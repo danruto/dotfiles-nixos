@@ -1,56 +1,42 @@
-#+title: Install
-#+author: Danruto
+# Pre-req
+- Download (the latest NixOS-WSL installer)[https://github.com/nix-community/NixOS-WSL]
+- Install it `wsl --import NixOS .\NixOS\ .\nixos-wsl.tar.gz --version 2`
 
-These are just some simple install notes for myself (in-case I have to reinstall unexpectedly).
+# Setup
+## Install and update the packages channel
+```sh
+sudo nix-channel --add https://nixos.org/channels/nixos-23.11 nixos
+sudo nix-channel --update
+```
 
-** Install Notes for Myself
-To get this running on a NixOS system, start by cloning the repo:
-#+BEGIN_SRC sh :noeval
-git clone https://github.com/danruto/dotfiles-nixos.git ~/.dotfiles
-#+END_SRC
+## Fetch this repo and build the NixOS baseline
+```sh
+nix-shell -p git helix
+git clone https://github.com/danruto/dotfiles-nixos.git /tmp/configuration
+cd /tmp/configuration
+```
 
-To get the hardware configuration on a new system, either copy from =/etc/nixos/hardware-configuration.nix= or run:
-#+BEGIN_SRC sh :noeval
-cd ~/.dotfiles
-sudo nixos-generate-config --show-hardware-config > system/hardware-configuration.nix
-#+END_SRC
-
-Also, if you have a differently named user account than my default (=danruto=), you /must/ update the following lines in the let binding near the top of the [[./flake.nix][flake.nix]]:
-#+BEGIN_SRC nix :noeval
-...
-let
-  ...
-  # ----- USER SETTINGS ----- #
-  username = "YOURUSERNAME"; # username
-  name = "YOURNAME"; # name/identifier
-...
-#+END_SRC
-
-There are many more config options there that you may also want to change as well.
-
-Once the variables are set, then switch into the system configuration by running:
-#+BEGIN_SRC sh :noeval
-cd ~/.dotfiles
+## Install it
+```sh
 sudo nixos-rebuild switch --flake .#system
-#+END_SRC
+```
 
-Home manager can be installed with:
-#+BEGIN_SRC sh :noeval
-nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
-nix-channel --update
-nix-shell '<home-manager>' -A install
-#+END_SRC
+## Exit and reconnect once system installed
+```sh
+exit
+wsl -t NixOS
+wsl -d NixOS
+```
 
-If home-manager starts to not cooperate, it may be because the unstable branch of nixpkgs is in the Nix channel list.  This can be fixed via:
-#+BEGIN_SRC sh :noeval
-nix-channel --add https://nixos.org/channels/nixpkgs-unstable
-nix-channel --update
-#+END_SRC
+## Move the config into home dir
+```sh
+mv /tmp/configuration ~/configuration
+```
 
-Home-manager may also not work without re-logging back in after it has been installed.
-
-Once home-manager is running, my home-manager configuration can be installed with:
-#+BEGIN_SRC sh :noeval
-cd ~/.dotfiles
+## Setup home-manager
+```sh
+cd ~/configuration
+sudo nixos-rebuild switch --flake .#system
 home-manager switch --flake .#user
-#+END_SRC
+```
+> NOTE: If it errors with `Could not find suitable profile directory` then run `nix profile list` and it should fix it

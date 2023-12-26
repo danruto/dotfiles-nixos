@@ -22,8 +22,6 @@
 
   home.packages = with pkgs; [
     # Core
-    fish
-    starship
     git
 
     # Various dev packages
@@ -32,27 +30,27 @@
     nodePackages.ungit
   ];
 
-  xdg.enable = true;
-  xdg.userDirs = {
-    enable = true;
-    createDirectories = true;
-    music = "${config.home.homeDirectory}/media/music";
-    videos = "${config.home.homeDirectory}/media/videos";
-    pictures = "${config.home.homeDirectory}/media/pictures";
-    templates = "${config.home.homeDirectory}/templates";
-    download = "${config.home.homeDirectory}/downloads";
-    documents = "${config.home.homeDirectory}/documents";
-    desktop = null;
-    publicShare = null;
-    extraConfig = {
-      XDG_DOTFILES_DIR = "${config.home.homeDirectory}/.dotfiles";
-      XDG_ARCHIVE_DIR = "${config.home.homeDirectory}/archive";
-      XDG_ORG_DIR = "${config.home.homeDirectory}/org";
-      XDG_BOOK_DIR = "${config.home.homeDirectory}/media/books";
-    };
-  };
-  xdg.mime.enable = true;
-  xdg.mimeApps.enable = true;
+  # xdg.enable = true;
+  # xdg.userDirs = {
+  #   enable = true;
+  #   createDirectories = true;
+  #   music = "${config.home.homeDirectory}/media/music";
+  #   videos = "${config.home.homeDirectory}/media/videos";
+  #   pictures = "${config.home.homeDirectory}/media/pictures";
+  #   templates = "${config.home.homeDirectory}/templates";
+  #   download = "${config.home.homeDirectory}/downloads";
+  #   documents = "${config.home.homeDirectory}/documents";
+  #   desktop = null;
+  #   publicShare = null;
+  #   extraConfig = {
+  #     XDG_DOTFILES_DIR = "${config.home.homeDirectory}/.dotfiles";
+  #     XDG_ARCHIVE_DIR = "${config.home.homeDirectory}/archive";
+  #     XDG_ORG_DIR = "${config.home.homeDirectory}/org";
+  #     XDG_BOOK_DIR = "${config.home.homeDirectory}/media/books";
+  #   };
+  # };
+  # xdg.mime.enable = true;
+  # xdg.mimeApps.enable = true;
 
   home.sessionVariables = {
     EDITOR = editor;

@@ -5,9 +5,6 @@
 { config, nixos-wsl, lib, pkgs, blocklist-hosts, username, name, hostname, timezone, locale, wm, theme, ... }:
 
 with lib;
-# let
-#   nixos-wsl = import ./nixos-wsl;
-# in
 {
   imports =
     [ 
@@ -57,9 +54,6 @@ with lib;
   # I'm sorry Stallman-taichou
   nixpkgs.config.allowUnfree = true;
 
-  # Kernel modules
-  # boot.kernelModules = [ "i2c-dev" "i2c-piix4" "cpufreq_powersave" ];
-
   # Networking
   networking.hostName = hostname; # Define your hostname.
 
@@ -85,13 +79,26 @@ with lib;
     home-manager
     starship
     zellij
-    zoxide
   ];
 
   environment.shells = with pkgs; [ fish ];
   users.defaultUserShell = pkgs.fish;
   programs.fish.enable = true;
   programs.starship.enable = true;
+  programs.starship.settings = {
+    gcloud.disabled = true;
+    kubernetes.disabled = false;
+    git_branch.style = "242";
+    directory.style = "bold blue dimmed";
+    directory.truncate_to_repo = false;
+    directory.truncation_length = 8;
+    python.disabled = true;
+    ruby.disabled = true;
+    hostname.ssh_only = false;
+    hostname.style = "bold green";
+    memory_usage.disabled = false;
+    memory_usage.threshold = -1;
+  };
 
   # It is ok to leave this unchanged for compatibility purposes
   system.stateVersion = "22.05";
