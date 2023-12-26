@@ -2,12 +2,10 @@
 
 let
   unstable-packages = with pkgs.unstable; [
-    rustup
   ];
   stable-packages = with pkgs; [
-    cargo-cache
-    cargo-expand
-    lldb
+		shellcheck
+		shfmt
   ];
   in
 {

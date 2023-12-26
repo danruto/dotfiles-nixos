@@ -15,6 +15,9 @@ let
     fzf
     pandoc
     pciutils
+    tree-sitter
+    xh
+    tealdeer
   ];
   unstable-packages = with pkgs.unstable; [
     ripgrep

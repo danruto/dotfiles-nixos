@@ -2,12 +2,15 @@
 
 let
   unstable-packages = with pkgs.unstable; [
-    rustup
   ];
   stable-packages = with pkgs; [
-    cargo-cache
-    cargo-expand
-    lldb
+		nodejs
+		typescript
+		nodePackages.typescript-language-server
+		nodePackages.vscode-langservers-extracted
+		nodePackages.yaml-language-server
+		nodePackages.prettier
+		nodePackages.pnpm
   ];
   in
 {

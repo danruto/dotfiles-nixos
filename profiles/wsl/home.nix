@@ -11,11 +11,16 @@
   imports = [
               # stylix.homeManagerModules.stylix
               # ../../user/style/stylix.nix # Styling and themes for my apps
-              ../../user/shell/sh.nix # My zsh and bash config
-              ../../user/shell/tui.nix # Useful CLI apps
+              ../../user/shell/sh.nix # Fish config
+              ../../user/shell/tui.nix # Useful cli/tui apps
               ../../user/apps/git/git.nix # My git config
               ../../user/lang/cc/cc.nix # C and C++ tools
               ../../user/lang/rust/rust.nix # Rust tools
+              ../../user/lang/typescript/typescript.nix # typescript tools
+              ../../user/lang/go/go.nix # go tools
+              ../../user/lang/lua/lua.nix # lua tools
+              ../../user/lang/nix/nix.nix # nix tools
+              ../../user/lang/shell/shell.nix # shell tools
             ];
 
   home.stateVersion = "22.11"; # Please read the comment before changing.

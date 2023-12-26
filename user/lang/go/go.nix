@@ -2,12 +2,11 @@
 
 let
   unstable-packages = with pkgs.unstable; [
-    rustup
   ];
   stable-packages = with pkgs; [
-    cargo-cache
-    cargo-expand
-    lldb
+		go
+		gopls
+		golangci-lint
   ];
   in
 {
