@@ -1,5 +1,5 @@
 # Pre-req
-- Download (the latest NixOS-WSL installer)[https://github.com/nix-community/NixOS-WSL]
+- Download [the latest NixOS-WSL installer](https://github.com/nix-community/NixOS-WSL)
 - Install it `wsl --import NixOS .\NixOS\ .\nixos-wsl.tar.gz --version 2`
 
 # Setup

@@ -9,6 +9,8 @@ let
     fd = "fd -Lu";
     # nixos-rebuild = "systemd-run --no-ask-password --uid=0 --system --scope -p MemoryLimit=16000M -p CPUQuota=60% nixos-rebuild";
     # home-manager = "systemd-run --no-ask-password --uid=1000 --user --scope -p MemoryLimit=16000M -p CPUQuota=60% home-manager";
+    norb = "pushd ~/configuration; sudo nixos-rebuild switch --flake .#system; popd;";
+    hmr = "pushd ~/configuration; home-manager switch --flake .#user; popd;";
   };
 in
 {
@@ -33,4 +35,10 @@ in
   programs.direnv.nix-direnv.enable = true;
 
   programs.starship.enableFishIntegration = true;
+
+  programs.zellij.enable = true;
+  programs.zellij.enableFishIntegration = true;
+
+  programs.zoxide.enable = true;
+  programs.zoxide.enableFishIntegration = true;
 }

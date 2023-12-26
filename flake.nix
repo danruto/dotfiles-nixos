@@ -1,7 +1,7 @@
 {
   description = "Danruto NixOS Configuration";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, stylix, blocklist-hosts, rust-overlay, hyprland-plugins, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, stylix, blocklist-hosts, rust-overlay, hyprland-plugins, nur, ... }@inputs:
   let
     # ---- SYSTEM SETTINGS ---- #
     system = "x86_64-linux"; # system arch
@@ -19,7 +19,7 @@
     wm = "hyprland"; # Selected window manager or desktop environment; must select one in both ./user/wm/ and ./system/wm/
     wmType = "wayland"; # x11 or wayland
     browser = "brave"; # Default browser; must select one from ./user/apps/browser/
-    editor = "helix"; # Default editor;
+    editor = "hx"; # Default editor;
     term = "alacritty"; # Default terminal command;
     font = "D2Coding"; # Selected font
     fontPkg = pkgs.d2coding; # Font package
@@ -34,12 +34,13 @@
     # configure pkgs
     pkgs = import nixpkgs-patched {
       inherit system;
-      inherit nixpkgs-unstable;
+      # inherit nixpkgs-unstable;
 
       config = { allowUnfree = true;
                  allowUnfreePredicate = (_: true); };
       overlays = [ 
         rust-overlay.overlays.default 
+        nur.overlay
         (_final: prev: {
           unstable = import nixpkgs-unstable {
             inherit (prev) system;
@@ -77,13 +78,17 @@
             inherit (inputs) stylix;
             inherit (inputs) hyprland-plugins;
             inherit (inputs) nixos-wsl;
+            channels = { inherit nixpkgs nixpkgs-unstable; };
           };
       };
     };
     nixosConfigurations = {
       system = lib.nixosSystem {
         inherit system;
-        modules = [ (./. + "/profiles"+("/"+profile)+"/configuration.nix") ]; # load configuration.nix from selected PROFILE
+        modules = [ 
+          # load configuration.nix from selected PROFILE
+          (./. + "/profiles"+("/"+profile)+"/configuration.nix") 
+        ]; 
         specialArgs = {
           # pass config variables from above
           inherit username;
@@ -98,6 +103,7 @@
           inherit (inputs) stylix;
           inherit (inputs) blocklist-hosts;
           inherit (inputs) nixos-wsl;
+          channels = { inherit nixpkgs nixpkgs-unstable; };
         };
       };
     };
@@ -112,6 +118,7 @@
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
     stylix.url = "github:danth/stylix";
     rust-overlay.url = "github:oxalica/rust-overlay";
+    nur.url = "github:nix-community/NUR";
     blocklist-hosts = {
       url = "github:StevenBlack/hosts";
       flake = false;

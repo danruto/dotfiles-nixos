@@ -51,6 +51,11 @@ with lib;
     experimental-features = nix-command flakes
   '';
 
+  nix.gc = {
+    automatic = true;
+    options = "--delete-older-than 7d";
+  };
+
   # I'm sorry Stallman-taichou
   nixpkgs.config.allowUnfree = true;
 
@@ -78,7 +83,8 @@ with lib;
     git
     home-manager
     starship
-    zellij
+
+    (import ./win32yank.nix {inherit pkgs;})
   ];
 
   environment.shells = with pkgs; [ fish ];

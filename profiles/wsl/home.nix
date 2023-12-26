@@ -52,6 +52,8 @@
   # xdg.mime.enable = true;
   # xdg.mimeApps.enable = true;
 
+  home.file.".config/zellij/config.kdl".source = ../../user/config/zellij.kdl;
+
   home.sessionVariables = {
     EDITOR = editor;
   };
