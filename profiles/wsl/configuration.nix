@@ -2,28 +2,26 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, lib, pkgs, blocklist-hosts, username, name, hostname, timezone, locale, wm, theme, ... }:
+{ config, nixos-wsl, lib, pkgs, blocklist-hosts, username, name, hostname, timezone, locale, wm, theme, ... }:
 
 with lib;
-let
-  nixos-wsl = import ./nixos-wsl;
-in
+# let
+#   nixos-wsl = import ./nixos-wsl;
+# in
 {
   imports =
-    [ nixos-wsl.nixosModules.wsl
-      ../../system/hardware/kernel.nix # Kernel config
-      ../../system/hardware/systemd.nix # systemd config
-      ../../system/hardware/opengl.nix
-      ../../system/hardware/bluetooth.nix
+    [ 
+      nixos-wsl.nixosModules.wsl
       ../../system/security/gpg.nix
       ../../system/security/blocklist.nix
-      ../../system/security/firewall.nix
       ../../system/style/stylix.nix
     ];
 
   wsl = {
     enable = true;
-    automountPath = "/mnt";
+    wslConf.automount.root = "/mnt";
+    wslConf.interop.appendWindowsPath = false;
+    wslConf.network.generateHosts = false;
     defaultUser = username;
     startMenuLaunchers = true;
 
@@ -32,11 +30,17 @@ in
 
     # Enable integration with Docker Desktop (needs to be installed)
     # docker-desktop.enable = true;
+  };
 
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = true;
+    autoPrune.enable = true;
   };
 
   # Fix nix path
-  nix.nixPath = [ "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
+  nix.nixPath = [ 
+                  "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
                   "nixos-config=$HOME/dotfiles/system/configuration.nix"
                   "/nix/var/nix/profiles/per-user/root/channels"
                 ];
@@ -54,7 +58,7 @@ in
   nixpkgs.config.allowUnfree = true;
 
   # Kernel modules
-  boot.kernelModules = [ "i2c-dev" "i2c-piix4" "cpufreq_powersave" ];
+  # boot.kernelModules = [ "i2c-dev" "i2c-piix4" "cpufreq_powersave" ];
 
   # Networking
   networking.hostName = hostname; # Define your hostname.
@@ -62,17 +66,6 @@ in
   # Timezone and locale
   time.timeZone = timezone; # time zone
   i18n.defaultLocale = locale;
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = locale;
-    LC_IDENTIFICATION = locale;
-    LC_MEASUREMENT = locale;
-    LC_MONETARY = locale;
-    LC_NAME = locale;
-    LC_NUMERIC = locale;
-    LC_PAPER = locale;
-    LC_TELEPHONE = locale;
-    LC_TIME = locale;
-  };
 
   # User account
   users.users.${username} = {
@@ -90,11 +83,15 @@ in
     fish
     git
     home-manager
+    starship
+    zellij
+    zoxide
   ];
 
   environment.shells = with pkgs; [ fish ];
   users.defaultUserShell = pkgs.fish;
   programs.fish.enable = true;
+  programs.starship.enable = true;
 
   # It is ok to leave this unchanged for compatibility purposes
   system.stateVersion = "22.05";

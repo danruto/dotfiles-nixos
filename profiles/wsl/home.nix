@@ -9,12 +9,13 @@
   programs.home-manager.enable = true;
 
   imports = [
-              stylix.homeManagerModules.stylix
+              # stylix.homeManagerModules.stylix
+              # ../../user/style/stylix.nix # Styling and themes for my apps
               ../../user/shell/sh.nix # My zsh and bash config
-              ../../user/shell/cli-collection.nix # Useful CLI apps
+              ../../user/shell/tui.nix # Useful CLI apps
               ../../user/apps/git/git.nix # My git config
-              ../../user/style/stylix.nix # Styling and themes for my apps
               ../../user/lang/cc/cc.nix # C and C++ tools
+              ../../user/lang/rust/rust.nix # Rust tools
             ];
 
   home.stateVersion = "22.11"; # Please read the comment before changing.
@@ -22,6 +23,7 @@
   home.packages = with pkgs; [
     # Core
     fish
+    starship
     git
 
     # Various dev packages

@@ -6,15 +6,24 @@
     # Command Line
     killall
     libnotify
-    bat eza fd bottom ripgrep
+    bat 
+    eza 
+    fd 
+    gotop
+    ripgrep
     rsync
-    htop
     hwinfo
     unzip
     brightnessctl
     fzf
     pandoc
     pciutils
+    neovim
+		helix
+    gitui
+    zellij
+    zoxide
+
     (pkgs.writeShellScriptBin "airplane-mode" ''
       #!/bin/sh
       connectivity="$(nmcli n connectivity)"
@@ -25,8 +34,6 @@
           nmcli n on
       fi
     '')
-    neovim
-		helix
   ];
 
   imports = [
