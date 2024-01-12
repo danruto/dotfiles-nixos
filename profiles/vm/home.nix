@@ -63,4 +63,8 @@
     EDITOR = editor;
   };
 
+  # Disable manuals until sourcehut references are removed from home-manager
+  manual.manpages.enable = false;
+  manual.json.enable = false;
+  manual.html.enable = false;
 }

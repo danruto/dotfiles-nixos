@@ -6,7 +6,8 @@
     # ---- SYSTEM SETTINGS ---- #
     system = "x86_64-linux"; # system arch
     hostname = "danruto"; # hostname
-    profile = "wsl"; # select a profile defined from my profiles directory
+    # profile = "wsl"; # select a profile defined from my profiles directory
+    profile = "vm";
     timezone = "Australia/Sydney"; # select timezone
     locale = "en_US.UTF-8"; # select locale
 
