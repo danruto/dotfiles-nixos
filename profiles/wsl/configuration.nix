@@ -83,6 +83,8 @@ with lib;
     git
     home-manager
     starship
+    # openssl
+    # pkg-config
 
     (import ./win32yank.nix {inherit pkgs;})
   ];
