@@ -4,9 +4,9 @@ let
   stable-packages = with pkgs; [
     killall
     libnotify
-    bat 
-    eza 
-    fd 
+    bat
+    eza
+    fd
     gotop
     rsync
     hwinfo
@@ -25,10 +25,11 @@ let
 		# helix
     ani-cli
     yt-dlp
+    asciinema
   ];
 in
 {
-  home.packages = stable-packages 
+  home.packages = stable-packages
                 ++ unstable-packages
                 ++ [
                   (pkgs.writeShellScriptBin "airplane-mode" ''
@@ -76,7 +77,7 @@ in
         };
 
         indent-guides.render = true;
-        
+
         statusline = {
           left = ["mode" "spinner"];
           center = ["file-name" "file-modification-indicator"];

@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  #services.auto-cpufreq.enable = true;
+  services.auto-cpufreq.enable = true;
   #services.auto-cpufreq.settings = {
   #  charger = {
   #    governor = "performance";
@@ -13,6 +13,12 @@
   #    turbo = "never";
   #  };
   #};
+  services.powerManagement.powertop.enable = true;
+  services.upower.enable = true;
+  services.upower.criticalPowerAction = "Hibernate";
+  services.logind.lidSwitch = "suspend-then-hibernate";
+  services.thermald.enable = true;
+
   services.tlp = {
     enable = true;
     settings = {
@@ -28,5 +34,4 @@
       CPU_MAX_PERF_ON_BAT = 80;
     };
   };
-
 }

@@ -18,6 +18,7 @@
     displayManager.gdm = {
       enable = true;
       wayland = true;
+      defaultSession = "Hyprland";
     };
   };
 }

@@ -128,5 +128,14 @@
       url = "github:hyprwm/hyprland-plugins";
       flake = false;
     };
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
+    fw-ectool = {
+        url = "github:tlvince/ectool.nix";
+        inputs.nixpkgs.follows = "nixos-unstable";
+    };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.3.0";
+      inputs.nixpkgs.follows = "nixos-pkgs";
+    };
   };
 }
