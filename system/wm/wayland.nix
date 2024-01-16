@@ -7,7 +7,15 @@
               ./fonts.nix
             ];
 
-  environment.systemPackages = [ pkgs.wayland pkgs.waydroid ];
+  environment.systemPackages = with pkgs; [ 
+    wayland 
+    xwayland
+    meson
+    wayland-protocols
+    wayland-utils
+    wl-clipboard
+    wlroots
+  ];
 
   # Configure xwayland
   services.xserver = {
@@ -18,7 +26,7 @@
     displayManager.gdm = {
       enable = true;
       wayland = true;
-      defaultSession = "Hyprland";
+      # defaultSession = "Hyprland";
     };
   };
 }

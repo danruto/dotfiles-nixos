@@ -2,15 +2,13 @@
 
 {
   imports = [
-    ../../app/terminal/alacritty.nix
+    ../../apps/terminal/alacritty.nix
   ];
 
-  gtk.cursorTheme = {
-    package = pkgs.quintom-cursor-theme;
-    name = if (config.stylix.polarity == "light") then "Quintom_Ink" else "Quintom_Snow";
-    size = 36;
-  };
-
+  home.file.".config/hypr/statusbar.sh".source = ./statusbar.sh;
+  home.file.".config/hypr/switch.sh".source = ./switch.sh;
+  home.file.".config/hypr/xdg.sh".source = ./xdg.sh;
+  
   wayland.windowManager.hyprland = {
     enable = true;
     plugins = [
@@ -18,275 +16,653 @@
     ];
     settings = { };
     extraConfig = ''
-      exec-once = dbus-update-activation-environment DISPLAY XAUTHORITY WAYLAND_DISPLAY
-      exec-once = hyprctl setcursor '' + config.gtk.cursorTheme.name + " " + builtins.toString config.gtk.cursorTheme.size + ''
 
-      exec-once = hyprprofile Personal
+      # This is an example Hyprland config file.
+      #
+      # Refer to the wiki for more information.
 
-      exec-once = pypr
-      exec-once = nm-applet
-      exec-once = blueman-applet
-      exec-once = GOMAXPROCS=1 syncthing --no-browser
-      exec-once = protonmail-bridge --noninteractive
-      exec-once = waybar
-      exec-once = emacs --daemon
+      #
+      # Please note not all available settings / options are set here.
+      # For a full list, see the wiki
+      #
 
-      #exec-once = swayidle -w timeout 90 '${pkgs.gtklock}/bin/gtklock -d' timeout 210 'suspend-unless-render' resume '${pkgs.hyprland}/bin/hyprctl dispatch dpms on' before-sleep "${pkgs.gtklock}/bin/gtklock -d"
-      exec-once = swayidle -w timeout 90 '${pkgs.swaylock}/bin/swaylock' timeout 210 'suspend-unless-render' resume '${pkgs.hyprland}/bin/hyprctl dispatch dpms on' before-sleep "${pkgs.swaylock}/bin/swaylock"
-      exec-once = obs-notification-mute-daemon
+      # See https://wiki.hyprland.org/Configuring/Monitors/
+      monitor=,preferred,auto,1
 
-      exec = ~/.swaybg-stylix
+      # Handle monitor plugging in and out
+      bindl=,switch:Lid Switch, exec, ~/.config/hypr/switch.sh
+
+      # See https://wiki.hyprland.org/Configuring/Keywords/ for more
+
+      # Execute your favorite apps at launch
+      # exec-once = waybar & hyprpaper & firefox
+      exec-once = ~/.config/hypr/xdg.sh
+      exec-once = /usr/lib/polkit-kde-authentication-agent-1
+      # exec-once = eww daemon
+      # exec-once = waybar
+      exec-once = ~/.config/hypr/statusbar.sh
+      exec-once = dunst
+
+      # Source a file (multi-file configs)
+      # source = ~/.config/hypr/myColors.conf
+
+      # Some default env vars.
+      env = XCURSOR_SIZE,24
+
+      # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
+      input {
+          kb_layout = us
+          kb_variant =
+          kb_model =
+          kb_options =
+          kb_rules =
+
+          follow_mouse = 1
+
+          touchpad {
+              natural_scroll = false
+          }
+
+          sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
+      }
 
       general {
-        layout = master
-        cursor_inactive_timeout = 30
-        border_size = 4
-        no_cursor_warps = false
-        col.active_border = 0xff'' + config.lib.stylix.colors.base08 + ''
+          # See https://wiki.hyprland.org/Configuring/Variables/ for more
 
-        col.inactive_border = 0x33'' + config.lib.stylix.colors.base00 + ''
+          gaps_in = 5
+          gaps_out = 20
+          border_size = 2
+          col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
+          col.inactive_border = rgba(595959aa)
 
-            resize_on_border = true
-            gaps_in = 7
-            gaps_out = 7
-       }
+          layout = dwindle
+      }
 
-       #plugin {
-       #  hyprbars {
-       #    bar_height = 0
-       #    bar_color = 0xee''+ config.lib.stylix.colors.base00 + ''
+      decoration {
+          # See https://wiki.hyprland.org/Configuring/Variables/ for more
 
-       #    col.text = 0xff''+ config.lib.stylix.colors.base05 + ''
+          rounding = 10
 
-       #    bar_text_font = '' + font + ''
+          blur {
+              size = 3
+          }
 
-       #    bar_text_size = 12
+          drop_shadow = true
+          shadow_range = 4
+          shadow_render_power = 3
+          col.shadow = rgba(1a1a1aee)
+      }
 
-       #    buttons {
-       #      button_size = 0
-       #      col.maximize = 0xff''+ config.lib.stylix.colors.base0A +''
+      animations {
+          enabled = true
 
-       #      col.close = 0xff''+ config.lib.stylix.colors.base08 +''
+          # Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
 
-       #    }
-       #  }
-       #}
+          bezier = myBezier, 0.05, 0.9, 0.1, 1.05
 
-       bind=SUPER,SPACE,fullscreen,1
-       bind=ALT,TAB,cyclenext
-       bind=ALT,TAB,bringactivetotop
-       bind=ALTSHIFT,TAB,cyclenext,prev
-       bind=ALTSHIFT,TAB,bringactivetotop
-       bind=SUPER,Y,workspaceopt,allfloat
+          animation = windows, 1, 7, myBezier
+          animation = windowsOut, 1, 7, default, popin 80%
+          animation = border, 1, 10, default
+          animation = borderangle, 1, 8, default
+          animation = fade, 1, 7, default
+          animation = workspaces, 1, 6, default
+      }
 
-       bind = SUPER,R,pass,^(com\.obsproject\.Studio)$
-       bind = SUPERSHIFT,R,pass,^(com\.obsproject\.Studio)$
+      dwindle {
+          # See https://wiki.hyprland.org/Configuring/Dwindle-Layout/ for more
+          pseudotile = true # master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
+          preserve_split = true # you probably want this
+      }
 
-       bind=SUPER,RETURN,exec,'' + term + ''
+      master {
+          # See https://wiki.hyprland.org/Configuring/Master-Layout/ for more
+          new_is_master = true
+      }
 
-       bind=SUPER,A,exec,'' + spawnEditor + ''
+      gestures {
+          # See https://wiki.hyprland.org/Configuring/Variables/ for more
+          workspace_swipe = false
+      }
 
-       bind=SUPER,S,exec,'' + browser + ''
+      # Example per-device config
+      # See https://wiki.hyprland.org/Configuring/Keywords/#executing for more
+      device:epic mouse V1 {
+          sensitivity = -0.5
+      }
 
-       bind=SUPERCTRL,S,exec,container-open # qutebrowser only
+      # Example windowrule v1
+      # windowrule = float, ^(kitty)$
+      # Example windowrule v2
+      # windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
+      # See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
 
-       bind=SUPERCTRL,R,exec,killall .waybar-wrapped && waybar & disown
 
-       bind=SUPER,code:47,exec,fuzzel
-       bind=SUPER,X,exec,fnottctl dismiss
-       bind=SUPERSHIFT,X,exec,fnottctl dismiss all
-       bind=SUPER,Q,killactive
-       bind=SUPERSHIFT,Q,exit
-       bindm=SUPER,mouse:272,movewindow
-       bindm=SUPER,mouse:273,resizewindow
-       bind=SUPER,T,togglefloating
+      # See https://wiki.hyprland.org/Configuring/Keywords/ for more
+      $mainMod = SUPER
 
-       bind=,code:107,exec,grim -g "$(slurp)"
-       bind=SHIFT,code:107,exec,grim -g "$(slurp -o)"
-       bind=SUPER,code:107,exec,grim
-       bind=CTRL,code:107,exec,grim -g "$(slurp)" - | wl-copy
-       bind=SHIFTCTRL,code:107,exec,grim -g "$(slurp -o)" - | wl-copy
-       bind=SUPERCTRL,code:107,exec,grim - | wl-copy
+      # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
+      bind = $mainMod, M, exec, kitty
+      bind = $mainMod, Return, exec, alacritty
+      bind = $mainMod, Q, killactive,
+      # bind = $mainMod, L, exit,
+      bind = $mainMod, E, exec, nemo
+      bind = $mainMod, V, togglefloating,
+      bind = $mainMod, R, exec, rofi -show run
+      bind = $mainMod, P, pseudo, # dwindle
+      bind = $mainMod, N, togglesplit, # dwindle
 
-       bind=,code:122,exec,pamixer -d 10
-       bind=,code:123,exec,pamixer -i 10
-       bind=,code:121,exec,pamixer -t
-       bind=,code:256,exec,pamixer --default-source -t
-       bind=SHIFT,code:122,exec,pamixer --default-source -d 10
-       bind=SHIFT,code:123,exec,pamixer --default-source -i 10
-       bind=,code:232,exec,brightnessctl set 15-
-       bind=,code:233,exec,brightnessctl set +15
-       bind=,code:237,exec,brightnessctl --device='asus::kbd_backlight' set 1-
-       bind=,code:238,exec,brightnessctl --device='asus::kbd_backlight' set +1
-       bind=,code:255,exec,airplane-mode
+      # Move focus with mainMod + arrow keys
+      bind = $mainMod, H, movefocus, l
+      bind = $mainMod, L, movefocus, r
+      bind = $mainMod, K, movefocus, u
+      bind = $mainMod, J, movefocus, d
 
-       bind=SUPERSHIFT,S,exec,swaylock & sleep 1 && systemctl suspend
-       bind=SUPERCTRL,L,exec,swaylock
+      # Switch workspaces with mainMod + [0-9]
+      bind = $mainMod, 1, workspace, 1
+      bind = $mainMod, 2, workspace, 2
+      bind = $mainMod, 3, workspace, 3
+      bind = $mainMod, 4, workspace, 4
+      bind = $mainMod, 5, workspace, 5
+      bind = $mainMod, 6, workspace, 6
+      bind = $mainMod, 7, workspace, 7
+      bind = $mainMod, 8, workspace, 8
+      bind = $mainMod, 9, workspace, 9
+      bind = $mainMod, 0, workspace, 10
 
-       bind=SUPER,H,movefocus,l
-       bind=SUPER,J,movefocus,d
-       bind=SUPER,K,movefocus,u
-       bind=SUPER,L,movefocus,r
+      # Move active window to a workspace with mainMod + SHIFT + [0-9]
+      bind = $mainMod SHIFT, 1, movetoworkspace, 1
+      bind = $mainMod SHIFT, 2, movetoworkspace, 2
+      bind = $mainMod SHIFT, 3, movetoworkspace, 3
+      bind = $mainMod SHIFT, 4, movetoworkspace, 4
+      bind = $mainMod SHIFT, 5, movetoworkspace, 5
+      bind = $mainMod SHIFT, 6, movetoworkspace, 6
+      bind = $mainMod SHIFT, 7, movetoworkspace, 7
+      bind = $mainMod SHIFT, 8, movetoworkspace, 8
+      bind = $mainMod SHIFT, 9, movetoworkspace, 9
+      bind = $mainMod SHIFT, 0, movetoworkspace, 10
 
-       bind=SUPERSHIFT,H,movewindow,l
-       bind=SUPERSHIFT,J,movewindow,d
-       bind=SUPERSHIFT,K,movewindow,u
-       bind=SUPERSHIFT,L,movewindow,r
+      # Scroll through existing workspaces with mainMod + scroll
+      bind = $mainMod, mouse_down, workspace, e+1
+      bind = $mainMod, mouse_up, workspace, e-1
 
-       bind=SUPER,1,exec,hyprworkspace 1
-       bind=SUPER,2,exec,hyprworkspace 2
-       bind=SUPER,3,exec,hyprworkspace 3
-       bind=SUPER,4,exec,hyprworkspace 4
-       bind=SUPER,5,exec,hyprworkspace 5
-       bind=SUPER,6,exec,hyprworkspace 6
-       bind=SUPER,7,exec,hyprworkspace 7
-       bind=SUPER,8,exec,hyprworkspace 8
-       bind=SUPER,9,exec,hyprworkspace 9
+      # Move/resize windows with mainMod + LMB/RMB and dragging
+      bindm = $mainMod, mouse:272, movewindow
+      bindm = $mainMod, mouse:273, resizewindow
 
-       bind=SUPERSHIFT,1,movetoworkspace,1
-       bind=SUPERSHIFT,2,movetoworkspace,2
-       bind=SUPERSHIFT,3,movetoworkspace,3
-       bind=SUPERSHIFT,4,movetoworkspace,4
-       bind=SUPERSHIFT,5,movetoworkspace,5
-       bind=SUPERSHIFT,6,movetoworkspace,6
-       bind=SUPERSHIFT,7,movetoworkspace,7
-       bind=SUPERSHIFT,8,movetoworkspace,8
-       bind=SUPERSHIFT,9,movetoworkspace,9
-
-       bind=SUPER,Z,exec,pypr toggle term && hyprctl dispatch bringactivetotop
-       bind=SUPER,F,exec,pypr toggle ranger && hyprctl dispatch bringactivetotop
-       bind=SUPER,N,exec,pypr toggle musikcube && hyprctl dispatch bringactivetotop
-       bind=SUPER,B,exec,pypr toggle btm && hyprctl dispatch bringactivetotop
-       bind=SUPER,E,exec,pypr toggle geary && hyprctl dispatch bringactivetotop
-       bind=SUPER,code:172,exec,pypr toggle pavucontrol && hyprctl dispatch bringactivetotop
-       $scratchpadsize = size 80% 85%
-
-       $scratchpad = class:^(scratchpad)$
-       windowrulev2 = float,$scratchpad
-       windowrulev2 = $scratchpadsize,$scratchpad
-       windowrulev2 = workspace special silent,$scratchpad
-       windowrulev2 = center,$scratchpad
-
-       $gearyscratchpad = class:^(geary)$
-       windowrulev2 = float,$gearyscratchpad
-       windowrulev2 = $scratchpadsize,$gearyscratchpad
-       windowrulev2 = workspace special silent,$gearyscratchpad
-       windowrulev2 = center,$gearyscratchpad
-
-       $pavucontrol = class:^(pavucontrol)$
-       windowrulev2 = float,$pavucontrol
-       windowrulev2 = size 86% 40%,$pavucontrol
-       windowrulev2 = move 50% 6%,$pavucontrol
-       windowrulev2 = workspace special silent,$pavucontrol
-       windowrulev2 = opacity 0.80,$pavucontrol
-
-       windowrulev2 = opacity 0.85,$gearyscratchpad
-       windowrulev2 = opacity 0.80,title:ORUI
-       windowrulev2 = opacity 0.80,title:Heimdall
-       windowrulev2 = opacity 0.80,title:^(LibreWolf)$
-       windowrulev2 = opacity 0.80,title:^(New Tab - LibreWolf)$
-       windowrulev2 = opacity 0.80,title:^(New Tab - Brave)$
-       windowrulev2 = opacity 0.65,title:^(My Local Dashboard Awesome Homepage - qutebrowser)$
-       windowrulev2 = opacity 0.65,title:\[.*\] - My Local Dashboard Awesome Homepage
-       windowrulev2 = opacity 0.9,class:^(org.keepassxc.KeePassXC)$
-       windowrulev2 = opacity 0.75,class:^(org.gnome.Nautilus)$
-
-       layerrule = blur,waybar
-
-       bind=SUPER,code:21,exec,pypr zoom
-       bind=SUPER,code:21,exec,hyprctl reload
-
-       bind=SUPERCTRL,right,workspace,+1
-       bind=SUPERCTRL,left,workspace,-1
-
-       bind=SUPER,I,exec,networkmanager_dmenu
-       bind=SUPER,P,exec,keepmenu
-       bind=SUPERSHIFT,P,exec,hyprprofile-dmenu
-
-       monitor=eDP-1,1920x1080,1000x1200,1
-       monitor=HDMI-A-1,1920x1200,1920x0,1
-       monitor=DP-1,1920x1200,0x0,1
-
-       xwayland {
-         force_zero_scaling = true
-       }
-
-       env = WLR_DRM_DEVICES,/dev/dri/card1:/dev/dri/card0
-       env = QT_QPA_PLATFORMTHEME,qt5ct
-
-       input {
-         kb_layout = us
-         kb_options = caps:escape
-         repeat_delay = 350
-         repeat_rate = 50
-         accel_profile = adaptive
-         follow_mouse = 2
-       }
-
-       misc {
-         mouse_move_enables_dpms = false
-       }
-       decoration {
-         rounding = 8
-         blur {
-           enabled = true
-           size = 5
-           passes = 2
-           ignore_opacity = true
-           contrast = 1.17
-           brightness = 0.8
-         }
-       }
-
+      # Screenshot
+      bind = $mainMod SHIFT, S, exec, hyprshot -m region
     '';
     xwayland = { enable = true; };
-    systemdIntegration = true;
+    systemd.enable = true;
+  };
+
+  programs.waybar = {
+    enable = true;
+    package = pkgs.waybar.overrideAttrs (oldAttrs: {
+      postPatch = ''
+        # use hyprctl to switch workspaces
+        sed -i 's/zext_workspace_handle_v1_activate(workspace_handle_);/const std::string command = "hyprworkspace " + name_;\n\tsystem(command.c_str());/g' src/modules/wlr/workspace_manager.cpp
+        sed -i 's/gIPC->getSocket1Reply("dispatch workspace " + std::to_string(id()));/const std::string command = "hyprworkspace " + std::to_string(id());\n\tsystem(command.c_str());/g' src/modules/hyprland/workspaces.cpp
+      '';
+    });
+    settings = {
+      mainBar = {
+        layer = "top";
+        position = "top";
+        height = 35;
+        margin = "0 0 0 0";
+        spacing = 5;
+
+        modules-left = [ "custom/launcher" "wlr/workspaces" ];
+        modules-center = [ "hyprland/window" ];
+        modules-right = [ "tray" "disk" "cpu" "memory" "backlight" "pulseaudio" "network" "battery" "block" "custom/power-menu" ];
+
+        "hyprland/workspaces" = {
+          "on-click" = "activate";
+          "format-icons" = {
+              "1" = "";
+              "2" = "";
+              "3" = "";
+              "4" = "";
+              "5" = "";
+              "urgent" = "";
+              "active" = "";
+              "default" = "";
+          };
+        };
+
+        "hyprland/window" = {
+          "format" = "{}";
+        };
+
+
+        "tray" = {
+            "spacing" = 10;
+        };
+        "clock" = {
+            "format" = "<span color='#bf616a'> </span>{:%I:%M %p %d/%m}";
+            "format-alt" = "<span color='#bf616a'> </span>{:%a %b %d}";
+            "tooltip-format" = "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>";
+        };
+        "cpu" = {
+            "interval" = 10;
+            "format" = " {}%";
+            "max-length" = 10;
+            "on-click" = "";
+        };
+        "memory" = {
+            "interval" = 30;
+            "format" = " {}%";
+            "format-alt" = " {used:0.1f}G";
+            "max-length" = 10;
+        };
+        "backlight" = {
+            "device" = "intel_backlight";
+            "format" = "{icon} {percent}%";
+            "format-icons" = [
+                ""
+                ""
+                ""
+                ""
+                ""
+                ""
+                ""
+                ""
+                ""
+            ];
+            "on-click" = "";
+        };
+        "network" = {
+            "format-wifi" = "直 {essid}";
+            "format-ethernet" = " wired";
+            "format-disconnected" = "睊";
+            "on-click" = "bash ~/.config/waybar/scripts/rofi-wifi-menu.sh";
+        };
+        "pulseaudio" = {
+            "format" = "{icon} {volume}%";
+            "format-bluetooth" = "  {volume}%";
+            "format-bluetooth-muted" = "";
+            "format-muted" = "婢";
+            "format-icons" = {
+                "headphone" = "";
+                "hands-free" = "";
+                "headset" = "";
+                "phone" = "";
+                "portable" = "";
+                "car" = "";
+                "default" = [
+                    ""
+                    ""
+                    ""
+                ];
+            };
+            "on-click" = "pavucontrol";
+        };
+        "bluetooth" = {
+            "on-click" = "~/.config/waybar/scripts/rofi-bluetooth &";
+            "format" = " {status} {num_connections}";
+        };
+        "battery" = {
+            "bat" = "BAT1";
+            "adapter" = "ADP0";
+            "interval" = 60;
+            "states" = {
+                "warning" = 30;
+                "critical" = 15;
+            };
+            "max-length" = 20;
+            "format" = "{icon} {capacity}%";
+            "format-warning" = "{icon} {capacity}%";
+            "format-critical" = "{icon} {capacity}%";
+            "format-charging" = "<span font-family='Font Awesome 6 Free'></span> {capacity}%";
+            "format-plugged" = "  {capacity}%";
+            "format-alt" = "{icon} {time}";
+            "format-full" = "  {capacity}%";
+            "format-icons" = [
+                " "
+                " "
+                " "
+                " "
+                " "
+            ];
+        };
+        "disk" = {
+            "interval" = 30;
+            "format" = "{free} / {total}";
+            "path" = "/";
+        };
+        "custom/spotify" = {
+            "exec" = "python3 ~/.config/waybar/scripts/mediaplayer.py --player spotify";
+            "format" = "{}  ";
+            "return-type" = "json";
+            "on-click" = "playerctl play-pause";
+            "on-double-click-right" = "playerctl next";
+            "on-scroll-down" = "playerctl previous";
+        };
+        "custom/power-menu" = {
+            "format" = " <span color='#6a92d7'>⏻ </span>";
+            "on-click" = "bash ~/.config/waybar/scripts/power-menu/powermenu.sh";
+        };
+        "custom/launcher" = {
+            "format" = " <span color='#6a92d7'> </span>";
+            "on-click" = "rofi -show drun";
+        };
+
+      };
+    };
+    style = ''
+      * {
+          /* `otf-font-awesome` is required to be installed for icons */
+          font-family: JetBrainsMono Nerd Font;
+          font-size: 14px;
+      }
+
+      window#waybar {
+          background-color: rgba(10, 10, 10, 10);
+          color: #ffffff;
+          transition-property: background-color;
+          transition-duration: 0.5s;
+          border-top: 8px transparent;
+          border-radius: 0px;
+          transition-duration: 0.5s;
+          margin: 16px 16px;
+      }
+
+      #custom-launcher {
+          margin-left: 5px;
+          margin-top: 3px;
+          margin-bottom: 3px;
+
+          background-color: #1b242b;
+          color: #6a92d7;
+          border-radius: 7.5px;
+      }
+
+      #custom-power-menu {
+          margin-left: 5px;
+          margin-top: 3px;
+          margin-bottom: 3px;
+          margin-right: 5px;
+
+          border-radius: 9.5px;
+          background-color: #1b242b;
+          border-radius: 7.5px;
+      }
+
+      window#waybar.hidden {
+          opacity: 0.2;
+      }
+
+      #workspaces button {
+          padding: 0 5px;
+          color: #7984A4;
+          background-color: transparent;
+          box-shadow: inset 0 -3px transparent;
+          border: none;
+          border-radius: 0;
+      }
+
+      #workspaces button.focused {
+          color: #bf616a;
+      }
+
+      #workspaces button.active {
+          color: #6a92d7;
+      }
+
+      #workspaces button.urgent {
+          background-color: #eb4d4b;
+      }
+
+      #window {
+          color: #64727d;
+      }
+
+      #clock,
+      #battery,
+      #cpu,
+      #memory,
+      #disk,
+      #temperature,
+      #backlight,
+      #network,
+      #pulseaudio,
+      #custom-media,
+      #tray,
+      #mode,
+      #idle_inhibitor,
+      #mpd,
+      #bluetooth,
+      #custom-hyprPicker,
+      #custom-power-menu,
+      #custom-spotify,
+      #custom-weather {
+          padding: 0 10px;
+          color: #e5e5e5;
+          border-radius: 9.5px;
+      }
+
+      #window,
+      #workspaces {
+          margin: 0 4px;
+          border-radius: 7.8px;
+      }
+
+      #cpu {
+          color: #fb958b;
+      }
+
+      #memory {
+          color: #ebcb8b;
+      }
+
+      #custom-weather.severe {
+          color: #eb937d;
+      }
+
+      #custom-weather.sunnyDay {
+          color: #c2ca76;
+      }
+
+      #custom-weather.clearNight {
+          color: #cad3f5;
+      }
+
+      #custom-weather.cloudyFoggyDay,
+      #custom-weather.cloudyFoggyNight {
+          color: #c2ddda;
+      }
+
+      #custom-weather.rainyDay,
+      #custom-weather.rainyNight {
+          color: #5aaca5;
+      }
+
+      #custom-weather.showyIcyDay,
+      #custom-weather.snowyIcyNight {
+          color: #d6e7e5;
+      }
+
+      #custom-weather.default {
+          color: #dbd9d8;
+      }
+
+      .modules-left>widget:first-child>#workspaces {
+          margin-left: 0;
+      }
+
+      .modules-right>widget:last-child>#workspaces {
+          margin-right: 0;
+      }
+
+      #pulseaudio {
+          color: #7d9bba;
+      }
+
+      #backlight {
+          color: #8fbcbb;
+      }
+
+      #clock {
+          color: #c8d2e0;
+      }
+
+      #battery {
+          color: #c0caf5;
+      }
+
+      #battery.charging,
+      #battery.full,
+      #battery.plugged {
+          color: #26a65b;
+      }
+
+      @keyframes blink {
+          to {
+              background-color: rgba(30, 34, 42, 0.5);
+              color: #abb2bf;
+          }
+      }
+
+      #battery.critical:not(.charging) {
+          color: #f53c3c;
+          animation-name: blink;
+          animation-duration: 0.5s;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          animation-direction: alternate;
+      }
+
+      label:focus {
+          background-color: #000000;
+      }
+
+      #disk {
+          color: #73d0ff;
+      }
+
+      #bluetooth {
+          color: #707d9d;
+      }
+
+      #bluetooth.disconnected {
+          color: #f53c3c;
+      }
+
+      #network {
+          color: #b48ead;
+      }
+
+      #network.disconnected {
+          color: #f53c3c;
+      }
+
+      #custom-media {
+          background-color: #66cc99;
+          color: #2a5c45;
+          min-width: 100px;
+      }
+
+      #custom-media.custom-spotify {
+          background-color: #66cc99;
+      }
+
+      #custom-media.custom-vlc {
+          background-color: #ffa000;
+      }
+
+      #temperature {
+          background-color: #f0932b;
+      }
+
+      #temperature.critical {
+          background-color: #eb4d4b;
+      }
+
+      #tray>.passive {
+          -gtk-icon-effect: dim;
+      }
+
+      #tray>.needs-attention {
+          -gtk-icon-effect: highlight;
+          background-color: #eb4d4b;
+      }
+
+      #idle_inhibitor {
+          background-color: #2d3436;
+      }
+
+      #idle_inhibitor.activated {
+          background-color: #ecf0f1;
+          color: #2d3436;
+      }
+
+      #mpd {
+          color: #2a5c45;
+      }
+
+      #mpd.disconnected {
+          color: #f53c3c;
+      }
+
+      #mpd.stopped {
+          color: #90b1b1;
+      }
+
+      #mpd.paused {
+          color: #51a37a;
+      }
+
+      #language {
+          background: #00b093;
+          color: #740864;
+          padding: 0 5px;
+          margin: 0 5px;
+          min-width: 16px;
+      }
+
+      #keyboard-state {
+          background: #97e1ad;
+          color: #000000;
+          padding: 0 0px;
+          margin: 0 5px;
+          min-width: 16px;
+      }
+
+      #keyboard-state>label {
+          padding: 0 5px;
+      }
+
+      #custom-spotify {
+          padding: 0 10px;
+          margin: 0 4px;
+          color: #abb2bf;
+      }
+
+      #keyboard-state>label.locked {
+          background: rgba(0, 0, 0, 0.2);
+      }    
+    '';
   };
 
   home.packages = with pkgs; [
-    alacritty
-    kitty
-    feh
-    killall
-    polkit_gnome
-    libva-utils
     gsettings-desktop-schemas
     wlr-randr
     wtype
     wl-clipboard
     hyprland-protocols
     hyprpicker
-    swayidle
-    gtklock
-    #swaylock
-    #(pkgs.swaylock-effects.overrideAttrs (oldAttrs: {
-    #  version = "1.6.4-1";
-    #  src = fetchFromGitHub {
-    #    owner = "mortie";
-    #    repo = "swaylock-effects";
-    #    rev = "20ecc6a0a5b61bb1a66cfb513bc357f74d040868";
-    #    sha256 = "sha256-nYA8W7iabaepiIsxDrCkG/WIFNrVdubk/AtFhIvYJB8=";
-    #  };
-    #}))
-    swaybg
-    fnott
-    #hyprpaper
-    #wofi
-    fuzzel
-    keepmenu
-    pinentry-gnome
-    wev
-    grim
-    slurp
-    libsForQt5.qt5.qtwayland
-    qt6.qtwayland
     xdg-utils
     xdg-desktop-portal
     xdg-desktop-portal-gtk
     xdg-desktop-portal-hyprland
-    wlsunset
-    pavucontrol
     pamixer
+    swayidle
+    swaylock
+    rofi-wayland
+    wofi
+    polkit_gnome
+    libva-utils
     (pkgs.writeScriptBin "sct" ''
       #!/bin/sh
       killall wlsunset &> /dev/null;
@@ -344,439 +720,6 @@
       exit 0
 
     '')
-    (pkgs.python3Packages.buildPythonPackage rec {
-      pname = "pyprland";
-      version = "1.4.1";
-      src = pkgs.fetchPypi {
-        inherit pname version;
-        sha256 = "sha256-JRxUn4uibkl9tyOe68YuHuJKwtJS//Pmi16el5gL9n8=";
-      };
-      format = "pyproject";
-      propagatedBuildInputs = with pkgs; [
-        python3Packages.setuptools
-        python3Packages.poetry-core
-        poetry
-      ];
-      doCheck = false;
-    })
   ];
-  home.file.".config/hypr/pyprland.json".text = ''
-    {
-      "pyprland": {
-        "plugins": ["scratchpads", "magnify"]
-      },
-      "scratchpads": {
-        "term": {
-          "command": "alacritty --class scratchpad",
-          "margin": 50
-        },
-        "ranger": {
-          "command": "kitty --class scratchpad -e ranger",
-          "margin": 50
-        },
-        "musikcube": {
-          "command": "alacritty --class scratchpad -e musikcube",
-          "margin": 50
-        },
-        "btm": {
-          "command": "alacritty --class scratchpad -e btm",
-          "margin": 50
-        },
-        "geary": {
-          "command": "geary",
-          "margin": 50
-        },
-        "pavucontrol": {
-          "command": "pavucontrol",
-          "margin": 50,
-          "unfocus": "hide",
-          "animation": "fromTop"
-        }
-      }
-    }
-  '';
 
-  programs.waybar = {
-    enable = true;
-    package = pkgs.waybar.overrideAttrs (oldAttrs: {
-      postPatch = ''
-        # use hyprctl to switch workspaces
-        sed -i 's/zext_workspace_handle_v1_activate(workspace_handle_);/const std::string command = "hyprworkspace " + name_;\n\tsystem(command.c_str());/g' src/modules/wlr/workspace_manager.cpp
-        sed -i 's/gIPC->getSocket1Reply("dispatch workspace " + std::to_string(id()));/const std::string command = "hyprworkspace " + std::to_string(id());\n\tsystem(command.c_str());/g' src/modules/hyprland/workspaces.cpp
-      '';
-    });
-    settings = {
-      mainBar = {
-        layer = "top";
-        position = "top";
-        height = 35;
-        margin = "7 7 3 7";
-        spacing = 2;
-
-        modules-left = [ "custom/os" "custom/hyprprofile" "battery" "backlight" "pulseaudio" "cpu" "memory" ];
-        modules-center = [ "hyprland/workspaces" ];
-        modules-right = [ "idle_inhibitor" "tray" "clock" ];
-
-        "custom/os" = {
-          "format" = " {} ";
-          "exec" = ''echo "" '';
-          "interval" = "once";
-        };
-        "custom/hyprprofile" = {
-          "format" = "   {}";
-          "exec" = ''cat ~/.hyprprofile'';
-          "interval" = 3;
-          "on-click" = "hyprprofile-dmenu";
-        };
-        "hyprland/workspaces" = {
-          "format" = "{icon}";
-          "format-icons" = {
-            "1" = "󱚌";
-            "2" = "󰖟";
-            "3" = "";
-            "4" = "󰎄";
-            "5" = "󰋩";
-            "6" = "";
-            "7" = "󰄖";
-            "8" = "󰑴";
-            "9" = "󱎓";
-            "scratch_term" = "_";
-            "scratch_ranger" = "_󰴉";
-            "scratch_musikcube" = "_";
-            "scratch_btm" = "_";
-            "scratch_geary" = "_";
-            "scratch_pavucontrol" = "_󰍰";
-          };
-          "on-click" = "activate";
-          "on-scroll-up" = "hyprctl dispatch workspace e+1";
-          "on-scroll-down" = "hyprctl dispatch workspace e-1";
-          #"all-outputs" = true;
-          #"active-only" = true;
-          "ignore-workspaces" = ["scratch" "-"];
-          #"show-special" = false;
-          #"persistent-workspaces" = {
-          #    # this block doesn't seem to work for whatever reason
-          #    "eDP-1" = [1 2 3 4 5 6 7 8 9];
-          #    "DP-1" = [1 2 3 4 5 6 7 8 9];
-          #    "HDMI-A-1" = [1 2 3 4 5 6 7 8 9];
-          #    "1" = ["eDP-1" "DP-1" "HDMI-A-1"];
-          #    "2" = ["eDP-1" "DP-1" "HDMI-A-1"];
-          #    "3" = ["eDP-1" "DP-1" "HDMI-A-1"];
-          #    "4" = ["eDP-1" "DP-1" "HDMI-A-1"];
-          #    "5" = ["eDP-1" "DP-1" "HDMI-A-1"];
-          #    "6" = ["eDP-1" "DP-1" "HDMI-A-1"];
-          #    "7" = ["eDP-1" "DP-1" "HDMI-A-1"];
-          #    "8" = ["eDP-1" "DP-1" "HDMI-A-1"];
-          #    "9" = ["eDP-1" "DP-1" "HDMI-A-1"];
-          #};
-        };
-
-        "idle_inhibitor" = {
-          format = "{icon}";
-          format-icons = {
-            activated = "󰅶";
-            deactivated = "󰾪";
-          };
-        };
-        tray = {
-          #"icon-size" = 21;
-          "spacing" = 10;
-        };
-        clock = {
-          "interval" = 1;
-          "format" = "{:%a %Y-%m-%d %I:%M:%S %p}";
-          "timezone" = "America/Chicago";
-          "tooltip-format" = ''
-            <big>{:%Y %B}</big>
-            <tt><small>{calendar}</small></tt>'';
-        };
-        cpu = {
-          "format" = "{usage}% ";
-        };
-        memory = { "format" = "{}% "; };
-        backlight = {
-          "format" = "{percent}% {icon}";
-          "format-icons" = [ "" "" "" "" "" "" "" "" "" ];
-        };
-        battery = {
-          "states" = {
-            "good" = 95;
-            "warning" = 30;
-            "critical" = 15;
-          };
-          "format" = "{capacity}% {icon}";
-          "format-charging" = "{capacity}% ";
-          "format-plugged" = "{capacity}% ";
-          #"format-good" = ""; # An empty format will hide the module
-          #"format-full" = "";
-          "format-icons" = [ "" "" "" "" "" ];
-        };
-        pulseaudio = {
-          "scroll-step" = 1;
-          "format" = "{volume}% {icon}  {format_source}";
-          "format-bluetooth" = "{volume}% {icon}  {format_source}";
-          "format-bluetooth-muted" = "󰸈 {icon}  {format_source}";
-          "format-muted" = "󰸈 {format_source}";
-          "format-source" = "{volume}% ";
-          "format-source-muted" = " ";
-          "format-icons" = {
-            "headphone" = "";
-            "hands-free" = "";
-            "headset" = "";
-            "phone" = "";
-            "portable" = "";
-            "car" = "";
-            "default" = [ "" "" "" ];
-          };
-          "on-click" = "pypr toggle pavucontrol && hyprctl dispatch bringactivetotop";
-        };
-      };
-    };
-    style = ''
-      * {
-          /* `otf-font-awesome` is required to be installed for icons */
-          font-family: FontAwesome, ''+font+'';
-
-          font-size: 20px;
-      }
-
-      window#waybar {
-          background-color: #'' + config.lib.stylix.colors.base00 + '';
-          opacity: 0.75;
-          border-radius: 8px;
-          color: #'' + config.lib.stylix.colors.base07 + '';
-          transition-property: background-color;
-          transition-duration: .2s;
-      }
-
-      window > box {
-          border-radius: 8px;
-          opacity: 0.94;
-      }
-
-      window#waybar.hidden {
-          opacity: 0.2;
-      }
-
-      button {
-          border: none;
-      }
-
-      #custom-hyprprofile {
-          color: #'' + config.lib.stylix.colors.base0D + '';
-      }
-
-      /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
-      button:hover {
-          background: inherit;
-      }
-
-      #workspaces button {
-          padding: 0 7px;
-          background-color: transparent;
-          color: #'' + config.lib.stylix.colors.base04 + '';
-      }
-
-      #workspaces button:hover {
-          color: #'' + config.lib.stylix.colors.base07 + '';
-      }
-
-      #workspaces button.active {
-          color: #'' + config.lib.stylix.colors.base08 + '';
-      }
-
-      #workspaces button.focused {
-          color: #'' + config.lib.stylix.colors.base0A + '';
-      }
-
-      #workspaces button.visible {
-          color: #'' + config.lib.stylix.colors.base05 + '';
-      }
-
-      #workspaces button.urgent {
-          color: #'' + config.lib.stylix.colors.base09 + '';
-      }
-
-      #clock,
-      #battery,
-      #cpu,
-      #memory,
-      #disk,
-      #temperature,
-      #backlight,
-      #network,
-      #pulseaudio,
-      #wireplumber,
-      #custom-media,
-      #tray,
-      #mode,
-      #idle_inhibitor,
-      #scratchpad,
-      #mpd {
-          padding: 0 10px;
-          color: #'' + config.lib.stylix.colors.base07 + '';
-          border: none;
-          border-radius: 8px;
-      }
-
-      #window,
-      #workspaces {
-          margin: 0 4px;
-      }
-
-      /* If workspaces is the leftmost module, omit left margin */
-      .modules-left > widget:first-child > #workspaces {
-          margin-left: 0;
-      }
-
-      /* If workspaces is the rightmost module, omit right margin */
-      .modules-right > widget:last-child > #workspaces {
-          margin-right: 0;
-      }
-
-      #clock {
-          color: #'' + config.lib.stylix.colors.base0D + '';
-      }
-
-      #battery {
-          color: #'' + config.lib.stylix.colors.base0B + '';
-      }
-
-      #battery.charging, #battery.plugged {
-          color: #'' + config.lib.stylix.colors.base0C + '';
-      }
-
-      @keyframes blink {
-          to {
-              background-color: #'' + config.lib.stylix.colors.base07 + '';
-              color: #'' + config.lib.stylix.colors.base00 + '';
-          }
-      }
-
-      #battery.critical:not(.charging) {
-          background-color: #'' + config.lib.stylix.colors.base08 + '';
-          color: #'' + config.lib.stylix.colors.base07 + '';
-          animation-name: blink;
-          animation-duration: 0.5s;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-          animation-direction: alternate;
-      }
-
-      label:focus {
-          background-color: #'' + config.lib.stylix.colors.base00 + '';
-      }
-
-      #cpu {
-          color: #'' + config.lib.stylix.colors.base0D + '';
-      }
-
-      #memory {
-          color: #'' + config.lib.stylix.colors.base0E + '';
-      }
-
-      #disk {
-          color: #'' + config.lib.stylix.colors.base0F + '';
-      }
-
-      #backlight {
-          color: #'' + config.lib.stylix.colors.base0A + '';
-      }
-
-      #pulseaudio {
-          color: #'' + config.lib.stylix.colors.base0C + '';
-      }
-
-      #pulseaudio.muted {
-          color: #'' + config.lib.stylix.colors.base04 + '';
-      }
-
-      #tray > .passive {
-          -gtk-icon-effect: dim;
-      }
-
-      #tray > .needs-attention {
-          -gtk-icon-effect: highlight;
-      }
-
-      #idle_inhibitor {
-          color: #'' + config.lib.stylix.colors.base04 + '';
-      }
-
-      #idle_inhibitor.activated {
-          color: #'' + config.lib.stylix.colors.base0F + '';
-      }
-      '';
-  };
-  home.file.".config/gtklock/style.css".text = ''
-    window {
-      background-image: url("''+config.stylix.image+''");
-      background-size: auto 100%;
-    }
-  '';
-  programs.swaylock = {
-    enable = true;
-    settings = {
-      color = "#"+config.lib.stylix.colors.base00;
-    };
-  };
-  programs.fuzzel.enable = true;
-  programs.fuzzel.settings = {
-    main = {
-      font = font + ":size=13";
-      terminal = "${pkgs.alacritty}/bin/alacritty";
-    };
-    colors = {
-      background = config.lib.stylix.colors.base00 + "e6";
-      text = config.lib.stylix.colors.base07 + "ff";
-      match = config.lib.stylix.colors.base05 + "ff";
-      selection = config.lib.stylix.colors.base08 + "ff";
-      selection-text = config.lib.stylix.colors.base00 + "ff";
-      selection-match = config.lib.stylix.colors.base05 + "ff";
-      border = config.lib.stylix.colors.base08 + "ff";
-    };
-    border = {
-      width = 3;
-      radius = 7;
-    };
-  };
-  services.fnott.enable = true;
-  services.fnott.settings = {
-    main = {
-      anchor = "bottom-right";
-      stacking-order = "top-down";
-      min-width = 400;
-      title-font = font + ":size=14";
-      summary-font = font + ":size=12";
-      body-font = font + ":size=11";
-      border-size = 0;
-    };
-    low = {
-      background = config.lib.stylix.colors.base00 + "e6";
-      title-color = config.lib.stylix.colors.base03 + "ff";
-      summary-color = config.lib.stylix.colors.base03 + "ff";
-      body-color = config.lib.stylix.colors.base03 + "ff";
-      idle-timeout = 150;
-      max-timeout = 30;
-      default-timeout = 8;
-    };
-    normal = {
-      background = config.lib.stylix.colors.base00 + "e6";
-      title-color = config.lib.stylix.colors.base07 + "ff";
-      summary-color = config.lib.stylix.colors.base07 + "ff";
-      body-color = config.lib.stylix.colors.base07 + "ff";
-      idle-timeout = 150;
-      max-timeout = 30;
-      default-timeout = 8;
-    };
-    critical = {
-      background = config.lib.stylix.colors.base00 + "e6";
-      title-color = config.lib.stylix.colors.base08 + "ff";
-      summary-color = config.lib.stylix.colors.base08 + "ff";
-      body-color = config.lib.stylix.colors.base08 + "ff";
-      idle-timeout = 0;
-      max-timeout = 0;
-      default-timeout = 0;
-    };
-  };
 }

@@ -7,7 +7,8 @@
     system = "x86_64-linux"; # system arch
     hostname = "danruto"; # hostname
     # profile = "wsl"; # select a profile defined from my profiles directory
-    profile = "vm";
+    # profile = "vm";
+    profile = "vm-hypr";
     timezone = "Australia/Sydney"; # select timezone
     locale = "en_US.UTF-8"; # select locale
 
@@ -131,11 +132,11 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     fw-ectool = {
         url = "github:tlvince/ectool.nix";
-        inputs.nixpkgs.follows = "nixos-unstable";
+        inputs.nixpkgs.follows = "nixpkgs";
     };
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v0.3.0";
-      inputs.nixpkgs.follows = "nixos-pkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 }

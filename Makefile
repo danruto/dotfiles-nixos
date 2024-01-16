@@ -5,6 +5,7 @@ NIXPORT ?= 22
 # Same as inside `flake.nix`
 NIXUSER ?= danruto
 SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+PROFILE=vm-hypr
 
 # Bootstrap based on: https://github.com/mitchellh/nixos-config/blob/main/Makefile
 vm/bootstrap/0:
@@ -55,6 +56,9 @@ vm/secrets:
 	rsync -av -e 'ssh $(SSH_OPTIONS)' \
 		--exclude='environment' \
 		$(HOME)/.ssh/ $(NIXUSER)@$(NIXADDR):~/.ssh
+	rsync -av -e 'ssh $(SSH_OPTIONS)' \
+		--exclude='environment' \
+		$(HOME)/.config/gh/ $(NIXUSER)@$(NIXADDR):~/.config/gh
 
 # copy the Nix configurations into the VM.
 vm/copy:
@@ -66,7 +70,7 @@ vm/copy:
 		--rsync-path="sudo rsync" \
 		$(MAKEFILE_DIR)/ $(NIXUSER)@$(NIXADDR):/nix-config
 	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR) " \
-	    cp /etc/nixos/hardware-configuration.nix /nix-config/profiles/vm \
+	    cp /etc/nixos/hardware-configuration.nix /nix-config/profiles/$(PROFILE) \
 	"
 
 vm/git_update:
@@ -80,3 +84,6 @@ vm/switch:
 	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR) " \
 		sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake \"/nix-config#system\" \
 	"
+
+vm/ssh:
+	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR)
