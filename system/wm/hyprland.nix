@@ -14,7 +14,6 @@
         auth include login
       '';
     };
-#    pam.services.gtklock = {};
     pam.services.login.enableGnomeKeyring = true;
   };
 
