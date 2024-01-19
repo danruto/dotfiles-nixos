@@ -21,8 +21,6 @@ let
   ];
   unstable-packages = with pkgs.unstable; [
     ripgrep
-    neovim
-		# helix
     ani-cli
     yt-dlp
     asciinema
