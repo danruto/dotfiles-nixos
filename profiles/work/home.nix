@@ -3,14 +3,12 @@
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = username;
-  home.homeDirectory = "/home/"+username;
+  home.username = "danny";
+  home.homeDirectory = "/Users/"+"danny";
 
   programs.home-manager.enable = true;
 
   imports = [
-              # stylix.homeManagerModules.stylix
-              # ../../user/style/stylix.nix # Styling and themes for my apps
               ../../user/shell/sh.nix # Fish config
               ../../user/shell/tui.nix # Useful cli/tui apps
               ../../user/apps/git/git.nix # My git config
@@ -35,28 +33,6 @@
     nodePackages.ungit
   ];
 
-  # xdg.enable = true;
-  # xdg.userDirs = {
-  #   enable = true;
-  #   createDirectories = true;
-  #   music = "${config.home.homeDirectory}/media/music";
-  #   videos = "${config.home.homeDirectory}/media/videos";
-  #   pictures = "${config.home.homeDirectory}/media/pictures";
-  #   templates = "${config.home.homeDirectory}/templates";
-  #   download = "${config.home.homeDirectory}/downloads";
-  #   documents = "${config.home.homeDirectory}/documents";
-  #   desktop = null;
-  #   publicShare = null;
-  #   extraConfig = {
-  #     XDG_DOTFILES_DIR = "${config.home.homeDirectory}/.dotfiles";
-  #     XDG_ARCHIVE_DIR = "${config.home.homeDirectory}/archive";
-  #     XDG_ORG_DIR = "${config.home.homeDirectory}/org";
-  #     XDG_BOOK_DIR = "${config.home.homeDirectory}/media/books";
-  #   };
-  # };
-  # xdg.mime.enable = true;
-  # xdg.mimeApps.enable = true;
-
   home.file.".config/zellij/config.kdl".source = ../../user/config/zellij.kdl;
 
   home.sessionVariables = {
@@ -67,4 +43,21 @@
   manual.manpages.enable = false;
   manual.json.enable = false;
   manual.html.enable = false;
+
+  programs.starship.enable = true;
+  programs.starship.settings = {
+    gcloud.disabled = true;
+    kubernetes.disabled = false;
+    git_branch.style = "242";
+    directory.style = "bold blue dimmed";
+    directory.truncate_to_repo = false;
+    directory.truncation_length = 8;
+    python.disabled = true;
+    ruby.disabled = true;
+    hostname.ssh_only = false;
+    hostname.style = "bold green";
+    memory_usage.disabled = false;
+    memory_usage.threshold = -1;
+  };
+
 }
