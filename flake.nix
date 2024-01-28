@@ -4,12 +4,14 @@
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, stylix, blocklist-hosts, rust-overlay, hyprland-plugins, nur, darwin, ... }@inputs:
   let
     # ---- SYSTEM SETTINGS ---- #
-    system = "x86_64-linux";
+    # system = "x86_64-linux";
+    system = "x86_64-darwin";
     hostname = "danruto"; # hostname
     # profile = "wsl";
-    profile = "vm";
+    # profile = "vm";
     # profile = "vm-hypr";
     # profile = "work";
+    profile = "work2";
     timezone = "Australia/Sydney"; # select timezone
     locale = "en_US.UTF-8"; # select locale
 
@@ -116,8 +118,11 @@
 
     darwinConfigurations = {
       work = darwin.lib.darwinSystem {
-        system = "x86_64-darwin";
-        # inherit pkgs;
+        # system = "x86_64-darwin";
+        inherit system;
+        inherit pkgs;
+        # pkgs = import nixpkgs {inherit system;};
+
         modules = [
           # load configuration.nix from selected PROFILE
           (./. + "/profiles"+("/"+profile)+"/configuration.nix")
@@ -125,7 +130,7 @@
           {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.${username} = import (./. + "/profiles"+("/"+profile)+"/home.nix");
+              home-manager.users.danny = import (./. + "/profiles"+("/"+profile)+"/home.nix");
 
               # Optionally, use home-manager.extraSpecialArgs to pass
               # arguments to home.nix

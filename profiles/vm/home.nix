@@ -11,6 +11,7 @@
   imports = [
               # stylix.homeManagerModules.stylix
               # ../../user/style/stylix.nix # Styling and themes for my apps
+              ../shared.nix # Shared home configurations
               ../../user/shell/sh.nix # Fish config
               ../../user/shell/tui.nix # Useful cli/tui apps
               ../../user/apps/git/git.nix # My git config
@@ -56,8 +57,6 @@
   # };
   # xdg.mime.enable = true;
   # xdg.mimeApps.enable = true;
-
-  home.file.".config/zellij/config.kdl".source = ../../user/config/zellij.kdl;
 
   home.sessionVariables = {
     EDITOR = editor;

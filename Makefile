@@ -5,7 +5,7 @@ NIXPORT ?= 22
 
 # Same as inside `flake.nix`
 NIXUSER ?= danruto
-PROFILE=vm
+PROFILE=work2
 
 SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 UNAME := $(shell uname)

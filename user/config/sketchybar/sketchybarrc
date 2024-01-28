@@ -1,0 +1,85 @@
+#!/usr/bin/env sh
+
+source "$HOME/.config/sketchybar/colours.sh"
+source "$HOME/.config/sketchybar/icons.sh"
+
+#
+# fonts
+#
+default_label_font="D2Coding:Regular:14.0"
+default_icon_font="VictorMono Nerd Font Mono:Regular:18.0"
+brand_font="VictorMono Nerd Font Mono:Regular:18.0"
+
+#
+# variables
+#
+ITEM_DIR="$HOME/.config/sketchybar/items" # Directory where the items are configured
+PLUGINS_DIR="$HOME/.config/sketchybar/plugins"
+display_count="$(yabai -m query --displays | jq -r 'length')"
+
+PADDINGS=3 # All paddings use this value (icon, label, background and bar paddings)
+
+POPUP_BORDER_WIDTH=2
+POPUP_CORNER_RADIUS=11
+
+SHADOW=on
+
+SPACE_CLICK_SCRIPT="yabai -m space --focus \$SID 2>/dev/null" # The script that is run for clicking on space components
+
+# Setting up the general bar appearance and default values
+sketchybar --bar     height=39                                           \
+                     corner_radius=9                                     \
+                     border_width=0                                      \
+                     margin=10                                           \
+                     blur_radius=50                                      \
+                     position=top                                        \
+                     padding_left=18                                     \
+                     padding_right=10                                    \
+                     color=${c_bar_bg}                                   \
+                     topmost=off                                         \
+                     sticky=on                                           \
+                     font_smoothing=off                                  \
+                     y_offset=10                                         \
+                     shadow=$SHADOW                                      \
+                     notch_width=200                                     \
+                                                                         \
+           --default drawing=on                                          \
+                     updates=when_shown                                  \
+                     label.color=$c_label                                \
+                     label.font="$default_label_font"                    \
+                     icon.font="$default_icon_font"                      \
+                     icon.color=$c_icon                                  \
+                     icon.highlight=on                                   \
+                     icon.highlight_color=$c_icon                        \
+                     icon.padding_left=$PADDINGS                         \
+                     icon.padding_right=$PADDINGS                        \
+                     label.padding_left=$PADDINGS                        \
+                     label.padding_right=$PADDINGS                       \
+                     background.padding_right=$PADDINGS                  \
+                     background.padding_left=$PADDINGS                   \
+                     popup.background.border_width=$POPUP_BORDER_WIDTH   \
+                     popup.background.corner_radius=$POPUP_CORNER_RADIUS \
+                     popup.background.border_color=$POPUP_BORDER_COLOR   \
+                     popup.background.color=$c_bar_bg                    \
+                     popup.background.shadow.drawing=$SHADOW
+
+# Left Items
+source "$ITEM_DIR/spaces.sh"
+
+# Center Items
+source "$ITEM_DIR/focused_app.sh"
+
+# Right Items
+# In reverse order, TODO: fix
+source "$ITEM_DIR/clock.sh"
+source "$ITEM_DIR/mic.sh"
+source "$ITEM_DIR/weather.sh"
+source "$ITEM_DIR/mem.sh"
+source "$ITEM_DIR/cpu.sh"
+source "$ITEM_DIR/battery.sh"
+
+
+###################### FINALIZE ###################
+sketchybar --update
+
+echo "sketchybar configuration loaded.."

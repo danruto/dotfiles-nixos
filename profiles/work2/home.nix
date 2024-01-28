@@ -1,12 +1,4 @@
-{ config, lib, pkgs, stdenv, fetchurl, stylix, username, email, theme, wm, editor, ... }:
-
-{
-  # Home Manager needs a bit of information about you and the paths it should
-  # manage.
-  home.username = "danny";
-  home.homeDirectory = "/Users/"+"danny";
-
-  programs.home-manager.enable = true;
+{ pkgs, ... }: {
 
   imports = [
               ../shared.nix # Shared home configurations
@@ -20,19 +12,29 @@
               ../../user/lang/lua/lua.nix # lua tools
               ../../user/lang/nix/nix.nix # nix tools
               ../../user/lang/shell/shell.nix # shell tools
+
             ];
 
-  home.stateVersion = "23.11"; # Please read the comment before changing.
-
   home.packages = with pkgs; [
-    # Core
+    cachix
+    diff-so-fancy
     git
-
-    # Various dev packages
-    texinfo
-    libffi zlib
-    nodePackages.ungit
   ];
+  home.stateVersion = "23.11";
+
+  programs.bat.enable = true;
+  programs.direnv = {
+    enable = true;
+    config = {
+      load_dotenv = true;
+    };
+  };
+  programs.eza.enable = true;
+  programs.home-manager.enable = true;
+
+  xdg = {
+    enable = true;
+  };
 
   programs.starship.enable = true;
   programs.starship.settings = {
@@ -50,4 +52,9 @@
     memory_usage.threshold = -1;
   };
 
+  home.file.".config/sketchybar" = {
+    source = ../../user/config/sketchybar;
+    recursive = true;
+  };
 }
+

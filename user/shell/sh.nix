@@ -22,25 +22,35 @@ in
   };
 
   home.packages = with pkgs; [
-    bat 
-    eza 
-    gotop
     fd
-    direnv 
+    direnv
     nix-direnv
     starship
     fish
   ];
 
-  programs.direnv.enable = true;
-  # programs.direnv.enableFishIntegration = true;
-  programs.direnv.nix-direnv.enable = true;
+  programs.btop = {
+      enable = true;
+      settings = {
+          vim_keys = true;
+      };
+  };
+
+  programs.direnv = {
+    enable = true;
+    enableFishIntegration = true;
+    nix-direnv.enable = true;
+  };
 
   programs.starship.enableFishIntegration = true;
 
-  programs.zellij.enable = true;
-  programs.zellij.enableFishIntegration = true;
+  programs.zellij = {
+    enable = true;
+    enableFishIntegration = true;
+  };
 
-  programs.zoxide.enable = true;
-  programs.zoxide.enableFishIntegration = true;
+  programs.zoxide = {
+    enable = true;
+    enableFishIntegration = true;
+  };
 }
