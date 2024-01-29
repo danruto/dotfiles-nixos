@@ -22,7 +22,6 @@ let
     yt-dlp
     asciinema
     helix
-    neovim
   ];
 in
 {

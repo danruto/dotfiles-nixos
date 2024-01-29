@@ -12,7 +12,6 @@
               #../../user/lang/lua/lua.nix # lua tools
               ../../user/lang/nix/nix.nix # nix tools
               ../../user/lang/shell/shell.nix # shell tools
-
             ];
 
   home.packages = with pkgs; [

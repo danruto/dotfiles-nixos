@@ -22,7 +22,7 @@
               ../../user/lang/lua/lua.nix # lua tools
               ../../user/lang/nix/nix.nix # nix tools
               ../../user/lang/shell/shell.nix # shell tools
-              ../../user/apps/terminal/nvim.nix
+              ../../user/apps/terminal/lazyvim.nix
             ];
 
   home.stateVersion = "23.11"; # Please read the comment before changing.
