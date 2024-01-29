@@ -66,4 +66,10 @@
   manual.manpages.enable = false;
   manual.json.enable = false;
   manual.html.enable = false;
+
+  programs.nix-index =
+  {
+    enable = true;
+    enableFishIntegration = true;
+  };
 }

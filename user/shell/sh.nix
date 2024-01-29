@@ -21,6 +21,8 @@ in
     shellAliases = myAliases;
   };
 
+  programs.eza.enable = true;
+
   home.packages = with pkgs; [
     fd
     direnv
