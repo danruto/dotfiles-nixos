@@ -22,6 +22,25 @@
 
     extraLuaConfig =
       let
+        tailwindcss-colorizer = pkgs.vimUtils.buildVimPlugin {
+          name = "tailwindcss-colorizer-cmp";
+          src = pkgs.fetchFromGitHub {
+            owner = "roobert";
+            repo = "tailwindcss-colorizer-cmp.nvim";
+            rev = "bc25c56083939f274edcfe395c6ff7de23b67c50";
+            hash = "sha256-4wt4J6pENX7QRG7N1GzE9L6pM5E88tnHbv4NQa5JqSI=";
+          };
+        };
+        venv-selector = pkgs.vimUtils.buildVimPlugin {
+          name = "venv-selector";
+          # https://github.com/linux-cultist/venv-selector.nvim
+          src = pkgs.fetchFromGitHub {
+            owner = "linux-cultist";
+            repo = "venv-selector.nvim";
+            rev = "fcb30164f2c4f8a34a305ead3247954a1fd8634f";
+            hash = "sha256-wtE63f6gNq0hNRILYR40w3undahAqGoQcXsP3f/8usY";
+          };
+        };
         plugins = with pkgs.vimPlugins; [
           # LazyVim
           LazyVim
@@ -74,6 +93,12 @@
           { name = "mini.pairs"; path = mini-nvim; }
           { name = "mini.surround"; path = mini-nvim; }
           { name = "mini.trailspace"; path = mini-nvim; }
+          crates-nvim
+          nvim-navic
+          rust-tools-nvim
+          typescript-nvim
+          tailwindcss-colorizer
+          venv-selector
         ];
         mkEntryFromDrv = drv:
           if lib.isDerivation drv then
