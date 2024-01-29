@@ -12,6 +12,7 @@
     variables = {
       NEXT_TELEMETRY_DISABLED = "1";
     };
+    loginShell = "fish";
   };
   homebrew = {
     enable = true;
@@ -92,6 +93,9 @@
     home = "/Users/danruto";
     shell = pkgs.fish;
   };
+  environment.shells = with pkgs; [ fish zsh ];
+  programs.fish.enable = true;
+  programs.zsh.enable = true;
 
 }
 

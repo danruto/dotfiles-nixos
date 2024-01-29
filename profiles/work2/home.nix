@@ -52,6 +52,9 @@
     memory_usage.threshold = -1;
   };
 
+  programs.fish.enable = true;
+  programs.zsh.enable = true;
+
   home.file.".config/sketchybar" = {
     source = ../../user/config/sketchybar;
     recursive = true;
