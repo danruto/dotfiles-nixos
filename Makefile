@@ -2,10 +2,13 @@ MAKEFILE_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 
 NIXADDR ?= unset
 NIXPORT ?= 22
+
 # Same as inside `flake.nix`
 NIXUSER ?= danruto
+PROFILE=work2
+
 SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
-PROFILE=vm-hypr
+UNAME := $(shell uname)
 
 # Bootstrap based on: https://github.com/mitchellh/nixos-config/blob/main/Makefile
 vm/bootstrap/0:
@@ -82,8 +85,16 @@ vm/git_update:
 # have to run vm/copy before.
 vm/switch:
 	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR) " \
-		sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake \"/nix-config#system\" \
+		sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake \"/nix-config#system\" --show-trace \
 	"
 
 vm/ssh:
 	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR)
+
+switch:
+ifeq ($(UNAME), Darwin)
+	nix build --extra-experimental-features nix-command --extra-experimental-features flakes ".#darwinConfigurations.work.system" --show-trace
+	./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#work"
+else
+	sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake ".#${NIXNAME}"
+endif

@@ -7,7 +7,7 @@
 with lib;
 {
   imports =
-    [ 
+    [
       ./hardware-configuration.nix
       ../../system/security/gpg.nix
       ../../system/security/blocklist.nix
@@ -19,7 +19,7 @@ with lib;
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Fix nix path
-  nix.nixPath = [ 
+  nix.nixPath = [
                   "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
                   "nixos-config=$HOME/dotfiles/system/configuration.nix"
                   "/nix/var/nix/profiles/per-user/root/channels"

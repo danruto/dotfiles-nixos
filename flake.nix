@@ -1,14 +1,17 @@
 {
   description = "Danruto NixOS Configuration";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, stylix, blocklist-hosts, rust-overlay, hyprland-plugins, nur, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, stylix, blocklist-hosts, rust-overlay, hyprland-plugins, nur, darwin, ... }@inputs:
   let
     # ---- SYSTEM SETTINGS ---- #
-    system = "x86_64-linux"; # system arch
+    # system = "x86_64-linux";
+    system = "x86_64-darwin";
     hostname = "danruto"; # hostname
-    # profile = "wsl"; # select a profile defined from my profiles directory
+    # profile = "wsl";
     # profile = "vm";
-    profile = "vm-hypr";
+    # profile = "vm-hypr";
+    # profile = "work";
+    profile = "work2";
     timezone = "Australia/Sydney"; # select timezone
     locale = "en_US.UTF-8"; # select locale
 
@@ -16,7 +19,6 @@
     username = "danruto"; # username
     name = "Danny"; # name/identifier
     email = "danny@pixelbru.sh"; # email (used for certain configurations)
-    dotfilesDir = "~/.dotfiles"; # absolute path of the local repo
     theme = "ayu-dark"; # selcted theme from my themes directory (./themes/)
     wm = "hyprland"; # Selected window manager or desktop environment; must select one in both ./user/wm/ and ./system/wm/
     wmType = "wayland"; # x11 or wayland
@@ -40,8 +42,8 @@
 
       config = { allowUnfree = true;
                  allowUnfreePredicate = (_: true); };
-      overlays = [ 
-        rust-overlay.overlays.default 
+      overlays = [
+        rust-overlay.overlays.default
         nur.overlay
         (_final: prev: {
           unstable = import nixpkgs-unstable {
@@ -57,40 +59,104 @@
     lib = nixpkgs.lib;
 
   in {
-    homeConfigurations = {
-      user = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [ (./. + "/profiles"+("/"+profile)+"/home.nix") ]; # load home.nix from selected PROFILE
-          extraSpecialArgs = {
-            # pass config variables from above
-            inherit username;
-            inherit name;
-            inherit hostname;
-            inherit profile;
-            inherit email;
-            inherit dotfilesDir;
-            inherit theme;
-            inherit font;
-            inherit fontPkg;
-            inherit wm;
-            inherit wmType;
-            inherit browser;
-            inherit editor;
-            inherit term;
-            inherit (inputs) stylix;
-            inherit (inputs) hyprland-plugins;
-            inherit (inputs) nixos-wsl;
-            channels = { inherit nixpkgs nixpkgs-unstable; };
-          };
-      };
-    };
     nixosConfigurations = {
       system = lib.nixosSystem {
-        inherit system;
-        modules = [ 
+        system = "x86_64-linux";
+        # inherit pkgs;
+        modules = [
           # load configuration.nix from selected PROFILE
-          (./. + "/profiles"+("/"+profile)+"/configuration.nix") 
-        ]; 
+          (./. + "/profiles"+("/"+profile)+"/configuration.nix")
+          home-manager.nixosModules.home-manager
+          {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.${username} = import (./. + "/profiles"+("/"+profile)+"/home.nix");
+
+              # Optionally, use home-manager.extraSpecialArgs to pass
+              # arguments to home.nix
+              home-manager.extraSpecialArgs = {
+                # pass config variables from above
+                inherit username;
+                # inherit name;
+                inherit hostname;
+                inherit profile;
+                inherit email;
+                inherit theme;
+                inherit font;
+                inherit fontPkg;
+                inherit wm;
+                inherit wmType;
+                inherit browser;
+                inherit editor;
+                inherit term;
+                inherit (inputs) stylix;
+                inherit (inputs) hyprland-plugins;
+                inherit (inputs) nixos-wsl;
+                inherit pkgs;
+                channels = { inherit nixpkgs nixpkgs-unstable; };
+              };
+          }
+        ];
+        specialArgs = {
+          # pass config variables from above
+          inherit username;
+          inherit name;
+          inherit hostname;
+          inherit timezone;
+          inherit locale;
+          inherit theme;
+          inherit font;
+          inherit fontPkg;
+          inherit wm;
+          inherit (inputs) stylix;
+          inherit (inputs) blocklist-hosts;
+          inherit (inputs) nixos-wsl;
+          channels = { inherit nixpkgs nixpkgs-unstable; };
+        };
+      };
+    };
+
+    darwinConfigurations = {
+      work = darwin.lib.darwinSystem {
+        # system = "x86_64-darwin";
+        inherit system;
+        inherit pkgs;
+        # pkgs = import nixpkgs {inherit system;};
+
+        modules = [
+          # load configuration.nix from selected PROFILE
+          (./. + "/profiles"+("/"+profile)+"/configuration.nix")
+          home-manager.darwinModules.home-manager
+          {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.danruto = import (./. + "/profiles"+("/"+profile)+"/home.nix");
+
+              # Optionally, use home-manager.extraSpecialArgs to pass
+              # arguments to home.nix
+              home-manager.extraSpecialArgs = {
+                # pass config variables from above
+                inherit username;
+                # inherit name;
+                inherit hostname;
+                inherit profile;
+                inherit email;
+                inherit theme;
+                inherit font;
+                inherit fontPkg;
+                inherit wm;
+                inherit wmType;
+                inherit browser;
+                inherit editor;
+                inherit term;
+                inherit (inputs) stylix;
+                inherit (inputs) hyprland-plugins;
+                inherit (inputs) nixos-wsl;
+                inherit pkgs;
+                channels = { inherit nixpkgs nixpkgs-unstable; };
+              };
+          }
+        ];
         specialArgs = {
           # pass config variables from above
           inherit username;
@@ -136,6 +202,10 @@
     };
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v0.3.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    darwin = {
+      url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

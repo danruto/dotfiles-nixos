@@ -4,26 +4,25 @@ let
   stable-packages = with pkgs; [
     killall
     libnotify
-    bat
-    eza
-    fd
-    gotop
     rsync
-    hwinfo
     unzip
-    brightnessctl
     fzf
     pandoc
     pciutils
     tree-sitter
     xh
     tealdeer
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
+    brightnessctl
+    hwinfo
   ];
   unstable-packages = with pkgs.unstable; [
     ripgrep
     ani-cli
     yt-dlp
     asciinema
+    helix
+    neovim
   ];
 in
 {
@@ -44,6 +43,8 @@ in
 
   imports = [
   ];
+
+  programs.bat.enable = true;
 
   programs.helix = {
     enable = true;

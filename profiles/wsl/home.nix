@@ -1,4 +1,4 @@
-{ config, lib, pkgs, stdenv, fetchurl, stylix, username, email, dotfilesDir, theme, wm, editor, ... }:
+{ config, lib, pkgs, stdenv, fetchurl, stylix, username, email, theme, wm, editor, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -11,6 +11,7 @@
   imports = [
               # stylix.homeManagerModules.stylix
               # ../../user/style/stylix.nix # Styling and themes for my apps
+              ../shared.nix
               ../../user/shell/sh.nix # Fish config
               ../../user/shell/tui.nix # Useful cli/tui apps
               ../../user/apps/git/git.nix # My git config
@@ -57,11 +58,5 @@
   # };
   # xdg.mime.enable = true;
   # xdg.mimeApps.enable = true;
-
-  home.file.".config/zellij/config.kdl".source = ../../user/config/zellij.kdl;
-
-  home.sessionVariables = {
-    EDITOR = editor;
-  };
 
 }
