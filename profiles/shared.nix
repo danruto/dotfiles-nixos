@@ -1,5 +1,5 @@
 _: {
-  home.file.".config/zellij/config.kdl".source = ../../user/config/zellij.kdl;
+  home.file.".config/zellij/config.kdl".source = ../user/config/zellij.kdl;
 
   home.sessionVariables = {
     EDITOR = "hx";

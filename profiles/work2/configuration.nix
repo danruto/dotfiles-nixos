@@ -47,6 +47,9 @@
       "visual-studio-code"
       "wireshark"
     ];
+    taps = [
+      "homebrew/cask-fonts"
+    ];
   };
   nix.extraOptions = ''
     experimental-features = nix-command flakes
@@ -85,8 +88,8 @@
     remapCapsLockToEscape = true;
   };
   # TODO: use username when we format
-  users.users.danny = {
-    home = "/Users/danny";
+  users.users.danruto = {
+    home = "/Users/danruto";
     shell = pkgs.fish;
   };
 

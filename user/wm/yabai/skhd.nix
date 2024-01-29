@@ -1,6 +1,8 @@
+{ pkgs, ... }:
 {
   services.skhd = {
     enable = true;
+    package = pkgs.unstable.skhd;
     skhdConfig = ''
       # Default mode
       :: default
