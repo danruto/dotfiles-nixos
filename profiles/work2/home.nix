@@ -22,14 +22,12 @@
   ];
   home.stateVersion = "23.11";
 
-  programs.bat.enable = true;
   programs.direnv = {
     enable = true;
     config = {
       load_dotenv = true;
     };
   };
-  programs.eza.enable = true;
   programs.home-manager.enable = true;
 
   xdg = {
@@ -52,12 +50,20 @@
     memory_usage.threshold = -1;
   };
 
-  programs.fish.enable = true;
-  programs.zsh.enable = true;
-
   home.file.".config/sketchybar" = {
     source = ../../user/config/sketchybar;
     recursive = true;
   };
+
+  home.file.".config/kitty" = {
+    source = ../../user/config/kitty;
+    recursive = true;
+  };
+
+  home.file.".config/alacritty/alacritty.toml".source = ../../user/config/alacritty.toml;
+
+
+  # programs.fish.enable = true;
+  # programs.zsh.enable = true;
 }
 

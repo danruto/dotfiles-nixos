@@ -23,6 +23,7 @@
       window_shadow = "on";
       # Size of the gap that separates windows
       window_gap = 2;
+      window_zoom_persist = "off";
       # Padding added around the sides of a space
       top_padding = 8;
       bottom_padding = 2;

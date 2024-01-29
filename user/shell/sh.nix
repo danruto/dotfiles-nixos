@@ -21,6 +21,11 @@ in
     shellAliases = myAliases;
   };
 
+  programs.zsh = {
+    enable = false;
+    shellAliases = myAliases;
+  };
+
   programs.eza.enable = true;
 
   home.packages = with pkgs; [

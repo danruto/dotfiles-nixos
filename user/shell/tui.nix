@@ -44,6 +44,8 @@ in
   imports = [
   ];
 
+  programs.bat.enable = true;
+
   programs.helix = {
     enable = true;
     package = pkgs.unstable.helix;

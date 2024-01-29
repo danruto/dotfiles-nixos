@@ -5,6 +5,7 @@
       ../../user/wm/yabai/sketchybar.nix # yabai and co
   ];
 
+
   environment = {
     systemPackages = with pkgs; [
       fish
@@ -12,8 +13,11 @@
     variables = {
       NEXT_TELEMETRY_DISABLED = "1";
     };
-    loginShell = "fish";
+    loginShell = pkgs.fish;
   };
+
+  # networking.dns = [ "1.1.1.1" "8.8.8.8" ];
+
   homebrew = {
     enable = true;
     brews = [
@@ -26,7 +30,6 @@
       "1password"
       "1password-cli"
       "alacritty"
-      "alfred"
       "azure-data-studio"
       "brave-browser"
       "discord"
@@ -39,6 +42,7 @@
       "iina"
       "insomnium"
       "kitty"
+      "raycast"
       "rectangle"
       "slack"
       "spotify"
@@ -52,50 +56,123 @@
       "homebrew/cask-fonts"
     ];
   };
+
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';
+
   security.pam.enableSudoTouchIdAuth = true;
   services.nix-daemon.enable = true;
+
+  system.activationScripts.postActivation.text = ''
+    # disable spotlight
+    launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist >/dev/null 2>&1 || true
+    # show upgrade diff
+    ${pkgs.nix}/bin/nix store --experimental-features nix-command diff-closures /run/current-system "$systemConfig"
+  '';
+
   system.defaults = {
-    dock.autohide = true;
-    dock.autohide-delay = 0.0;
-    dock.autohide-time-modifier = 0.5;
-    dock.mineffect = "scale";
-    dock.show-process-indicators = true;
-    dock.tilesize = 48;
-    finder._FXShowPosixPathInTitle = true;
-    finder.AppleShowAllExtensions = true;
-    finder.AppleShowAllFiles = true;
-    finder.FXEnableExtensionChangeWarning = false;
-    finder.FXPreferredViewStyle = "Nlsv";
-    finder.QuitMenuItem = true;
-    finder.ShowPathbar = true;
-    finder.ShowStatusBar = true;
-    NSGlobalDomain."com.apple.mouse.tapBehavior" = 1.0;
-    NSGlobalDomain."com.apple.trackpad.scaling" = 3.0;
-    NSGlobalDomain._HIHideMenuBar = true;
-    NSGlobalDomain.AppleICUForce24HourTime = false;
-    NSGlobalDomain.AppleInterfaceStyle = "Dark";
-    NSGlobalDomain.AppleInterfaceStyleSwitchesAutomatically = false;
-    NSGlobalDomain.AppleScrollerPagingBehavior = true;
-    NSGlobalDomain.AppleShowAllExtensions = true;
-    NSGlobalDomain.AppleShowAllFiles = true;
-    NSGlobalDomain.InitialKeyRepeat = 14;
-    NSGlobalDomain.KeyRepeat = 1;
+    dock = {
+      autohide = true;
+      autohide-delay = 0.0;
+      autohide-time-modifier = 0.5;
+      mineffect = "scale";
+      show-process-indicators = true;
+      tilesize = 48;
+      mru-spaces = false;
+      show-recents = false;
+    };
+
+    finder = {
+      _FXShowPosixPathInTitle = true;
+      AppleShowAllExtensions = true;
+      AppleShowAllFiles = true;
+      FXEnableExtensionChangeWarning = false;
+      FXPreferredViewStyle = "Nlsv";
+      QuitMenuItem = true;
+      ShowPathbar = true;
+      ShowStatusBar = true;
+    };
+
+    screencapture = {
+      disable-shadow = true;
+      location = "/Users/danruto/Pictures/Screenshots";
+      type = "png";
+    };
+
+    NSGlobalDomain = {
+      "com.apple.mouse.tapBehavior" = 1.0;
+      "com.apple.trackpad.scaling" = 3.0;
+      _HIHideMenuBar = true;
+      AppleICUForce24HourTime = false;
+      AppleInterfaceStyle = "Dark";
+      AppleInterfaceStyleSwitchesAutomatically = false;
+      AppleScrollerPagingBehavior = true;
+      AppleShowAllExtensions = true;
+      AppleShowAllFiles = true;
+      AppleMeasurementUnits = "Centimeters";
+      AppleTemperatureUnit = "Celsius";
+
+      InitialKeyRepeat = 20;
+      KeyRepeat = 2;
+    };
+
+    CustomUserPreferences = {
+      NSGlobalDomain = {
+        WebKitDeveloperExtras = true;
+        AppleAccentColor = 1;
+      };
+      "com.apple.finder" = {
+        DisableAllAnimations = true;
+        ShowExternalHardDrivesOnDesktop = false;
+        ShowMountedServersOnDesktop = false;
+        ShowRemovableMediaOnDesktop = false;
+        ShowHardDrivesOnDesktop = false;
+      };
+      "com.apple.NetworkBrowser" = {
+        BrowseAllInterfaces = 1;
+      };
+      "com.apple.DesktopServices" = {
+        DSDontWriteNetworkStores = true;
+      };
+      "com.apple.Safari" = {
+        AutoOpenSafeDownloads = false;
+        IncludeDevelopMenu = true;
+        WebKitDeveloperExtrasEnabledPreferenceKey = true;
+        "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled" = true;
+      };
+      "com.apple.mail" = {
+        AddressesIncludeNameOnPasteboard = false;
+      };
+    };
+
   };
+
   system.keyboard = {
     enableKeyMapping = true;
     remapCapsLockToEscape = true;
   };
+
   # TODO: use username when we format
+  users.knownUsers = [ "danruto" ];
+  users.knownGroups = [ "danruto" ];
   users.users.danruto = {
     home = "/Users/danruto";
     shell = pkgs.fish;
+    uid = 501;
   };
-  environment.shells = with pkgs; [ fish zsh ];
-  programs.fish.enable = true;
-  programs.zsh.enable = true;
+
+  environment.shells = with pkgs; [ 
+    fish 
+    # zsh
+  ];
+
+  programs.fish = {
+    enable = true;
+    useBabelfish = true;
+  };
+
+  programs.zsh.enable = false;
 
 }
 
