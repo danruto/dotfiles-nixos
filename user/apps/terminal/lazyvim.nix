@@ -99,6 +99,8 @@
           typescript-nvim
           tailwindcss-colorizer
           venv-selector
+          neovim-ayu
+          papercolor-theme
         ];
         mkEntryFromDrv = drv:
           if lib.isDerivation drv then
@@ -132,6 +134,38 @@
             -- treesitter handled by xdg.configFile."nvim/parser", put this line at the end of spec to clear ensure_installed
             { "nvim-treesitter/nvim-treesitter", opts = { ensure_installed = {} } },
           },
+        	performance = {
+        		rtp = {
+        			disabled_plugins = {
+        				"2html_plugin",
+        				"getscript",
+        				"getscriptPlugin",
+        				"gzip",
+        				"logipat",
+        				"netrw",
+        				"netrwPlugin",
+        				"netrwSettings",
+        				"netrwFileHandlers",
+        				"matchit",
+        				"tar",
+        				"tarPlugin",
+        				"rrhelper",
+        				"spellfile_plugin",
+        				"vimball",
+        				"vimballPlugin",
+        				"zip",
+        				"zipPlugin",
+        				"tutor",
+        				"rplugin",
+        				"syntax",
+        				"synmenu",
+        				"optwin",
+        				"compiler",
+        				"bugreport",
+        				"ftplugin",
+        			},
+        		},
+        	},
         })
       '';
   };
