@@ -75,6 +75,7 @@ in
         };
 
         indent-guides.render = true;
+        whitespace.render.tab = "all";
 
         statusline = {
           left = ["mode" "spinner"];
@@ -114,39 +115,43 @@ in
       language = [
         {
           name = "javascript";
-          indent = { tab-width = 4; unit = "    "; };
+          indent = { tab-width = 4; unit = "    "; auto-format = true; };
         }
         {
           name = "jsx";
-          indent = { tab-width = 4; unit = "    "; };
+          indent = { tab-width = 4; unit = "    "; auto-format = true; };
         }
         {
           name = "typescript";
-          indent = { tab-width = 4; unit = "    "; };
+          indent = { tab-width = 4; unit = "    "; auto-format = true; };
         }
         {
           name = "tsx";
-          indent = { tab-width = 4; unit = "    "; };
+          indent = { tab-width = 4; unit = "    "; auto-format = true; };
         }
         {
           name = "css";
-          indent = { tab-width = 4; unit = "    "; };
+          indent = { tab-width = 4; unit = "    "; auto-format = true; };
         }
         {
           name = "scss";
-          indent = { tab-width = 4; unit = "    "; };
+          indent = { tab-width = 4; unit = "    "; auto-format = true; };
         }
         {
           name = "json";
-          indent = { tab-width = 4; unit = "    "; };
+          indent = { tab-width = 4; unit = "    "; auto-format = true; };
         }
         {
           name = "html";
-          indent = { tab-width = 4; unit = "    "; };
+          indent = { tab-width = 4; unit = "    "; auto-format = true; };
         }
         {
           name = "rust";
-          indent = { tab-width = 4; unit = "    "; };
+          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+        }
+        {
+          name = "python";
+          indent = { tab-width = 4; unit = "    "; auto-format = true; };
         }
       ];
     };
