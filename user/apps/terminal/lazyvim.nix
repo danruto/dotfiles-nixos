@@ -22,8 +22,8 @@
 
     extraLuaConfig =
       let
-        tailwindcss-colorizer = pkgs.vimUtils.buildVimPlugin {
-          name = "tailwindcss-colorizer-cmp";
+        tailwindcss-colorizer-nvim = pkgs.vimUtils.buildVimPlugin {
+          name = "tailwindcss-colorizer-cmp.nvim";
           src = pkgs.fetchFromGitHub {
             owner = "roobert";
             repo = "tailwindcss-colorizer-cmp.nvim";
@@ -31,9 +31,8 @@
             hash = "sha256-4wt4J6pENX7QRG7N1GzE9L6pM5E88tnHbv4NQa5JqSI=";
           };
         };
-        venv-selector = pkgs.vimUtils.buildVimPlugin {
-          name = "venv-selector";
-          # https://github.com/linux-cultist/venv-selector.nvim
+        venv-selector-nvim = pkgs.vimUtils.buildVimPlugin {
+          name = "venv-selector.nvim";
           src = pkgs.fetchFromGitHub {
             owner = "linux-cultist";
             repo = "venv-selector.nvim";
@@ -97,8 +96,8 @@
           nvim-navic
           rust-tools-nvim
           typescript-nvim
-          tailwindcss-colorizer
-          venv-selector
+          tailwindcss-colorizer-nvim
+          venv-selector-nvim
           neovim-ayu
           papercolor-theme
         ];
@@ -133,6 +132,8 @@
             { import = "plugins" },
             -- treesitter handled by xdg.configFile."nvim/parser", put this line at the end of spec to clear ensure_installed
             { "nvim-treesitter/nvim-treesitter", opts = { ensure_installed = {} } },
+            -- disable bufferline because I don't like it
+            { "akinsho/bufferline.nvim", enabled = false },
           },
         	performance = {
         		rtp = {
