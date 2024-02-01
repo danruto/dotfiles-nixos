@@ -134,6 +134,8 @@
             { "nvim-treesitter/nvim-treesitter", opts = { ensure_installed = {} } },
             -- disable bufferline because I don't like it
             { "akinsho/bufferline.nvim", enabled = false },
+            -- I hate it jumping around with incorrect context
+            { "folke/persistence.nvim", enabled = false },
           },
         	performance = {
         		rtp = {
