@@ -2,24 +2,26 @@
 
 {
   programs.neovim = {
-		enable = true;
-		# package = pkgs.unstable.neovim;
+    enable = true;
+    # package = pkgs.unstable.neovim;
     extraPackages = with pkgs; [
       # LazyVim
       # lua-language-server
       # stylua
-			# gopls
-			# rust-analyzer
-			# nodePackages.typescript-language-server
+      # gopls
+      # rust-analyzer
+      # nodePackages.typescript-language-server
 
       # Telescope
       ripgrep
+      nixpkgs-fmt
     ];
 
     plugins = with pkgs.vimPlugins; [
       lazy-nvim
     ];
 
+    # https://github.com/seppeljordan/nix-prefetch-github
     extraLuaConfig =
       let
         tailwindcss-colorizer-nvim = pkgs.vimUtils.buildVimPlugin {
@@ -40,67 +42,137 @@
             hash = "sha256-wtE63f6gNq0hNRILYR40w3undahAqGoQcXsP3f/8usY";
           };
         };
-        plugins = with pkgs.vimPlugins; [
-          # LazyVim
-          LazyVim
-          bufferline-nvim
-          cmp-buffer
-          cmp-nvim-lsp
-          cmp-path
-          cmp_luasnip
-          conform-nvim
-          dashboard-nvim
-          dressing-nvim
-          flash-nvim
-          friendly-snippets
-          gitsigns-nvim
-          indent-blankline-nvim
-          lualine-nvim
-          neo-tree-nvim
-          neoconf-nvim
-          neodev-nvim
-          noice-nvim
-          nui-nvim
-          nvim-cmp
-          nvim-lint
-          nvim-lspconfig
-          nvim-notify
-          nvim-spectre
-          nvim-treesitter
-          nvim-treesitter-context
-          nvim-treesitter-textobjects
-          nvim-ts-autotag
-          nvim-ts-context-commentstring
-          nvim-web-devicons
-          persistence-nvim
-          plenary-nvim
-          telescope-fzf-native-nvim
-          telescope-nvim
-          todo-comments-nvim
-          tokyonight-nvim
-          trouble-nvim
-          vim-illuminate
-          vim-startuptime
-          which-key-nvim
-          { name = "LuaSnip"; path = luasnip; }
-          { name = "catppuccin"; path = catppuccin-nvim; }
-          { name = "mini.ai"; path = mini-nvim; }
-          { name = "mini.bracketed"; path = mini-nvim; }
-          { name = "mini.bufremove"; path = mini-nvim; }
-          { name = "mini.comment"; path = mini-nvim; }
-          { name = "mini.indentscope"; path = mini-nvim; }
-          { name = "mini.pairs"; path = mini-nvim; }
-          { name = "mini.surround"; path = mini-nvim; }
-          { name = "mini.trailspace"; path = mini-nvim; }
-          crates-nvim
-          nvim-navic
-          rust-tools-nvim
-          typescript-nvim
-          tailwindcss-colorizer-nvim
-          venv-selector-nvim
-          neovim-ayu
-          papercolor-theme
-        ];
+        snowy-vim = pkgs.vimUtils.buildVimPlugin {
+          name = "snowy-vim";
+          src = pkgs.fetchFromGitHub {
+            owner = "yuttie";
+            repo = "snowy-vim";
+            rev = "2324e8a956baba46d0ab3ea2d823046e4a54e0af";
+            hash = "sha256-kiV+J0kCbgaTUMjEht9G1aZFl5TtoTP8TvtXTQRHDq8=";
+          };
+        };
+        danger-vim = pkgs.vimUtils.buildVimPlugin {
+          name = "danger-vim";
+          src = pkgs.fetchFromGitHub {
+            owner = "igorgue";
+            repo = "danger";
+            rev = "01482cd1dd80fc1709994ea0c3571bead8a6a1bc";
+            hash = "sha256-Vfb+lOqLAt7dxt6y25RVid5qxTr8iZtqT3aZ2izAkIQ=";
+          };
+        };
+        darkrose-nvim = pkgs.vimUtils.buildVimPlugin {
+          name = "darkrose-nvim";
+          src = pkgs.fetchFromGitHub {
+            owner = "water-sucks";
+            repo = "darkrose.nvim";
+            rev = "4b39e4e6c86f9d8e61c107ee685c55da55e04931";
+            hash = "sha256-aXCu71Yu397a91yVjHh4XQgJblqh0XKgifYCn9Lr7mM=";
+          };
+        };
+        abyss-nvim = pkgs.vimUtils.buildVimPlugin {
+          name = "abyss-nvim";
+          src = pkgs.fetchFromGitHub {
+            owner = "barrientosvctor";
+            repo = "abyss.nvim";
+            rev = "b486ca9a53fa2d0189bbe45828a328bc438eeb57";
+            hash = "sha256-bq1SkY8Kb6GD+l1wuk0BAqlb8AUFqor5mMV4GJJ+gVg=";
+          };
+        };
+        plugins = with pkgs.vimPlugins;
+          [
+            # LazyVim
+            LazyVim
+            cmp-buffer
+            cmp-nvim-lsp
+            cmp-path
+            cmp_luasnip
+            conform-nvim
+            dashboard-nvim
+            dressing-nvim
+            flash-nvim
+            friendly-snippets
+            gitsigns-nvim
+            indent-blankline-nvim
+            lualine-nvim
+            neo-tree-nvim
+            neoconf-nvim
+            neodev-nvim
+            noice-nvim
+            nui-nvim
+            nvim-cmp
+            nvim-lint
+            nvim-lspconfig
+            nvim-notify
+            nvim-spectre
+            nvim-treesitter
+            nvim-treesitter-context
+            nvim-treesitter-textobjects
+            nvim-ts-autotag
+            nvim-ts-context-commentstring
+            nvim-web-devicons
+            plenary-nvim
+            telescope-fzf-native-nvim
+            telescope-nvim
+            todo-comments-nvim
+            tokyonight-nvim
+            trouble-nvim
+            vim-illuminate
+            vim-startuptime
+            which-key-nvim
+            {
+              name = "LuaSnip";
+              path = luasnip;
+            }
+            {
+              name = "catppuccin";
+              path = catppuccin-nvim;
+            }
+            {
+              name = "mini.ai";
+              path = mini-nvim;
+            }
+            {
+              name = "mini.bracketed";
+              path = mini-nvim;
+            }
+            {
+              name = "mini.bufremove";
+              path = mini-nvim;
+            }
+            {
+              name = "mini.comment";
+              path = mini-nvim;
+            }
+            {
+              name = "mini.indentscope";
+              path = mini-nvim;
+            }
+            {
+              name = "mini.pairs";
+              path = mini-nvim;
+            }
+            {
+              name = "mini.surround";
+              path = mini-nvim;
+            }
+            {
+              name = "mini.trailspace";
+              path = mini-nvim;
+            }
+            crates-nvim
+            nvim-navic
+            rust-tools-nvim
+            typescript-nvim
+            tailwindcss-colorizer-nvim
+            venv-selector-nvim
+            neovim-ayu
+            papercolor-theme
+            snowy-vim
+            danger-vim
+            kanagawa-nvim
+            darkrose-nvim
+            abyss-nvim
+          ];
         mkEntryFromDrv = drv:
           if lib.isDerivation drv then
             { name = "${lib.getName drv}"; path = drv; }
@@ -179,32 +251,32 @@
       parsers = pkgs.symlinkJoin {
         name = "treesitter-parsers";
         paths = (pkgs.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
-					bash
+          bash
           c
-					cpp
-					css
-					fish
-					gitignore
-					go
-					graphql
-					html
-					http
-					javascript
-					json
-					jsonc
+          cpp
+          css
+          fish
+          gitignore
+          go
+          graphql
+          html
+          http
+          javascript
+          json
+          jsonc
           lua
-					markdown
-					nix
-					python
-					regex
-					rust
-					scss
-					sql
-					toml
-					tsx
-					typescript
-					vim
-					yaml
+          markdown
+          nix
+          python
+          regex
+          rust
+          scss
+          sql
+          toml
+          tsx
+          typescript
+          vim
+          yaml
         ])).dependencies;
       };
     in

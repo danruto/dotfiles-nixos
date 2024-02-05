@@ -2,13 +2,17 @@ return {
     { "folke/tokyonight.nvim" },
     { "Shatur/neovim-ayu" },
     { "NLKNguyen/papercolor-theme" },
-
     {
         "LazyVim/LazyVim",
         opts = {
             colorscheme = "tokyonight-night",
         },
     },
+    { "yuttie/snowy-vim" },
+    { "igorgue/danger" },
+    { "rebelot/kanagawa.nvim" },
+    { "water-sucks/darkrose.nvim" },
+    { "barrientosvctor/abyss.nvim" },
 
     -- add tsserver and setup with typescript.nvim instead of lspconfig
     {
@@ -316,8 +320,19 @@ return {
             formatters_by_ft = {
                 json = { "fixjson" },
                 python = { "isort", "black" },
+                nix = { "nixpkgs_fmt" }
             },
         }
     },
+
+    {
+        "mfussenegger/nvim-lint",
+        opts = {
+            linters_by_ft = {
+                python = { "ruff" },
+                typescript = { "eslint_d" },
+            }
+        }
+    }
 
 }

@@ -1,5 +1,6 @@
 { config, lib, pkgs, stdenv, fetchurl, stylix, username, email, theme, wm, editor, ... }:
 
+
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -58,5 +59,4 @@
   # };
   # xdg.mime.enable = true;
   # xdg.mimeApps.enable = true;
-
 }
