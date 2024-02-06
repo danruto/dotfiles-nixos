@@ -1,17 +1,17 @@
 {
   description = "Danruto NixOS Configuration";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, stylix, blocklist-hosts, rust-overlay, hyprland-plugins, nur, darwin, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, blocklist-hosts, rust-overlay, hyprland-plugins, nur, darwin, ... }@inputs:
   let
     # ---- SYSTEM SETTINGS ---- #
-    # system = "x86_64-linux";
-    system = "x86_64-darwin";
+    system = "x86_64-linux";
+    # system = "x86_64-darwin";
     hostname = "danruto"; # hostname
-    # profile = "wsl";
+    profile = "wsl";
     # profile = "vm";
     # profile = "vm-hypr";
     # profile = "work";
-    profile = "work2";
+    # profile = "work2";
     timezone = "Australia/Sydney"; # select timezone
     locale = "en_US.UTF-8"; # select locale
 
@@ -89,7 +89,6 @@
                 inherit browser;
                 inherit editor;
                 inherit term;
-                inherit (inputs) stylix;
                 inherit (inputs) hyprland-plugins;
                 inherit (inputs) nixos-wsl;
                 inherit pkgs;
@@ -108,7 +107,6 @@
           inherit font;
           inherit fontPkg;
           inherit wm;
-          inherit (inputs) stylix;
           inherit (inputs) blocklist-hosts;
           inherit (inputs) nixos-wsl;
           channels = { inherit nixpkgs nixpkgs-unstable; };
@@ -149,7 +147,6 @@
                 inherit browser;
                 inherit editor;
                 inherit term;
-                inherit (inputs) stylix;
                 inherit (inputs) hyprland-plugins;
                 inherit (inputs) nixos-wsl;
                 inherit pkgs;
@@ -168,7 +165,6 @@
           inherit font;
           inherit fontPkg;
           inherit wm;
-          inherit (inputs) stylix;
           inherit (inputs) blocklist-hosts;
           inherit (inputs) nixos-wsl;
           channels = { inherit nixpkgs nixpkgs-unstable; };
@@ -184,7 +180,6 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
-    stylix.url = "github:danth/stylix";
     rust-overlay.url = "github:oxalica/rust-overlay";
     nur.url = "github:nix-community/NUR";
     blocklist-hosts = {
@@ -197,8 +192,8 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     fw-ectool = {
-        url = "github:tlvince/ectool.nix";
-        inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:tlvince/ectool.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v0.3.0";

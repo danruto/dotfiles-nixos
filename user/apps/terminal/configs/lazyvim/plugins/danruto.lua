@@ -331,6 +331,10 @@ return {
             linters_by_ft = {
                 python = { "ruff" },
                 typescript = { "eslint_d" },
+                ["yaml.cloudformation"] = { "cfn_lint", "cfn_nag" },
+                ["yaml.github_actions"] = { "actionlint" },
+                go = { "golangcilint" },
+                dockerfile = { "hadolint" },
             }
         }
     }

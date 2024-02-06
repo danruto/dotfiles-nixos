@@ -11,7 +11,6 @@ with lib;
       nixos-wsl.nixosModules.wsl
       ../../system/security/gpg.nix
       ../../system/security/blocklist.nix
-      ../../system/style/stylix.nix
     ];
 
   wsl = {
