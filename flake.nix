@@ -7,11 +7,12 @@
     system = "x86_64-linux";
     # system = "x86_64-darwin";
     hostname = "danruto"; # hostname
-    profile = "wsl";
+    # profile = "wsl";
     # profile = "vm";
     # profile = "vm-hypr";
     # profile = "work";
     # profile = "work2";
+    profile = "framework";
     timezone = "Australia/Sydney"; # select timezone
     locale = "en_US.UTF-8"; # select locale
 
@@ -109,6 +110,7 @@
           inherit wm;
           inherit (inputs) blocklist-hosts;
           inherit (inputs) nixos-wsl;
+          inherit (inputs) nixos-hardware;
           channels = { inherit nixpkgs nixpkgs-unstable; };
         };
       };

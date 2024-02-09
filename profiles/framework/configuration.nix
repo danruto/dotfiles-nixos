@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, nixos-wsl, lib, pkgs, blocklist-hosts, username, name, hostname, timezone, locale, wm, theme, lanzaboote, nixos-hardware, ... }:
+{ config, lib, pkgs, blocklist-hosts, username, name, hostname, timezone, locale, wm, theme, nixos-hardware, ... }:
 
 with lib;
 {
@@ -10,7 +10,10 @@ with lib;
     [
       # lanzaboote.nixosModules.lanzaboote,
       # nixos-hardware.nixosModules.common-hidpi,
-      nixos-hardware.nixosModules.framework/12th-gen-intel,
+      nixos-hardware.nixosModules.framework-12th-gen-intel
+      nixos-hardware.nixosModules.common-pc-ssd
+      nixos-hardware.nixosModules.common-cpu-intel
+      nixos-hardware.nixosModules.common-gpu-intel
       ./hardware-configuration.nix
       ../../system/hardware/bluetooth.nix
       ../../system/hardware/monitor.nix
@@ -18,7 +21,6 @@ with lib;
       ../../system/hardware/power.nix
       ../../system/security/gpg.nix
       ../../system/security/blocklist.nix
-      ../../system/style/stylix.nix
       ../../system/wm/wayland.nix
       ../../system/wm/hyprland.nix
     ];
@@ -77,6 +79,7 @@ with lib;
     git
     home-manager
     starship
+    kitty
   ];
 
   environment.shells = with pkgs; [ fish ];

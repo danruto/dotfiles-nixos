@@ -1,4 +1,4 @@
 { config, pkgs, ... }:
 {
-    home.packages = [ pkgs.1password ];
+  home.packages = [ pkgs._1password-gui ];
 }

@@ -5,7 +5,8 @@ NIXPORT ?= 22
 
 # Same as inside `flake.nix`
 NIXUSER ?= danruto
-PROFILE=work2
+# PROFILE=work2
+PROFILE=framework
 
 SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 UNAME := $(shell uname)
@@ -96,5 +97,5 @@ ifeq ($(UNAME), Darwin)
 	nix build --extra-experimental-features nix-command --extra-experimental-features flakes ".#darwinConfigurations.work.system" --show-trace
 	./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#work"
 else
-	sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake ".#${NIXNAME}"
+	sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake ".#system" --show-trace
 endif

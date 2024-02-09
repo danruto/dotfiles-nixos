@@ -1,18 +1,14 @@
 { config, lib, pkgs, stdenv, toString, browser, term, font, hyprland-plugins, ... }:
 
 {
-  imports = [
-    ../../apps/terminal/alacritty.nix
-  ];
-
   home.file.".config/hypr/statusbar.sh".source = ./statusbar.sh;
   home.file.".config/hypr/switch.sh".source = ./switch.sh;
   home.file.".config/hypr/xdg.sh".source = ./xdg.sh;
-  
+
   wayland.windowManager.hyprland = {
     enable = true;
     plugins = [
-    #  (pkgs.callPackage ./hyprbars.nix { inherit hyprland-plugins; } )
+      #  (pkgs.callPackage ./hyprbars.nix { inherit hyprland-plugins; } )
     ];
     settings = { };
     extraConfig = ''
@@ -220,14 +216,14 @@
         "hyprland/workspaces" = {
           "on-click" = "activate";
           "format-icons" = {
-              "1" = "";
-              "2" = "";
-              "3" = "";
-              "4" = "";
-              "5" = "";
-              "urgent" = "";
-              "active" = "";
-              "default" = "";
+            "1" = "";
+            "2" = "";
+            "3" = "";
+            "4" = "";
+            "5" = "";
+            "urgent" = "";
+            "active" = "";
+            "default" = "";
           };
         };
 
@@ -237,115 +233,115 @@
 
 
         "tray" = {
-            "spacing" = 10;
+          "spacing" = 10;
         };
         "clock" = {
-            "format" = "<span color='#bf616a'> </span>{:%I:%M %p %d/%m}";
-            "format-alt" = "<span color='#bf616a'> </span>{:%a %b %d}";
-            "tooltip-format" = "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>";
+          "format" = "<span color='#bf616a'> </span>{:%I:%M %p %d/%m}";
+          "format-alt" = "<span color='#bf616a'> </span>{:%a %b %d}";
+          "tooltip-format" = "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>";
         };
         "cpu" = {
-            "interval" = 10;
-            "format" = " {}%";
-            "max-length" = 10;
-            "on-click" = "";
+          "interval" = 10;
+          "format" = " {}%";
+          "max-length" = 10;
+          "on-click" = "";
         };
         "memory" = {
-            "interval" = 30;
-            "format" = " {}%";
-            "format-alt" = " {used:0.1f}G";
-            "max-length" = 10;
+          "interval" = 30;
+          "format" = " {}%";
+          "format-alt" = " {used:0.1f}G";
+          "max-length" = 10;
         };
         "backlight" = {
-            "device" = "intel_backlight";
-            "format" = "{icon} {percent}%";
-            "format-icons" = [
-                ""
-                ""
-                ""
-                ""
-                ""
-                ""
-                ""
-                ""
-                ""
-            ];
-            "on-click" = "";
+          "device" = "intel_backlight";
+          "format" = "{icon} {percent}%";
+          "format-icons" = [
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+          ];
+          "on-click" = "";
         };
         "network" = {
-            "format-wifi" = "直 {essid}";
-            "format-ethernet" = " wired";
-            "format-disconnected" = "睊";
-            "on-click" = "bash ~/.config/waybar/scripts/rofi-wifi-menu.sh";
+          "format-wifi" = "直 {essid}";
+          "format-ethernet" = " wired";
+          "format-disconnected" = "睊";
+          "on-click" = "bash ~/.config/waybar/scripts/rofi-wifi-menu.sh";
         };
         "pulseaudio" = {
-            "format" = "{icon} {volume}%";
-            "format-bluetooth" = "  {volume}%";
-            "format-bluetooth-muted" = "";
-            "format-muted" = "婢";
-            "format-icons" = {
-                "headphone" = "";
-                "hands-free" = "";
-                "headset" = "";
-                "phone" = "";
-                "portable" = "";
-                "car" = "";
-                "default" = [
-                    ""
-                    ""
-                    ""
-                ];
-            };
-            "on-click" = "pavucontrol";
+          "format" = "{icon} {volume}%";
+          "format-bluetooth" = "  {volume}%";
+          "format-bluetooth-muted" = "";
+          "format-muted" = "婢";
+          "format-icons" = {
+            "headphone" = "";
+            "hands-free" = "";
+            "headset" = "";
+            "phone" = "";
+            "portable" = "";
+            "car" = "";
+            "default" = [
+              ""
+              ""
+              ""
+            ];
+          };
+          "on-click" = "pavucontrol";
         };
         "bluetooth" = {
-            "on-click" = "~/.config/waybar/scripts/rofi-bluetooth &";
-            "format" = " {status} {num_connections}";
+          "on-click" = "~/.config/waybar/scripts/rofi-bluetooth &";
+          "format" = " {status} {num_connections}";
         };
         "battery" = {
-            "bat" = "BAT1";
-            "adapter" = "ADP0";
-            "interval" = 60;
-            "states" = {
-                "warning" = 30;
-                "critical" = 15;
-            };
-            "max-length" = 20;
-            "format" = "{icon} {capacity}%";
-            "format-warning" = "{icon} {capacity}%";
-            "format-critical" = "{icon} {capacity}%";
-            "format-charging" = "<span font-family='Font Awesome 6 Free'></span> {capacity}%";
-            "format-plugged" = "  {capacity}%";
-            "format-alt" = "{icon} {time}";
-            "format-full" = "  {capacity}%";
-            "format-icons" = [
-                " "
-                " "
-                " "
-                " "
-                " "
-            ];
+          "bat" = "BAT1";
+          "adapter" = "ADP0";
+          "interval" = 60;
+          "states" = {
+            "warning" = 30;
+            "critical" = 15;
+          };
+          "max-length" = 20;
+          "format" = "{icon} {capacity}%";
+          "format-warning" = "{icon} {capacity}%";
+          "format-critical" = "{icon} {capacity}%";
+          "format-charging" = "<span font-family='Font Awesome 6 Free'></span> {capacity}%";
+          "format-plugged" = "  {capacity}%";
+          "format-alt" = "{icon} {time}";
+          "format-full" = "  {capacity}%";
+          "format-icons" = [
+            " "
+            " "
+            " "
+            " "
+            " "
+          ];
         };
         "disk" = {
-            "interval" = 30;
-            "format" = "{free} / {total}";
-            "path" = "/";
+          "interval" = 30;
+          "format" = "{free} / {total}";
+          "path" = "/";
         };
         "custom/spotify" = {
-            "exec" = "python3 ~/.config/waybar/scripts/mediaplayer.py --player spotify";
-            "format" = "{}  ";
-            "return-type" = "json";
-            "on-click" = "playerctl play-pause";
-            "on-double-click-right" = "playerctl next";
-            "on-scroll-down" = "playerctl previous";
+          "exec" = "python3 ~/.config/waybar/scripts/mediaplayer.py --player spotify";
+          "format" = "{}  ";
+          "return-type" = "json";
+          "on-click" = "playerctl play-pause";
+          "on-double-click-right" = "playerctl next";
+          "on-scroll-down" = "playerctl previous";
         };
         "custom/power-menu" = {
-            "format" = " <span color='#6a92d7'>⏻ </span>";
-            "on-click" = "bash ~/.config/waybar/scripts/power-menu/powermenu.sh";
+          "format" = " <span color='#6a92d7'>⏻ </span>";
+          "on-click" = "bash ~/.config/waybar/scripts/power-menu/powermenu.sh";
         };
         "custom/launcher" = {
-            "format" = " <span color='#6a92d7'> </span>";
-            "on-click" = "rofi -show drun";
+          "format" = " <span color='#6a92d7'> </span>";
+          "on-click" = "rofi -show drun";
         };
 
       };
@@ -641,11 +637,12 @@
 
       #keyboard-state>label.locked {
           background: rgba(0, 0, 0, 0.2);
-      }    
+      }
     '';
   };
 
   home.packages = with pkgs; [
+    dunst
     gsettings-desktop-schemas
     wlr-randr
     wtype
@@ -660,7 +657,6 @@
     swayidle
     swaylock
     rofi-wayland
-    wofi
     polkit_gnome
     libva-utils
     (pkgs.writeScriptBin "sct" ''

@@ -13,7 +13,7 @@
   #    turbo = "never";
   #  };
   #};
-  services.powerManagement.powertop.enable = true;
+  powerManagement.powertop.enable = true;
   services.upower.enable = true;
   services.upower.criticalPowerAction = "Hibernate";
   services.logind.lidSwitch = "suspend-then-hibernate";
