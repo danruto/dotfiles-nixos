@@ -72,7 +72,7 @@
     recursive = true;
   };
 
-  home.file.".config/alacritty/alacritty.toml".source = ../../user/config/alacritty.toml;
+  home.file.".config/rofi/config.rasi".source = ../../user/config/rofi.rasi;
 
   programs.nix-index =
     {

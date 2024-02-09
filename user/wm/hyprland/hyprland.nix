@@ -35,7 +35,7 @@
       exec-once = ~/.config/hypr/xdg.sh
       exec-once = /usr/lib/polkit-kde-authentication-agent-1
       # exec-once = eww daemon
-      # exec-once = waybar
+      exec-once = waybar
       exec-once = ~/.config/hypr/statusbar.sh
       exec-once = dunst
 
@@ -186,7 +186,8 @@
       bindm = $mainMod, mouse:273, resizewindow
 
       # Screenshot
-      bind = $mainMod SHIFT, S, exec, hyprshot -m region
+      # bind = $mainMod SHIFT, S, exec, hyprshot -m region
+      bind = $mainMod SHIFT, S, exec, grimblast copy area
     '';
     xwayland = { enable = true; };
     systemd.enable = true;
@@ -349,7 +350,8 @@
     style = ''
       * {
           /* `otf-font-awesome` is required to be installed for icons */
-          font-family: JetBrainsMono Nerd Font;
+          /* font-family: JetBrainsMono Nerd Font Mono; */
+          font-family: D2Coding;
           font-size: 14px;
       }
 
@@ -659,6 +661,7 @@
     rofi-wayland
     polkit_gnome
     libva-utils
+    grimblast
     (pkgs.writeScriptBin "sct" ''
       #!/bin/sh
       killall wlsunset &> /dev/null;

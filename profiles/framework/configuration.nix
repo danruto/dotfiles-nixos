@@ -23,6 +23,7 @@ with lib;
       ../../system/security/blocklist.nix
       ../../system/wm/wayland.nix
       ../../system/wm/hyprland.nix
+      ../../system/wm/fonts.nix
     ];
 
   # Setup bootloader

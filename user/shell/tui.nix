@@ -22,23 +22,24 @@ let
     yt-dlp
     asciinema
     helix
+    aerc
   ];
 in
 {
   home.packages = stable-packages
-                ++ unstable-packages
-                ++ [
-                  (pkgs.writeShellScriptBin "airplane-mode" ''
-                    #!/bin/sh
-                    connectivity="$(nmcli n connectivity)"
-                    if [ "$connectivity" == "full" ]
-                    then
-                        nmcli n off
-                    else
-                        nmcli n on
-                    fi
-                  '')
-                ];
+    ++ unstable-packages
+    ++ [
+    (pkgs.writeShellScriptBin "airplane-mode" ''
+      #!/bin/sh
+      connectivity="$(nmcli n connectivity)"
+      if [ "$connectivity" == "full" ]
+      then
+          nmcli n off
+      else
+          nmcli n on
+      fi
+    '')
+  ];
 
   imports = [
   ];
@@ -57,7 +58,7 @@ in
         auto-info = true;
         true-color = true;
         color-modes = true;
-        rulers = [120];
+        rulers = [ 120 ];
 
         cursor-shape = {
           insert = "bar";
@@ -78,28 +79,28 @@ in
         whitespace.render.tab = "all";
 
         statusline = {
-          left = ["mode" "spinner"];
-          center = ["file-name" "file-modification-indicator"];
-          right = ["version-control" "diagnostics" "selections" "position" "file-encoding" "file-line-ending" "file-type" "total-line-numbers"];
+          left = [ "mode" "spinner" ];
+          center = [ "file-name" "file-modification-indicator" ];
+          right = [ "version-control" "diagnostics" "selections" "position" "file-encoding" "file-line-ending" "file-type" "total-line-numbers" ];
         };
       };
 
       keys = {
         normal = {
-          "{" = ["goto_prev_paragraph" "collapse_selection"];
-          "}" = ["goto_next_paragraph" "collapse_selection"];
-          "C-h" = ["jump_view_left" "normal_mode"];
-          "C-l" = ["jump_view_right" "normal_mode"];
-          "C-k" = ["jump_view_up" "normal_mode"];
-          "C-j" = ["jump_view_down" "normal_mode"];
-          "V" = ["select_mode" "extend_to_line_bounds"];
-          "esc" = ["collapse_selection" "keep_primary_selection"];
-          "K" = ["hover"];
+          "{" = [ "goto_prev_paragraph" "collapse_selection" ];
+          "}" = [ "goto_next_paragraph" "collapse_selection" ];
+          "C-h" = [ "jump_view_left" "normal_mode" ];
+          "C-l" = [ "jump_view_right" "normal_mode" ];
+          "C-k" = [ "jump_view_up" "normal_mode" ];
+          "C-j" = [ "jump_view_down" "normal_mode" ];
+          "V" = [ "select_mode" "extend_to_line_bounds" ];
+          "esc" = [ "collapse_selection" "keep_primary_selection" ];
+          "K" = [ "hover" ];
         };
 
         select = {
-          "{" = ["extend_to_line_bounds" "goto_prev_paragraph"];
-          "}" = ["extend_to_line_bounds" "goto_next_paragraph"];
+          "{" = [ "extend_to_line_bounds" "goto_prev_paragraph" ];
+          "}" = [ "extend_to_line_bounds" "goto_next_paragraph" ];
         };
 
         insert = {

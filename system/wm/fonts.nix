@@ -1,10 +1,10 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
-  # Fonts are nice to have
+  fonts.fontconfig.enable = true;
+  fonts.fontDir.enable = true;
+
   fonts.packages = with pkgs; [
-    # Fonts
-    (nerdfonts.override { fonts = [ "Inconsolata" ]; })
     powerline
     inconsolata
     inconsolata-nerdfont
@@ -13,6 +13,11 @@
     ubuntu_font_family
     terminus_font
 		d2coding
+    font-awesome
+    jetbrains-mono
+    d2coding
+    nerdfonts
+    agave
   ];
 
 }
