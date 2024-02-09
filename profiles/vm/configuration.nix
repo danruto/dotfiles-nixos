@@ -18,6 +18,10 @@ with lib;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  services.qemuGuest.enable = true;
+  services.spice-vdagentd.enable = true;
+
+
   # Fix nix path
   nix.nixPath = [
                   "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"

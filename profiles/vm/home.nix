@@ -15,6 +15,7 @@
               ../../user/shell/sh.nix # Fish config
               ../../user/shell/tui.nix # Useful cli/tui apps
               ../../user/apps/git/git.nix # My git config
+              ../../user/apps/terminal/lazyvim.nix # My git config
               ../../user/lang/cc/cc.nix # C and C++ tools
               ../../user/lang/rust/rust.nix # Rust tools
               ../../user/lang/typescript/typescript.nix # typescript tools

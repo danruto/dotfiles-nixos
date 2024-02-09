@@ -25,7 +25,8 @@
     extraLuaConfig =
       let
         tailwindcss-colorizer-nvim = pkgs.vimUtils.buildVimPlugin {
-          name = "tailwindcss-colorizer-cmp.nvim";
+          pname = "tailwindcss-colorizer-cmp.nvim";
+          version = "2024-02-01";
           src = pkgs.fetchFromGitHub {
             owner = "roobert";
             repo = "tailwindcss-colorizer-cmp.nvim";
@@ -34,7 +35,8 @@
           };
         };
         venv-selector-nvim = pkgs.vimUtils.buildVimPlugin {
-          name = "venv-selector.nvim";
+          pname = "venv-selector.nvim";
+          version = "2024-02-01";
           src = pkgs.fetchFromGitHub {
             owner = "linux-cultist";
             repo = "venv-selector.nvim";
@@ -43,7 +45,8 @@
           };
         };
         snowy-vim = pkgs.vimUtils.buildVimPlugin {
-          name = "snowy-vim";
+          pname = "snowy-vim";
+          version = "2024-02-01";
           src = pkgs.fetchFromGitHub {
             owner = "yuttie";
             repo = "snowy-vim";
@@ -52,7 +55,8 @@
           };
         };
         danger-vim = pkgs.vimUtils.buildVimPlugin {
-          name = "danger-vim";
+          pname = "danger-vim";
+          version = "2024-02-01";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
             repo = "danger";
@@ -61,7 +65,8 @@
           };
         };
         darkrose-nvim = pkgs.vimUtils.buildVimPlugin {
-          name = "darkrose-nvim";
+          pname = "darkrose-nvim";
+          version = "2024-02-01";
           src = pkgs.fetchFromGitHub {
             owner = "water-sucks";
             repo = "darkrose.nvim";
@@ -70,7 +75,8 @@
           };
         };
         abyss-nvim = pkgs.vimUtils.buildVimPlugin {
-          name = "abyss-nvim";
+          pname = "abyss-nvim";
+          version = "2024-02-01";
           src = pkgs.fetchFromGitHub {
             owner = "barrientosvctor";
             repo = "abyss.nvim";
