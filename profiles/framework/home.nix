@@ -19,6 +19,7 @@
     ../../user/lang/shell/shell.nix # shell tools
     ../../user/apps/terminal/lazyvim.nix
     ../../user/apps/terminal/alacritty.nix
+    ../../user/apps/terminal/kitty.nix
     ../../user/wm/hyprland/hyprland.nix
     ../../user/apps/browser/brave.nix
     ../../user/apps/fileman/nemo.nix
@@ -64,11 +65,6 @@
 
   home.file.".config/sketchybar" = {
     source = ../../user/config/sketchybar;
-    recursive = true;
-  };
-
-  home.file.".config/kitty" = {
-    source = ../../user/config/kitty;
     recursive = true;
   };
 
