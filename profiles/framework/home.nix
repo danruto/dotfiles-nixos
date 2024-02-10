@@ -63,11 +63,6 @@
     memory_usage.threshold = -1;
   };
 
-  home.file.".config/sketchybar" = {
-    source = ../../user/config/sketchybar;
-    recursive = true;
-  };
-
   home.file.".config/rofi/config.rasi".source = ../../user/config/rofi.rasi;
 
   programs.nix-index =

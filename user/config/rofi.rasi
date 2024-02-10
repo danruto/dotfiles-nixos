@@ -24,7 +24,7 @@
    urgent-color:     @red;
    selected-color:   @orange;
 
-   font:             "D2Coding 12";
+   font:             "VictorMono Nerd Font 12";
 }
 
 window {

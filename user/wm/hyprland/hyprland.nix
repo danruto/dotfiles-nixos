@@ -243,7 +243,7 @@
         };
         "cpu" = {
           "interval" = 10;
-          "format" = " {}%";
+          "format" = "󰻠 {}%";
           "max-length" = 10;
           "on-click" = "";
         };
@@ -270,16 +270,16 @@
           "on-click" = "";
         };
         "network" = {
-          "format-wifi" = "直 {essid}";
+          "format-wifi" = "󰤨 {essid}";
           "format-ethernet" = " wired";
-          "format-disconnected" = "睊";
+          "format-disconnected" = "󰤭";
           "on-click" = "bash ~/.config/waybar/scripts/rofi-wifi-menu.sh";
         };
         "pulseaudio" = {
           "format" = "{icon} {volume}%";
           "format-bluetooth" = "  {volume}%";
           "format-bluetooth-muted" = "";
-          "format-muted" = "婢";
+          "format-muted" = "󰝟";
           "format-icons" = {
             "headphone" = "";
             "hands-free" = "";
@@ -351,7 +351,7 @@
       * {
           /* `otf-font-awesome` is required to be installed for icons */
           /* font-family: JetBrainsMono Nerd Font Mono; */
-          font-family: D2Coding;
+          font-family: VictorMono Nerd Font;
           font-size: 14px;
       }
 

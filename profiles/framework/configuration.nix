@@ -24,6 +24,7 @@ with lib;
       ../../system/wm/wayland.nix
       ../../system/wm/hyprland.nix
       ../../system/wm/fonts.nix
+      ../../system/apps/starship.nix
     ];
 
   # Setup bootloader
@@ -31,11 +32,11 @@ with lib;
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Fix nix path
-  nix.nixPath = [ 
-                  "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
-                  "nixos-config=$HOME/dotfiles/system/configuration.nix"
-                  "/nix/var/nix/profiles/per-user/root/channels"
-                ];
+  nix.nixPath = [
+    "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
+    "nixos-config=$HOME/dotfiles/system/configuration.nix"
+    "/nix/var/nix/profiles/per-user/root/channels"
+  ];
 
   # Experimental features
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -66,7 +67,7 @@ with lib;
     isNormalUser = true;
     description = name;
     extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [];
+    packages = with pkgs; [ ];
     uid = 1000;
   };
   security.sudo.wheelNeedsPassword = false;
@@ -86,23 +87,8 @@ with lib;
   environment.shells = with pkgs; [ fish ];
   users.defaultUserShell = pkgs.fish;
   programs.fish.enable = true;
-  programs.starship.enable = true;
-  programs.starship.settings = {
-    gcloud.disabled = true;
-    kubernetes.disabled = false;
-    git_branch.style = "242";
-    directory.style = "bold blue dimmed";
-    directory.truncate_to_repo = false;
-    directory.truncation_length = 8;
-    python.disabled = true;
-    ruby.disabled = true;
-    hostname.ssh_only = false;
-    hostname.style = "bold green";
-    memory_usage.disabled = false;
-    memory_usage.threshold = -1;
-  };
 
-# TODO: Move to modules
+  # TODO: Move to modules
   services.openssh.enable = true;
   services.fwupd.enable = true;
 

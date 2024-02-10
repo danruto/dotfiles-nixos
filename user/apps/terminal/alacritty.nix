@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, font, ... }:
 
 {
   home.packages = with pkgs; [
@@ -10,7 +10,7 @@
     window.opacity = lib.mkForce 0.65;
     window.decorations = "none";
     font.size = 11.0;
-    font.normal.family = "D2Coding";
+    font.normal.family = font;
     colors.draw_bold_text_with_bright_colors = true;
     window.padding.x = 5;
     window.padding.y = 5;

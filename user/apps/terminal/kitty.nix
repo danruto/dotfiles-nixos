@@ -1,10 +1,10 @@
-{ pkgs, ... }:
+{ pkgs, font, ... }:
 {
   programs.kitty = {
     enable = true;
     settings = {
       font_size = 14;
-      font_family = "D2Coding";
+      font_family = font;
 
       background = "#0e1419";
       foreground = "#e5e1cf";
