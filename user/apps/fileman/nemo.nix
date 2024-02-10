@@ -14,7 +14,6 @@ in
     dbus
     samba
     gvfs
-    yazi
   ];
 
   gtk = {
@@ -40,5 +39,6 @@ in
     source = "${catppuccin}/share/themes/${catppuccin_name}/gtk-4.0/assets";
   };
 
+  programs.yazi.enable = true;
 }
 

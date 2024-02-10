@@ -13,6 +13,7 @@ let
     hmr = "home-manager switch -b backup --flake .#user";
     nu = "nix flake update";
     nuh = "nix flake update && hmr";
+    nc = "nix-collect-garbage && nix-collect-garbage -d && rm /nix/var/nix/gcroots/auto/* && nix-collect-garbage && nix-collage-garbage -d";
   };
 in
 {
