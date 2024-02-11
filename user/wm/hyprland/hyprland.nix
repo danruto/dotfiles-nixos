@@ -1,194 +1,154 @@
 { config, lib, pkgs, stdenv, toString, browser, term, font, hyprland-plugins, ... }:
-
+let
+  statusbar = pkgs.writeShellScriptBin "statusbar" (builtins.readFile ./statusbar.sh);
+  switch = pkgs.writeShellScriptBin "switch" (builtins.readFile ./switch.sh);
+  xdg = pkgs.writeShellScriptBin "xdg" (builtins.readFile ./xdg.sh);
+in
 {
-  home.file.".config/hypr/statusbar.sh".source = ./statusbar.sh;
-  home.file.".config/hypr/switch.sh".source = ./switch.sh;
-  home.file.".config/hypr/xdg.sh".source = ./xdg.sh;
+  # home.file.".config/hypr/statusbar.sh".source = ./statusbar.sh;
+  # home.file.".config/hypr/switch.sh".source = ./switch.sh;
+  # home.file.".config/hypr/xdg.sh".source = ./xdg.sh;
+  home.file.".config/waybar/scripts" = {
+    source = ../../config/waybar/scripts;
+    recursive = true;
+  };
 
   wayland.windowManager.hyprland = {
     enable = true;
     plugins = [
       #  (pkgs.callPackage ./hyprbars.nix { inherit hyprland-plugins; } )
     ];
-    settings = { };
-    extraConfig = ''
+    settings = {
+      "$mainMod" = "SUPER";
+      monitor = ",preferred,auto,1";
+      bindl = [
+        ",switch:Lid Switch, exec, ${lib.getExe switch}"
+      ];
 
-      # This is an example Hyprland config file.
-      #
-      # Refer to the wiki for more information.
+      exec-once = [
+        "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+        "${lib.getExe xdg}"
+        "${lib.getExe pkgs.dunst}"
+        "${lib.getExe statusbar}"
+        # "${lib.getExe pkgs.waybar}"
+      ];
 
-      #
-      # Please note not all available settings / options are set here.
-      # For a full list, see the wiki
-      #
+      env = "XCURSOR_SIZE,24";
 
-      # See https://wiki.hyprland.org/Configuring/Monitors/
-      monitor=,preferred,auto,1
+      input = {
+        kb_layout = "us";
+        kb_variant = "";
+        kb_model = "";
+        kb_options = "";
+        kb_rules = "";
+        follow_mouse = 1;
+        touchpad = {
+          natural_scroll = false;
+          disable_while_typing = true;
+        };
+        sensitivity = 0;
+      };
 
-      # Handle monitor plugging in and out
-      bindl=,switch:Lid Switch, exec, ~/.config/hypr/switch.sh
+      general = {
+        gaps_in = 5;
+        gaps_out = 20;
+        border_size = 2;
+        "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
+        "col.inactive_border" = "rgba(595959aa)";
 
-      # See https://wiki.hyprland.org/Configuring/Keywords/ for more
+        layout = "dwindle";
+      };
 
-      # Execute your favorite apps at launch
-      # exec-once = waybar & hyprpaper & firefox
-      exec-once = ~/.config/hypr/xdg.sh
-      exec-once = /usr/lib/polkit-kde-authentication-agent-1
-      # exec-once = eww daemon
-      exec-once = waybar
-      exec-once = ~/.config/hypr/statusbar.sh
-      exec-once = dunst
+      decoration = {
+        rounding = 10;
+        blur = {
+          size = 3;
+        };
+        drop_shadow = true;
+        shadow_range = 4;
+        shadow_render_power = 3;
+        "col.shadow" = "rgba(1a1a1aee)";
+      };
 
-      # Source a file (multi-file configs)
-      # source = ~/.config/hypr/myColors.conf
+      animations = {
+        enabled = true;
+        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+        animation = [
+          "windows, 1, 7, myBezier"
+          "windowsOut, 1, 7, default, popin 80%"
+          "border, 1, 10, default"
+          "borderangle, 1, 8, default"
+          "fade, 1, 7, default"
+          "workspaces, 1, 6, default"
+        ];
+      };
 
-      # Some default env vars.
-      env = XCURSOR_SIZE,24
+      dwindle = {
+        pseudotile = true;
+        preserve_split = true;
+      };
 
-      # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
-      input {
-          kb_layout = us
-          kb_variant =
-          kb_model =
-          kb_options =
-          kb_rules =
+      master = {
+        new_is_master = true;
+      };
 
-          follow_mouse = 1
-
-          touchpad {
-              natural_scroll = false
-          }
-
-          sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
-      }
-
-      general {
-          # See https://wiki.hyprland.org/Configuring/Variables/ for more
-
-          gaps_in = 5
-          gaps_out = 20
-          border_size = 2
-          col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
-          col.inactive_border = rgba(595959aa)
-
-          layout = dwindle
-      }
-
-      decoration {
-          # See https://wiki.hyprland.org/Configuring/Variables/ for more
-
-          rounding = 10
-
-          blur {
-              size = 3
-          }
-
-          drop_shadow = true
-          shadow_range = 4
-          shadow_render_power = 3
-          col.shadow = rgba(1a1a1aee)
-      }
-
-      animations {
-          enabled = true
-
-          # Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
-
-          bezier = myBezier, 0.05, 0.9, 0.1, 1.05
-
-          animation = windows, 1, 7, myBezier
-          animation = windowsOut, 1, 7, default, popin 80%
-          animation = border, 1, 10, default
-          animation = borderangle, 1, 8, default
-          animation = fade, 1, 7, default
-          animation = workspaces, 1, 6, default
-      }
-
-      dwindle {
-          # See https://wiki.hyprland.org/Configuring/Dwindle-Layout/ for more
-          pseudotile = true # master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
-          preserve_split = true # you probably want this
-      }
-
-      master {
-          # See https://wiki.hyprland.org/Configuring/Master-Layout/ for more
-          new_is_master = true
-      }
-
-      gestures {
-          # See https://wiki.hyprland.org/Configuring/Variables/ for more
-          workspace_swipe = false
-      }
-
-      # Example per-device config
-      # See https://wiki.hyprland.org/Configuring/Keywords/#executing for more
-      device:epic mouse V1 {
-          sensitivity = -0.5
-      }
-
-      # Example windowrule v1
-      # windowrule = float, ^(kitty)$
-      # Example windowrule v2
-      # windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
-      # See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
+      gestures = {
+        workspace_swipe = false;
+      };
 
 
-      # See https://wiki.hyprland.org/Configuring/Keywords/ for more
-      $mainMod = SUPER
+      bindm = [
+        # Move/resize windows with mainMod + LMB/RMB and dragging
+        "$mainMod, mouse:272, movewindow"
+        "$mainMod, mouse:273, resizewindow"
+      ];
 
-      # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
-      bind = $mainMod, M, exec, kitty
-      bind = $mainMod, Return, exec, alacritty
-      bind = $mainMod, Q, killactive,
-      # bind = $mainMod, L, exit,
-      bind = $mainMod, E, exec, nemo
-      bind = $mainMod, V, togglefloating,
-      bind = $mainMod, R, exec, rofi -show run
-      bind = $mainMod, P, pseudo, # dwindle
-      bind = $mainMod, N, togglesplit, # dwindle
+      bind = [
+        "$mainMod, M, exec, kitty"
+        "$mainMod, Return, exec, alacritty"
+        "$mainMod, Q, killactive,"
+        "$mainMod, E, exec, nemo"
+        "$mainMod, V, togglefloating,"
+        "$mainMod, R, exec, rofi -show run"
+        "$mainMod, P, pseudo, # dwindle"
+        "$mainMod, N, togglesplit, # dwindle"
 
-      # Move focus with mainMod + arrow keys
-      bind = $mainMod, H, movefocus, l
-      bind = $mainMod, L, movefocus, r
-      bind = $mainMod, K, movefocus, u
-      bind = $mainMod, J, movefocus, d
+        # Move focus with mainMod + arrow keys
+        "$mainMod, H, movefocus, l"
+        "$mainMod, L, movefocus, r"
+        "$mainMod, K, movefocus, u"
+        "$mainMod, J, movefocus, d"
 
-      # Switch workspaces with mainMod + [0-9]
-      bind = $mainMod, 1, workspace, 1
-      bind = $mainMod, 2, workspace, 2
-      bind = $mainMod, 3, workspace, 3
-      bind = $mainMod, 4, workspace, 4
-      bind = $mainMod, 5, workspace, 5
-      bind = $mainMod, 6, workspace, 6
-      bind = $mainMod, 7, workspace, 7
-      bind = $mainMod, 8, workspace, 8
-      bind = $mainMod, 9, workspace, 9
-      bind = $mainMod, 0, workspace, 10
+        # Scroll through existing workspaces with mainMod + scroll
+        "$mainMod, mouse_down, workspace, e+1"
+        "$mainMod, mouse_up, workspace, e-1"
 
-      # Move active window to a workspace with mainMod + SHIFT + [0-9]
-      bind = $mainMod SHIFT, 1, movetoworkspace, 1
-      bind = $mainMod SHIFT, 2, movetoworkspace, 2
-      bind = $mainMod SHIFT, 3, movetoworkspace, 3
-      bind = $mainMod SHIFT, 4, movetoworkspace, 4
-      bind = $mainMod SHIFT, 5, movetoworkspace, 5
-      bind = $mainMod SHIFT, 6, movetoworkspace, 6
-      bind = $mainMod SHIFT, 7, movetoworkspace, 7
-      bind = $mainMod SHIFT, 8, movetoworkspace, 8
-      bind = $mainMod SHIFT, 9, movetoworkspace, 9
-      bind = $mainMod SHIFT, 0, movetoworkspace, 10
 
-      # Scroll through existing workspaces with mainMod + scroll
-      bind = $mainMod, mouse_down, workspace, e+1
-      bind = $mainMod, mouse_up, workspace, e-1
+        # Screenshotting
+        # "$mainMod SHIFT, S, exec, hyprshot -m region"
+        "$mainMod SHIFT, S, exec, grimblast copy area"
+      ] ++ (
+        builtins.concatLists (builtins.genList
+          (
+            x:
+            let
+              ws =
+                let
+                  c = (x + 1) / 10;
+                in
+                builtins.toString (x + 1 - (c * 10));
+            in
+            [
+              "$mainMod, ${ws}, workspace, ${builtins.toString (x + 1)}"
+              "$mainMod SHIFT, ${ws}, movetoworkspace, ${builtins.toString (x + 1)}"
+            ]
+          )
+          10)
 
-      # Move/resize windows with mainMod + LMB/RMB and dragging
-      bindm = $mainMod, mouse:272, movewindow
-      bindm = $mainMod, mouse:273, resizewindow
+      );
+    };
 
-      # Screenshot
-      # bind = $mainMod SHIFT, S, exec, hyprshot -m region
-      bind = $mainMod SHIFT, S, exec, grimblast copy area
-    '';
+    # extraConfig = '';
     xwayland = { enable = true; };
     systemd.enable = true;
   };
@@ -198,8 +158,8 @@
     package = pkgs.waybar.overrideAttrs (oldAttrs: {
       postPatch = ''
         # use hyprctl to switch workspaces
-        sed -i 's/zext_workspace_handle_v1_activate(workspace_handle_);/const std::string command = "hyprworkspace " + name_;\n\tsystem(command.c_str());/g' src/modules/wlr/workspace_manager.cpp
-        sed -i 's/gIPC->getSocket1Reply("dispatch workspace " + std::to_string(id()));/const std::string command = "hyprworkspace " + std::to_string(id());\n\tsystem(command.c_str());/g' src/modules/hyprland/workspaces.cpp
+        # sed -i 's/zext_workspace_handle_v1_activate(workspace_handle_);/const std::string command = "hyprworkspace " + name_;\n\tsystem(command.c_str());/g' src/modules/wlr/workspace_manager.cpp
+        # sed -i 's/gIPC->getSocket1Reply("dispatch workspace " + std::to_string(id()));/const std::string command = "hyprworkspace " + std::to_string(id());\n\tsystem(command.c_str());/g' src/modules/hyprland/workspaces.cpp
       '';
     });
     settings = {
@@ -212,7 +172,7 @@
 
         modules-left = [ "custom/launcher" "wlr/workspaces" ];
         modules-center = [ "hyprland/window" ];
-        modules-right = [ "tray" "disk" "cpu" "memory" "backlight" "pulseaudio" "network" "battery" "block" "custom/power-menu" ];
+        modules-right = [ "tray" "disk" "cpu" "memory" "backlight" "pulseaudio" "network" "battery" "clock" "custom/power-menu" ];
 
         "hyprland/workspaces" = {
           "on-click" = "activate";
@@ -662,63 +622,6 @@
     polkit_gnome
     libva-utils
     grimblast
-    (pkgs.writeScriptBin "sct" ''
-      #!/bin/sh
-      killall wlsunset &> /dev/null;
-      if [ $# -eq 1 ]; then
-        temphigh=$(( $1 + 1 ))
-        templow=$1
-        wlsunset -t $templow -T $temphigh &> /dev/null &
-      else
-        killall wlsunset &> /dev/null;
-      fi
-    '')
-    (pkgs.writeScriptBin "obs-notification-mute-daemon" ''
-      #!/bin/sh
-      while true; do
-        if pgrep -x .obs-wrapped > /dev/null;
-          then
-            pkill -STOP fnott;
-            #emacsclient --eval "(org-yaap-mode 0)";
-          else
-            pkill -CONT fnott;
-            #emacsclient --eval "(if (not org-yaap-mode) (org-yaap-mode 1))";
-        fi
-        sleep 10;
-      done
-    '')
-    (pkgs.writeScriptBin "suspend-unless-render" ''
-      #!/bin/sh
-      if pgrep -x nixos-rebuild > /dev/null || pgrep -x home-manager > /dev/null || pgrep -x kdenlive > /dev/null || pgrep -x FL64.exe > /dev/null || pgrep -x blender > /dev/null || pgrep -x flatpak > /dev/null;
-      then echo "Shouldn't suspend"; sleep 10; else echo "Should suspend"; systemctl suspend; fi
-    '')
-    (pkgs.writeScriptBin "hyprworkspace" ''
-      #!/bin/sh
-      # from https://github.com/taylor85345/hyprland-dotfiles/blob/master/hypr/scripts/workspace
-      monitors=/tmp/hypr/monitors_temp
-      hyprctl monitors > $monitors
-
-      if [[ -z $1 ]]; then
-        workspace=$(grep -B 5 "focused: no" "$monitors" | awk 'NR==1 {print $3}')
-      else
-        workspace=$1
-      fi
-
-      activemonitor=$(grep -B 11 "focused: yes" "$monitors" | awk 'NR==1 {print $2}')
-      passivemonitor=$(grep  -B 6 "($workspace)" "$monitors" | awk 'NR==1 {print $2}')
-      #activews=$(grep -A 2 "$activemonitor" "$monitors" | awk 'NR==3 {print $1}' RS='(' FS=')')
-      passivews=$(grep -A 6 "Monitor $passivemonitor" "$monitors" | awk 'NR==4 {print $1}' RS='(' FS=')')
-
-      if [[ $workspace -eq $passivews ]] && [[ $activemonitor != "$passivemonitor" ]]; then
-       hyprctl dispatch workspace "$workspace" && hyprctl dispatch swapactiveworkspaces "$activemonitor" "$passivemonitor" && hyprctl dispatch workspace "$workspace"
-        echo $activemonitor $passivemonitor
-      else
-        hyprctl dispatch moveworkspacetomonitor "$workspace $activemonitor" && hyprctl dispatch workspace "$workspace"
-      fi
-
-      exit 0
-
-    '')
   ];
 
 }

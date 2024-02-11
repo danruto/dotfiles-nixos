@@ -71,7 +71,13 @@ with lib;
     uid = 1000;
   };
   security.sudo.wheelNeedsPassword = false;
-  virtualisation.docker.enable = true;
+
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = false;
+  };
+
+  security.pam.services.login.fprintAuth = true;
 
   # System packages
   environment.systemPackages = with pkgs; [

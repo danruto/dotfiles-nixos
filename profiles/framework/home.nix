@@ -26,6 +26,7 @@
     ../../user/apps/gui/gui.nix
     ../../user/apps/networking/wireguard.nix
     ../../user/apps/security/1password.nix
+    ../../user/hardware/keyboard.nix
   ];
 
   home.packages = with pkgs; [
