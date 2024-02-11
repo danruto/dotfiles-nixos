@@ -98,6 +98,10 @@ with lib;
   services.openssh.enable = true;
   services.fwupd.enable = true;
 
+  services.udev.extraRules = ''
+    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
+  '';
+
   # It is ok to leave this unchanged for compatibility purposes
   system.stateVersion = "23.11";
 
