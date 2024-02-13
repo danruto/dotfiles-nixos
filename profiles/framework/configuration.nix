@@ -16,7 +16,7 @@ with lib;
       nixos-hardware.nixosModules.common-gpu-intel
       ./hardware-configuration.nix
       ../../system/hardware/bluetooth.nix
-      ../../system/hardware/monitor.nix
+      # ../../system/hardware/monitor.nix
       ../../system/hardware/opengl.nix
       ../../system/hardware/power.nix
       ../../system/security/gpg.nix

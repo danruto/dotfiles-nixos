@@ -170,7 +170,7 @@ in
         margin = "0 0 0 0";
         spacing = 5;
 
-        modules-left = [ "custom/launcher" "wlr/workspaces" ];
+        modules-left = [ "custom/launcher" "hyprland/workspaces" ];
         modules-center = [ "hyprland/window" ];
         modules-right = [ "tray" "disk" "cpu" "memory" "backlight" "pulseaudio" "network" "battery" "clock" "custom/power-menu" ];
 
@@ -192,27 +192,30 @@ in
           "format" = "{}";
         };
 
-
         "tray" = {
           "spacing" = 10;
         };
+
         "clock" = {
           "format" = "<span color='#bf616a'> </span>{:%I:%M %p %d/%m}";
           "format-alt" = "<span color='#bf616a'> </span>{:%a %b %d}";
           "tooltip-format" = "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>";
         };
+
         "cpu" = {
           "interval" = 10;
           "format" = "󰻠 {}%";
           "max-length" = 10;
           "on-click" = "";
         };
+
         "memory" = {
           "interval" = 30;
           "format" = " {}%";
           "format-alt" = " {used:0.1f}G";
           "max-length" = 10;
         };
+
         "backlight" = {
           "device" = "intel_backlight";
           "format" = "{icon} {percent}%";
@@ -229,12 +232,14 @@ in
           ];
           "on-click" = "";
         };
+
         "network" = {
           "format-wifi" = "󰤨 {essid}";
           "format-ethernet" = " wired";
           "format-disconnected" = "󰤭";
           "on-click" = "bash ~/.config/waybar/scripts/rofi-wifi-menu.sh";
         };
+
         "pulseaudio" = {
           "format" = "{icon} {volume}%";
           "format-bluetooth" = "  {volume}%";
@@ -255,10 +260,12 @@ in
           };
           "on-click" = "pavucontrol";
         };
+
         "bluetooth" = {
           "on-click" = "~/.config/waybar/scripts/rofi-bluetooth &";
           "format" = " {status} {num_connections}";
         };
+
         "battery" = {
           "bat" = "BAT1";
           "adapter" = "ADP0";
@@ -283,11 +290,13 @@ in
             " "
           ];
         };
+
         "disk" = {
           "interval" = 30;
           "format" = "{free} / {total}";
           "path" = "/";
         };
+
         "custom/spotify" = {
           "exec" = "python3 ~/.config/waybar/scripts/mediaplayer.py --player spotify";
           "format" = "{}  ";
@@ -296,12 +305,14 @@ in
           "on-double-click-right" = "playerctl next";
           "on-scroll-down" = "playerctl previous";
         };
+
         "custom/power-menu" = {
           "format" = " <span color='#6a92d7'>⏻ </span>";
           "on-click" = "bash ~/.config/waybar/scripts/power-menu/powermenu.sh";
         };
+
         "custom/launcher" = {
-          "format" = " <span color='#6a92d7'> </span>";
+          "format" = " <span color='#6a92d7'></span>";
           "on-click" = "rofi -show drun";
         };
 
@@ -616,6 +627,7 @@ in
     xdg-desktop-portal-gtk
     xdg-desktop-portal-hyprland
     pamixer
+    pavucontrol
     swayidle
     swaylock
     rofi-wayland

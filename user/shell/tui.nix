@@ -46,6 +46,7 @@ in
 
   programs.bat.enable = true;
 
+  # TODO: move into own module
   programs.helix = {
     enable = true;
     package = pkgs.unstable.helix;
@@ -113,6 +114,11 @@ in
     };
 
     languages = {
+      language-server.rust-analyzer = {
+        config = {
+          check.command = "clippy";
+        };
+      };
       language = [
         {
           name = "javascript";

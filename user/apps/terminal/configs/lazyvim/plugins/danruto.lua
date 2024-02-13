@@ -1,5 +1,14 @@
 return {
-    { "folke/tokyonight.nvim" },
+    {
+        "tokyonight.nvim",
+        opts = {
+            transparent = true,
+            styles = {
+                sidebars = "transparent",
+                floats = "transparent",
+            },
+        }
+    },
     { "Shatur/neovim-ayu" },
     { "NLKNguyen/papercolor-theme" },
     {
@@ -10,7 +19,7 @@ return {
     },
     { "yuttie/snowy-vim" },
     { "igorgue/danger" },
-    { "rebelot/kanagawa.nvim" },
+    -- { "rebelot/kanagawa.nvim" },
     { "water-sucks/darkrose.nvim" },
     { "barrientosvctor/abyss.nvim" },
 
