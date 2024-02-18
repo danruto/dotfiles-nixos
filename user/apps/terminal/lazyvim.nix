@@ -84,6 +84,26 @@
             hash = "sha256-bq1SkY8Kb6GD+l1wuk0BAqlb8AUFqor5mMV4GJJ+gVg=";
           };
         };
+        tartessos-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "tartessos-nvim";
+          version = "2024-02-18";
+          src = pkgs.fetchFromGitHub {
+            owner = "m-t3k";
+            repo = "tartessos.nvim";
+            rev = "c5275ea2b73d46a4b6c678301eae0f4af6da5fea";
+            hash = "sha256-10V4IHNHpGm4Yrfqd6tl6PxVzHjoPAFODdYnM8Pr9y8=";
+          };
+        };
+        icecream-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "icecream-nvim";
+          version = "2024-02-18";
+          src = pkgs.fetchFromGitHub {
+            owner = "liminalminds";
+            repo = "icecream.nvim";
+            rev = "b34e0cf61b33457961c175d749e079d9e10d6768";
+            hash = "sha256-nOYNHKvcSDqpRvzXmpnHx3fcwrUrQXtiPpBI+y+J2c4=";
+          };
+        };
         plugins = with pkgs.vimPlugins;
           [
             # LazyVim
@@ -178,6 +198,8 @@
             kanagawa-nvim
             darkrose-nvim
             abyss-nvim
+            # tartessos-nvim
+            # icecream-nvim
           ];
         mkEntryFromDrv = drv:
           if lib.isDerivation drv then

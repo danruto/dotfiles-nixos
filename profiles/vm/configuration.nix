@@ -24,10 +24,10 @@ with lib;
 
   # Fix nix path
   nix.nixPath = [
-                  "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
-                  "nixos-config=$HOME/dotfiles/system/configuration.nix"
-                  "/nix/var/nix/profiles/per-user/root/channels"
-                ];
+    "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
+    "nixos-config=$HOME/dotfiles/system/configuration.nix"
+    "/nix/var/nix/profiles/per-user/root/channels"
+  ];
 
   # Experimental features
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -60,7 +60,7 @@ with lib;
     isNormalUser = true;
     description = name;
     extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [];
+    packages = with pkgs; [ ];
     uid = 1000;
   };
   security.sudo.wheelNeedsPassword = false;
@@ -68,7 +68,7 @@ with lib;
 
   # System packages
   environment.systemPackages = with pkgs; [
-    helix
+    vim
     wget
     fish
     git

@@ -7,7 +7,7 @@
 with lib;
 {
   imports =
-    [ 
+    [
       ./hardware-configuration.nix
       ../../system/security/gpg.nix
       ../../system/security/blocklist.nix
@@ -20,11 +20,11 @@ with lib;
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Fix nix path
-  nix.nixPath = [ 
-                  "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
-                  "nixos-config=$HOME/dotfiles/system/configuration.nix"
-                  "/nix/var/nix/profiles/per-user/root/channels"
-                ];
+  nix.nixPath = [
+    "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
+    "nixos-config=$HOME/dotfiles/system/configuration.nix"
+    "/nix/var/nix/profiles/per-user/root/channels"
+  ];
 
   # Experimental features
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -42,8 +42,8 @@ with lib;
 
   nixpkgs.config.allowUnfree = true;
   nix.settings = {
-    substituters = ["https://hyprland.cachix.org"];
-    trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+    substituters = [ "https://hyprland.cachix.org" ];
+    trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
   };
 
   # Use bleeding edge kernel
@@ -61,7 +61,7 @@ with lib;
     isNormalUser = true;
     description = name;
     extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [];
+    packages = with pkgs; [ ];
     uid = 1000;
   };
   security.sudo.wheelNeedsPassword = false;
@@ -69,7 +69,7 @@ with lib;
 
   # System packages
   environment.systemPackages = with pkgs; [
-    helix
+    vim
     wget
     fish
     git

@@ -81,7 +81,7 @@ with lib;
 
   # System packages
   environment.systemPackages = with pkgs; [
-    helix
+    vim
     wget
     fish
     git

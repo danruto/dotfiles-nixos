@@ -18,6 +18,7 @@
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
     ../../user/apps/terminal/lazyvim.nix
+    ../../user/apps/terminal/helix.nix
     ../../user/apps/terminal/alacritty.nix
     ../../user/apps/terminal/kitty.nix
     ../../user/wm/hyprland/hyprland.nix

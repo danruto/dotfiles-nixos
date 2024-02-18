@@ -1,19 +1,20 @@
 { pkgs, ... }: {
 
   imports = [
-              ../shared.nix # Shared home configurations
-              ../../user/shell/sh.nix # Fish config
-              ../../user/shell/tui.nix # Useful cli/tui apps
-              ../../user/apps/git/git.nix # My git config
-              ../../user/lang/cc/cc.nix # C and C++ tools
-              ../../user/lang/rust/rust.nix # Rust tools
-              ../../user/lang/typescript/typescript.nix # typescript tools
-              ../../user/lang/go/go.nix # go tools
-              ../../user/lang/lua/lua.nix # lua tools
-              ../../user/lang/nix/nix.nix # nix tools
-              ../../user/lang/shell/shell.nix # shell tools
-              ../../user/apps/terminal/lazyvim.nix 
-            ];
+    ../shared.nix # Shared home configurations
+    ../../user/shell/sh.nix # Fish config
+    ../../user/shell/tui.nix # Useful cli/tui apps
+    ../../user/apps/git/git.nix # My git config
+    ../../user/lang/cc/cc.nix # C and C++ tools
+    ../../user/lang/rust/rust.nix # Rust tools
+    ../../user/lang/typescript/typescript.nix # typescript tools
+    ../../user/lang/go/go.nix # go tools
+    ../../user/lang/lua/lua.nix # lua tools
+    ../../user/lang/nix/nix.nix # nix tools
+    ../../user/lang/shell/shell.nix # shell tools
+    ../../user/apps/terminal/lazyvim.nix
+    ../../user/apps/terminal/helix.nix
+  ];
 
   home.packages = with pkgs; [
     cachix

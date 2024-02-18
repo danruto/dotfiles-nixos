@@ -7,7 +7,7 @@
 with lib;
 {
   imports =
-    [ 
+    [
       nixos-wsl.nixosModules.wsl
       ../../system/security/gpg.nix
       ../../system/security/blocklist.nix
@@ -35,11 +35,11 @@ with lib;
   };
 
   # Fix nix path
-  nix.nixPath = [ 
-                  "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
-                  "nixos-config=$HOME/dotfiles/system/configuration.nix"
-                  "/nix/var/nix/profiles/per-user/root/channels"
-                ];
+  nix.nixPath = [
+    "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
+    "nixos-config=$HOME/dotfiles/system/configuration.nix"
+    "/nix/var/nix/profiles/per-user/root/channels"
+  ];
 
   # Experimental features
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -70,13 +70,13 @@ with lib;
     isNormalUser = true;
     description = name;
     extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [];
+    packages = with pkgs; [ ];
     uid = 1000;
   };
 
   # System packages
   environment.systemPackages = with pkgs; [
-    helix
+    vim
     wget
     fish
     git
@@ -85,7 +85,7 @@ with lib;
     # openssl
     # pkg-config
 
-    (import ./win32yank.nix {inherit pkgs;})
+    (import ./win32yank.nix { inherit pkgs; })
   ];
 
   environment.shells = with pkgs; [ fish ];

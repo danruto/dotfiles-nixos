@@ -6,6 +6,14 @@
       font_size = 14;
       font_family = font;
 
+      window_padding_width = 4;
+      hide_window_decorations = "yes";
+      top_bar_edge = "top";
+
+      macos_option_as_alt = "yes";
+      macos_thicken_font = 0.75;
+
+      background_opacity = 1;
       background = "#0e1419";
       foreground = "#e5e1cf";
       cursor = "#f19618";
