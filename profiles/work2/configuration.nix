@@ -29,7 +29,7 @@
     casks = [
       "1password"
       "1password-cli"
-      "alacritty"
+      # "alacritty"
       "azure-data-studio"
       "brave-browser"
       "discord"
@@ -41,7 +41,7 @@
       "font-victor-mono-nerd-font"
       "iina"
       "insomnium"
-      "kitty"
+      # "kitty"
       "raycast"
       "rectangle"
       "slack"

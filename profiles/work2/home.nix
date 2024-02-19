@@ -14,6 +14,8 @@
     ../../user/lang/shell/shell.nix # shell tools
     ../../user/apps/terminal/lazyvim.nix
     ../../user/apps/terminal/helix.nix
+    ../../user/apps/terminal/alacritty.nix
+    ../../user/apps/terminal/kitty.nix
   ];
 
   home.packages = with pkgs; [
@@ -55,14 +57,6 @@
     source = ../../user/config/sketchybar;
     recursive = true;
   };
-
-  home.file.".config/kitty" = {
-    source = ../../user/config/kitty;
-    recursive = true;
-  };
-
-  home.file.".config/alacritty/alacritty.toml".source = ../../user/config/alacritty.toml;
-
 
   # programs.fish.enable = true;
   # programs.zsh.enable = true;

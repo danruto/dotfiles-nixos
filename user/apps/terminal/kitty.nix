@@ -11,7 +11,7 @@
       top_bar_edge = "top";
 
       macos_option_as_alt = "yes";
-      macos_thicken_font = 0.75;
+      macos_thicken_font = "0.75";
 
       background_opacity = 1;
       background = "#0e1419";
