@@ -12,7 +12,8 @@
       # profile = "vm-hypr";
       # profile = "work";
       # profile = "work2";
-      profile = "framework";
+      # profile = "framework";
+      profile = "orb";
       timezone = "Australia/Sydney"; # select timezone
       locale = "en_US.UTF-8"; # select locale
 

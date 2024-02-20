@@ -6,7 +6,8 @@ NIXPORT ?= 22
 # Same as inside `flake.nix`
 NIXUSER ?= danruto
 # PROFILE=work2
-PROFILE=framework
+# PROFILE=framework
+PROFILE=orb
 
 SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 UNAME := $(shell uname)
