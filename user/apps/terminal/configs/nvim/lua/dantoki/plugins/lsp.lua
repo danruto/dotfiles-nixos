@@ -1,12 +1,12 @@
 return {
     {
-        "neovim/nvim-lspconfig",
+        'dundalek/lazy-lsp.nvim',
         dependencies = {
             {
+                "neovim/nvim-lspconfig",
                 "SmiteshP/nvim-navbuddy",
                 -- event = "LspAttach",
                 dependencies = {
-                    "neovim/nvim-lspconfig",
                     "SmiteshP/nvim-navic",
                     "MunifTanjim/nui.nvim",
                 },
@@ -31,7 +31,12 @@ return {
     },
     {
         "saecki/crates.nvim",
-        opts = {},
+        event = { "BufRead Cargo.toml" },
+        opts = {
+            src = {
+                cmp = { enabled = true },
+            },
+        },
     },
     {
         "hrsh7th/nvim-cmp",
@@ -90,31 +95,41 @@ return {
         "simrat39/rust-tools.nvim",
         ft = "rust",
         dependencies = { "neovim/nvim-lspconfig" },
-        -- config = function()
-        -- 	local rt = require("rust-tools")
-        -- 	local tb = require("telescope.builtin")
-        -- 	rt.setup({
-        -- 		server = {
-        -- 			on_attach = function(_, bufnr)
-        -- 				-- Add custom key maps for rt based lspconfig
-        -- 				local rt_opts = { noremap = true, silent = true, buffer = bufnr }
-        -- 				vim.keymap.set("n", "<C-Space>", rt.hover_actions.hover_actions, rt_opts)
-        -- 				vim.keymap.set("n", "<Leader>ca", rt.code_action_group.code_action_group, rt_opts)
-        --
-        -- 				-- Common regular lsp keys
-        -- 				vim.keymap.set("n", "<Leader>rn", vim.lsp.buf.rename, rt_opts)
-        -- 				vim.keymap.set("n", "gd", tb.lsp_definitions, rt_opts)
-        -- 				vim.keymap.set("n", "gD", tb.lsp_type_definitions, rt_opts)
-        -- 				vim.keymap.set("n", "gr", tb.lsp_references, rt_opts)
-        -- 				vim.keymap.set("n", "gi", tb.lsp_implementations, rt_opts)
-        -- 				vim.keymap.set("n", "<Leader>F", vim.lsp.buf.formatting, rt_opts)
-        -- 				vim.keymap.set("n", "<Leader>S", tb.lsp_workspace_symbols, rt_opts)
-        -- 				vim.keymap.set("n", "<Leader>s", tb.lsp_document_symbols, rt_opts)
-        -- 				-- vim.keymap.set("n", "K", vim.lsp.buf.hover, rt_opts)
-        -- 				vim.keymap.set({ "n", "v" }, "<Space>a", vim.lsp.buf.code_action, rt_opts)
-        -- 			end,
-        -- 		},
-        -- 	})
-        -- end,
+        opts = function()
+            local ok, mason_registry = pcall(require, "mason-registry")
+            local adapter ---@type any
+            if ok then
+                -- rust tools configuration for debugging support
+                local codelldb = mason_registry.get_package("codelldb")
+                local extension_path = codelldb:get_install_path() .. "/extension/"
+                local codelldb_path = extension_path .. "adapter/codelldb"
+                local liblldb_path = ""
+                if vim.loop.os_uname().sysname:find("Windows") then
+                    liblldb_path = extension_path .. "lldb\\bin\\liblldb.dll"
+                elseif vim.fn.has("mac") == 1 then
+                    liblldb_path = extension_path .. "lldb/lib/liblldb.dylib"
+                else
+                    liblldb_path = extension_path .. "lldb/lib/liblldb.so"
+                end
+                adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path)
+            end
+            return {
+                dap = {
+                    adapter = adapter,
+                },
+                tools = {
+                    on_initialized = function()
+                        vim.cmd([[
+                  augroup RustLSP
+                    autocmd CursorHold                      *.rs silent! lua vim.lsp.buf.document_highlight()
+                    autocmd CursorMoved,InsertEnter         *.rs silent! lua vim.lsp.buf.clear_references()
+                    autocmd BufEnter,CursorHold,InsertLeave *.rs silent! lua vim.lsp.codelens.refresh()
+                  augroup END
+                ]])
+                    end,
+                },
+            }
+        end,
+        config = function() end,
     },
 }
