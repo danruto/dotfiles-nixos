@@ -46,16 +46,16 @@ local options = {
 	-- },
 
 	window = {
-		completion = cmp.config.window.bordered {
+		completion = cmp.config.window.bordered({
 			winhighlight = "Normal:Pmenu,FloatBorder:PmenuBorder,CursorLine:PmenuSel,Search:None",
 			scrollbar = true,
 			col_offset = -1,
-			side_padding = 0
-		},
-		documentation = cmp.config.window.bordered {
+			side_padding = 0,
+		}),
+		documentation = cmp.config.window.bordered({
 			winhighlight = "Normal:Pmenu,FloatBorder:PmenuDocBorder,CursorLine:PmenuSel,Search:None",
 			scrollbar = true,
-		},
+		}),
 	},
 	snippet = {
 		expand = function(args)
@@ -102,19 +102,19 @@ local options = {
 	},
 	sources = {
 		{ name = "nvim_lsp_signature_help", priority = 1000 },
-		{ name = "nvim_lsp",                priority = 900 },
-		{ name = "luasnip",                 priority = 800 },
-		{ name = "copilot",                 priority = 700 },
-		{ name = "buffer",                  priority = 600 },
-		{ name = "nvim_lua",                priority = 500 },
-		{ name = "path",                    priority = 400 },
+		{ name = "nvim_lsp", priority = 900 },
+		{ name = "luasnip", priority = 800 },
+		{ name = "copilot", priority = 700 },
+		{ name = "buffer", priority = 600 },
+		{ name = "nvim_lua", priority = 500 },
+		{ name = "path", priority = 400 },
 		-- { name = "orgmode" },
-		{ name = "crates",                  priority = 300 },
+		{ name = "crates", priority = 300 },
 	},
 	formatting = {
 		format = lspkind.cmp_format({
 			mode = "symbol_text", -- show only symbol annotations
-			maxwidth = 50,      -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+			maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
 			ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
 			-- The function below will be called before any actual modifications from lspkind
 			-- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))

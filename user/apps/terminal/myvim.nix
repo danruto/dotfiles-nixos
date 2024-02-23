@@ -8,6 +8,7 @@
       # Telescope
       ripgrep
       nixpkgs-fmt
+      stylua
     ];
 
     plugins = with pkgs.vimPlugins; [
@@ -98,6 +99,7 @@
           nvim-treesitter-textsubjects
           nvim-treesitter-endwise
           nvim-treesitter-refactor
+          nvim-ts-context-commentstring
           flash-nvim
           mini-nvim
           # { name = "mini.ai"; path = mini-nvim; }
@@ -135,7 +137,8 @@
           cmp-cmdline
           cmp-nvim-lsp-document-symbol
           copilot-cmp
-          none-ls-nvim
+          # none-ls-nvim
+          conform-nvim
           typescript-tools-nvim
           rust-tools-nvim
           nvim-dap
@@ -173,6 +176,8 @@
           nordic-nvim
           lazy-lsp-nvim
           lsp_lines-nvim
+          nvim-spectre
+          todo-comments-nvim
 
 
 
@@ -181,12 +186,8 @@
 
 
           # Lazy plugins we can check out later
-          # indent-blankline-nvim
           # noice-nvim
-          # nvim-spectre
-          # nvim-ts-context-commentstring
           # telescope-fzf-native-nvim
-          # todo-comments-nvim
           # vim-illuminate
           # vim-startuptime
           # { name = "catppuccin"; path = catppuccin-nvim; }
