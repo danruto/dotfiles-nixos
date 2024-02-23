@@ -7,7 +7,8 @@ NIXPORT ?= 22
 NIXUSER ?= danruto
 # PROFILE=work2
 # PROFILE=framework
-PROFILE=orb
+# PROFILE=orb
+PROFILE=wsl
 
 SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 UNAME := $(shell uname)

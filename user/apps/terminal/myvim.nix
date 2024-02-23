@@ -17,15 +17,6 @@
 
     extraLuaConfig =
       let
-        tailwindcss-colorizer-nvim = pkgs.vimUtils.buildVimPlugin {
-          name = "tailwindcss-colorizer-cmp.nvim";
-          src = pkgs.fetchFromGitHub {
-            owner = "roobert";
-            repo = "tailwindcss-colorizer-cmp.nvim";
-            rev = "bc25c56083939f274edcfe395c6ff7de23b67c50";
-            hash = "sha256-4wt4J6pENX7QRG7N1GzE9L6pM5E88tnHbv4NQa5JqSI=";
-          };
-        };
         snowy-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "snowy-vim";
           version = "2024-02-01";
@@ -37,7 +28,7 @@
           };
         };
         danger-vim = pkgs.vimUtils.buildVimPlugin {
-          pname = "danger-vim";
+          pname = "danger";
           version = "2024-02-01";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
@@ -46,8 +37,8 @@
             hash = "sha256-Vfb+lOqLAt7dxt6y25RVid5qxTr8iZtqT3aZ2izAkIQ=";
           };
         };
-        github-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "github-nvim";
+        github-nvim-theme = pkgs.vimUtils.buildVimPlugin {
+          pname = "github-nvim-theme";
           version = "2024-02-23";
           src = pkgs.fetchFromGitHub {
             owner = "projekt0n";
@@ -57,7 +48,7 @@
           };
         };
         ohlucy-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "ohlucy-nvim";
+          pname = "oh-lucy.nvim";
           version = "2024-02-23";
           src = pkgs.fetchFromGitHub {
             owner = "Yazeed1s";
@@ -67,7 +58,7 @@
           };
         };
         icon-picker-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "icon-picker-nvim";
+          pname = "icon-picker.nvim";
           version = "2024-02-23";
           src = pkgs.fetchFromGitHub {
             owner = "ziontee113";
@@ -77,7 +68,7 @@
           };
         };
         lsp-lens-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "lsp-lens-nvim";
+          pname = "lsp-lens.nvim";
           version = "2024-02-23";
           src = pkgs.fetchFromGitHub {
             owner = "vidocqh";
@@ -128,7 +119,7 @@
           nvim-cmp
           cmp-buffer
           cmp-nvim-lsp
-          lspkind-nvim
+          { name = "lspkind.nvim"; path = lspkind-nvim; }
           cmp-nvim-lsp-signature-help
           cmp-path
           cmp-nvim-lua
@@ -154,7 +145,7 @@
           nvim-web-devicons
           nvim-notify
           dressing-nvim
-          Shade-nvim
+          { name = "shade.nvim"; path = Shade-nvim; }
           # expressline
           icon-picker-nvim
           nvim-colorizer-lua
@@ -163,7 +154,7 @@
           trouble-nvim
           telescope-nvim
           neo-tree-nvim
-          github-nvim
+          github-nvim-theme
           neovim-ayu
           papercolor-theme
           snowy-vim
