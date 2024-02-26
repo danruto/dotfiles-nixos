@@ -18,6 +18,9 @@ return {
 				},
 			},
 		},
+		opts = {
+			excluded_servers = { "sqls" },
+		},
 	},
 	{
 		"zbirenbaum/copilot.lua",

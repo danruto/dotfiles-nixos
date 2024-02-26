@@ -107,3 +107,8 @@ vim.schedule(function()
 	vim.opt.shadafile = vim.fn.stdpath(vim.version().minor > 7 and "state" or "data") .. "/shada/main.shada"
 	vim.cmd([[ silent! rsh ]])
 end)
+
+-- Neovide
+if vim.g.neovide then
+	vim.opt.guifont = "IosevkaTerm Nerd Font Propo:h10"
+end
