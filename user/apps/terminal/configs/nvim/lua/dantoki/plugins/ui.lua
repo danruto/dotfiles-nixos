@@ -113,10 +113,15 @@ return {
 				desc = "Jump to next diagnostic",
 			},
 		},
+		opts = {
+			use_diagnostic_signs = true,
+		},
 	},
 	{
 		"nvim-pack/nvim-spectre",
-		opts = {},
+		opts = {
+			open_cmd = "noswapfile vnew",
+		},
 	},
 	{
 		"folke/todo-comments.nvim",

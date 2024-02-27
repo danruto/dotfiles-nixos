@@ -34,6 +34,7 @@ end
 -- 	return info
 -- end
 
+-- vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
 local options = {
 	-- window = {
 	-- 	completion = {
@@ -44,7 +45,9 @@ local options = {
 	-- 		border = border("CmpDocBorder"),
 	-- 	},
 	-- },
-
+	completion = {
+		completeopt = "menuone,noinsert",
+	},
 	window = {
 		completion = cmp.config.window.bordered({
 			winhighlight = "Normal:Pmenu,FloatBorder:PmenuBorder,CursorLine:PmenuSel,Search:None",
@@ -99,12 +102,18 @@ local options = {
 			"i",
 			"s",
 		}),
+		-- experimental = {
+		-- 	ghost_text = {
+		-- 		hl_group = "CmpGhostText",
+		-- 	},
+		-- },
 	},
 	sources = {
 		{ name = "nvim_lsp_signature_help", priority = 1000 },
 		{ name = "nvim_lsp", priority = 900 },
 		{ name = "luasnip", priority = 800 },
-		{ name = "copilot", priority = 700 },
+		-- { name = "copilot", priority = 700 },
+		{ name = "codeium", priority = 601 },
 		{ name = "buffer", priority = 600 },
 		{ name = "nvim_lua", priority = 500 },
 		{ name = "path", priority = 400 },

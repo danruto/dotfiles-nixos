@@ -89,7 +89,7 @@
           };
         };
 
-        plugins = with pkgs.vimPlugins; [
+        plugins = with pkgs.unstable.vimPlugins; [
           nvim-ts-autotag
           editorconfig-vim
           vim-closetag
@@ -124,7 +124,7 @@
           nvim-navbuddy
           nvim-navic
           nui-nvim
-          copilot-lua
+          # copilot-lua
           crates-nvim
           nvim-cmp
           cmp-buffer
@@ -137,7 +137,7 @@
           cmp-under-comparator
           cmp-cmdline
           cmp-nvim-lsp-document-symbol
-          copilot-cmp
+          # copilot-cmp
           # none-ls-nvim
           conform-nvim
           typescript-tools-nvim
@@ -180,6 +180,7 @@
           nvim-spectre
           todo-comments-nvim
           pineapple-nvim
+          codeium-nvim
 
 
 
@@ -257,10 +258,6 @@
             },
           },
         })
-
-        require("lazy-lsp").setup {
-            excluded_servers = { "sqls" },
-        }
       '';
   };
 

@@ -41,7 +41,7 @@ local options = {
 		layout_strategy = "vertical",
 		layout_config = {
 			horizontal = {
-				prompt_position = "bottom",
+				prompt_position = "top",
 				preview_width = 0.55,
 				results_width = 0.8,
 			},
@@ -73,7 +73,7 @@ local options = {
 		},
 	},
 	pickers = { colorscheme = { enable_preview = true } },
-	extensions_list = { "themes", "colo" },
+	extensions_list = { "themes" },
 }
 
 telescope.setup(options)

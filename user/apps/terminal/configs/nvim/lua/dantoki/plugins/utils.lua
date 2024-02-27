@@ -25,7 +25,7 @@ return {
 					local function files_fallback()
 						vim.fn.system("git rev-parse --is-inside-work-tree")
 						if vim.v.shell_error == 0 then
-							tb.git_files()
+							tb.git_files({ show_untracked = true })
 						else
 							tb.find_files()
 						end
@@ -184,7 +184,10 @@ return {
 			{ "<Space>e", "<cmd>Neotree toggle<cr>", desc = "NeoTree" },
 		},
 		opts = {
+			sources = { "filesystem", "buffers", "git_status", "document_symbols" },
+			open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
 			filesystem = {
+				bind_to_cwd = false,
 				follow_current_file = {
 					enabled = true,
 				},
