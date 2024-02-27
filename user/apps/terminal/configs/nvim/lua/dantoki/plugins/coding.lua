@@ -94,6 +94,7 @@ return {
 			"nvim-lua/plenary.nvim",
 			"hrsh7th/nvim-cmp",
 		},
+		event = "LspAttach",
 		cmd = "Codeium",
 		build = ":Codeium Auth",
 		opts = {},

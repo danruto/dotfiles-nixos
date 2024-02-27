@@ -1,6 +1,7 @@
 return {
 	{
 		"dundalek/lazy-lsp.nvim",
+		event = "InsertEnter",
 		dependencies = {
 			{
 				"neovim/nvim-lspconfig",
