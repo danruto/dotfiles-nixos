@@ -78,6 +78,16 @@
           };
         };
 
+        pineapple-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "pineapple";
+          version = "2024-02-23";
+          src = pkgs.fetchFromGitHub {
+            owner = "CWood-sdf";
+            repo = "pineapple";
+            rev = "2ddd76ec9fdc68b514c9ec45412c3b48a97b0ef4";
+            hash = "sha256-d3+lhm4Sq4FIQVSBPrqQJQBdvkphZ10OS4ObUD04UkI=";
+          };
+        };
 
         plugins = with pkgs.vimPlugins; [
           nvim-ts-autotag
@@ -169,6 +179,7 @@
           lsp_lines-nvim
           nvim-spectre
           todo-comments-nvim
+          pineapple-nvim
 
 
 
@@ -290,6 +301,7 @@
     in
     "${parsers}/parser";
 
+  xdg.configFile."nvim/after".source = ./configs/nvim/after;
   xdg.configFile."nvim/lua".source = ./configs/nvim/lua;
 }
 

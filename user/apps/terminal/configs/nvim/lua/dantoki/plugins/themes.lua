@@ -105,4 +105,13 @@ return {
 			saturation = "high",
 		},
 	},
+	{
+		"CWood-sdf/pineapple",
+		-- dependencies = require("dantoki.pineapple"),
+		opts = {
+			installedRegistry = "dantoki.pineapple",
+			colorschemeFile = "after/plugin/theme.lua",
+		},
+		cmd = "Pineapple",
+	},
 }
