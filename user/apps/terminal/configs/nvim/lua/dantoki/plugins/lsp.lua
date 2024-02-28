@@ -21,6 +21,9 @@ return {
 		},
 		opts = {
 			excluded_servers = { "sqls" },
+			preferred_servers = {
+				python = { "pyright", "ruff_lsp" },
+			},
 			configs = {
 				rust_analyzer = {
 					keys = {
