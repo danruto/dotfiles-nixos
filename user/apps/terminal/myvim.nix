@@ -141,7 +141,8 @@
           # none-ls-nvim
           conform-nvim
           typescript-tools-nvim
-          rust-tools-nvim
+          # rust-tools-nvim
+          rustaceanvim
           nvim-dap
           nvim-dap-ui
           hover-nvim
