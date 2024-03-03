@@ -26,12 +26,6 @@
   ];
   home.stateVersion = "23.11";
 
-  programs.direnv = {
-    enable = true;
-    config = {
-      load_dotenv = true;
-    };
-  };
   programs.home-manager.enable = true;
 
   xdg = {

@@ -4,27 +4,27 @@
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = username;
-  home.homeDirectory = "/home/"+username;
+  home.homeDirectory = "/home/" + username;
 
   programs.home-manager.enable = true;
 
   imports = [
-              # stylix.homeManagerModules.stylix
-              # ../../user/style/stylix.nix # Styling and themes for my apps
-              ../shared.nix # Shared home configurations
-              ../../user/shell/sh.nix # Fish config
-              ../../user/shell/tui.nix # Useful cli/tui apps
-              ../../user/apps/git/git.nix # My git config
-              ../../user/apps/terminal/lazyvim.nix 
-              ../../user/apps/terminal/helix.nix 
-              ../../user/lang/cc/cc.nix # C and C++ tools
-              ../../user/lang/rust/rust.nix # Rust tools
-              ../../user/lang/typescript/typescript.nix # typescript tools
-              ../../user/lang/go/go.nix # go tools
-              ../../user/lang/lua/lua.nix # lua tools
-              ../../user/lang/nix/nix.nix # nix tools
-              ../../user/lang/shell/shell.nix # shell tools
-            ];
+    # stylix.homeManagerModules.stylix
+    # ../../user/style/stylix.nix # Styling and themes for my apps
+    ../shared.nix # Shared home configurations
+    ../../user/shell/sh.nix # Fish config
+    ../../user/shell/tui.nix # Useful cli/tui apps
+    ../../user/apps/git/git.nix # My git config
+    ../../user/apps/terminal/lazyvim.nix
+    ../../user/apps/terminal/helix.nix
+    ../../user/lang/cc/cc.nix # C and C++ tools
+    ../../user/lang/rust/rust.nix # Rust tools
+    ../../user/lang/typescript/typescript.nix # typescript tools
+    ../../user/lang/go/go.nix # go tools
+    ../../user/lang/lua/lua.nix # lua tools
+    ../../user/lang/nix/nix.nix # nix tools
+    ../../user/lang/shell/shell.nix # shell tools
+  ];
 
   home.stateVersion = "23.11"; # Please read the comment before changing.
 
@@ -34,7 +34,8 @@
 
     # Various dev packages
     texinfo
-    libffi zlib
+    libffi
+    zlib
     nodePackages.ungit
   ];
 
@@ -70,15 +71,8 @@
   manual.html.enable = false;
 
   programs.nix-index =
-  {
-    enable = true;
-    enableFishIntegration = true;
-  };
-
-  programs.direnv = {
-    enable = true;
-    config = {
-      load_dotenv = true;
+    {
+      enable = true;
+      enableFishIntegration = true;
     };
-  };
 }

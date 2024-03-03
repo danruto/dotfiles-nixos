@@ -1,4 +1,3 @@
-
 { config, pkgs, ... }:
 let
 
@@ -7,6 +6,7 @@ let
     ls = "eza --icons -l -T -L=1";
     cat = "bat";
     fd = "fd -Lu";
+    zj = "zellij --layout compact";
     # nixos-rebuild = "systemd-run --no-ask-password --uid=0 --system --scope -p MemoryLimit=16000M -p CPUQuota=60% nixos-rebuild";
     # home-manager = "systemd-run --no-ask-password --uid=1000 --user --scope -p MemoryLimit=16000M -p CPUQuota=60% home-manager";
     norb = "sudo nixos-rebuild switch --flake .#system";
@@ -38,15 +38,18 @@ in
   ];
 
   programs.btop = {
-      enable = true;
-      settings = {
-          vim_keys = true;
-      };
+    enable = true;
+    settings = {
+      vim_keys = true;
+    };
   };
 
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
+    config = {
+      load_dotenv = true;
+    };
   };
 
   programs.starship.enableFishIntegration = true;

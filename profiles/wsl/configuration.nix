@@ -46,8 +46,11 @@ with lib;
 
   # Ensure nix flakes are enabled
   nix.package = pkgs.nixFlakes;
+  # TODO: Probably make new file to cover nix settings
   nix.extraOptions = ''
     experimental-features = nix-command flakes
+    keep-outputs = true
+    keep-derivations = true
   '';
 
   nix.gc = {
