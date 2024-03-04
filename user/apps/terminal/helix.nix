@@ -83,59 +83,81 @@
     };
 
     languages = {
-      language-server.rust-analyzer = {
-        config = {
-          check.command = "clippy";
+      language-server = {
+        rust-analyzer = {
+          config = {
+            check = {
+              command = "clippy";
+            };
+          };
+        };
+
+        ruff-lsp = {
+          command = "ruff-lsp";
         };
       };
+
       language = [
         {
           name = "javascript";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
         }
         {
           name = "jsx";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
         }
         {
           name = "typescript";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
         }
         {
           name = "tsx";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
         }
         {
           name = "css";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
         }
         {
           name = "scss";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
         }
         {
           name = "json";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
         }
         {
           name = "yaml";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
         }
         {
           name = "html";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
         }
         {
           name = "rust";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
         }
         {
           name = "python";
-          indent = { tab-width = 4; unit = "    "; auto-format = true; };
+          indent = { tab-width = 4; unit = "    "; };
+          auto-format = true;
+          language-servers = [ "ruff-lsp" "pyright" ];
         }
         {
           name = "nix";
-          indent = { tab-width = 2; unit = "  "; auto-format = true; };
+          indent = { tab-width = 2; unit = "  "; };
+          auto-format = true;
         }
       ];
     };
