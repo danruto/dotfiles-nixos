@@ -158,6 +158,7 @@
           name = "nix";
           indent = { tab-width = 2; unit = "  "; };
           auto-format = true;
+          formatter = { command = "nixpkgs-fmt"; };
         }
       ];
     };
