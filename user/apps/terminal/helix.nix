@@ -1,8 +1,9 @@
-{ config, lib, pkgs, ... }:
+{ helix, pkgs, ... }:
 {
   programs.helix = {
     enable = true;
-    package = pkgs.unstable.helix;
+    # package = pkgs.unstable.helix;
+    package = helix.packages.${pkgs.system}.default;
     extraPackages = with pkgs; [
       nixpkgs-fmt
     ];
@@ -46,7 +47,7 @@
           tabpad = "·";
         };
 
-        # popup-border = "all";
+        popup-border = "all";
 
         statusline = {
           left = [ "mode" "spinner" ];

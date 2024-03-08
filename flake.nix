@@ -1,7 +1,7 @@
 {
   description = "Danruto NixOS Configuration";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, blocklist-hosts, rust-overlay, hyprland-plugins, nur, darwin, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, blocklist-hosts, rust-overlay, hyprland-plugins, nur, darwin, helix, ... }@inputs:
     let
       # ---- SYSTEM SETTINGS ---- #
       system = "x86_64-linux";
@@ -99,6 +99,7 @@
                 inherit (inputs) hyprland-plugins;
                 inherit (inputs) nixos-wsl;
                 inherit pkgs;
+                inherit helix;
                 channels = { inherit nixpkgs nixpkgs-unstable; };
               };
             }
@@ -158,6 +159,7 @@
                 inherit (inputs) hyprland-plugins;
                 inherit (inputs) nixos-wsl;
                 inherit pkgs;
+                inherit helix;
                 channels = { inherit nixpkgs nixpkgs-unstable; };
               };
             }
@@ -211,5 +213,6 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    helix.url = "github:helix-editor/helix";
   };
 }
