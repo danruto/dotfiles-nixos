@@ -20,7 +20,7 @@
   ];
 
   home.packages = with pkgs; [
-    cachix
+    # cachix
     diff-so-fancy
     git
   ];

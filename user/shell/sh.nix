@@ -11,9 +11,11 @@ let
     # home-manager = "systemd-run --no-ask-password --uid=1000 --user --scope -p MemoryLimit=16000M -p CPUQuota=60% home-manager";
     norb = "sudo nixos-rebuild switch --flake .#system";
     hmr = "home-manager switch -b backup --flake .#user";
+    ncu = "sudo nix-channel --update";
+    ncl = "sudo nix-channel --list";
     nu = "nix flake update";
     nuh = "nix flake update && hmr";
-    nc = "nix-collect-garbage && nix-collect-garbage -d && rm /nix/var/nix/gcroots/auto/* && nix-collect-garbage && nix-collage-garbage -d";
+    ncg = "nix-collect-garbage && nix-collect-garbage -d && rm /nix/var/nix/gcroots/auto/* && nix-collect-garbage && nix-collage-garbage -d";
   };
 in
 {
