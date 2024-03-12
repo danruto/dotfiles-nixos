@@ -49,6 +49,7 @@
         overlays = [
           rust-overlay.overlays.default
           nur.overlay
+          neovim-nightly-overlay.overlay
           (_final: prev: {
             unstable = import nixpkgs-unstable {
               inherit (prev) system;
@@ -214,5 +215,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     helix.url = "github:helix-editor/helix";
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
 }

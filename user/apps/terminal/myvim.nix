@@ -4,6 +4,7 @@
   programs.neovim = {
     enable = true;
     # package = pkgs.unstable.neovim;
+    package = pkgs.neovim-nightly;
     extraPackages = with pkgs; [
       # Telescope
       ripgrep
@@ -267,7 +268,7 @@
     let
       parsers = pkgs.symlinkJoin {
         name = "treesitter-parsers";
-        paths = (pkgs.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
+        paths = (pkgs.unstable.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
           bash
           c
           cpp
