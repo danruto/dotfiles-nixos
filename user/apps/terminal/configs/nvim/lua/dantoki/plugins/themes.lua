@@ -95,17 +95,6 @@ return {
 	},
 	-- { "Alexis12119/nightly.nvim" },
 	{
-		"echasnovski/mini.hues",
-		version = false,
-		-- lazy = false,
-		-- priority = 1000,
-		opts = {
-			background = "#0a0e14",
-			foreground = "#73d0ff",
-			saturation = "high",
-		},
-	},
-	{
 		"CWood-sdf/pineapple",
 		-- dependencies = require("dantoki.pineapple"),
 		opts = {

@@ -7,12 +7,12 @@
       system = "x86_64-linux";
       # system = "x86_64-darwin";
       hostname = "danruto"; # hostname
-      # profile = "wsl";
+      profile = "wsl";
       # profile = "vm";
       # profile = "vm-hypr";
       # profile = "work";
       # profile = "work2";
-      profile = "framework";
+      # profile = "framework";
       # profile = "orb";
       timezone = "Australia/Sydney"; # select timezone
       locale = "en_US.UTF-8"; # select locale
@@ -206,15 +206,18 @@
       url = "github:tlvince/ectool.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote/v0.3.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # lanzaboote = {
+    #   url = "github:nix-community/lanzaboote/v0.3.0";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
     darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     helix.url = "github:helix-editor/helix";
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    neovim-nightly-overlay = {
+      url = "github:nix-community/neovim-nightly-overlay";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 }

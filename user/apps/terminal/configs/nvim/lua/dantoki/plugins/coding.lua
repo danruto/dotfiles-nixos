@@ -70,6 +70,11 @@ return {
 			})
 			require("mini.cursorword").setup()
 			require("mini.doc").setup()
+			require("mini.hues").setup({
+				background = "#0a0e14",
+				foreground = "#73d0ff",
+				saturation = "high",
+			})
 			require("mini.indentscope").setup()
 			require("mini.pairs").setup()
 			require("mini.splitjoin").setup()

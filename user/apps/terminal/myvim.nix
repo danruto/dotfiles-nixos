@@ -110,7 +110,7 @@
           # { name = "mini.comment"; path = mini-nvim; }
           # { name = "mini.cursorword"; path = mini-nvim; }
           # { name = "mini.doc"; path = mini-nvim; }
-          { name = "mini.hues"; path = mini-nvim; }
+          # { name = "mini.hues"; path = mini-nvim; }
           # { name = "mini.indentscope"; path = mini-nvim; }
           # { name = "mini.pairs"; path = mini-nvim; }
           # { name = "mini.splitjoin"; path = mini-nvim; }
@@ -122,8 +122,9 @@
           gitsigns-nvim
           neogit
           nvim-lspconfig
-          nvim-navbuddy
-          nvim-navic
+          # nvim-navbuddy
+          # nvim-navic
+          # barbecue-nvim
           nui-nvim
           # copilot-lua
           crates-nvim
@@ -149,7 +150,6 @@
           hover-nvim
           lsp-inlayhints-nvim
           fidget-nvim
-          barbecue-nvim
           lsp-lens-nvim
           friendly-snippets
           { name = "LuaSnip"; path = luasnip; }
@@ -183,6 +183,8 @@
           todo-comments-nvim
           pineapple-nvim
           codeium-nvim
+          dropbar-nvim
+          telescope-fzf-native-nvim
 
 
 
@@ -277,6 +279,7 @@
           gitignore
           go
           graphql
+          gleam
           html
           http
           javascript

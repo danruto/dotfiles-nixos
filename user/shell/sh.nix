@@ -15,7 +15,7 @@ let
     ncl = "sudo nix-channel --list";
     nu = "nix flake update";
     nuh = "nix flake update && hmr";
-    ncg = "sudo nix-collect-garbage && sudo nix-collect-garbage -d && sudo rm /nix/var/nix/gcroots/auto/* && sudo nix-collect-garbage && sudo nix-collage-garbage -d";
+    ncg = "sudo nix-collect-garbage && sudo nix-collect-garbage -d && sudo rm /nix/var/nix/gcroots/auto/* && sudo nix-collect-garbage && sudo nix-collect-garbage -d";
   };
 in
 {

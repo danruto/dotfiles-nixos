@@ -5,18 +5,18 @@ return {
 		dependencies = {
 			{
 				"neovim/nvim-lspconfig",
-				"SmiteshP/nvim-navbuddy",
+				-- "SmiteshP/nvim-navbuddy",
 				-- event = "LspAttach",
-				dependencies = {
-					"SmiteshP/nvim-navic",
-					"MunifTanjim/nui.nvim",
-				},
-				opts = {
-					window = {
-						border = "double",
-					},
-					lsp = { auto_attach = true },
-				},
+				-- dependencies = {
+				-- "SmiteshP/nvim-navic",
+				-- "MunifTanjim/nui.nvim",
+				-- },
+				-- opts = {
+				-- 	window = {
+				-- 		border = "double",
+				-- 	},
+				-- 	lsp = { auto_attach = true },
+				-- },
 			},
 		},
 		opts = {
@@ -167,7 +167,7 @@ return {
 			})
 
 			local has_words_before = function()
-				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+				local line, col = (unpack or table.unpack)(vim.api.nvim_win_get_cursor(0))
 				return col ~= 0
 					and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 			end
@@ -176,21 +176,88 @@ return {
 				vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
 			end
 
+			local icons = {
+				misc = {
+					dots = "󰇘",
+				},
+				dap = {
+					Stopped = { "󰁕 ", "DiagnosticWarn", "DapStoppedLine" },
+					Breakpoint = " ",
+					BreakpointCondition = " ",
+					BreakpointRejected = { " ", "DiagnosticError" },
+					LogPoint = ".>",
+				},
+				diagnostics = {
+					Error = " ",
+					Warn = " ",
+					Hint = " ",
+					Info = " ",
+				},
+				git = {
+					added = " ",
+					modified = " ",
+					removed = " ",
+				},
+				kinds = {
+					Array = " ",
+					Boolean = "󰨙 ",
+					Class = " ",
+					Codeium = "󰘦 ",
+					Color = " ",
+					Control = " ",
+					Collapsed = " ",
+					Constant = "󰏿 ",
+					Constructor = " ",
+					Copilot = " ",
+					Enum = " ",
+					EnumMember = " ",
+					Event = " ",
+					Field = " ",
+					File = " ",
+					Folder = " ",
+					Function = "󰊕 ",
+					Interface = " ",
+					Key = " ",
+					Keyword = " ",
+					Method = "󰊕 ",
+					Module = " ",
+					Namespace = "󰦮 ",
+					Null = " ",
+					Number = "󰎠 ",
+					Object = " ",
+					Operator = " ",
+					Package = " ",
+					Property = " ",
+					Reference = " ",
+					Snippet = " ",
+					String = " ",
+					Struct = "󰆼 ",
+					TabNine = "󰏚 ",
+					Text = " ",
+					TypeParameter = " ",
+					Unit = " ",
+					Value = " ",
+					Variable = "󰀫 ",
+				},
+			}
+
 			return {
 				completion = {
 					completeopt = "menu,menuone,noinsert",
 				},
 				window = {
-					completion = cmp.config.window.bordered({
-						winhighlight = "Normal:Pmenu,FloatBorder:PmenuBorder,CursorLine:PmenuSel,Search:None",
-						scrollbar = true,
-						col_offset = -1,
-						side_padding = 0,
-					}),
-					documentation = cmp.config.window.bordered({
-						winhighlight = "Normal:Pmenu,FloatBorder:PmenuDocBorder,CursorLine:PmenuSel,Search:None",
-						scrollbar = true,
-					}),
+					-- completion = cmp.config.window.bordered({
+					-- 	winhighlight = "Normal:Pmenu,FloatBorder:PmenuBorder,CursorLine:PmenuSel,Search:None",
+					-- 	-- winhighlight = "Normal:CmpPmenu,FloatBorder:PmenuBorder,CursorLine:CmpSel,Search:PmenuSel,Search:None",
+					-- 	scrollbar = true,
+					-- 	col_offset = -1,
+					-- 	side_padding = 0,
+					-- }),
+					-- documentation = cmp.config.window.bordered({
+					-- 	winhighlight = "Normal:Pmenu,FloatBorder:PmenuDocBorder,CursorLine:PmenuSel,Search:None",
+					-- 	-- winhighlight = "Normal:CmpPmenu,FloatBorder:PmenuBorder,CursorLine:CmpSel,Search:PmenuSel,Search:None",
+					-- 	scrollbar = true,
+					-- }),
 				},
 				snippet = {
 					expand = function(args)
@@ -216,8 +283,8 @@ return {
 					["<Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() then
 							cmp.select_next_item()
-						elseif vim.fn["vsnip#available"](1) == 1 then
-							feedkey("<Plug>(vsnip-expand-or-jump)", "")
+						elseif require("luasnip").expand_or_jumpable() then
+							feedkey("<Plug>(luasnip-expand-or-jump)", "")
 						elseif has_words_before() then
 							cmp.complete()
 						else
@@ -227,8 +294,8 @@ return {
 					["<S-Tab>"] = cmp.mapping(function()
 						if cmp.visible() then
 							cmp.select_prev_item()
-						elseif vim.fn["vsnip#jumpable"](-1) == 1 then
-							feedkey("<Plug>(vsnip-jump-prev)", "")
+						elseif require("luasnip").jumpable(-1) then
+							feedkey("<Plug>(luasnip-jump-prev)", "")
 						end
 					end, { "i", "s" }),
 				}),
@@ -260,7 +327,6 @@ return {
 				source.group_index = source.group_index or 1
 			end
 			require("cmp").setup(opts)
-			print("Setup CMP using opts", vim.inspect(opts))
 		end,
 	},
 	{
