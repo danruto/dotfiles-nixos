@@ -185,6 +185,7 @@
           codeium-nvim
           dropbar-nvim
           telescope-fzf-native-nvim
+          { name = "catppuccin"; path = catppuccin-nvim; }
 
 
 
@@ -197,7 +198,6 @@
           # telescope-fzf-native-nvim
           # vim-illuminate
           # vim-startuptime
-          # { name = "catppuccin"; path = catppuccin-nvim; }
           # typescript-nvim
           # tailwindcss-colorizer-nvim
         ];

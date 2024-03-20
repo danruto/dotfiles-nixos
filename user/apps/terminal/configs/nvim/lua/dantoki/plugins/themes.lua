@@ -84,11 +84,11 @@ return {
 	-- },
 	{
 		"folke/tokyonight.nvim",
-		lazy = false,
 		priority = 1000,
-		config = function()
-			vim.cmd([[ colorscheme tokyonight-night ]])
-		end,
+		-- lazy = false,
+		-- config = function()
+		-- 	vim.cmd([[ colorscheme tokyonight-night ]])
+		-- end,
 		opts = {
 			style = "night",
 		},
@@ -102,5 +102,18 @@ return {
 			colorschemeFile = "after/plugin/theme.lua",
 		},
 		cmd = "Pineapple",
+	},
+	{
+		"catppuccin/nvim",
+		lazy = false,
+		name = "catppuccin",
+		priority = 1000,
+		config = function()
+			vim.cmd.colorscheme("catppuccin")
+		end,
+		opts = {
+			flavour = "macchiato",
+			no_italic = true,
+		},
 	},
 }

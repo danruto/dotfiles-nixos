@@ -1,14 +1,28 @@
-{ config, lib, pkgs, name, email, ... }:
+{ pkgs, name, email, ... }:
 
 {
   home.packages = [ pkgs.git pkgs.gitui pkgs.gh ];
 
-  programs.git.enable = true;
-  programs.git.userName = name;
-  programs.git.userEmail = email;
-  programs.git.extraConfig = {
-    init.defaultBranch = "main";
+  programs.git = {
+    enable = true;
+    userName = name;
+    userEmail = email;
+    extraConfig = {
+      init.defaultBranch = "main";
+    };
+    includes = [
+      {
+        condition = "gitdir:~/dev/human/";
+        contents = {
+          user = {
+            name = name;
+            email = "danny@hellohuman.com.au";
+          };
+        };
+      }
+    ];
   };
+
 
   programs.gitui.enable = true;
   programs.gitui.keyConfig = ''

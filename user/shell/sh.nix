@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 let
 
   # My shell aliases
@@ -22,6 +22,7 @@ in
   programs.fish = {
     enable = true;
     shellAliases = myAliases;
+    interactiveShellInit = "set fish_greeting";
   };
 
   programs.zsh = {
