@@ -1,8 +1,9 @@
 { pkgs, ... }: {
   imports = [
-      ../../user/wm/yabai/yabai.nix # yabai and co
-      ../../user/wm/yabai/skhd.nix # yabai and co
-      ../../user/wm/yabai/sketchybar.nix # yabai and co
+    # ../../user/wm/yabai/yabai.nix # yabai and co
+    # ../../user/wm/yabai/skhd.nix # yabai and co
+    # ../../user/wm/yabai/sketchybar.nix # yabai and co
+    ../../system/wm/aerospace.nix
   ];
 
 
@@ -52,6 +53,7 @@
       "vial"
       "visual-studio-code"
       "wireshark"
+      "wezterm"
     ];
     taps = [
       "homebrew/cask-fonts"
@@ -163,8 +165,8 @@
     uid = 501;
   };
 
-  environment.shells = with pkgs; [ 
-    fish 
+  environment.shells = with pkgs; [
+    fish
     # zsh
   ];
 

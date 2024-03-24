@@ -17,6 +17,7 @@
     ../../user/apps/terminal/helix.nix
     ../../user/apps/terminal/alacritty.nix
     ../../user/apps/terminal/kitty.nix
+    ../../user/wm/aerospace
   ];
 
   home.packages = with pkgs; [
