@@ -56,5 +56,25 @@
 
   # programs.fish.enable = true;
   # programs.zsh.enable = true;
+
+  home.file.".config/wezterm/wezterm.lua".text = ''
+    local wezterm = require 'wezterm'
+    local config = wezterm.config_builder()
+
+    config.color_scheme = 'AyuDark (Gogh)'
+    config.font = wezterm.font 'VictorMono Nerd Font'
+    config.freetype_load_flags = 'NO_HINTING'
+
+    config.enable_tab_bar = false
+    config.window_decorations = "RESIZE"
+    config.window_padding = {
+      left = 0,
+      right = 0,
+      top = 0,
+      bottom = 0,
+    }
+
+    return config
+  '';
 }
 
