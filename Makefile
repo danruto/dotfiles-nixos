@@ -5,10 +5,7 @@ NIXPORT ?= 22
 
 # Same as inside `flake.nix`
 NIXUSER ?= danruto
-# PROFILE=work2
-# PROFILE=framework
-# PROFILE=orb
-PROFILE=wsl
+PROFILE=$(cat flake.nix | rg '  profile = "([a-z0-9]+)"' --trim -or '$1$2')
 
 SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 UNAME := $(shell uname)

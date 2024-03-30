@@ -7,12 +7,12 @@
       system = "x86_64-linux";
       # system = "x86_64-darwin";
       hostname = "danruto"; # hostname
-      profile = "wsl";
+      # profile = "wsl";
       # profile = "vm";
       # profile = "vm-hypr";
       # profile = "work";
       # profile = "work2";
-      # profile = "framework";
+      profile = "framework";
       # profile = "orb";
       timezone = "Australia/Sydney"; # select timezone
       locale = "en_US.UTF-8"; # select locale
