@@ -110,6 +110,12 @@ with lib;
     memory_usage.threshold = -1;
   };
 
+  services.openssh = {
+    enable = true;
+    ports = [ 2222 ];
+    settings.PasswordAuthentication = true;
+  };
+
   # It is ok to leave this unchanged for compatibility purposes
   system.stateVersion = "22.05";
 
