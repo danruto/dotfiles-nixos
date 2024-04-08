@@ -88,7 +88,7 @@ with lib;
     # openssl
     # pkg-config
 
-    (import ./win32yank.nix { inherit pkgs; })
+    # (import ./win32yank.nix { inherit pkgs; })
   ];
 
   environment.shells = with pkgs; [ fish ];

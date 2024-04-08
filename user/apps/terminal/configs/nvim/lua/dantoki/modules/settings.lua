@@ -112,3 +112,17 @@ end)
 if vim.g.neovide then
 	vim.opt.guifont = "IosevkaTerm Nerd Font Propo:h10"
 end
+
+-- Win32Yank
+vim.g.clipboard = {
+  name = "win32yank-wsl",
+  copy = {
+    ["+"] = "/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -i --crlf",
+    ["*"] = "/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -i --crlf"
+  },
+  paste = {
+    ["+"] = "/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -o --crlf",
+    ["*"] = "/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -o --crlf"
+  },
+  cache_enable = 0,
+}
