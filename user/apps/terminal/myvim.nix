@@ -90,6 +90,17 @@
           };
         };
 
+        nvim-nio = pkgs.vimUtils.buildVimPlugin {
+          pname = "nvim-nio";
+          version = "2024-04-10";
+          src = pkgs.fetchFromGitHub {
+            owner = "nvim-neotest";
+            repo = "nvim-nio";
+            rev = "5800f585def265d52f1d8848133217c800bcb25d";
+            hash = "sha256-ZRYclqsgAvlRBwb59XHlqVat7CxUJTH1rD6QLwh1ang=";
+          };
+        };
+
         plugins = with pkgs.unstable.vimPlugins; [
           nvim-ts-autotag
           editorconfig-vim
@@ -147,6 +158,7 @@
           rustaceanvim
           nvim-dap
           nvim-dap-ui
+          nvim-nio
           hover-nvim
           lsp-inlayhints-nvim
           fidget-nvim

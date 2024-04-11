@@ -15,23 +15,23 @@ end
 o.laststatus = 3
 o.guifont = "JetBrainsMono Nerd Font"
 vim.cmd([[let g:neovide_cursor_vfx_mode = "ripple"]])
-o.cul = true -- cursor line
-o.mouse = "nv" -- Enable mouse
-o.backup = false -- Recommended by CoC
-o.writebackup = false -- Recommended by CoC
-o.softtabstop = 4 -- 4 Spaces per tab
-o.tabstop = 4 -- 4 Spaces per tab
-o.shiftwidth = 4 -- 4 Spaces per tab
-o.smarttab = true -- Makes tabbing smarter. Will use 4 vs 2
-o.expandtab = true -- Converts tabs to spaces
+o.cul = true           -- cursor line
+o.mouse = "nv"         -- Enable mouse
+o.backup = false       -- Recommended by CoC
+o.writebackup = false  -- Recommended by CoC
+o.softtabstop = 4      -- 4 Spaces per tab
+o.tabstop = 4          -- 4 Spaces per tab
+o.shiftwidth = 4       -- 4 Spaces per tab
+o.smarttab = true      -- Makes tabbing smarter. Will use 4 vs 2
+o.expandtab = true     -- Converts tabs to spaces
 o.termguicolors = true -- Enable 16bit colours
-o.hidden = true -- Required to keep multiple buffers open
-o.showmode = false -- We don't need things like -- INSERT -- anymore
-o.splitbelow = true -- Horizontal splits will automatically be below
-o.splitright = true -- Vertical splits will automatically be to the right
-o.ignorecase = true -- Ignore case when searching
-o.smartcase = true -- Ignore case if search pattern is lowercase
-o.list = true -- enable displaychars
+o.hidden = true        -- Required to keep multiple buffers open
+o.showmode = false     -- We don't need things like -- INSERT -- anymore
+o.splitbelow = true    -- Horizontal splits will automatically be below
+o.splitright = true    -- Vertical splits will automatically be to the right
+o.ignorecase = true    -- Ignore case when searching
+o.smartcase = true     -- Ignore case if search pattern is lowercase
+o.list = true          -- enable displaychars
 -- o.syntax = 'on'
 vim.cmd([[ syntax enable ]])
 -- o.filetype.plugin = 'on'
@@ -43,7 +43,7 @@ o.pumblend = 17
 -- o.wildmode = o.wildmode:gsub('[list]', '')
 o.wildmode = "longest:full"
 -- o.match = true -- Show matching brackets when text indicator is over them
-o.clipboard = "unnamedplus"
+-- o.clipboard = "unnamedplus"
 -- o.paste = true
 o.wildoptions = "pum"
 o.inccommand = "nosplit" -- Preview substitute
@@ -56,7 +56,8 @@ vim.opt.shortmess:append("sI")
 -- o.listchars = "trail:·,extends:»,precedes:«,nbsp:░,eol:,tab:» " -- setup list chars
 o.conceallevel = 0 -- Show `` in MD
 -- o.t_Co = "256" -- Enable true colours, deprecated
-o.wildignore = "*.git,.hg.*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**" -- File patterns to ignore expanding
+o.wildignore =
+"*.git,.hg.*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**" -- File patterns to ignore expanding
 o.grepprg = "rg --hidden --vimgrep --smart-case --"
 o.timeoutlen = 400
 o.undofile = true
@@ -75,23 +76,23 @@ vim.cmd([[ autocmd FileType * setlocal formatoptions-=c formatoptions-=r formato
 
 -- Window settings
 wo.relativenumber = true -- Show line numbers as relative
-wo.number = true -- Show line numbers
-wo.wrap = false -- Disable line wrap
-wo.cursorline = true -- Highlight current line
+wo.number = true         -- Show line numbers
+wo.wrap = false          -- Disable line wrap
+wo.cursorline = true     -- Highlight current line
 wo.foldmethod = "marker"
 
-vim.g.python_2_host_prog = "/usr/bin/python"
-if vim.g.os == "mac" or vim.loop.os_uname().sysname == "Darwin" then
-	vim.g.python3_host_prog = "/usr/local/bin/python3"
+g.python_2_host_prog = "/usr/bin/python"
+if g.os == "mac" or vim.loop.os_uname().sysname == "Darwin" then
+	g.python3_host_prog = "/usr/local/bin/python3"
 
-	vim.g.clipboard = {
+	g.clipboard = {
 		name = "macOS-clipboard",
 		copy = { ["+"] = "pbcopy", ["*"] = "pbcopy" },
 		paste = { ["+"] = "pbpaste", ["*"] = "pbpaste" },
 		cache_enabled = 0,
 	}
 else
-	vim.g.python3_host_prog = "/usr/bin/python3"
+	g.python3_host_prog = "/usr/bin/python3"
 end
 
 -- Load autocommands
@@ -104,25 +105,33 @@ vim.cmd(
 
 -- set shada path
 vim.schedule(function()
-	vim.opt.shadafile = vim.fn.stdpath(vim.version().minor > 7 and "state" or "data") .. "/shada/main.shada"
+	o.shadafile = vim.fn.stdpath(vim.version().minor > 7 and "state" or "data") .. "/shada/main.shada"
 	vim.cmd([[ silent! rsh ]])
 end)
 
 -- Neovide
-if vim.g.neovide then
-	vim.opt.guifont = "IosevkaTerm Nerd Font Propo:h10"
+if g.neovide then
+	o.guifont = "IosevkaTerm Nerd Font Propo:h10"
 end
 
 -- Win32Yank
-vim.g.clipboard = {
-  name = "win32yank-wsl",
-  copy = {
-    ["+"] = "/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -i --crlf",
-    ["*"] = "/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -i --crlf"
-  },
-  paste = {
-    ["+"] = "/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -o --crlf",
-    ["*"] = "/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -o --crlf"
-  },
-  cache_enable = 0,
-}
+
+if os.getenv("WSL_DISTRO_NAME") ~= nil then
+	local yank_cp =
+	"/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -i"
+	local yank_paste =
+	"/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -o"
+
+	g.clipboard = {
+		name = "win32yank-wsl",
+		copy = {
+			["+"] = yank_cp,
+			["*"] = yank_cp,
+		},
+		paste = {
+			["+"] = yank_paste,
+			["*"] = yank_paste,
+		},
+		cache_enable = 0,
+	}
+end

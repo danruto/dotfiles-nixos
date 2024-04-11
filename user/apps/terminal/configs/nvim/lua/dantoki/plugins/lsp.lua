@@ -20,10 +20,11 @@ return {
 			},
 		},
 		opts = {
-			excluded_servers = { "sqls", "rust_analyzer", "denols", "flow", "nixd", "tsserver" },
+			excluded_servers = { "sqls", "denols", "flow", "nixd", "tsserver", "rust_analyzer" },
 			preferred_servers = {
 				python = { "pyright", "ruff_lsp" },
-				rust = { "rust_analyzer" },
+				-- rust = { "rust_analyzer" },
+				rust = {},
 				-- nix = { "nil" },
 				javascript = {},
 				javascriptreact = {},
@@ -438,6 +439,7 @@ return {
 	},
 	{
 		"mrcjkb/rustaceanvim",
+		dependencies = { "neovim/nvim-lspconfig" },
 		version = "^4", -- Recommended
 		ft = { "rust" },
 	},
