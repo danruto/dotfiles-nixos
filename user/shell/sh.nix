@@ -6,7 +6,9 @@ let
     ls = "eza --icons -l -T -L=1";
     cat = "bat";
     fd = "fd -Lu";
-    zj = "zellij --layout compact";
+    # zj = "zellij --layout compact";
+    zj = "zellij";
+    zjp = "zellij a personal";
     # nixos-rebuild = "systemd-run --no-ask-password --uid=0 --system --scope -p MemoryLimit=16000M -p CPUQuota=60% nixos-rebuild";
     # home-manager = "systemd-run --no-ask-password --uid=1000 --user --scope -p MemoryLimit=16000M -p CPUQuota=60% home-manager";
     norb = "sudo nixos-rebuild switch --flake .#system";
@@ -60,6 +62,7 @@ in
   programs.zellij = {
     enable = true;
     enableFishIntegration = false;
+    package = pkgs.unstable.zellij;
   };
 
   programs.zoxide = {

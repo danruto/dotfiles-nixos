@@ -1,7 +1,7 @@
 {
   description = "Danruto NixOS Configuration";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, blocklist-hosts, rust-overlay, hyprland-plugins, nur, darwin, helix, neovim-nightly-overlay, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, blocklist-hosts, rust-overlay, hyprland-plugins, nur, darwin, helix, neovim-nightly-overlay, zjstatus, ... }@inputs:
     let
       # ---- SYSTEM SETTINGS ---- #
       system = "x86_64-linux";
@@ -51,6 +51,7 @@
           nur.overlay
           neovim-nightly-overlay.overlay
           (_final: prev: {
+            zjstatus = zjstatus.packages.${prev.system}.default;
             unstable = import nixpkgs-unstable {
               inherit (prev) system;
               config = {
@@ -185,18 +186,32 @@
     };
 
   inputs = {
+    # Global shared inputs
     nixpkgs.url = "nixpkgs/nixos-23.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager/release-23.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-wsl.url = "github:nix-community/NixOS-WSL";
-    nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
-    rust-overlay.url = "github:oxalica/rust-overlay";
     nur.url = "github:nix-community/NUR";
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    zjstatus = {
+      url = "github:dj95/zjstatus";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     blocklist-hosts = {
       url = "github:StevenBlack/hosts";
       flake = false;
     };
+    helix.url = "github:helix-editor/helix";
+    neovim-nightly-overlay = {
+      url = "github:nix-community/neovim-nightly-overlay";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    # WSL inputs
+    nixos-wsl.url = "github:nix-community/NixOS-WSL";
+    nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Framework inputs
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
       flake = false;
@@ -210,14 +225,11 @@
     #   url = "github:nix-community/lanzaboote/v0.3.0";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
+
+    # Mac inputs
     darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-    helix.url = "github:helix-editor/helix";
-    neovim-nightly-overlay = {
-      url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 }
