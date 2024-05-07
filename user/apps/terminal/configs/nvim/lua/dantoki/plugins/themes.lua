@@ -116,4 +116,11 @@ return {
 			no_italic = true,
 		},
 	},
+	{
+		"fynnfluegge/monet.nvim",
+		opts = {
+			dark_mode = false,
+			transparent_background = false,
+		},
+	},
 }

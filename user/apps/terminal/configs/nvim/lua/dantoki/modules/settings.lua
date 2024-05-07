@@ -13,8 +13,6 @@ end
 
 -- Global settings
 o.laststatus = 3
-o.guifont = "JetBrainsMono Nerd Font"
-vim.cmd([[let g:neovide_cursor_vfx_mode = "ripple"]])
 o.cul = true           -- cursor line
 o.mouse = "nv"         -- Enable mouse
 o.backup = false       -- Recommended by CoC
@@ -112,6 +110,7 @@ end)
 -- Neovide
 if g.neovide then
 	o.guifont = "IosevkaTerm Nerd Font Propo:h10"
+	vim.cmd([[let g:neovide_cursor_vfx_mode = "ripple"]])
 end
 
 -- Win32Yank

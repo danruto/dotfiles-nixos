@@ -101,6 +101,17 @@
           };
         };
 
+        monet-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "monet.nvim";
+          version = "2024-05-02";
+          src = pkgs.fetchFromGitHub {
+            owner = "fynnfluegge";
+            repo = "monet.nvim";
+            rev = "aafa0d8489c3f225ea17b8303e989b91ad913e97";
+            hash = "sha256-6Y2zzcQClaIbMSOT9nDgRa3fQo9wGeG8Z/+3XG1OjAM=";
+          };
+        };
+
         plugins = with pkgs.unstable.vimPlugins; [
           nvim-ts-autotag
           editorconfig-vim
@@ -198,6 +209,7 @@
           dropbar-nvim
           telescope-fzf-native-nvim
           { name = "catppuccin"; path = catppuccin-nvim; }
+          monet-nvim
 
 
 

@@ -57,7 +57,10 @@ return {
 										-- and we're lazy so just overwrite with whatever the last value is
 										k = nk
 									end
-									table.insert(plugins, k)
+									-- catppuccin is catppuccin/nvim which is different to the norm, so skip that one specifically
+									if k ~= "nvim" then
+										table.insert(plugins, k)
+									end
 								end
 							end
 						end
@@ -71,13 +74,8 @@ return {
 				end,
 				desc = "Theme selector",
 			},
-			{
-				"<Space>C",
-				"<cmd>Telescope themes<cr>",
-				desc = "Theme selector",
-			},
 			{ "<Space>/", "<cmd>Telescope live_grep<cr>", desc = "Live grep" },
-			{ ";", "<cmd>Telescope buffers show_all_buffers=true<cr>", desc = "Show buffers" },
+			-- { ";", "<cmd>Telescope buffers show_all_buffers=true<cr>", desc = "Show buffers" },
 			{
 				"gd",
 				function()
