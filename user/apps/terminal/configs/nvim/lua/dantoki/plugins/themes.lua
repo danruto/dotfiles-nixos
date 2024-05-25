@@ -123,4 +123,17 @@ return {
 			transparent_background = false,
 		},
 	},
+	{
+		"diegoulloao/neofusion.nvim",
+		config = true,
+		opts = {
+			italic = {
+				strings = false,
+				emphasis = false,
+				comments = false,
+				operators = false,
+				folds = false,
+			},
+		},
+	},
 }

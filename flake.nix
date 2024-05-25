@@ -49,7 +49,7 @@
         overlays = [
           rust-overlay.overlays.default
           nur.overlay
-          neovim-nightly-overlay.overlay
+          neovim-nightly-overlay.overlays.default
           (_final: prev: {
             zjstatus = zjstatus.packages.${prev.system}.default;
             unstable = import nixpkgs-unstable {

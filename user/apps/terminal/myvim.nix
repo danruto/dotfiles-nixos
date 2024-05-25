@@ -4,13 +4,14 @@
   programs.neovim = {
     enable = true;
     # package = pkgs.unstable.neovim;
-    package = pkgs.neovim-nightly;
+    package = pkgs.neovim-unwrapped;
     extraPackages = with pkgs; [
       # Telescope
       ripgrep
       nixpkgs-fmt
       stylua
     ];
+
 
     plugins = with pkgs.vimPlugins; [
       lazy-nvim
@@ -112,6 +113,17 @@
           };
         };
 
+        neofusion-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "neofusion.nvim";
+          version = "2024-05-25";
+          src = pkgs.fetchFromGitHub {
+            owner = "diegoulloao";
+            repo = "neofusion.nvim";
+            rev = "329ecf98b38b9a994077606557d926ae10518b90";
+            hash = "sha256-7jsRS6jMXpiQ1CIhwy9obTdl9jv0lR23Ss/BmIkFjZE=";
+          };
+        };
+
         plugins = with pkgs.unstable.vimPlugins; [
           nvim-ts-autotag
           editorconfig-vim
@@ -210,6 +222,7 @@
           telescope-fzf-native-nvim
           { name = "catppuccin"; path = catppuccin-nvim; }
           monet-nvim
+          neofusion-nvim
 
 
 
