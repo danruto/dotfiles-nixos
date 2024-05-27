@@ -3,8 +3,9 @@
 {
   programs.neovim = {
     enable = true;
-    # package = pkgs.unstable.neovim;
-    package = pkgs.neovim-unwrapped;
+    package = pkgs.unstable.neovim-unwrapped;
+    # package = pkgs.neovim-unwrapped;
+    # package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
     extraPackages = with pkgs; [
       # Telescope
       ripgrep

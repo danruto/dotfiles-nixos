@@ -1,4 +1,4 @@
-{ config, lib, pkgs, stdenv, fetchurl, stylix, username, email, theme, wm, editor, ... }:
+{ pkgs, username, ... }:
 
 
 {
