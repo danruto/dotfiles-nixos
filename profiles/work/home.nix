@@ -4,25 +4,25 @@
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "danny";
-  home.homeDirectory = "/Users/"+"danny";
+  home.homeDirectory = "/Users/" + "danny";
 
   programs.home-manager.enable = true;
 
   imports = [
-              ../shared.nix # Shared home configurations
-              ../../user/shell/sh.nix # Fish config
-              ../../user/shell/tui.nix # Useful cli/tui apps
-              ../../user/apps/git/git.nix # My git config
-              ../../user/lang/cc/cc.nix # C and C++ tools
-              ../../user/lang/rust/rust.nix # Rust tools
-              ../../user/lang/typescript/typescript.nix # typescript tools
-              ../../user/lang/go/go.nix # go tools
-              ../../user/lang/lua/lua.nix # lua tools
-              ../../user/lang/nix/nix.nix # nix tools
-              ../../user/lang/shell/shell.nix # shell tools
-            ];
+    ../shared.nix # Shared home configurations
+    ../../user/shell/sh.nix # Fish config
+    ../../user/shell/tui.nix # Useful cli/tui apps
+    ../../user/apps/git/git.nix # My git config
+    ../../user/lang/cc/cc.nix # C and C++ tools
+    ../../user/lang/rust/rust.nix # Rust tools
+    ../../user/lang/typescript/typescript.nix # typescript tools
+    ../../user/lang/go/go.nix # go tools
+    ../../user/lang/lua/lua.nix # lua tools
+    ../../user/lang/nix/nix.nix # nix tools
+    ../../user/lang/shell/shell.nix # shell tools
+  ];
 
-  home.stateVersion = "23.11"; # Please read the comment before changing.
+  home.stateVersion = "24.05"; # Please read the comment before changing.
 
   home.packages = with pkgs; [
     # Core
@@ -30,7 +30,8 @@
 
     # Various dev packages
     texinfo
-    libffi zlib
+    libffi
+    zlib
     nodePackages.ungit
   ];
 

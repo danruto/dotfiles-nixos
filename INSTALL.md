@@ -5,7 +5,7 @@
 # Setup
 ## Install and update the packages channel
 ```sh
-sudo nix-channel --add https://nixos.org/channels/nixos-23.11 nixos
+sudo nix-channel --add https://nixos.org/channels/nixos-24.05 nixos
 sudo nix-channel --update
 ```
 
