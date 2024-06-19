@@ -32,32 +32,32 @@
         };
         danger-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "danger";
-          version = "2024-02-01";
+          version = "2024-06-19";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
             repo = "danger";
-            rev = "01482cd1dd80fc1709994ea0c3571bead8a6a1bc";
-            hash = "sha256-Vfb+lOqLAt7dxt6y25RVid5qxTr8iZtqT3aZ2izAkIQ=";
+            rev = "a1ac47deb21ec2c4aff1c64b72dbfd151514fefc";
+            hash = "sha256-oWkXs9y7O8rUbE7lqhjJH2Z9Kx0BJgF36FFmWdDfRqo=";
           };
         };
         github-nvim-theme = pkgs.vimUtils.buildVimPlugin {
           pname = "github-nvim-theme";
-          version = "2024-02-23";
+          version = "2024-06-19";
           src = pkgs.fetchFromGitHub {
             owner = "projekt0n";
             repo = "github-nvim-theme";
-            rev = "d92e1143e5aaa0d7df28a26dd8ee2102df2cadd8";
-            hash = "sha256-FO4mwRY2qjutjVTiW0wN5KVhuoBZmycfOwMFInaTnNo=";
+            rev = "d832925e77cef27b16011a8dfd8835f49bdcd055";
+            hash = "sha256-vsIr3UrnajxixDo0cp+6GoQfmO0KDkPX8jw1e0fPHo4=";
           };
         };
         ohlucy-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "oh-lucy.nvim";
-          version = "2024-02-23";
+          version = "2024-06-19";
           src = pkgs.fetchFromGitHub {
             owner = "Yazeed1s";
             repo = "oh-lucy.nvim";
-            rev = "b53f8c8735ca7e788994147bfa10eb04331eaf7c";
-            hash = "sha256-5e+YlZD5DW8XXojhWyAE3NX4sxznTB4WyYajFQAZ4s8=";
+            rev = "05a0505f5288cd0ac905842eb54e63b45ebb3ec1";
+            hash = "sha256-AgOA7otqdAu4ur1zkCw+aKS7Oi6j5XzdraKl9DKTUzs=";
           };
         };
         icon-picker-nvim = pkgs.vimUtils.buildVimPlugin {
@@ -67,7 +67,7 @@
             owner = "ziontee113";
             repo = "icon-picker.nvim";
             rev = "3ee9a0ea9feeef08ae35e40c8be6a2fa2c20f2d3";
-            hash = "sha256-VZKsVeSmPR3AA8267Mtd5sSTZl2CAqnbgqceCptgp4w";
+            hash = "sha256-VZKsVeSmPR3AA8267Mtd5sSTZl2CAqnbgqceCptgp4w=";
           };
         };
         lsp-lens-nvim = pkgs.vimUtils.buildVimPlugin {
@@ -94,34 +94,34 @@
 
         nvim-nio = pkgs.vimUtils.buildVimPlugin {
           pname = "nvim-nio";
-          version = "2024-04-10";
+          version = "2024-06-19";
           src = pkgs.fetchFromGitHub {
             owner = "nvim-neotest";
             repo = "nvim-nio";
-            rev = "5800f585def265d52f1d8848133217c800bcb25d";
-            hash = "sha256-ZRYclqsgAvlRBwb59XHlqVat7CxUJTH1rD6QLwh1ang=";
+            rev = "7969e0a8ffabdf210edd7978ec954a47a737bbcc";
+            hash = "sha256-gAbqGPNBYkj+x+wR6WN2x7kqKaxlBzVXPmRXm8sM40Y=";
           };
         };
 
         monet-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "monet.nvim";
-          version = "2024-05-02";
+          version = "2024-06-19";
           src = pkgs.fetchFromGitHub {
             owner = "fynnfluegge";
             repo = "monet.nvim";
-            rev = "aafa0d8489c3f225ea17b8303e989b91ad913e97";
-            hash = "sha256-6Y2zzcQClaIbMSOT9nDgRa3fQo9wGeG8Z/+3XG1OjAM=";
+            rev = "e358f6b0035932c6faad8cd4157e4dd2272f88a2";
+            hash = "sha256-qquos+vbYGsLeY/yAd9lUj6usuWgx0/u4JFO4q7vgJc=";
           };
         };
 
         neofusion-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "neofusion.nvim";
-          version = "2024-05-25";
+          version = "2024-06-19";
           src = pkgs.fetchFromGitHub {
             owner = "diegoulloao";
             repo = "neofusion.nvim";
-            rev = "329ecf98b38b9a994077606557d926ae10518b90";
-            hash = "sha256-7jsRS6jMXpiQ1CIhwy9obTdl9jv0lR23Ss/BmIkFjZE=";
+            rev = "d6c861b230ad67341db6916892939cf3c54a18f8";
+            hash = "sha256-FiwzQOXvUosLSN4HXdSxCOaSDVaWHDzhWh3x7EeXURY=";
           };
         };
 
@@ -185,7 +185,7 @@
           nvim-nio
           hover-nvim
           lsp-inlayhints-nvim
-          fidget-nvim
+          # fidget-nvim
           lsp-lens-nvim
           friendly-snippets
           { name = "LuaSnip"; path = luasnip; }

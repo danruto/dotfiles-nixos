@@ -57,6 +57,7 @@ return {
 	},
 	{
 		"echasnovski/mini.nvim",
+		version = false,
 		config = function()
 			-- require("mini.ai").setup()
 			-- require("mini.animate").setup()
@@ -77,6 +78,7 @@ return {
 			-- })
 			require("mini.indentscope").setup()
 			require("mini.pairs").setup()
+			require("mini.notify").setup()
 			require("mini.splitjoin").setup()
 			require("mini.surround").setup({
 				mappings = {
