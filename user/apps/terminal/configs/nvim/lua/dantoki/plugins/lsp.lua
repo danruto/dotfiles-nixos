@@ -29,8 +29,8 @@ return {
 				javascript = { "tsserver" },
 				javascriptreact = {},
 				["javascript.tsx"] = {},
-				typescript = {},
-				typescriptreact = {},
+				typescript = { "eslint" },
+				typescriptreact = { "eslint" },
 				["typescript.tsx"] = {},
 				-- typescript = { "typescript-tools" },
 				-- ["typescript.tsx"] = { "typescript-tools" },
@@ -371,11 +371,26 @@ return {
 				json = { "fixjson" },
 				python = { "isort", "black" },
 				nix = { "nixpkgs_fmt" },
+				-- typescript = { "eslint_d" },
+				-- typescriptreact = { "eslint_d" },
 			},
 			-- Set up format-on-save
 			format_on_save = { timeout_ms = 500, lsp_fallback = true },
 			formatters = {
 				stylua = {},
+				-- prettier = {
+				-- 	require_cwd = true,
+				-- 	cwd = require("conform.util").root_file({
+				-- 		".prettierrc.yaml",
+				-- 	}),
+				-- },
+				-- eslint_d = {
+				-- 	require_cwd = true,
+				-- 	cwd = require("conform.util").root_file({
+				-- 		"eslint.config.js",
+				-- 		"eslint.config.cjs",
+				-- 	}),
+				-- },
 			},
 		},
 	},

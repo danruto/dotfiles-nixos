@@ -63,7 +63,7 @@ local sources = {
 	-- null_ls.builtins.diagnostics.eslint,
 	null_ls.builtins.diagnostics.eslint_d.with({
 		condition = function(utils)
-			return utils.root_has_file({ ".eslintrc", ".eslintrc.yml", ".eslintrc.yaml", ".eslintrc.json" })
+			return utils.root_has_file({ "eslint.config.mjs", "eslint.config.js", ".eslintrc", ".eslintrc.yml", ".eslintrc.yaml", ".eslintrc.json" })
 		end,
 	}),
 	null_ls.builtins.diagnostics.flake8,
