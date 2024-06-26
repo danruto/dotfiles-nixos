@@ -373,6 +373,8 @@ return {
 				nix = { "nixpkgs_fmt" },
 				-- typescript = { "eslint_d" },
 				-- typescriptreact = { "eslint_d" },
+				-- typescript = { "dprint" },
+				-- typescriptreact = { "dprint" },
 			},
 			-- Set up format-on-save
 			format_on_save = { timeout_ms = 500, lsp_fallback = true },

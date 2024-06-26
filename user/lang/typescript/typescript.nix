@@ -1,17 +1,21 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 let
   unstable-packages = with pkgs.unstable; [
+    # dprint
   ];
   stable-packages = with pkgs; [
     nodejs
     typescript
-    nodePackages.typescript-language-server
-    nodePackages.vscode-langservers-extracted
-    nodePackages.yaml-language-server
-    nodePackages.prettier
     nodePackages.pnpm
-    tailwindcss-language-server
+
+    # TODO: These should be from local flakes
+    # nodePackages.typescript-language-server
+    # nodePackages.vscode-langservers-extracted
+    # nodePackages.yaml-language-server
+    # nodePackages.prettier
+    # tailwindcss-language-server
+    # prettierd
   ];
 in
 {
