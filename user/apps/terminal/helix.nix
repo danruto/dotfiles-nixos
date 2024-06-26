@@ -96,6 +96,15 @@
         ruff-lsp = {
           command = "ruff-lsp";
         };
+
+        vscode-eslint-language-server = {
+          config = {
+            experimental = { useFlatConfig = true; };
+            workingDirectory.mode = "auto";
+            format.enable = true;
+            codeActionsOnSave = { mode = "all"; "source.fixAll.eslint" = true; };
+          };
+        };
       };
 
       language = [
@@ -113,11 +122,29 @@
           name = "typescript";
           indent = { tab-width = 4; unit = "    "; };
           auto-format = true;
+          language-servers = [
+            {
+              except-features = [ "format" ];
+              name = "typescript-language-server";
+            }
+            "vscode-eslint-language-server"
+            "tailwindcss-ls"
+          ];
+          formatter = { command = "prettier"; args = [ "--parser" "typescript" ]; };
         }
         {
           name = "tsx";
           indent = { tab-width = 4; unit = "    "; };
           auto-format = true;
+          language-servers = [
+            {
+              except-features = [ "format" ];
+              name = "typescript-language-server";
+            }
+            "vscode-eslint-language-server"
+            "tailwindcss-ls"
+          ];
+          formatter = { command = "prettier"; args = [ "--parser" "typescript" ]; };
         }
         {
           name = "css";
