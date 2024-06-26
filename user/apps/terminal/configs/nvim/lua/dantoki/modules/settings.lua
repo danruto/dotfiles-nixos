@@ -13,23 +13,23 @@ end
 
 -- Global settings
 o.laststatus = 3
-o.cul = true           -- cursor line
-o.mouse = "nv"         -- Enable mouse
-o.backup = false       -- Recommended by CoC
-o.writebackup = false  -- Recommended by CoC
-o.softtabstop = 4      -- 4 Spaces per tab
-o.tabstop = 4          -- 4 Spaces per tab
-o.shiftwidth = 4       -- 4 Spaces per tab
-o.smarttab = true      -- Makes tabbing smarter. Will use 4 vs 2
-o.expandtab = true     -- Converts tabs to spaces
+o.cul = true -- cursor line
+o.mouse = "nv" -- Enable mouse
+o.backup = false -- Recommended by CoC
+o.writebackup = false -- Recommended by CoC
+o.softtabstop = 4 -- 4 Spaces per tab
+o.tabstop = 4 -- 4 Spaces per tab
+o.shiftwidth = 4 -- 4 Spaces per tab
+o.smarttab = true -- Makes tabbing smarter. Will use 4 vs 2
+o.expandtab = true -- Converts tabs to spaces
 o.termguicolors = true -- Enable 16bit colours
-o.hidden = true        -- Required to keep multiple buffers open
-o.showmode = false     -- We don't need things like -- INSERT -- anymore
-o.splitbelow = true    -- Horizontal splits will automatically be below
-o.splitright = true    -- Vertical splits will automatically be to the right
-o.ignorecase = true    -- Ignore case when searching
-o.smartcase = true     -- Ignore case if search pattern is lowercase
-o.list = true          -- enable displaychars
+o.hidden = true -- Required to keep multiple buffers open
+o.showmode = false -- We don't need things like -- INSERT -- anymore
+o.splitbelow = true -- Horizontal splits will automatically be below
+o.splitright = true -- Vertical splits will automatically be to the right
+o.ignorecase = true -- Ignore case when searching
+o.smartcase = true -- Ignore case if search pattern is lowercase
+o.list = true -- enable displaychars
 -- o.syntax = 'on'
 vim.cmd([[ syntax enable ]])
 -- o.filetype.plugin = 'on'
@@ -44,7 +44,7 @@ o.wildmode = "longest:full"
 -- o.clipboard = "unnamedplus"
 -- o.paste = true
 o.wildoptions = "pum"
-o.inccommand = "nosplit" -- Preview substitute
+o.inccommand = "split" -- Preview substitute
 o.cmdheight = 1
 -- o.autoread = true -- Autoread on by default
 o.lazyredraw = true
@@ -54,8 +54,7 @@ vim.opt.shortmess:append("sI")
 -- o.listchars = "trail:·,extends:»,precedes:«,nbsp:░,eol:,tab:» " -- setup list chars
 o.conceallevel = 0 -- Show `` in MD
 -- o.t_Co = "256" -- Enable true colours, deprecated
-o.wildignore =
-"*.git,.hg.*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**" -- File patterns to ignore expanding
+o.wildignore = "*.git,.hg.*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**" -- File patterns to ignore expanding
 o.grepprg = "rg --hidden --vimgrep --smart-case --"
 o.timeoutlen = 400
 o.undofile = true
@@ -74,9 +73,9 @@ vim.cmd([[ autocmd FileType * setlocal formatoptions-=c formatoptions-=r formato
 
 -- Window settings
 wo.relativenumber = true -- Show line numbers as relative
-wo.number = true         -- Show line numbers
-wo.wrap = false          -- Disable line wrap
-wo.cursorline = true     -- Highlight current line
+wo.number = true -- Show line numbers
+wo.wrap = false -- Disable line wrap
+wo.cursorline = true -- Highlight current line
 wo.foldmethod = "marker"
 
 g.python_2_host_prog = "/usr/bin/python"
@@ -117,9 +116,9 @@ end
 
 if os.getenv("WSL_DISTRO_NAME") ~= nil then
 	local yank_cp =
-	"/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -i"
+		"/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -i"
 	local yank_paste =
-	"/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -o"
+		"/mnt/c/Users/danny/AppData/Local/Microsoft/WinGet/Packages/equalsraf.win32yank_Microsoft.Winget.Source_8wekyb3d8bbwe/win32yank.exe -o"
 
 	g.clipboard = {
 		name = "win32yank-wsl",

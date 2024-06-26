@@ -41,7 +41,6 @@
   home.stateVersion = "24.05";
 
   programs.home-manager.enable = true;
-  # programs.home-manager.backupFileExtension = "backup";
 
   xdg = {
     enable = true;
