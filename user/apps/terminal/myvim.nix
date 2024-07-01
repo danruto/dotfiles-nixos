@@ -224,6 +224,7 @@
           { name = "catppuccin"; path = catppuccin-nvim; }
           monet-nvim
           neofusion-nvim
+          oxocarbon-nvim
 
 
 
