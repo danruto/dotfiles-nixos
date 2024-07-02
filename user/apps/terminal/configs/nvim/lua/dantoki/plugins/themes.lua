@@ -105,11 +105,11 @@ return {
 	},
 	{
 		"catppuccin/nvim",
-		lazy = false,
+		-- lazy = false,
 		name = "catppuccin",
 		priority = 1000,
 		config = function()
-			vim.cmd.colorscheme("catppuccin")
+			-- vim.cmd.colorscheme("catppuccin")
 		end,
 		opts = {
 			flavour = "macchiato",
@@ -138,6 +138,10 @@ return {
 	},
 	{
 		"nyoom-engineering/oxocarbon.nvim",
-		config = function() end,
+		lazy = false,
+		config = function()
+			vim.opt.background = "dark"
+			vim.cmd.colorscheme("oxocarbon")
+		end,
 	},
 }

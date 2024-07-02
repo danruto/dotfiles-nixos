@@ -13,7 +13,6 @@
       stylua
     ];
 
-
     plugins = with pkgs.vimPlugins; [
       lazy-nvim
     ];
@@ -125,6 +124,17 @@
           };
         };
 
+        tiny-inline-diagnostic-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "tiny-inline-diagnostic.nvim";
+          version = "2024-07-02";
+          src = pkgs.fetchFromGitHub {
+            owner = "rachartier";
+            repo = "tiny-inline-diagnostic.nvim";
+            rev = "01ded45a2c1054d9751b13571a0baa1e80fe9456";
+            hash = "sha256-InSpvkRBi6I2Ve6NLNvcsHFGCjd8+gAiZSjKOfCcDVY=";
+          };
+        };
+
         plugins = with pkgs.unstable.vimPlugins; [
           nvim-ts-autotag
           editorconfig-vim
@@ -199,6 +209,7 @@
           nvim-colorizer-lua
           true-zen-nvim
           winshift-nvim
+          tiny-inline-diagnostic-nvim
           trouble-nvim
           telescope-nvim
           neo-tree-nvim
@@ -214,7 +225,7 @@
           # nightly
           nordic-nvim
           lazy-lsp-nvim
-          lsp_lines-nvim
+          # lsp_lines-nvim
           nvim-spectre
           todo-comments-nvim
           pineapple-nvim
@@ -346,5 +357,3 @@
   xdg.configFile."nvim/lua".source = ./configs/nvim/lua;
 }
 
-# TODO: Port to nix:
-# barbecue, lsp_lines.nvim, lspkind.nvim, moonbow.nvim, nightly.nvim, nvim-colo

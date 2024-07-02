@@ -2,14 +2,13 @@ return {
 	"onsails/lspkind.nvim",
 	{
 		"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+		enabled = false,
 		event = "LspAttach",
 		config = function()
 			require("lsp_lines").setup()
 
 			-- `virtual_text` is redundant due to lsp_lines.
-			vim.diagnostic.config({
-				virtual_text = false,
-			})
+			vim.diagnostic.config({ virtual_text = false })
 		end,
 	},
 	{
@@ -111,5 +110,14 @@ return {
 		dependencies = {
 			"nvim-telescope/telescope-fzf-native.nvim",
 		},
+	},
+	{
+		"rachartier/tiny-inline-diagnostic.nvim",
+		event = "VeryLazy",
+		config = function()
+			vim.diagnostic.config({ virtual_text = false })
+
+			require("tiny-inline-diagnostic").setup()
+		end,
 	},
 }

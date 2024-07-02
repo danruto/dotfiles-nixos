@@ -2,12 +2,12 @@
 
 let
   unstable-packages = with pkgs.unstable; [
+    pnpm
     # dprint
   ];
   stable-packages = with pkgs; [
     nodejs
     typescript
-    nodePackages.pnpm
 
     # TODO: These should be from local flakes
     # nodePackages.typescript-language-server
