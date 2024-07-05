@@ -135,6 +135,19 @@
           };
         };
 
+        # Temp reference for mini.icons until unstable updates
+        my-mini-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "mini.nvim";
+          version = "2024-07-05";
+          src = pkgs.fetchFromGitHub {
+            owner = "echasnovski";
+            repo = "mini.nvim";
+            rev = "fc99446b05a83c5939d18789b60284fd1ed8e1e7";
+            sha256 = "sha256-cgRRDvsvysYcr7Y3ccLvtbyppNoxnObKDD0jYYjzD1g=";
+          };
+          meta.homepage = "https://github.com/echasnovski/mini.nvim/";
+        };
+
         plugins = with pkgs.unstable.vimPlugins; [
           nvim-ts-autotag
           editorconfig-vim
@@ -148,7 +161,8 @@
           nvim-treesitter-refactor
           nvim-ts-context-commentstring
           flash-nvim
-          mini-nvim
+          # mini-nvim
+          my-mini-nvim
           # { name = "mini.ai"; path = mini-nvim; }
           # { name = "mini.bracketed"; path = mini-nvim; }
           # { name = "mini.bufremove"; path = mini-nvim; }
@@ -226,7 +240,7 @@
           nordic-nvim
           lazy-lsp-nvim
           # lsp_lines-nvim
-          nvim-spectre
+          # nvim-spectre
           todo-comments-nvim
           pineapple-nvim
           codeium-nvim

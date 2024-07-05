@@ -76,6 +76,8 @@ return {
 			-- 	foreground = "#73d0ff",
 			-- 	saturation = "high",
 			-- })
+			require("mini.files").setup()
+			require("mini.icons").setup()
 			require("mini.indentscope").setup()
 			require("mini.pairs").setup()
 			require("mini.notify").setup()
@@ -97,6 +99,15 @@ return {
 			require("mini.statusline").setup()
 			require("mini.trailspace").setup()
 		end,
+		specs = {
+      { "nvim-tree/nvim-web-devicons", enabled = false, optional = true },
+    },
+		init = function()
+      package.preload["nvim-web-devicons"] = function()
+        require("mini.icons").mock_nvim_web_devicons()
+        return package.loaded["nvim-web-devicons"]
+      end
+    end,
 	},
 	{
 		"Exafunction/codeium.nvim",

@@ -117,12 +117,12 @@ return {
 			use_diagnostic_signs = true,
 		},
 	},
-	{
-		"nvim-pack/nvim-spectre",
-		opts = {
-			open_cmd = "noswapfile vnew",
-		},
-	},
+	-- {
+	-- 	"nvim-pack/nvim-spectre",
+	-- 	opts = {
+	-- 		open_cmd = "noswapfile vnew",
+	-- 	},
+	-- },
 	{
 		"folke/todo-comments.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
