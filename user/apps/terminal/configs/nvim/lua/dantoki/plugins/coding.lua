@@ -29,9 +29,23 @@ return {
 		},
 		---@type TSConfig
 		opts = {
+			auto_install = false,
 			highlight = {
 				enable = true,
 				use_languagetree = true,
+				disable = function(lang, buf)
+					-- Skip help files
+					if lang == "help" then
+						return true
+					end
+
+					-- Skip large files
+					local max_filesize = 100 * 1024 -- 100 KB
+					local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+					if ok and stats and stats.size > max_filesize then
+						return true
+					end
+				end,
 			},
 		},
 	},
@@ -40,14 +54,14 @@ return {
 		event = "VeryLazy",
 		---@type Flash.Config
 		opts = {},
-        -- stylua: ignore
-        keys = {
-            { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
-            { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
-            { "r", mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
-            { "R", mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-            --- { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
-        },
+		-- stylua: ignore
+		keys = {
+			{ "s", mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
+			{ "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
+			{ "r", mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
+			{ "R", mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+			--- { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+		},
 	},
 	{
 		"JoosepAlviste/nvim-ts-context-commentstring",
@@ -100,14 +114,14 @@ return {
 			require("mini.trailspace").setup()
 		end,
 		specs = {
-      { "nvim-tree/nvim-web-devicons", enabled = false, optional = true },
-    },
+			{ "nvim-tree/nvim-web-devicons", enabled = false, optional = true },
+		},
 		init = function()
-      package.preload["nvim-web-devicons"] = function()
-        require("mini.icons").mock_nvim_web_devicons()
-        return package.loaded["nvim-web-devicons"]
-      end
-    end,
+			package.preload["nvim-web-devicons"] = function()
+				require("mini.icons").mock_nvim_web_devicons()
+				return package.loaded["nvim-web-devicons"]
+			end
+		end,
 	},
 	{
 		"Exafunction/codeium.nvim",

@@ -29,6 +29,7 @@
             hash = "sha256-kiV+J0kCbgaTUMjEht9G1aZFl5TtoTP8TvtXTQRHDq8=";
           };
         };
+
         danger-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "danger";
           version = "2024-06-19";
@@ -39,6 +40,7 @@
             hash = "sha256-oWkXs9y7O8rUbE7lqhjJH2Z9Kx0BJgF36FFmWdDfRqo=";
           };
         };
+
         github-nvim-theme = pkgs.vimUtils.buildVimPlugin {
           pname = "github-nvim-theme";
           version = "2024-06-19";
@@ -49,6 +51,7 @@
             hash = "sha256-vsIr3UrnajxixDo0cp+6GoQfmO0KDkPX8jw1e0fPHo4=";
           };
         };
+
         ohlucy-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "oh-lucy.nvim";
           version = "2024-06-19";
@@ -59,6 +62,7 @@
             hash = "sha256-AgOA7otqdAu4ur1zkCw+aKS7Oi6j5XzdraKl9DKTUzs=";
           };
         };
+
         icon-picker-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "icon-picker.nvim";
           version = "2024-02-23";
@@ -69,6 +73,7 @@
             hash = "sha256-VZKsVeSmPR3AA8267Mtd5sSTZl2CAqnbgqceCptgp4w=";
           };
         };
+
         lsp-lens-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "lsp-lens.nvim";
           version = "2024-02-23";
@@ -126,24 +131,24 @@
 
         tiny-inline-diagnostic-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "tiny-inline-diagnostic.nvim";
-          version = "2024-07-02";
+          version = "2024-07-07";
           src = pkgs.fetchFromGitHub {
             owner = "rachartier";
             repo = "tiny-inline-diagnostic.nvim";
-            rev = "01ded45a2c1054d9751b13571a0baa1e80fe9456";
-            hash = "sha256-InSpvkRBi6I2Ve6NLNvcsHFGCjd8+gAiZSjKOfCcDVY=";
+            rev = "42a762f5134c49bc6701a514267addee721bfa6a";
+            hash = "sha256-PyY8DGzvAtfcDi7e5aHFkBxO8v/p/HeN4ELtnDdqvXQ=";
           };
         };
 
         # Temp reference for mini.icons until unstable updates
         my-mini-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "mini.nvim";
-          version = "2024-07-05";
+          version = "2024-07-07";
           src = pkgs.fetchFromGitHub {
             owner = "echasnovski";
             repo = "mini.nvim";
-            rev = "fc99446b05a83c5939d18789b60284fd1ed8e1e7";
-            sha256 = "sha256-cgRRDvsvysYcr7Y3ccLvtbyppNoxnObKDD0jYYjzD1g=";
+            rev = "45b3540003566e8f19c4cc4b1c9d0b8605a2697c";
+            sha256 = "sha256-kA8yDJrnKLlg27rKsAdxp3vTBF2ZT2uCIIY103unHeo=";
           };
           meta.homepage = "https://github.com/echasnovski/mini.nvim/";
         };
@@ -339,6 +344,7 @@
           c
           cpp
           css
+          dockerfile
           fish
           gitignore
           go
@@ -349,6 +355,7 @@
           javascript
           json
           jsonc
+          json5
           lua
           markdown
           nix
@@ -357,11 +364,13 @@
           rust
           scss
           sql
+          svelte
           toml
           tsx
           typescript
           vim
           yaml
+          zig
         ])).dependencies;
       };
     in
