@@ -153,6 +153,17 @@
           meta.homepage = "https://github.com/echasnovski/mini.nvim/";
         };
 
+        my-lazy-lsp-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "lazy-lsp.nvim";
+          version = "2024-07-12";
+          src = pkgs.fetchFromGitHub {
+            owner = "danruto";
+            repo = "lazy-lsp.nvim";
+            rev = "d6aa2ae07ffaaebb263e822c0068adea8114d935";
+            hash = "sha256-Nag+5YtbxLa4XpROeMCtBqF8IRSTiEsQ9F010fcwNAg=";
+          };
+        };
+
         plugins = with pkgs.unstable.vimPlugins; [
           nvim-ts-autotag
           editorconfig-vim
@@ -243,7 +254,8 @@
           tokyonight-nvim
           # nightly
           nordic-nvim
-          lazy-lsp-nvim
+          # lazy-lsp-nvim
+          my-lazy-lsp-nvim
           # lsp_lines-nvim
           # nvim-spectre
           todo-comments-nvim

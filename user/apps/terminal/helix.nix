@@ -101,9 +101,14 @@
           config = {
             experimental = { useFlatConfig = true; };
             workingDirectory.mode = "auto";
-            format.enable = true;
+            format.enable = false;
             codeActionsOnSave = { mode = "all"; "source.fixAll.eslint" = true; };
           };
+        };
+
+        biome = {
+          command = "biome";
+          args = ["lsp-proxy"];
         };
       };
 
@@ -127,10 +132,11 @@
               except-features = [ "format" ];
               name = "typescript-language-server";
             }
-            "vscode-eslint-language-server"
+            # "vscode-eslint-language-server"
+            "biome"
             "tailwindcss-ls"
           ];
-          formatter = { command = "prettier"; args = [ "--parser" "typescript" ]; };
+          # formatter = { command = "prettier"; args = [ "--parser" "typescript" ]; };
         }
         {
           name = "tsx";
@@ -141,10 +147,11 @@
               except-features = [ "format" ];
               name = "typescript-language-server";
             }
-            "vscode-eslint-language-server"
+            # "vscode-eslint-language-server"
+            "biome"
             "tailwindcss-ls"
           ];
-          formatter = { command = "prettier"; args = [ "--parser" "typescript" ]; };
+          # formatter = { command = "prettier"; args = [ "--parser" "typescript" ]; };
         }
         {
           name = "css";

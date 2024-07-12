@@ -91,6 +91,10 @@ return {
 		-- end,
 		opts = {
 			style = "night",
+			styles = {
+				comments = { italic = false },
+				keywords = { italic = false },
+			}
 		},
 	},
 	-- { "Alexis12119/nightly.nvim" },
