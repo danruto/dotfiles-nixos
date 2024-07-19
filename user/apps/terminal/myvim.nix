@@ -141,17 +141,17 @@
         };
 
         # Temp reference for mini.icons until unstable updates
-        my-mini-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "mini.nvim";
-          version = "2024-07-07";
-          src = pkgs.fetchFromGitHub {
-            owner = "echasnovski";
-            repo = "mini.nvim";
-            rev = "45b3540003566e8f19c4cc4b1c9d0b8605a2697c";
-            sha256 = "sha256-kA8yDJrnKLlg27rKsAdxp3vTBF2ZT2uCIIY103unHeo=";
-          };
-          meta.homepage = "https://github.com/echasnovski/mini.nvim/";
-        };
+        # my-mini-nvim = pkgs.vimUtils.buildVimPlugin {
+        #   pname = "mini.nvim";
+        #   version = "2024-07-07";
+        #   src = pkgs.fetchFromGitHub {
+        #     owner = "echasnovski";
+        #     repo = "mini.nvim";
+        #     rev = "45b3540003566e8f19c4cc4b1c9d0b8605a2697c";
+        #     sha256 = "sha256-kA8yDJrnKLlg27rKsAdxp3vTBF2ZT2uCIIY103unHeo=";
+        #   };
+        #   meta.homepage = "https://github.com/echasnovski/mini.nvim/";
+        # };
 
         my-lazy-lsp-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "lazy-lsp.nvim";
@@ -177,8 +177,8 @@
           nvim-treesitter-refactor
           nvim-ts-context-commentstring
           flash-nvim
-          # mini-nvim
-          my-mini-nvim
+          mini-nvim
+          # my-mini-nvim
           # { name = "mini.ai"; path = mini-nvim; }
           # { name = "mini.bracketed"; path = mini-nvim; }
           # { name = "mini.bufremove"; path = mini-nvim; }
