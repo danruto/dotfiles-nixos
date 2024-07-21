@@ -132,4 +132,10 @@ return {
 			-- refer to the configuration section below
 		},
 	},
+	{
+		"MeanderingProgrammer/markdown.nvim",
+		cmd = "RenderMarkdown",
+		dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use standalone mini plugins
+		opts = {},
+	},
 }

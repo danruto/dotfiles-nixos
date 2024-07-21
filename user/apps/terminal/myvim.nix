@@ -32,23 +32,23 @@
 
         danger-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "danger";
-          version = "2024-06-19";
+          version = "2024-07-21";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
             repo = "danger";
-            rev = "a1ac47deb21ec2c4aff1c64b72dbfd151514fefc";
-            hash = "sha256-oWkXs9y7O8rUbE7lqhjJH2Z9Kx0BJgF36FFmWdDfRqo=";
+            rev = "06b5b8fab49c2d541205a5dc7e94acac24025d63";
+            hash = "sha256-8yR4r0OIbh6B5PbdCILzKwfOLSgID+g/yN/5EUEhag0=";
           };
         };
 
         github-nvim-theme = pkgs.vimUtils.buildVimPlugin {
           pname = "github-nvim-theme";
-          version = "2024-06-19";
+          version = "2024-07-21";
           src = pkgs.fetchFromGitHub {
             owner = "projekt0n";
             repo = "github-nvim-theme";
-            rev = "d832925e77cef27b16011a8dfd8835f49bdcd055";
-            hash = "sha256-vsIr3UrnajxixDo0cp+6GoQfmO0KDkPX8jw1e0fPHo4=";
+            rev = "98db85c8a12307e3b1bc8da48ddf76d8484e9e90";
+            hash = "sha256-AxtZd6sPHVl8HR0tPGkV4MUi40yV7EJRDIPc0NuCWEM=";
           };
         };
 
@@ -96,47 +96,36 @@
           };
         };
 
-        nvim-nio = pkgs.vimUtils.buildVimPlugin {
-          pname = "nvim-nio";
-          version = "2024-06-19";
-          src = pkgs.fetchFromGitHub {
-            owner = "nvim-neotest";
-            repo = "nvim-nio";
-            rev = "7969e0a8ffabdf210edd7978ec954a47a737bbcc";
-            hash = "sha256-gAbqGPNBYkj+x+wR6WN2x7kqKaxlBzVXPmRXm8sM40Y=";
-          };
-        };
-
         monet-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "monet.nvim";
-          version = "2024-06-19";
+          version = "2024-07-21";
           src = pkgs.fetchFromGitHub {
             owner = "fynnfluegge";
             repo = "monet.nvim";
-            rev = "e358f6b0035932c6faad8cd4157e4dd2272f88a2";
-            hash = "sha256-qquos+vbYGsLeY/yAd9lUj6usuWgx0/u4JFO4q7vgJc=";
+            rev = "af6c8fb9faaae2fa7aa16dd83b1b425c2b372891";
+            hash = "sha256-zNawnZRnyvn73viNN1R1jyvgiecT522/NQSZgJvzU9Q=";
           };
         };
 
         neofusion-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "neofusion.nvim";
-          version = "2024-06-19";
+          version = "2024-07-21";
           src = pkgs.fetchFromGitHub {
             owner = "diegoulloao";
             repo = "neofusion.nvim";
-            rev = "d6c861b230ad67341db6916892939cf3c54a18f8";
-            hash = "sha256-FiwzQOXvUosLSN4HXdSxCOaSDVaWHDzhWh3x7EeXURY=";
+            rev = "b112e62da836fb662a5bbb4761ccae9124cd9615";
+            hash = "sha256-9OM4TQ7Mm5d/qwHSog9lTWqpxX/tg8bqpOV/uDqskr4=";
           };
         };
 
         tiny-inline-diagnostic-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "tiny-inline-diagnostic.nvim";
-          version = "2024-07-07";
+          version = "2024-07-21";
           src = pkgs.fetchFromGitHub {
             owner = "rachartier";
             repo = "tiny-inline-diagnostic.nvim";
-            rev = "42a762f5134c49bc6701a514267addee721bfa6a";
-            hash = "sha256-PyY8DGzvAtfcDi7e5aHFkBxO8v/p/HeN4ELtnDdqvXQ=";
+            rev = "4b5bc565d8ea4dce4bc45bba57f292578ba5197c";
+            hash = "sha256-DwwLVLZov7CiGuYAWXltqmBAAyjBPBnXBksNWXCi0Z0=";
           };
         };
 
@@ -161,6 +150,17 @@
             repo = "lazy-lsp.nvim";
             rev = "d6aa2ae07ffaaebb263e822c0068adea8114d935";
             hash = "sha256-Nag+5YtbxLa4XpROeMCtBqF8IRSTiEsQ9F010fcwNAg=";
+          };
+        };
+
+        markdown-render-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "markdown.nvim";
+          version = "2024-07-21";
+          src = pkgs.fetchFromGitHub {
+            owner = "MeanderingProgrammer";
+            repo = "markdown.nvim";
+            rev = "123048b428eb85618780fcef9ea9f4d68b5d2508";
+            hash = "sha256-YWcpS8K8ykAnC2qDXhl6kteSJ9pwxT4WXMqsFrwX7WM=";
           };
         };
 
@@ -243,6 +243,10 @@
           trouble-nvim
           telescope-nvim
           neo-tree-nvim
+          markdown-render-nvim
+
+          # ---- Themes ----
+
           github-nvim-theme
           neovim-ayu
           papercolor-theme
