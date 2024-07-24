@@ -1,7 +1,7 @@
 { pkgs, name, email, ... }:
 
 {
-  home.packages = [ pkgs.git pkgs.gitui pkgs.gh ];
+  home.packages = with pkgs; [ git gitui gh jujutsu ];
 
   programs.git = {
     enable = true;
