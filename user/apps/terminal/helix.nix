@@ -54,6 +54,11 @@
           center = [ "file-name" "file-modification-indicator" ];
           right = [ "version-control" "diagnostics" "selections" "position" "file-encoding" "file-line-ending" "file-type" "total-line-numbers" ];
         };
+
+        inline-diagnostics = {
+          cursor-line = "hint";
+          other-lines = "error";
+        };
       };
 
       keys = {
@@ -108,7 +113,7 @@
 
         biome = {
           command = "biome";
-          args = ["lsp-proxy"];
+          args = [ "lsp-proxy" ];
         };
       };
 
@@ -199,5 +204,5 @@
     };
   };
 
-
+  home.file.".config/helix/themes/carbon.toml".source = ./configs/helix/carbon.toml;
 }
