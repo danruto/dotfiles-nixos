@@ -18,10 +18,11 @@ let
   ];
   unstable-packages = with pkgs.unstable; [
     ripgrep
-    ani-cli
     yt-dlp
     asciinema
     aerc
+  ] ++ lib.optionals pkgs.unstable.stdenv.isLinux [
+    ani-cli
   ];
 in
 {
