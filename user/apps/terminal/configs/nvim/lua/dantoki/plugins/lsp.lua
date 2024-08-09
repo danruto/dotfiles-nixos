@@ -36,6 +36,7 @@ return {
 				-- ["typescript.tsx"] = { "typescript-tools" },
 				-- typescriptreact = { "typescript-tools" },
 				go = { "gopls" },
+				yaml = { "yamlls" },
 			},
 			prefer_local = true,
 			configs = {
@@ -82,6 +83,11 @@ return {
 							end,
 							desc = "Show Crate Documentation",
 						},
+					},
+				},
+				gopls = {
+					settings = {
+						gofumpt = true,
 					},
 				},
 			},

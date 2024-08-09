@@ -115,6 +115,15 @@
           command = "biome";
           args = [ "lsp-proxy" ];
         };
+
+        gopls = {
+          config = {
+            "formatting.gofumpt" = true;
+            # formatting = {
+            #   gofumpt = true;
+            # };
+          };
+        };
       };
 
       language = [

@@ -4,12 +4,13 @@ let
   unstable-packages = with pkgs.unstable; [
   ];
   stable-packages = with pkgs; [
-		go
-		gopls
-		golangci-lint
+    go
+    gopls
+    gofumpt
+    golangci-lint
   ];
-  in
+in
 {
   home.packages = stable-packages
-                ++ unstable-packages;
+    ++ unstable-packages;
 }
