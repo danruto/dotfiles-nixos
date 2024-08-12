@@ -186,6 +186,7 @@
           name = "yaml";
           indent = { tab-width = 4; unit = "    "; };
           auto-format = true;
+          formatter = { command = "yamlfmt"; args = [ "-formatter" "indent=4,retain_line_breaks_single=true" "-" ]; };
         }
         {
           name = "html";
