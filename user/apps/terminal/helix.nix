@@ -18,6 +18,7 @@
         color-modes = true;
         rulers = [ 120 ];
         text-width = 120;
+        popup-border = "all";
 
         cursor-shape = {
           insert = "bar";
@@ -36,7 +37,7 @@
 
         indent-guides.render = true;
         whitespace.render.tab = "all";
-        whitespace.render.space = "all";
+        whitespace.render.space = "none";
         whitespace.render.newline = "none";
 
         whitespace.characters = {
@@ -46,8 +47,6 @@
           newline = "⏎";
           tabpad = "·";
         };
-
-        popup-border = "all";
 
         statusline = {
           left = [ "mode" "spinner" ];
