@@ -280,7 +280,8 @@ return {
 	--
 
 	{
-		"hrsh7th/nvim-cmp",
+		-- "hrsh7th/nvim-cmp",
+		"yioneko/nvim-cmp",
 		keys = {
 			{ "<Leader>a", vim.lsp.buf.code_action, desc = "Code actions" },
 			{ "<Leader>rn", vim.lsp.buf.rename, desc = "Rename" },

@@ -18,5 +18,4 @@ let
 in
 {
   home.packages = stable-packages ++ unstable-packages;
-
 }

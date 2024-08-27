@@ -1,7 +1,19 @@
 { pkgs, name, email, ... }:
 
+let
+  stable-packages = with pkgs; [
+    git
+    gitui
+    gh
+  ];
+
+  ## lazyjj
+  unstable-packages = with pkgs.unstable; [
+    jujutsu
+  ];
+in
 {
-  home.packages = with pkgs; [ git gitui gh jujutsu ];
+  home.packages = stable-packages ++ unstable-packages;
 
   programs.git = {
     enable = true;

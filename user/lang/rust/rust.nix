@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 let
   unstable-packages = with pkgs.unstable; [
@@ -9,8 +9,8 @@ let
     cargo-expand
     lldb
   ];
-  in
+in
 {
   home.packages = stable-packages
-                ++ unstable-packages;
+    ++ unstable-packages;
 }

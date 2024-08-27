@@ -109,23 +109,23 @@
 
         neofusion-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "neofusion.nvim";
-          version = "2024-07-21";
+          version = "2024-08-27";
           src = pkgs.fetchFromGitHub {
             owner = "diegoulloao";
             repo = "neofusion.nvim";
-            rev = "b112e62da836fb662a5bbb4761ccae9124cd9615";
-            hash = "sha256-9OM4TQ7Mm5d/qwHSog9lTWqpxX/tg8bqpOV/uDqskr4=";
+            rev = "c0fc7b41057fbb69dd9ff6fd2d913b1f532effac";
+            hash = "sha256-Urnb4N8FYlfCm8j4LYgWEvLwzR9zbTZadJJfELqWRMU=";
           };
         };
 
         tiny-inline-diagnostic-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "tiny-inline-diagnostic.nvim";
-          version = "2024-07-21";
+          version = "2024-08-27";
           src = pkgs.fetchFromGitHub {
             owner = "rachartier";
             repo = "tiny-inline-diagnostic.nvim";
-            rev = "4b5bc565d8ea4dce4bc45bba57f292578ba5197c";
-            hash = "sha256-DwwLVLZov7CiGuYAWXltqmBAAyjBPBnXBksNWXCi0Z0=";
+            rev = "c0b058439d3a592c04967e475fc83cf41d6aad0e";
+            hash = "sha256-KpM8EbFL8nAB0KRl1bchVvzZZIdxpVgXJqrhjqUuZBc=";
           };
         };
 
@@ -161,6 +161,17 @@
             repo = "markdown.nvim";
             rev = "123048b428eb85618780fcef9ea9f4d68b5d2508";
             hash = "sha256-YWcpS8K8ykAnC2qDXhl6kteSJ9pwxT4WXMqsFrwX7WM=";
+          };
+        };
+
+        perf-nvim-cmp = pkgs.vimUtils.buildVimPlugin {
+          pname = "nvim-cmp";
+          version = "2024-08-27";
+          src = pkgs.fetchFromGitHub {
+            owner = "yioneko";
+            repo = "nvim-cmp";
+            rev = "6c3d595f3223c1ae7392d4fde1626355439af6c1";
+            hash = "sha256-qVU02nIclxt5Fgh+8Cll087AoWtaLo4g2846VYf+ALY=";
           };
         };
 
@@ -203,7 +214,8 @@
           nui-nvim
           # copilot-lua
           crates-nvim
-          nvim-cmp
+          # nvim-cmp
+          perf-nvim-cmp
           cmp-buffer
           cmp-nvim-lsp
           { name = "lspkind.nvim"; path = lspkind-nvim; }

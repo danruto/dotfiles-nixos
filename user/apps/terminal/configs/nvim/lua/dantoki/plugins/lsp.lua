@@ -113,7 +113,8 @@ return {
 		},
 	},
 	{
-		"hrsh7th/nvim-cmp",
+		-- "hrsh7th/nvim-cmp",
+		"yioneko/nvim-cmp",
 		version = false,
 		keys = {
 			{ "<Leader>a",  vim.lsp.buf.code_action,   desc = "Code actions" },
