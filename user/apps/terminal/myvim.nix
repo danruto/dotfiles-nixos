@@ -120,12 +120,12 @@
 
         tiny-inline-diagnostic-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "tiny-inline-diagnostic.nvim";
-          version = "2024-08-27";
+          version = "2024-09-10";
           src = pkgs.fetchFromGitHub {
             owner = "rachartier";
             repo = "tiny-inline-diagnostic.nvim";
-            rev = "c0b058439d3a592c04967e475fc83cf41d6aad0e";
-            hash = "sha256-KpM8EbFL8nAB0KRl1bchVvzZZIdxpVgXJqrhjqUuZBc=";
+            rev = "c0543b2980251a7a2024e936ef724dcdfb07bb87";
+            hash = "sha256-UOJf4Oi38Bj8xRHGGV+XWvOlOez6jm908NuThWUQyIU=";
           };
         };
 
@@ -172,6 +172,17 @@
             repo = "nvim-cmp";
             rev = "6c3d595f3223c1ae7392d4fde1626355439af6c1";
             hash = "sha256-qVU02nIclxt5Fgh+8Cll087AoWtaLo4g2846VYf+ALY=";
+          };
+        };
+
+        neocodeium = pkgs.vimUtils.buildVimPlugin {
+          pname = "neocodeium";
+          version = "2024-09-10";
+          src = pkgs.fetchFromGitHub {
+            owner = "monkoose";
+            repo = "neocodeium";
+            rev = "f45d2e2fda4889f507776d9102850359a5ce1d0f";
+            hash = "sha256-R6+oovZ2uMIJG5Ekremtctt1h8OjpwEGInyCS58FTag=";
           };
         };
 
@@ -256,6 +267,7 @@
           telescope-nvim
           neo-tree-nvim
           markdown-render-nvim
+          neocodeium
 
           # ---- Themes ----
 
@@ -276,7 +288,7 @@
           # nvim-spectre
           todo-comments-nvim
           pineapple-nvim
-          codeium-nvim
+          # codeium-nvim
           dropbar-nvim
           telescope-fzf-native-nvim
           { name = "catppuccin"; path = catppuccin-nvim; }

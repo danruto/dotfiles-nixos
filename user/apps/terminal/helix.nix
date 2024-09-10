@@ -19,6 +19,7 @@
         rulers = [ 120 ];
         text-width = 120;
         popup-border = "all";
+        completion-replace = true;
 
         cursor-shape = {
           insert = "bar";
@@ -36,9 +37,11 @@
         };
 
         indent-guides.render = true;
-        whitespace.render.tab = "all";
-        whitespace.render.space = "none";
-        whitespace.render.newline = "none";
+        whitespace.render = {
+          tab = "all";
+          space = "none";
+          newline = "none";
+        };
 
         whitespace.characters = {
           space = "·";
@@ -71,6 +74,9 @@
           "V" = [ "select_mode" "extend_to_line_bounds" ];
           "esc" = [ "collapse_selection" "keep_primary_selection" ];
           "K" = [ "hover" ];
+          # Switch p and P behaviour
+          "P" = [ "paste_after" ];
+          "p" = [ "paste_before" ];
         };
 
         select = {

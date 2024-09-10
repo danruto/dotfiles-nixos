@@ -129,11 +129,23 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			-- "hrsh7th/nvim-cmp",
-		"yioneko/nvim-cmp",
+			"yioneko/nvim-cmp",
 		},
 		event = "LspAttach",
 		cmd = "Codeium",
 		build = ":Codeium Auth",
 		opts = {},
+		enabled = false,
+	},
+	{
+		"monkoose/neocodeium",
+		event = "VeryLazy",
+		cmd = "NeoCodeium",
+		build = ":NeoCodeium auth",
+		config = function()
+			local neocodeium = require("neocodeium")
+			neocodeium.setup()
+			-- vim.keymap.set("i", "<A-f>", neocodeium.accept)
+		end,
 	},
 }
