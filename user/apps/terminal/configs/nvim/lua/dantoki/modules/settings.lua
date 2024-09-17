@@ -51,7 +51,7 @@ o.cmdheight = 1
 o.lazyredraw = true
 o.completeopt = "menu,menuone,noselect,noinsert"
 -- o.completeopt = 'menu,noselect,noinsert'
-o.shortmess:append("sI")
+vim.opt.shortmess:append("sI")
 -- o.listchars = "trail:·,extends:»,precedes:«,nbsp:░,eol:,tab:» " -- setup list chars
 o.conceallevel = 0 -- Show `` in MD
 -- o.t_Co = "256" -- Enable true colours, deprecated
@@ -61,7 +61,7 @@ o.timeoutlen = 400
 o.undofile = true
 o.signcolumn = "yes"
 o.updatetime = 250 -- interval for writing swap to disk
-o.whichwrap:append("<>[]hl")
+vim.opt.whichwrap:append("<>[]hl")
 
 -- Buffer settings
 bo.swapfile = false
