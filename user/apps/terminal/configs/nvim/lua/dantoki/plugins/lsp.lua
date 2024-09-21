@@ -20,7 +20,7 @@ return {
 			},
 		},
 		opts = {
-			excluded_servers = { "sqls", "denols", "flow", "nixd", "tsserver", "rust_analyzer" },
+			excluded_servers = { "sqls", "denols", "flow", "nixd", "tsserver", "rust_analyzer", "bazelrc-lsp" },
 			preferred_servers = {
 				python = { "pyright", "ruff_lsp" },
 				-- rust = { "rust_analyzer" },

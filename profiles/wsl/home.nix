@@ -18,6 +18,7 @@
     ../../user/apps/git/git.nix # My git config
     ../../user/lang/cc/cc.nix # C and C++ tools
     ../../user/lang/rust/rust.nix # Rust tools
+    ../../user/lang/zig/zig.nix # Zig tools
     ../../user/lang/typescript/typescript.nix # typescript tools
     ../../user/lang/go/go.nix # go tools
     ../../user/lang/lua/lua.nix # lua tools

@@ -144,12 +144,12 @@
 
         my-lazy-lsp-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "lazy-lsp.nvim";
-          version = "2024-07-12";
+          version = "2024-09-21";
           src = pkgs.fetchFromGitHub {
             owner = "danruto";
             repo = "lazy-lsp.nvim";
-            rev = "d6aa2ae07ffaaebb263e822c0068adea8114d935";
-            hash = "sha256-Nag+5YtbxLa4XpROeMCtBqF8IRSTiEsQ9F010fcwNAg=";
+            rev = "d2028b68ddb132b987874ddf220ffbc6afe7e5f3";
+            hash = "sha256-rlAuS5Ij2rCGppJXUCVvZgO/wrgQzrTBxskoWgGYAQw=";
           };
         };
 
