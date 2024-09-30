@@ -32,12 +32,12 @@
 
         danger-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "danger";
-          version = "2024-07-21";
+          version = "2024-09-30";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
             repo = "danger";
-            rev = "06b5b8fab49c2d541205a5dc7e94acac24025d63";
-            hash = "sha256-8yR4r0OIbh6B5PbdCILzKwfOLSgID+g/yN/5EUEhag0=";
+            rev = "804af61ada7da78e5c948abbdc04dd4e81a8a55b";
+            hash = "sha256-fNvC0YkmSWej7m/it2j9MmZsC7eMQEzZQE4HQpbYqWg=";
           };
         };
 
@@ -47,8 +47,8 @@
           src = pkgs.fetchFromGitHub {
             owner = "projekt0n";
             repo = "github-nvim-theme";
-            rev = "98db85c8a12307e3b1bc8da48ddf76d8484e9e90";
-            hash = "sha256-AxtZd6sPHVl8HR0tPGkV4MUi40yV7EJRDIPc0NuCWEM=";
+            rev = "0e4636f556880d13c00d8a8f686fae8df7c9845f";
+            hash = "sha256-EreIuni6/XR0428rO4Lbi2usIreOyPWKm7kJJA2Nwqo=";
           };
         };
 
@@ -109,23 +109,23 @@
 
         neofusion-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "neofusion.nvim";
-          version = "2024-08-27";
+          version = "2024-09-30";
           src = pkgs.fetchFromGitHub {
             owner = "diegoulloao";
             repo = "neofusion.nvim";
-            rev = "c0fc7b41057fbb69dd9ff6fd2d913b1f532effac";
-            hash = "sha256-Urnb4N8FYlfCm8j4LYgWEvLwzR9zbTZadJJfELqWRMU=";
+            rev = "f1776ed91ed7aa605d7827ee498b06bd8bbc37b5";
+            hash = "sha256-FrWsYxaz3tkHhfuY7umASrH7yO2wf3JSTJNd6E/NUnk=";
           };
         };
 
         tiny-inline-diagnostic-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "tiny-inline-diagnostic.nvim";
-          version = "2024-09-10";
+          version = "2024-09-30";
           src = pkgs.fetchFromGitHub {
             owner = "rachartier";
             repo = "tiny-inline-diagnostic.nvim";
-            rev = "c0543b2980251a7a2024e936ef724dcdfb07bb87";
-            hash = "sha256-UOJf4Oi38Bj8xRHGGV+XWvOlOez6jm908NuThWUQyIU=";
+            rev = "1a83e7ce5c9d0ae4d89fc5c812b55ff8ed1d39e7";
+            hash = "sha256-NBcUVUSnk2TlbSr/vFTbp3Rh35ms8lAcfDqpmE1KTq4=";
           };
         };
 
@@ -144,23 +144,23 @@
 
         my-lazy-lsp-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "lazy-lsp.nvim";
-          version = "2024-09-21";
+          version = "2024-09-30";
           src = pkgs.fetchFromGitHub {
-            owner = "danruto";
+            owner = "dundalek";
             repo = "lazy-lsp.nvim";
-            rev = "d2028b68ddb132b987874ddf220ffbc6afe7e5f3";
-            hash = "sha256-rlAuS5Ij2rCGppJXUCVvZgO/wrgQzrTBxskoWgGYAQw=";
+            rev = "faedf30d6e858a32e635a9640d10f7b44a878847";
+            hash = "sha256-sIh2SkOlKV/asMZ76XHbVdzcgDU/upIbqtdZ8zydZtY=";
           };
         };
 
         markdown-render-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "markdown.nvim";
-          version = "2024-07-21";
+          version = "2024-09-30";
           src = pkgs.fetchFromGitHub {
             owner = "MeanderingProgrammer";
             repo = "markdown.nvim";
-            rev = "123048b428eb85618780fcef9ea9f4d68b5d2508";
-            hash = "sha256-YWcpS8K8ykAnC2qDXhl6kteSJ9pwxT4WXMqsFrwX7WM=";
+            rev = "ebfea32e3b3d538a6e0c8e12da911d632deb1d8c";
+            hash = "sha256-bZXsnXx9U0C+b2kgpXk+cPK8inVt4dmVEca+/tDWxZE=";
           };
         };
 
@@ -177,12 +177,12 @@
 
         neocodeium = pkgs.vimUtils.buildVimPlugin {
           pname = "neocodeium";
-          version = "2024-09-10";
+          version = "2024-09-30";
           src = pkgs.fetchFromGitHub {
             owner = "monkoose";
             repo = "neocodeium";
-            rev = "f45d2e2fda4889f507776d9102850359a5ce1d0f";
-            hash = "sha256-R6+oovZ2uMIJG5Ekremtctt1h8OjpwEGInyCS58FTag=";
+            rev = "37e66aa0e7d69601fe6a410a5dee65c48aaeb6f7";
+            hash = "sha256-qSkUKrXGzv3kTyKUTrPLNyX//wLKyVBGOo0D3ulzN4s=";
           };
         };
 
