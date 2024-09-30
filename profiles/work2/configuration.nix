@@ -56,7 +56,7 @@
       "wezterm"
     ];
     taps = [
-      "homebrew/cask-fonts"
+      # "homebrew/cask-fonts"
     ];
   };
 
@@ -176,6 +176,8 @@
   };
 
   programs.zsh.enable = false;
+
+  system.stateVersion = 5;
 
 }
 
