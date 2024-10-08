@@ -1,18 +1,33 @@
 {
   description = "Danruto NixOS Configuration";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, blocklist-hosts, rust-overlay, hyprland-plugins, nur, darwin, helix, neovim-nightly-overlay, zjstatus, ... }@inputs:
+  outputs =
+    { self
+    , nixpkgs
+    , nixpkgs-unstable
+    , home-manager
+    , blocklist-hosts
+    , rust-overlay
+    , hyprland-plugins
+    , nur
+    , darwin
+    , helix
+    , neovim-nightly-overlay
+    , zjstatus
+    , blink-cmp
+    , ...
+    }@inputs:
     let
       # ---- SYSTEM SETTINGS ---- #
       system = "x86_64-linux";
       # system = "x86_64-darwin";
       hostname = "danruto"; # hostname
-      # profile = "wsl";
+      profile = "wsl";
       # profile = "vm";
       # profile = "vm-hypr";
       # profile = "work";
       # profile = "work2";
-      profile = "framework";
+      # profile = "framework";
       # profile = "orb";
       timezone = "Australia/Sydney"; # select timezone
       locale = "en_US.UTF-8"; # select locale
@@ -52,6 +67,7 @@
           neovim-nightly-overlay.overlays.default
           (_final: prev: {
             zjstatus = zjstatus.packages.${prev.system}.default;
+            blink-cmp = blink-cmp.packages.${prev.system}.default;
             unstable = import nixpkgs-unstable {
               inherit (prev) system;
               config = {
@@ -218,6 +234,10 @@
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    blink-cmp = {
+      url = "github:Saghen/blink.cmp";
     };
 
     # WSL inputs

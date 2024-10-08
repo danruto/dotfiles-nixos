@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, blink-cmp, ... }:
 
 {
   programs.neovim = {
@@ -186,6 +186,17 @@
           };
         };
 
+        blink-cmp-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "blink.cmp";
+          version = "2024-10-08";
+          src = pkgs.fetchFromGitHub {
+            owner = "Saghen";
+            repo = "blink.cmp";
+            rev = "8684a8ee10281f3cfd6eac6c9077ce2b5f04a61b";
+            hash = "sha256-cDS4pCrO3MJUN66Bs8UqXBbVFiKYjBpMtCN//NQemlk=";
+          };
+        };
+
         plugins = with pkgs.unstable.vimPlugins; [
           nvim-ts-autotag
           editorconfig-vim
@@ -226,17 +237,19 @@
           # copilot-lua
           crates-nvim
           # nvim-cmp
-          perf-nvim-cmp
-          cmp-buffer
-          cmp-nvim-lsp
-          { name = "lspkind.nvim"; path = lspkind-nvim; }
-          cmp-nvim-lsp-signature-help
-          cmp-path
-          cmp-nvim-lua
-          cmp_luasnip
-          cmp-under-comparator
-          cmp-cmdline
-          cmp-nvim-lsp-document-symbol
+          # perf-nvim-cmp
+          pkgs.blink-cmp
+          # blink-cmp-nvim
+          # cmp-buffer
+          # cmp-nvim-lsp
+          # { name = "lspkind.nvim"; path = lspkind-nvim; }
+          # cmp-nvim-lsp-signature-help
+          # cmp-path
+          # cmp-nvim-lua
+          # cmp_luasnip
+          # cmp-under-comparator
+          # cmp-cmdline
+          # cmp-nvim-lsp-document-symbol
           # copilot-cmp
           # none-ls-nvim
           conform-nvim

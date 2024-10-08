@@ -6,8 +6,9 @@
             children
             pane size=1 borderless=true {
                 plugin location="file:${pkgs.zjstatus}/bin/zjstatus.wasm" {
-                  format_left  "{mode} #[fg=#89B4FA,bg=#0a0e14,bold] {session}#[bg=#0a0e14] {tabs}"
-                  format_right "{command_kubectx}#[fg=#424554,bg=#0a0e14]::{datetime}"
+                  format_left  "{mode} #[fg=#89B4FA,bg=#0a0e14,bold] {session}#[bg=#0a0e14]"
+                  format_center "{tabs}"
+                  format_right "{swap_layout}#[fg=#424554,bg=#0a0e14]::{datetime}"
                   format_space "#[bg=#0a0e14]"
 
                   hide_frame_for_single_pane "true"
