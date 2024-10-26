@@ -1,23 +1,43 @@
 return {
 	{
+		"Exafunction/codeium.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			-- "hrsh7th/nvim-cmp",
+			"yioneko/nvim-cmp",
+		},
+		event = "LspAttach",
+		cmd = "Codeium",
+		build = ":Codeium Auth",
+		opts = {},
+		enabled = false,
+	},
+	{
+		"monkoose/neocodeium",
+		event = "VeryLazy",
+		cmd = "NeoCodeium",
+		build = ":NeoCodeium auth",
+		config = function()
+			local neocodeium = require("neocodeium")
+			neocodeium.setup()
+			-- vim.keymap.set("i", "<A-f>", neocodeium.accept)
+		end,
+	},
+	{
+		"zbirenbaum/copilot.lua",
+		enabled = false,
+		cmd = "Copilot",
+		event = "InsertEnter",
+		opts = {
+			suggestion = { enabled = false },
+			panel = { enabled = false },
+		},
+	},
+	{
 		"dundalek/lazy-lsp.nvim",
 		event = "InsertEnter",
 		dependencies = {
-			{
-				"neovim/nvim-lspconfig",
-				-- "SmiteshP/nvim-navbuddy",
-				-- event = "LspAttach",
-				-- dependencies = {
-				-- "SmiteshP/nvim-navic",
-				-- "MunifTanjim/nui.nvim",
-				-- },
-				-- opts = {
-				-- 	window = {
-				-- 		border = "double",
-				-- 	},
-				-- 	lsp = { auto_attach = true },
-				-- },
-			},
+			"neovim/nvim-lspconfig",
 		},
 		opts = {
 			excluded_servers = { "sqls", "denols", "flow", "nixd", "tsserver", "rust_analyzer", "bazelrc-lsp" },
@@ -95,21 +115,11 @@ return {
 		},
 	},
 	{
-		"zbirenbaum/copilot.lua",
-		enabled = false,
-		cmd = "Copilot",
-		event = "InsertEnter",
-		opts = {
-			suggestion = { enabled = false },
-			panel = { enabled = false },
-		},
-	},
-	{
 		"saecki/crates.nvim",
 		event = { "BufRead Cargo.toml" },
 		opts = {
 			completion = {
-				cmp = { enabled = true },
+				cmp = { enabled = false },
 			},
 		},
 	},
@@ -467,7 +477,8 @@ return {
 	{
 		"mrcjkb/rustaceanvim",
 		dependencies = { "neovim/nvim-lspconfig" },
-		version = "^4", -- Recommended
+		version = "^5", -- Recommended
+		lazy = false,
 		ft = { "rust" },
 	},
 	{
@@ -477,8 +488,7 @@ return {
 		dependencies = "rafamadriz/friendly-snippets",
 
 		-- use a release tag to download pre-built binaries
-		version = "v0.2.0",
-		tag = "v0.2.0",
+		version = "v0.*",
 
 		-- OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
 		-- build = "cargo build --release",
@@ -500,9 +510,14 @@ return {
 			-- experimental signature help support
 			trigger = { signature_help = { enabled = true } },
 
-			-- keymap = {
-			-- 	accept = { '<Tab>', '<Enter>', '<Return>', '<CR>' },
-			-- },
+			keymap = {
+				accept = "<CR>",
+				-- show = ",a",
+			},
+
+			fuzzy = {
+				prebuildBinaries = { download = false },
+			},
 		},
 	},
 }

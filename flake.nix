@@ -14,7 +14,6 @@
     , helix
     , neovim-nightly-overlay
     , zjstatus
-    , blink-cmp
     , ...
     }@inputs:
     let
@@ -67,7 +66,6 @@
           neovim-nightly-overlay.overlays.default
           (_final: prev: {
             zjstatus = zjstatus.packages.${prev.system}.default;
-            blink-cmp = blink-cmp.packages.${prev.system}.default;
             unstable = import nixpkgs-unstable {
               inherit (prev) system;
               config = {
@@ -234,10 +232,6 @@
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    blink-cmp = {
-      url = "github:Saghen/blink.cmp";
     };
 
     # WSL inputs

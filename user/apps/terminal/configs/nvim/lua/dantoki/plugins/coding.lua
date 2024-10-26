@@ -91,14 +91,14 @@ return {
 			-- 	foreground = "#73d0ff",
 			-- 	saturation = "high",
 			-- })
-			require("mini.files").setup()
+			-- require("mini.files").setup()
 			require("mini.icons").setup()
 			require("mini.indentscope").setup()
 			require("mini.pairs").setup()
 			require("mini.notify").setup()
-			require("mini.sessions").setup({
-				autoread = true,
-			})
+			-- require("mini.sessions").setup({
+			-- 	autoread = true,
+			-- })
 			require("mini.splitjoin").setup()
 			require("mini.surround").setup({
 				mappings = {
@@ -122,30 +122,6 @@ return {
 				require("mini.icons").mock_nvim_web_devicons()
 				return package.loaded["nvim-web-devicons"]
 			end
-		end,
-	},
-	{
-		"Exafunction/codeium.nvim",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			-- "hrsh7th/nvim-cmp",
-			"yioneko/nvim-cmp",
-		},
-		event = "LspAttach",
-		cmd = "Codeium",
-		build = ":Codeium Auth",
-		opts = {},
-		enabled = false,
-	},
-	{
-		"monkoose/neocodeium",
-		event = "VeryLazy",
-		cmd = "NeoCodeium",
-		build = ":NeoCodeium auth",
-		config = function()
-			local neocodeium = require("neocodeium")
-			neocodeium.setup()
-			-- vim.keymap.set("i", "<A-f>", neocodeium.accept)
 		end,
 	},
 }

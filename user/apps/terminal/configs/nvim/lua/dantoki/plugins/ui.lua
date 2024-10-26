@@ -32,7 +32,7 @@ return {
 			keys = {
 				brightness_up = "<C-Up>",
 				brightness_down = "<C-Down>",
-				toggle = "<Leader>ss",
+				toggle = "<Leader>ts",
 			},
 			exclude_filetypes = { "CHADTree", "neo-tree", "Mason" },
 		},
