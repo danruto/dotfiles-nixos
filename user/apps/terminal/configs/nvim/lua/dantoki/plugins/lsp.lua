@@ -492,6 +492,16 @@ return {
 
 		-- OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
 		-- build = "cargo build --release",
+		--
+		keys = {
+			{ "<Leader>a", vim.lsp.buf.code_action, desc = "Code actions" },
+			{ "<Leader>rn", vim.lsp.buf.rename, desc = "Rename" },
+			{ "K", vim.lsp.buf.hover, desc = "Hover" },
+			{ "<Leader>F", vim.lsp.buf.format, desc = "Format document" },
+			{ "[d", vim.diagnostic.goto_prev, desc = "Go to prev diagnostic" },
+			{ "]d", vim.diagnostic.goto_next, desc = "Go to next diagnostic" },
+			{ "<Leader>?", vim.diagnostic.open_float, desc = "Line Diagnostics" },
+		},
 
 		opts = {
 			highlight = {
@@ -510,10 +520,32 @@ return {
 			-- experimental signature help support
 			trigger = { signature_help = { enabled = true } },
 
-			keymap = {
-				accept = "<CR>",
-				-- show = ",a",
-			},
+			-- Enable this keymap once the new build is out
+			-- keymap = {
+			-- 	['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
+			-- 	['<C-e>'] = { 'hide' },
+			-- 	['<CR>'] = { 'select_and_accept' },
+			-- 	['<Tab>'] = {
+			-- 		function(cmp)
+			-- 			if cmp.is_in_snippet() then
+			-- 				return cmp.accept()
+			-- 			else
+			-- 				return cmp.select_and_accept()
+			-- 			end
+			-- 		end,
+			-- 		'snippet_forward',
+			-- 		'fallback',
+			-- 	},
+			-- 	['<S-Tab>'] = { 'snippet_backward', 'fallback' },
+			--
+			-- 	['<Up>'] = { 'select_prev', 'fallback' },
+			-- 	['<Down>'] = { 'select_next', 'fallback' },
+			-- 	['<C-p>'] = { 'select_prev', 'fallback' },
+			-- 	['<C-n>'] = { 'select_next', 'fallback' },
+			--
+			-- 	['<C-b>'] = { 'scroll_documentation_up', 'fallback' },
+			-- 	['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
+			-- },
 
 			fuzzy = {
 				prebuildBinaries = { download = false },
