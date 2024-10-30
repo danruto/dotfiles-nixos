@@ -10,6 +10,7 @@
     ../../user/lang/typescript/typescript.nix # typescript tools
     ../../user/lang/go/go.nix # go tools
     ../../user/lang/lua/lua.nix # lua tools
+    ../../user/lang/zig/zig.nix # zig tools
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
     # ../../user/apps/terminal/lazyvim.nix

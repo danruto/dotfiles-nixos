@@ -2,6 +2,7 @@
 {
   programs.kitty = {
     enable = true;
+    package = pkgs.unstable.kitty;
     settings = {
       font_size = 14;
       font_family = font;
@@ -35,6 +36,8 @@
       color7 = "#ffffff";
       color15 = "#ffffff";
       selection_foreground = "#0e1419";
+
+      cursor_trail = 3;
     };
   };
 }
