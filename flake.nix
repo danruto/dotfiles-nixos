@@ -14,6 +14,7 @@
     , helix
     , neovim-nightly-overlay
     , zjstatus
+    , niri
     , ...
     }@inputs:
     let
@@ -33,7 +34,6 @@
 
       # ----- USER SETTINGS ----- #
       username = "danruto"; # username
-      name = "Danny"; # name/identifier
       email = "danny@pixelbru.sh"; # email (used for certain configurations)
       theme = "ayu-dark"; # selcted theme from my themes directory (./themes/)
       wm = "hyprland"; # Selected window manager or desktop environment; must select one in both ./user/wm/ and ./system/wm/
@@ -80,6 +80,34 @@
       # configure lib
       lib = nixpkgs.lib;
 
+      commonSpecialArgs = {
+        inherit username;
+        # inherit name;
+        inherit hostname;
+        inherit profile;
+        inherit email;
+        inherit theme;
+        inherit font;
+        inherit fontPkg;
+        inherit wm;
+        inherit wmType;
+        inherit browser;
+        inherit editor;
+        inherit term;
+        inherit pkgs;
+        inherit helix;
+        inherit timezone;
+        inherit locale;
+        channels = { inherit nixpkgs nixpkgs-unstable; };
+      };
+
+      linuxSpecialArgs = commonSpecialArgs // {
+        inherit (inputs) hyprland-plugins;
+        inherit (inputs) nixos-wsl;
+        inherit (inputs) niri;
+        # inherit inputs;
+      };
+
     in
     {
       nixosConfigurations = {
@@ -98,45 +126,10 @@
 
               # Optionally, use home-manager.extraSpecialArgs to pass
               # arguments to home.nix
-              home-manager.extraSpecialArgs = {
-                # pass config variables from above
-                inherit username;
-                # inherit name;
-                inherit hostname;
-                inherit profile;
-                inherit email;
-                inherit theme;
-                inherit font;
-                inherit fontPkg;
-                inherit wm;
-                inherit wmType;
-                inherit browser;
-                inherit editor;
-                inherit term;
-                inherit (inputs) hyprland-plugins;
-                inherit (inputs) nixos-wsl;
-                inherit pkgs;
-                inherit helix;
-                channels = { inherit nixpkgs nixpkgs-unstable; };
-              };
+              home-manager.extraSpecialArgs = linuxSpecialArgs;
             }
           ];
-          specialArgs = {
-            # pass config variables from above
-            inherit username;
-            inherit name;
-            inherit hostname;
-            inherit timezone;
-            inherit locale;
-            inherit theme;
-            inherit font;
-            inherit fontPkg;
-            inherit wm;
-            inherit (inputs) blocklist-hosts;
-            inherit (inputs) nixos-wsl;
-            inherit (inputs) nixos-hardware;
-            channels = { inherit nixpkgs nixpkgs-unstable; };
-          };
+          specialArgs = linuxSpecialArgs;
         };
       };
 
@@ -158,44 +151,10 @@
 
               # Optionally, use home-manager.extraSpecialArgs to pass
               # arguments to home.nix
-              home-manager.extraSpecialArgs = {
-                # pass config variables from above
-                inherit username;
-                # inherit name;
-                inherit hostname;
-                inherit profile;
-                inherit email;
-                inherit theme;
-                inherit font;
-                inherit fontPkg;
-                inherit wm;
-                inherit wmType;
-                inherit browser;
-                inherit editor;
-                inherit term;
-                inherit (inputs) hyprland-plugins;
-                inherit (inputs) nixos-wsl;
-                inherit pkgs;
-                inherit helix;
-                channels = { inherit nixpkgs nixpkgs-unstable; };
-              };
+              home-manager.extraSpecialArgs = commonSpecialArgs;
             }
           ];
-          specialArgs = {
-            # pass config variables from above
-            inherit username;
-            inherit name;
-            inherit hostname;
-            inherit timezone;
-            inherit locale;
-            inherit theme;
-            inherit font;
-            inherit fontPkg;
-            inherit wm;
-            inherit (inputs) blocklist-hosts;
-            inherit (inputs) nixos-wsl;
-            channels = { inherit nixpkgs nixpkgs-unstable; };
-          };
+          specialArgs = commonSpecialArgs;
         };
       };
     };
@@ -245,6 +204,7 @@
       url = "github:hyprwm/hyprland-plugins";
       flake = false;
     };
+    niri.url = "github:sodiboo/niri-flake";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     fw-ectool = {
       url = "github:tlvince/ectool.nix";

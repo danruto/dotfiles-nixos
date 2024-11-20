@@ -14,7 +14,7 @@
     variables = {
       NEXT_TELEMETRY_DISABLED = "1";
     };
-    loginShell = pkgs.fish;
+    # loginShell = pkgs.fish;
   };
 
   # networking.dns = [ "1.1.1.1" "8.8.8.8" ];

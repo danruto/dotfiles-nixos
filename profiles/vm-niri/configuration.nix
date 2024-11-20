@@ -2,34 +2,33 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, pkgs, username, hostname, timezone, locale, nixos-hardware, ... }:
+{ lib, pkgs, username, hostname, timezone, locale, ... }:
 
 with lib;
 {
   imports =
     [
-      # lanzaboote.nixosModules.lanzaboote,
-      # nixos-hardware.nixosModules.common-hidpi,
-      nixos-hardware.nixosModules.framework-12th-gen-intel
-      nixos-hardware.nixosModules.common-pc-ssd
-      # nixos-hardware.nixosModules.common-cpu-intel
-      # nixos-hardware.nixosModules.common-gpu-intel
       ./hardware-configuration.nix
-      ../../system/hardware/bluetooth.nix
-      # ../../system/hardware/monitor.nix
-      ../../system/hardware/opengl.nix
-      ../../system/hardware/power.nix
       ../../system/security/gpg.nix
-      ../../system/security/blocklist.nix
-      ../../system/wm/wayland.nix
-      ../../system/wm/hyprland.nix
-      ../../system/wm/fonts.nix
-      ../../system/apps/starship.nix
+      # ../../system/security/blocklist.nix
+      # ../../system/style/stylix.nix
+      # ../../system/wm/hyprland.nix
+      ../../system/wm/niri.nix
     ];
 
   # Setup bootloader
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  # boot.loader.systemd-boot.enable = true;
+  # boot.loader.efi.canTouchEfiVariables = true;
+  # boot.loader.grub.device = "nodev";
+  # boot.loader.grub.efiSupport = true;
+
+  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.useOSProber = true;
+  boot.loader.grub.enable = true;
+
+  services.qemuGuest.enable = true;
+  services.spice-vdagentd.enable = true;
+  # services.getty.autologinUser = "danruto";
 
   # Fix nix path
   nix.nixPath = [
@@ -54,9 +53,11 @@ with lib;
 
   nixpkgs.config.allowUnfree = true;
 
-  # TODO: Move to modules Networking
+  # Use bleeding edge kernel
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # Networking
   networking.hostName = hostname; # Define your hostname.
-  networking.networkmanager.enable = true;
 
   # Timezone and locale
   time.timeZone = timezone; # time zone
@@ -71,13 +72,7 @@ with lib;
     uid = 1000;
   };
   security.sudo.wheelNeedsPassword = false;
-
-  virtualisation.docker = {
-    enable = true;
-    enableOnBoot = false;
-  };
-
-  security.pam.services.login.fprintAuth = true;
+  virtualisation.docker.enable = true;
 
   # System packages
   environment.systemPackages = with pkgs; [
@@ -87,22 +82,39 @@ with lib;
     git
     home-manager
     starship
-    kitty
+    swaylock
   ];
 
   environment.shells = with pkgs; [ fish ];
   users.defaultUserShell = pkgs.fish;
   programs.fish.enable = true;
+  programs.starship.enable = true;
+  programs.starship.settings = {
+    gcloud.disabled = true;
+    kubernetes.disabled = false;
+    git_branch.style = "242";
+    directory.style = "bold blue dimmed";
+    directory.truncate_to_repo = false;
+    directory.truncation_length = 8;
+    python.disabled = true;
+    ruby.disabled = true;
+    hostname.ssh_only = false;
+    hostname.style = "bold green";
+    memory_usage.disabled = false;
+    memory_usage.threshold = -1;
+  };
 
-  # TODO: Move to modules
   services.openssh.enable = true;
-  services.fwupd.enable = true;
+  services.openssh.settings.PasswordAuthentication = true;
+  services.openssh.settings.PermitRootLogin = "yes";
 
-  services.udev.extraRules = ''
-    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
-  '';
+  # Disable the firewall since we're in a VM and we want to make it
+  # easy to visit stuff in here. We only use NAT networking anyways.
+  networking.firewall.enable = false;
+  # networking.useDHCP = true;
+  # networking.interfaces.enp0s1.useDHCP = false;
 
   # It is ok to leave this unchanged for compatibility purposes
-  system.stateVersion = "23.11";
+  system.stateVersion = "24.05";
 
 }

@@ -5,10 +5,14 @@ NIXPORT ?= 22
 
 # Same as inside `flake.nix`
 NIXUSER ?= danruto
-PROFILE=$(cat flake.nix | rg '  profile = "([a-z0-9]+)"' --trim -or '$1$2')
+PROFILE=$(cat flake.nix | rg '  profile = "([a-z0-9\-]+)"' --trim -or '$1$2')
 
 SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 UNAME := $(shell uname)
+
+vm/help:
+	echo "sudo -i; passwd. Set to root."
+	echo "export NIXADDR = $(ifconfig of vm); make vm/bootstrap/$(step)"
 
 # Bootstrap based on: https://github.com/mitchellh/nixos-config/blob/main/Makefile
 vm/bootstrap/0:
@@ -28,7 +32,7 @@ vm/bootstrap/0:
 		mount /dev/disk/by-label/boot /mnt/boot; \
 		nixos-generate-config --root /mnt; \
 		sed --in-place '/system\.stateVersion = .*/a \
-			nix.package = pkgs.nixUnstable;\n \
+			# nix.package = pkgs.git;\n \
 			nix.extraOptions = \"experimental-features = nix-command flakes\";\n \
 			services.openssh.enable = true;\n \
 			services.openssh.settings.PasswordAuthentication = true;\n \
@@ -52,6 +56,10 @@ vm/bootstrap/2:
 		nix profile list; \
 		home-manager switch -b backup --flake /nix-config#user; \
 	"
+
+vm/bootstrap/u:
+	NIXUSER=root $(MAKE) vm/copy
+	NIXUSER=root $(MAKE) vm/switch
 
 # copy our secrets into the VM
 vm/secrets:

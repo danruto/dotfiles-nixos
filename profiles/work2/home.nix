@@ -6,11 +6,11 @@
     ../../user/shell/tui.nix # Useful cli/tui apps
     ../../user/apps/git/git.nix # My git config
     ../../user/lang/cc/cc.nix # C and C++ tools
-    ../../user/lang/rust/rust.nix # Rust tools
+    # ../../user/lang/rust/rust.nix # Rust tools
     ../../user/lang/typescript/typescript.nix # typescript tools
-    ../../user/lang/go/go.nix # go tools
+    # ../../user/lang/go/go.nix # go tools
     ../../user/lang/lua/lua.nix # lua tools
-    ../../user/lang/zig/zig.nix # zig tools
+    # ../../user/lang/zig/zig.nix # zig tools
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
     # ../../user/apps/terminal/lazyvim.nix
@@ -29,6 +29,7 @@
   home.stateVersion = "24.05";
 
   programs.home-manager.enable = true;
+  programs.yazi.enable = true;
 
   xdg = {
     enable = true;

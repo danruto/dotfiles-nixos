@@ -12,7 +12,6 @@
     font-awesome
     ubuntu_font_family
     terminus_font
-		d2coding
     font-awesome
     jetbrains-mono
     d2coding
