@@ -1,4 +1,4 @@
-{ config, lib, pkgs, stdenv, toString, browser, term, font, hyprland-plugins, ... }:
+{ lib, pkgs, ... }:
 let
   statusbar = pkgs.writeShellScriptBin "statusbar" (builtins.readFile ./statusbar.sh);
   switch = pkgs.writeShellScriptBin "switch" (builtins.readFile ./switch.sh);
@@ -341,6 +341,7 @@ in
           margin-left: 5px;
           margin-top: 3px;
           margin-bottom: 3px;
+          padding: 0 8px;
 
           background-color: #1b242b;
           color: #6a92d7;

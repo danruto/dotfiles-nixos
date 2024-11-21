@@ -45,9 +45,28 @@ in
         margin = "0 0 0 0";
         spacing = 5;
 
-        modules-left = [ "custom/launcher" ];
-        modules-center = [ ];
+        modules-left = [ "custom/launcher" "niri/workspaces" ];
+        modules-center = [ "niri/window" ];
         modules-right = [ "tray" "disk" "cpu" "memory" "backlight" "pulseaudio" "network" "battery" "clock" "custom/power-menu" ];
+
+        "niri/workspaces" = {
+          "on-click" = "activate";
+          "format-icons" = {
+            "1" = "";
+            "2" = "";
+            "3" = "";
+            "4" = "";
+            "5" = "";
+            "urgent" = "";
+            "active" = "";
+            "default" = "";
+          };
+        };
+
+        "niri/window" = {
+          "format" = "{}";
+        };
+
 
         "tray" = {
           "spacing" = 10;
@@ -170,7 +189,7 @@ in
 
         "custom/launcher" = {
           "format" = " <span color='#6a92d7'></span>";
-          "on-click" = "rofi -show drun";
+          "on-click" = "fuzzel";
         };
 
       };
