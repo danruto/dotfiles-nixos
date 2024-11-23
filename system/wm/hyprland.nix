@@ -1,22 +1,12 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   # Import wayland config
-  imports = [ ./wayland.nix
-              ./pipewire.nix
-              ./dbus.nix
-            ];
+  imports = [
+    # ./wayland.nix
+  ];
 
-  # Security
-  security = {
-    pam.services.swaylock = {
-      text = ''
-        auth include login
-      '';
-    };
-    pam.services.login.enableGnomeKeyring = true;
-  };
-
+  security.pam.services.login.enableGnomeKeyring = true;
   services.gnome.gnome-keyring.enable = true;
 
   programs = {

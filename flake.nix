@@ -15,6 +15,7 @@
     , neovim-nightly-overlay
     , zjstatus
     , niri
+    , nixos-hardware
     , ...
     }@inputs:
     let
@@ -98,14 +99,21 @@
         inherit helix;
         inherit timezone;
         inherit locale;
+
+        inherit (inputs) blocklist-hosts;
+
         channels = { inherit nixpkgs nixpkgs-unstable; };
       };
 
-      linuxSpecialArgs = commonSpecialArgs // {
-        inherit (inputs) hyprland-plugins;
+      wslSpecialArgs = commonSpecialArgs // {
         inherit (inputs) nixos-wsl;
-        inherit (inputs) niri;
         # inherit inputs;
+      };
+
+      fwSpecialArgs = commonSpecialArgs // {
+        inherit (inputs) hyprland-plugins;
+        inherit (inputs) niri;
+        inherit (inputs) nixos-hardware;
       };
 
     in
@@ -126,10 +134,10 @@
 
               # Optionally, use home-manager.extraSpecialArgs to pass
               # arguments to home.nix
-              home-manager.extraSpecialArgs = linuxSpecialArgs;
+              home-manager.extraSpecialArgs = if (profile == "wsl") then wslSpecialArgs else fwSpecialArgs;
             }
           ];
-          specialArgs = linuxSpecialArgs;
+          specialArgs = if (profile == "wsl") then wslSpecialArgs else fwSpecialArgs;
         };
       };
 

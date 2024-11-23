@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -31,4 +31,15 @@
       wayland = true;
     };
   };
+
+  # Security
+  security = {
+    pam.services.swaylock = {
+      text = ''
+        auth include login
+      '';
+    };
+    pam.services.login.enableGnomeKeyring = true;
+  };
+
 }

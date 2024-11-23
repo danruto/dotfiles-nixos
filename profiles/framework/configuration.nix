@@ -21,10 +21,12 @@ with lib;
       ../../system/hardware/power.nix
       ../../system/security/gpg.nix
       ../../system/security/blocklist.nix
-      ../../system/wm/wayland.nix
-      ../../system/wm/hyprland.nix
       ../../system/wm/fonts.nix
       ../../system/apps/starship.nix
+
+      ../../system/wm/wayland.nix
+      ../../system/wm/hyprland.nix
+      ../../system/wm/niri.nix
     ];
 
   # Setup bootloader

@@ -17,6 +17,7 @@
     d2coding
     nerdfonts
     agave
+    iosevka-comfy.comfy
   ];
 
 }

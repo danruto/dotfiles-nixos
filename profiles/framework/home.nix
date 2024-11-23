@@ -21,10 +21,12 @@
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/gui/neovide.nix
     ../../user/apps/terminal/helix.nix
-    ../../user/apps/terminal/alacritty.nix
+    # ../../user/apps/terminal/alacritty.nix
     ../../user/apps/terminal/kitty.nix
     ../../user/wm/hyprland/hyprland.nix
+    ../../user/wm/niri/niri.nix
     ../../user/apps/browser/brave.nix
+    ../../user/apps/browser/ff.nix
     ../../user/apps/fileman/nemo.nix
     ../../user/apps/gui/gui.nix
     ../../user/apps/networking/wireguard.nix
