@@ -1,4 +1,4 @@
-{ pkgs, name, email, ... }:
+{ pkgs, email, ... }:
 
 let
   stable-packages = with pkgs; [
@@ -11,6 +11,8 @@ let
   unstable-packages = with pkgs.unstable; [
     jujutsu
   ];
+
+  name = "Danny";
 in
 {
   home.packages = stable-packages ++ unstable-packages;

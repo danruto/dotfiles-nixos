@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, nixos-wsl, lib, pkgs, blocklist-hosts, username, name, hostname, timezone, locale, wm, theme, ... }:
+{ lib, pkgs, username, hostname, timezone, locale, ... }:
 
 with lib;
 {
@@ -58,7 +58,7 @@ with lib;
   # User account
   users.users.${username} = {
     isNormalUser = true;
-    description = name;
+    description = username;
     extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [ ];
     uid = 1000;
