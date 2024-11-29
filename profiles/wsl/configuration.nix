@@ -32,6 +32,7 @@ with lib;
     enable = true;
     enableOnBoot = true;
     autoPrune.enable = true;
+    extraOptions = "--insecure-registry 192.168.0.252:49159";
   };
 
   # Fix nix path
