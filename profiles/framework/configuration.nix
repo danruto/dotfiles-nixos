@@ -44,7 +44,7 @@ with lib;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # Ensure nix flakes are enabled
-  nix.package = pkgs.nixFlakes;
+  nix.package = pkgs.nixVersions.stable;
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';
@@ -79,7 +79,8 @@ with lib;
     enableOnBoot = false;
   };
 
-  security.pam.services.login.fprintAuth = true;
+  services.fprintd.enable = true;
+  # security.pam.services.login.fprintAuth = true;
 
   # System packages
   environment.systemPackages = with pkgs; [

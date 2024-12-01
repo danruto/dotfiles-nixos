@@ -23,12 +23,12 @@
       system = "x86_64-linux";
       # system = "x86_64-darwin";
       hostname = "danruto"; # hostname
-      profile = "wsl";
+      # profile = "wsl";
       # profile = "vm";
       # profile = "vm-hypr";
       # profile = "work";
       # profile = "work2";
-      # profile = "framework";
+      profile = "framework";
       # profile = "orb";
       timezone = "Australia/Sydney"; # select timezone
       locale = "en_US.UTF-8"; # select locale
@@ -169,11 +169,11 @@
 
   inputs = {
     # Global shared inputs
-    nixpkgs.url = "nixpkgs/nixos-24.05";
+    nixpkgs.url = "nixpkgs/nixos-24.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

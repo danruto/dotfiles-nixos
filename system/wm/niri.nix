@@ -1,4 +1,4 @@
-{ niri, ... }:
+{ pkgs, niri, ... }:
 {
   # Import wayland config
   imports = [
@@ -9,5 +9,12 @@
 
   nixpkgs.overlays = [ niri.overlays.niri ];
 
+  environment.systemPackages = with pkgs; [
+    xwayland-satellite
+  ];
+  environment.variables.NIXOS_OZONE_WL = "1";
+  environment.variables.DISLPAY = ":0";
+
   programs.niri.enable = true;
+
 }
