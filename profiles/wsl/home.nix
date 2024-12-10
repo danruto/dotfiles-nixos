@@ -42,6 +42,8 @@
     nodePackages.ungit
   ];
 
+  programs.yazi.enable = true;
+
   # xdg.enable = true;
   # xdg.userDirs = {
   #   enable = true;

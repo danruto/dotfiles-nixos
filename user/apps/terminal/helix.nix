@@ -75,8 +75,8 @@
           "esc" = [ "collapse_selection" "keep_primary_selection" ];
           "K" = [ "hover" ];
           # Switch p and P behaviour
-          "P" = [ "paste_after" ];
-          "p" = [ "paste_before" ];
+          # "P" = [ "paste_after" ];
+          # "p" = [ "paste_before" ];
         };
 
         select = {
@@ -103,8 +103,9 @@
           };
         };
 
-        ruff-lsp = {
-          command = "ruff-lsp";
+        ruff = {
+          command = "ruff";
+          args = [ "server" ];
         };
 
         vscode-eslint-language-server = {
@@ -207,7 +208,7 @@
           name = "python";
           indent = { tab-width = 4; unit = "    "; };
           auto-format = true;
-          language-servers = [ "ruff-lsp" "pyright" ];
+          language-servers = [ "ruff" "pyright" ];
         }
         {
           name = "nix";
