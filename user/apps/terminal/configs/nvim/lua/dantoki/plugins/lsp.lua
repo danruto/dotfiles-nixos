@@ -40,9 +40,19 @@ return {
 			"neovim/nvim-lspconfig",
 		},
 		opts = {
-			excluded_servers = { "sqls", "denols", "flow", "nixd", "tsserver", "rust_analyzer", "bazelrc-lsp" },
+			excluded_servers = {
+				"sqls",
+				"denols",
+				"flow",
+				"nixd",
+				"tsserver",
+				"rust_analyzer",
+				"bazelrc-lsp",
+				"ruff_lsp",
+				"bufls",
+			},
 			preferred_servers = {
-				python = { "pyright", "ruff_lsp" },
+				python = { "pyright", "ruff" },
 				-- rust = { "rust_analyzer" },
 				rust = {},
 				-- nix = { "nil" },
@@ -129,13 +139,13 @@ return {
 		enabled = false,
 		version = false,
 		keys = {
-			{ "<Leader>a",  vim.lsp.buf.code_action,   desc = "Code actions" },
-			{ "<Leader>rn", vim.lsp.buf.rename,        desc = "Rename" },
-			{ "K",          vim.lsp.buf.hover,         desc = "Hover" },
-			{ "<Leader>F",  vim.lsp.buf.format,        desc = "Format document" },
-			{ "[d",         vim.diagnostic.goto_prev,  desc = "Go to prev diagnostic" },
-			{ "]d",         vim.diagnostic.goto_next,  desc = "Go to next diagnostic" },
-			{ "<Leader>?",  vim.diagnostic.open_float, desc = "Line Diagnostics" },
+			{ "<Leader>a", vim.lsp.buf.code_action, desc = "Code actions" },
+			{ "<Leader>rn", vim.lsp.buf.rename, desc = "Rename" },
+			{ "K", vim.lsp.buf.hover, desc = "Hover" },
+			{ "<Leader>F", vim.lsp.buf.format, desc = "Format document" },
+			{ "[d", vim.diagnostic.goto_prev, desc = "Go to prev diagnostic" },
+			{ "]d", vim.diagnostic.goto_next, desc = "Go to next diagnostic" },
+			{ "<Leader>?", vim.diagnostic.open_float, desc = "Line Diagnostics" },
 		},
 		event = "InsertEnter",
 		dependencies = {
@@ -173,16 +183,16 @@ return {
 			-- default sources for all buffers
 			local default_cmp_sources = cmp.config.sources({
 				{ name = "nvim_lsp_signature_help", priority = 1000 },
-				{ name = "nvim_lsp",                priority = 900 },
-				{ name = "luasnip",                 priority = 800 },
+				{ name = "nvim_lsp", priority = 900 },
+				{ name = "luasnip", priority = 800 },
 			}, {
 				-- { name = "copilot", priority = 700 },
-				{ name = "codeium",  priority = 601 },
-				{ name = "buffer",   priority = 600 },
+				{ name = "codeium", priority = 601 },
+				{ name = "buffer", priority = 600 },
 				{ name = "nvim_lua", priority = 500 },
-				{ name = "path",     priority = 400 },
+				{ name = "path", priority = 400 },
 				-- { name = "orgmode" },
-				{ name = "crates",   priority = 300 },
+				{ name = "crates", priority = 300 },
 			})
 			-- If a file is too large, I don't want to add to it's cmp sources treesitter, see:
 			-- https://github.com/hrsh7th/nvim-cmp/issues/1522
@@ -201,7 +211,7 @@ return {
 			local has_words_before = function()
 				local line, col = (unpack or table.unpack)(vim.api.nvim_win_get_cursor(0))
 				return col ~= 0
-						and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+					and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 			end
 
 			local feedkey = function(key, mode)
@@ -341,7 +351,7 @@ return {
 				formatting = {
 					format = lspkind.cmp_format({
 						mode = "text_symbol", -- show only symbol annotations
-						maxwidth = 50,   -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+						maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
 						ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
 						-- The function below will be called before any actual modifications from lspkind
 						-- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
@@ -494,13 +504,13 @@ return {
 		-- build = "cargo build --release",
 		--
 		keys = {
-			{ "<Leader>a",  vim.lsp.buf.code_action,   desc = "Code actions" },
-			{ "<Leader>rn", vim.lsp.buf.rename,        desc = "Rename" },
-			{ "K",          vim.lsp.buf.hover,         desc = "Hover" },
-			{ "<Leader>F",  vim.lsp.buf.format,        desc = "Format document" },
-			{ "[d",         vim.diagnostic.goto_prev,  desc = "Go to prev diagnostic" },
-			{ "]d",         vim.diagnostic.goto_next,  desc = "Go to next diagnostic" },
-			{ "<Leader>?",  vim.diagnostic.open_float, desc = "Line Diagnostics" },
+			{ "<Leader>a", vim.lsp.buf.code_action, desc = "Code actions" },
+			{ "<Leader>rn", vim.lsp.buf.rename, desc = "Rename" },
+			{ "K", vim.lsp.buf.hover, desc = "Hover" },
+			{ "<Leader>F", vim.lsp.buf.format, desc = "Format document" },
+			{ "[d", vim.diagnostic.goto_prev, desc = "Go to prev diagnostic" },
+			{ "]d", vim.diagnostic.goto_next, desc = "Go to next diagnostic" },
+			{ "<Leader>?", vim.diagnostic.open_float, desc = "Line Diagnostics" },
 		},
 
 		opts = {
@@ -521,7 +531,7 @@ return {
 			trigger = { signature_help = { enabled = true } },
 
 			keymap = {
-				preset = 'default',
+				preset = "default",
 				-- ['<CR>'] = { 'select_and_accept' },
 			},
 

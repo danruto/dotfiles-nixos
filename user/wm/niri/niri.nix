@@ -434,7 +434,7 @@ in
 
       # Suggested binds for running programs: terminal, app launcher, screen locker.
       (plain "Mod+T" [ (leaf "spawn" [ "foot" ]) ])
-      (plain "Mod+D" [ (leaf "spawn" [ "fuzzel" ]) ])
+      (plain "Mod+R" [ (leaf "spawn" [ "fuzzel" ]) ])
       (plain "Super+Alt+L" [ (leaf "spawn" [ "swaylock" ]) ])
 
       # You can also use a shell:
@@ -557,7 +557,7 @@ in
       # (plain "Mod+BracketLeft"  [(flag "consume-or-expel-window-left")])
       # (plain "Mod+BracketRight" [(flag "consume-or-expel-window-right")])
 
-      (plain "Mod+R" [ (flag "switch-preset-column-width") ])
+      (plain "Mod+D" [ (flag "switch-preset-column-width") ])
       (plain "Mod+F" [ (flag "maximize-column") ])
       (plain "Mod+Shift+F" [ (flag "fullscreen-window") ])
       (plain "Mod+C" [ (flag "center-column") ])

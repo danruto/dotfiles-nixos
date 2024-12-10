@@ -63,7 +63,7 @@
         };
         overlays = [
           rust-overlay.overlays.default
-          nur.overlay
+          nur.overlays.default
           neovim-nightly-overlay.overlays.default
           (_final: prev: {
             zjstatus = zjstatus.packages.${prev.system}.default;
