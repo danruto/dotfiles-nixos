@@ -50,6 +50,7 @@ return {
 				"bazelrc-lsp",
 				"ruff_lsp",
 				"bufls",
+				"typst_lsp"
 			},
 			preferred_servers = {
 				python = { "pyright", "ruff" },
@@ -531,7 +532,7 @@ return {
 			trigger = { signature_help = { enabled = true } },
 
 			keymap = {
-				preset = "default",
+				preset = "enter",
 				-- ['<CR>'] = { 'select_and_accept' },
 			},
 
