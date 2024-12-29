@@ -542,6 +542,12 @@ return {
 				documentation = {
 					auto_show = true,
 				},
+				menu = {
+					-- auto_show = function(ctx)
+					-- 	return ctx.mode ~= "cmdline"
+					-- end,
+					-- auto_show = false,
+				},
 			},
 
 			snippets = {
@@ -560,6 +566,7 @@ return {
 			},
 			sources = {
 				default = { "lsp", "path", "luasnip", "buffer" },
+				cmdline = {},
 			},
 		},
 	},
