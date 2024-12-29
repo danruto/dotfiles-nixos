@@ -494,7 +494,7 @@ return {
 	},
 	{
 		"saghen/blink.cmp",
-		name = "blink-cmp",
+		-- name = "blink-cmp",
 		lazy = false, -- lazy loading handled internally
 		-- optional: provides snippets for the snippet source
 		dependencies = { "rafamadriz/friendly-snippets", { "L3MON4D3/LuaSnip", version = "v2.*" } },
