@@ -90,7 +90,7 @@ with lib;
     git
     home-manager
     starship
-    kitty
+    ghostty
   ];
 
   environment.shells = with pkgs; [ fish ];
