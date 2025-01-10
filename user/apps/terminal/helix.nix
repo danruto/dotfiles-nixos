@@ -77,6 +77,7 @@
           # Switch p and P behaviour
           # "P" = [ "paste_after" ];
           # "p" = [ "paste_before" ];
+          "C-y" = [ ":sh zellij run -c -f -x 10% -y 10% --width 80% --height 80% -- bash ~/.config/helix/yazi-picker.sh open" ];
         };
 
         select = {
@@ -221,4 +222,5 @@
   };
 
   home.file.".config/helix/themes/carbon.toml".source = ./configs/helix/carbon.toml;
+  home.file.".config/helix/yazi-picker.sh".source = ./configs/helix/yazi-picker.sh;
 }
