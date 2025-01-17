@@ -25,6 +25,7 @@
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
     # ../../user/apps/terminal/lazyvim.nix
+    ../../user/apps/fileman/yazi.nix
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/helix.nix
   ];
@@ -41,8 +42,6 @@
     zlib
     nodePackages.ungit
   ];
-
-  programs.yazi.enable = true;
 
   # xdg.enable = true;
   # xdg.userDirs = {

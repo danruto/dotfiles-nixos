@@ -38,7 +38,5 @@ in
     recursive = true;
     source = "${catppuccin}/share/themes/${catppuccin_name}/gtk-4.0/assets";
   };
-
-  programs.yazi.enable = true;
 }
 

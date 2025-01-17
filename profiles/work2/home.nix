@@ -14,6 +14,7 @@
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
     # ../../user/apps/terminal/lazyvim.nix
+    ../../user/apps/fileman/yazi.nix
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/helix.nix
     ../../user/apps/terminal/alacritty.nix
@@ -29,7 +30,6 @@
   home.stateVersion = "24.05";
 
   programs.home-manager.enable = true;
-  programs.yazi.enable = true;
 
   xdg = {
     enable = true;
