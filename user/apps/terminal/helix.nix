@@ -222,5 +222,6 @@
   };
 
   home.file.".config/helix/themes/carbon.toml".source = ./configs/helix/carbon.toml;
+  home.file.".config/helix/themes/adwaita-light-inlay.toml".source = ./configs/helix/adwaita-light-inlay.toml;
   home.file.".config/helix/yazi-picker.sh".source = ./configs/helix/yazi-picker.sh;
 }
