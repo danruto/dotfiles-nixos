@@ -20,6 +20,7 @@
         text-width = 120;
         popup-border = "all";
         completion-replace = true;
+        continue-comments = false;
 
         cursor-shape = {
           insert = "bar";
