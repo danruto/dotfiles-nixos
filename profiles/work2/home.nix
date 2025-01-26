@@ -17,8 +17,8 @@
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/helix.nix
-    ../../user/apps/terminal/alacritty.nix
-    ../../user/apps/terminal/kitty.nix
+    # ../../user/apps/terminal/alacritty.nix
+    # ../../user/apps/terminal/kitty.nix
     ../../user/wm/aerospace
   ];
 
