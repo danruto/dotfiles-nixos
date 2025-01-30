@@ -101,6 +101,7 @@ return {
 	{
 		"CWood-sdf/pineapple",
 		-- dependencies = require("dantoki.pineapple"),
+		enabled = false,
 		opts = {
 			installedRegistry = "dantoki.pineapple",
 			colorschemeFile = "after/plugin/theme.lua",

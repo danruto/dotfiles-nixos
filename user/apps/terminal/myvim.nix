@@ -269,6 +269,14 @@
           neo-tree-nvim
           markdown-render-nvim
           neocodeium
+          # lazy-lsp-nvim
+          my-lazy-lsp-nvim
+          # lsp_lines-nvim
+          # nvim-spectre
+          todo-comments-nvim
+          dropbar-nvim
+          # codeium-nvim
+          telescope-fzf-native-nvim
 
           # ---- Themes ----
 
@@ -283,15 +291,7 @@
           tokyonight-nvim
           # nightly
           nordic-nvim
-          # lazy-lsp-nvim
-          my-lazy-lsp-nvim
-          # lsp_lines-nvim
-          # nvim-spectre
-          todo-comments-nvim
-          pineapple-nvim
-          # codeium-nvim
-          dropbar-nvim
-          telescope-fzf-native-nvim
+          # pineapple-nvim
           { name = "catppuccin"; path = catppuccin-nvim; }
           monet-nvim
           neofusion-nvim
@@ -397,6 +397,7 @@
           json
           jsonc
           json5
+          just
           lua
           markdown
           nix
