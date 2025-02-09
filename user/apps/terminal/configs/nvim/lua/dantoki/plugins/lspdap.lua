@@ -3,10 +3,10 @@ return {
 		"mfussenegger/nvim-dap",
 		enabled = false,
 		keys = {
-			{ ",db",  "<CMD>DapToggleBreakpoint<CR>",             desc = "Toggle dap breakpoint" },
-			{ ",dc",  "<CMD>DapContinue<CR>",                     desc = "Continue run" },
-			{ ",do",  "<CMD>DapStepOver<CR>",                     desc = "Step over" },
-			{ ",de",  "<CMD>DapTerminate<CR>",                    desc = "Terminate" },
+			{ ",db", "<CMD>DapToggleBreakpoint<CR>", desc = "Toggle dap breakpoint" },
+			{ ",dc", "<CMD>DapContinue<CR>", desc = "Continue run" },
+			{ ",do", "<CMD>DapStepOver<CR>", desc = "Step over" },
+			{ ",de", "<CMD>DapTerminate<CR>", desc = "Terminate" },
 			{ ",dfs", "<CMD>!firefox -start-debugger-server<CR>", desc = "Start firefox debug server" },
 		},
 		dependencies = {
@@ -27,8 +27,7 @@ return {
 					},
 				},
 			},
-			{ "nvim-neotest/nvim-nio" }
-
+			-- { "nvim-neotest/nvim-nio" }
 		},
 		config = function()
 			local dap = require("dap")

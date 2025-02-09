@@ -26,6 +26,7 @@ return {
 	},
 	{
 		"jghauser/shade.nvim",
+		enabled = false,
 		opts = {
 			overlay_opacity = 50,
 			opacity_step = 1,
@@ -85,6 +86,7 @@ return {
 	},
 	{
 		"Pocco81/true-zen.nvim",
+		enabled = false,
 		cmd = {
 			"TZAtaraxis",
 			"TZMinimalist",
@@ -95,6 +97,7 @@ return {
 	},
 	{
 		"sindrets/winshift.nvim",
+		enabled = false,
 		opts = {},
 	},
 	{

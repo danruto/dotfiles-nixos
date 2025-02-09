@@ -85,17 +85,6 @@
           };
         };
 
-        pineapple-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "pineapple";
-          version = "2024-02-23";
-          src = pkgs.fetchFromGitHub {
-            owner = "CWood-sdf";
-            repo = "pineapple";
-            rev = "2ddd76ec9fdc68b514c9ec45412c3b48a97b0ef4";
-            hash = "sha256-d3+lhm4Sq4FIQVSBPrqQJQBdvkphZ10OS4ObUD04UkI=";
-          };
-        };
-
         monet-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "monet.nvim";
           version = "2024-07-21";
@@ -118,73 +107,39 @@
           };
         };
 
-        tiny-inline-diagnostic-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "tiny-inline-diagnostic.nvim";
-          version = "2024-09-30";
-          src = pkgs.fetchFromGitHub {
-            owner = "rachartier";
-            repo = "tiny-inline-diagnostic.nvim";
-            rev = "1a83e7ce5c9d0ae4d89fc5c812b55ff8ed1d39e7";
-            hash = "sha256-NBcUVUSnk2TlbSr/vFTbp3Rh35ms8lAcfDqpmE1KTq4=";
-          };
-        };
-
-        # Temp reference for mini.icons until unstable updates
-        # my-mini-nvim = pkgs.vimUtils.buildVimPlugin {
-        #   pname = "mini.nvim";
-        #   version = "2024-07-07";
-        #   src = pkgs.fetchFromGitHub {
-        #     owner = "echasnovski";
-        #     repo = "mini.nvim";
-        #     rev = "45b3540003566e8f19c4cc4b1c9d0b8605a2697c";
-        #     sha256 = "sha256-kA8yDJrnKLlg27rKsAdxp3vTBF2ZT2uCIIY103unHeo=";
-        #   };
-        #   meta.homepage = "https://github.com/echasnovski/mini.nvim/";
-        # };
-
-        my-lazy-lsp-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "lazy-lsp.nvim";
-          version = "2024-09-30";
-          src = pkgs.fetchFromGitHub {
-            owner = "dundalek";
-            repo = "lazy-lsp.nvim";
-            rev = "faedf30d6e858a32e635a9640d10f7b44a878847";
-            hash = "sha256-sIh2SkOlKV/asMZ76XHbVdzcgDU/upIbqtdZ8zydZtY=";
-          };
-        };
-
         markdown-render-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "markdown.nvim";
-          version = "2024-09-30";
+          version = "2025-02-09";
           src = pkgs.fetchFromGitHub {
             owner = "MeanderingProgrammer";
             repo = "markdown.nvim";
-            rev = "ebfea32e3b3d538a6e0c8e12da911d632deb1d8c";
-            hash = "sha256-bZXsnXx9U0C+b2kgpXk+cPK8inVt4dmVEca+/tDWxZE=";
-          };
-        };
-
-        perf-nvim-cmp = pkgs.vimUtils.buildVimPlugin {
-          pname = "nvim-cmp";
-          version = "2024-08-27";
-          src = pkgs.fetchFromGitHub {
-            owner = "yioneko";
-            repo = "nvim-cmp";
-            rev = "6c3d595f3223c1ae7392d4fde1626355439af6c1";
-            hash = "sha256-qVU02nIclxt5Fgh+8Cll087AoWtaLo4g2846VYf+ALY=";
+            rev = "17a77463f945c4b9e4f371c752efd90e3e1bf604";
+            hash = "sha256-x8FJNB30uhuwkieCcGdP7ct+DxbwlyOzaFFA6DRHwbE=";
           };
         };
 
         neocodeium = pkgs.vimUtils.buildVimPlugin {
           pname = "neocodeium";
-          version = "2024-09-30";
+          version = "2025-02-09";
           src = pkgs.fetchFromGitHub {
             owner = "monkoose";
             repo = "neocodeium";
-            rev = "37e66aa0e7d69601fe6a410a5dee65c48aaeb6f7";
-            hash = "sha256-qSkUKrXGzv3kTyKUTrPLNyX//wLKyVBGOo0D3ulzN4s=";
+            rev = "a2b5257c736886ec3ccbd961766f8ab9c82b2a72";
+            hash = "sha256-mR2fzsdCVbh7nLcsSgQnhRivoKW6oFqJwuIYfz8OV0k=";
           };
         };
+
+        my-snacks-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "snacks.nvim";
+          version = "2025-02-09";
+          src = pkgs.fetchFromGitHub {
+            owner = "folke";
+            repo = "snacks.nvim";
+            rev = "a386e4270b7c083c95028bcaa1b062b57537817b";
+            hash = "sha256-1BoY4f4jqxdzNPjZSpnrkcAfv3XKOgKb/Xic/htQ7/Y=";
+          };
+        };
+
 
         plugins = with pkgs.unstable.vimPlugins; [
           nvim-ts-autotag
@@ -200,6 +155,8 @@
           nvim-ts-context-commentstring
           flash-nvim
           mini-nvim
+          # snacks-nvim
+          my-snacks-nvim
           # my-mini-nvim
           # { name = "mini.ai"; path = mini-nvim; }
           # { name = "mini.bracketed"; path = mini-nvim; }
@@ -245,8 +202,9 @@
           # rust-tools-nvim
           rustaceanvim
           nvim-dap
-          nvim-dap-ui
-          nvim-nio
+          # nvim-dap-ui
+          # nvim-nio
+          # neotest
           hover-nvim
           lsp-inlayhints-nvim
           # fidget-nvim
@@ -257,26 +215,25 @@
           nvim-web-devicons
           nvim-notify
           dressing-nvim
-          { name = "shade.nvim"; path = Shade-nvim; }
+          # { name = "shade.nvim"; path = Shade-nvim; }
           # expressline
           icon-picker-nvim
           nvim-colorizer-lua
-          true-zen-nvim
-          winshift-nvim
+          # true-zen-nvim
+          # winshift-nvim
           tiny-inline-diagnostic-nvim
           trouble-nvim
           telescope-nvim
-          neo-tree-nvim
+          # neo-tree-nvim
           markdown-render-nvim
           neocodeium
-          # lazy-lsp-nvim
-          my-lazy-lsp-nvim
+          lazy-lsp-nvim
           # lsp_lines-nvim
           # nvim-spectre
           todo-comments-nvim
           dropbar-nvim
           # codeium-nvim
-          telescope-fzf-native-nvim
+          # telescope-fzf-native-nvim
 
           # ---- Themes ----
 
@@ -305,7 +262,6 @@
 
           # Lazy plugins we can check out later
           # noice-nvim
-          # telescope-fzf-native-nvim
           # vim-illuminate
           # vim-startuptime
           # typescript-nvim
@@ -347,10 +303,10 @@
                 "getscriptPlugin",
                 "gzip",
                 "logipat",
-                "netrw",
-                "netrwPlugin",
-                "netrwSettings",
-                "netrwFileHandlers",
+                -- "netrw",
+                -- "netrwPlugin",
+                -- "netrwSettings",
+                -- "netrwFileHandlers",
                 "matchit",
                 "tar",
                 "tarPlugin",

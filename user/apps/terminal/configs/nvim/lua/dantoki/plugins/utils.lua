@@ -1,7 +1,8 @@
 local finder = {
-	telescope = true,
+	telescope = false,
 	jfind = false,
 	azy = false,
+	snacks = true,
 }
 
 return {
@@ -171,6 +172,8 @@ return {
 	},
 	{
 		"nvim-neo-tree/neo-tree.nvim",
+		-- TODO: Enable once explorer is in the nix snacks version
+		enabled = not finder.snacks,
 		event = { "BufReadPre", "BufNewFile" },
 		branch = "v3.x",
 		dependencies = {
@@ -237,5 +240,204 @@ return {
 		"https://git.sr.ht/~vigoux/azy.nvim",
 		enabled = finder.azy,
 		build = "make lib",
+	},
+	{
+		enabled = finder.snacks,
+		"folke/snacks.nvim",
+		priority = 1000,
+		lazy = false,
+		---@type snacks.Config
+		opts = {
+			-- your configuration comes here
+			-- or leave it empty to use the default settings
+			-- refer to the configuration section below
+			animate = { enabled = false },
+			bigfile = { enabled = true },
+			dashboard = { enabled = false },
+			dim = { enabled = false },
+			explorer = { enabled = true },
+			gitbrowse = { enabled = false },
+			indent = { enabled = true },
+			input = { enabled = true },
+			layout = { enabled = true },
+			lazygit = { enabled = false },
+			notifier = { enabled = true },
+			picker = { enabled = true },
+			quickfile = { enabled = true },
+			scope = { enabled = true },
+			scratch = { enabled = true },
+			scroll = { enabled = false },
+			statuscolumn = { enabled = true },
+			terminal = { enabled = true },
+			toggle = { enabled = false },
+			win = { enabled = false },
+			words = { enabled = true },
+			zen = { enabled = true },
+		},
+		keys = {
+			{
+				"<leader><leader>",
+				function()
+					Snacks.picker.smart()
+				end,
+				desc = "Smart Find Files",
+			},
+			{
+				"<Space>f",
+				function()
+					local function files_fallback()
+						vim.fn.system("git rev-parse --is-inside-work-tree")
+						if vim.v.shell_error == 0 then
+							Snacks.picker.git_files()
+						else
+							Snacks.picker.files()
+						end
+					end
+
+					files_fallback()
+				end,
+				desc = "Find Files (Git if in .git)",
+			},
+			{
+				"<Space>c",
+				function()
+					Snacks.picker.colorschemes()
+				end,
+				desc = "Colorschemes",
+			},
+			{
+				"<Space>b",
+				function()
+					Snacks.picker.buffers()
+				end,
+				desc = "Buffers",
+			},
+			{
+				"<Space>e",
+				function()
+					Snacks.explorer()
+				end,
+				desc = "File Explorer",
+			},
+			{
+				"<Space>/",
+				function()
+					Snacks.picker.grep()
+				end,
+				desc = "Grep",
+			},
+			{
+				"gd",
+				function()
+					Snacks.picker.lsp_definitions()
+				end,
+				desc = "Goto Definition",
+			},
+			{
+				"gD",
+				function()
+					Snacks.picker.lsp_declarations()
+				end,
+				desc = "Goto Declaration",
+			},
+			{
+				"gr",
+				function()
+					Snacks.picker.lsp_references()
+				end,
+				nowait = true,
+				desc = "References",
+			},
+			{
+				"gI",
+				function()
+					Snacks.picker.lsp_implementations()
+				end,
+				desc = "Goto Implementation",
+			},
+			{
+				"gy",
+				function()
+					Snacks.picker.lsp_type_definitions()
+				end,
+				desc = "Goto T[y]pe Definition",
+			},
+			{
+				"<Space>s",
+				function()
+					Snacks.picker.lsp_symbols()
+				end,
+				desc = "LSP Symbols",
+			},
+			{
+				"<Space>S",
+				function()
+					Snacks.picker.lsp_workspace_symbols()
+				end,
+				desc = "LSP Workspace Symbols",
+			},
+			{
+				"<Space>d",
+				function()
+					Snacks.picker.diagnostics()
+				end,
+				desc = "Diagnostics",
+			},
+			{
+				"]]",
+				function()
+					Snacks.words.jump(vim.v.count1)
+				end,
+				desc = "Next Reference",
+				mode = { "n", "t" },
+			},
+			{
+				"[[",
+				function()
+					Snacks.words.jump(-vim.v.count1)
+				end,
+				desc = "Prev Reference",
+				mode = { "n", "t" },
+			},
+			{
+				"<leader>z",
+				function()
+					Snacks.zen()
+				end,
+				desc = "Toggle Zen Mode",
+			},
+		},
+		init = function()
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "VeryLazy",
+				callback = function()
+					-- Setup some globals for debugging (lazy-loaded)
+					_G.dd = function(...)
+						Snacks.debug.inspect(...)
+					end
+					_G.bt = function()
+						Snacks.debug.backtrace()
+					end
+					vim.print = _G.dd -- Override print to use snacks for `:=` command
+
+					-- Create some toggle mappings
+					Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
+					Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
+					Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
+					Snacks.toggle.diagnostics():map("<leader>ud")
+					Snacks.toggle.line_number():map("<leader>ul")
+					Snacks.toggle
+						.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
+						:map("<leader>uc")
+					Snacks.toggle.treesitter():map("<leader>uT")
+					Snacks.toggle
+						.option("background", { off = "light", on = "dark", name = "Dark Background" })
+						:map("<leader>ub")
+					Snacks.toggle.inlay_hints():map("<leader>uh")
+					Snacks.toggle.indent():map("<leader>ug")
+					Snacks.toggle.dim():map("<leader>uD")
+				end,
+			})
+		end,
 	},
 }
