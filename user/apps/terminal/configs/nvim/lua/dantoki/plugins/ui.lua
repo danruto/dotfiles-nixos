@@ -5,12 +5,14 @@ return {
 	},
 	{
 		"rcarriga/nvim-notify",
+		enabled = false,
 		config = function()
 			vim.notify = require("notify")
 		end,
 	},
 	{
 		"stevearc/dressing.nvim",
+		enabled = false,
 		init = function()
 			---@diagnostic disable-next-line: duplicate-set-field
 			vim.ui.select = function(...)
@@ -46,20 +48,6 @@ return {
 		config = function()
 			require("dantoki.configs.expressline")
 		end,
-	},
-	{
-		"ziontee113/icon-picker.nvim",
-		cmd = {
-			"IconPickerNormal",
-			"IconPickerYank",
-			"IconPickerInsert",
-		},
-		dependencies = {
-			"stevearc/dressing.nvim",
-		},
-		opts = {
-			disable_legacy_commands = true,
-		},
 	},
 	{
 		"NvChad/nvim-colorizer.lua",
@@ -102,6 +90,7 @@ return {
 	},
 	{
 		"folke/trouble.nvim",
+		enabled = false,
 		cmd = "Trouble",
 		keys = {
 			{

@@ -94,7 +94,7 @@ return {
 			styles = {
 				comments = { italic = false },
 				keywords = { italic = false },
-			}
+			},
 		},
 	},
 	-- { "Alexis12119/nightly.nvim" },
@@ -143,10 +143,18 @@ return {
 	},
 	{
 		"nyoom-engineering/oxocarbon.nvim",
-		lazy = false,
 		config = function()
 			vim.opt.background = "dark"
 			vim.cmd.colorscheme("oxocarbon")
+		end,
+	},
+	{
+		"Skardyy/makurai-nvim",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			vim.opt.background = "dark"
+			vim.cmd.colorscheme("makurai")
 		end,
 	},
 }

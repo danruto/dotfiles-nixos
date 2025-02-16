@@ -140,23 +140,32 @@
           };
         };
 
+        makurai-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "makurai-nvim";
+          version = "2025-02-13";
+          src = pkgs.fetchFromGitHub {
+            owner = "Skardyy";
+            repo = "makurai-nvim";
+            rev = "8fe07dd5d836b4dd5c6fbc8c48d604fe3a12b8b9";
+            hash = "sha256-bZJU0cjtiY4l/9VhZRV70gV3U1xEZntlgiOXhnSYn04=";
+          };
+        };
 
         plugins = with pkgs.unstable.vimPlugins; [
+          # Basic Deps
+          plenary-nvim
+
+          # QoL
           nvim-ts-autotag
-          editorconfig-vim
           vim-closetag
           tagalong-vim
-          nvim-treesitter
-          nvim-treesitter-context
-          nvim-treesitter-textobjects
-          nvim-treesitter-textsubjects
-          nvim-treesitter-endwise
-          nvim-treesitter-refactor
-          nvim-ts-context-commentstring
-          flash-nvim
-          mini-nvim
+          typescript-tools-nvim
+          crates-nvim
+          rustaceanvim
+          hover-nvim
           # snacks-nvim
           my-snacks-nvim
+          mini-nvim
           # my-mini-nvim
           # { name = "mini.ai"; path = mini-nvim; }
           # { name = "mini.bracketed"; path = mini-nvim; }
@@ -171,101 +180,65 @@
           # { name = "mini.surround"; path = mini-nvim; }
           # { name = "mini.statusbar"; path = mini-nvim; }
           # { name = "mini.trailspace"; path = mini-nvim; }
-          plenary-nvim
+          flash-nvim
+
+          # UI
+          lsp-inlayhints-nvim
+          lsp-lens-nvim
+          tiny-inline-diagnostic-nvim
+          nui-nvim
+          nvim-web-devicons
+          todo-comments-nvim
+          dropbar-nvim
+          markdown-render-nvim
+          nvim-colorizer-lua
+
+          # Git
           diffview-nvim
           gitsigns-nvim
           neogit
+
+          # LSP
+          nvim-treesitter
+          nvim-treesitter-context
+          nvim-treesitter-textobjects
+          nvim-treesitter-textsubjects
+          nvim-treesitter-endwise
+          nvim-treesitter-refactor
+          nvim-ts-context-commentstring
           nvim-lspconfig
-          # nvim-navbuddy
-          # nvim-navic
-          # barbecue-nvim
-          nui-nvim
-          # copilot-lua
-          crates-nvim
-          # nvim-cmp
-          # perf-nvim-cmp
           blink-cmp
-          # cmp-buffer
-          # cmp-nvim-lsp
-          # { name = "lspkind.nvim"; path = lspkind-nvim; }
-          # cmp-nvim-lsp-signature-help
-          # cmp-path
-          # cmp-nvim-lua
-          # cmp_luasnip
-          # cmp-under-comparator
-          # cmp-cmdline
-          # cmp-nvim-lsp-document-symbol
-          # copilot-cmp
-          # none-ls-nvim
-          conform-nvim
-          typescript-tools-nvim
-          # rust-tools-nvim
-          rustaceanvim
+          lazy-lsp-nvim
           nvim-dap
           # nvim-dap-ui
           # nvim-nio
           # neotest
-          hover-nvim
-          lsp-inlayhints-nvim
-          # fidget-nvim
-          lsp-lens-nvim
+
+          # LLM
+          neocodeium
+
+          # Snippets
           friendly-snippets
           { name = "LuaSnip"; path = luasnip; }
-          impatient-nvim
-          nvim-web-devicons
-          nvim-notify
-          dressing-nvim
-          # { name = "shade.nvim"; path = Shade-nvim; }
-          # expressline
-          icon-picker-nvim
-          nvim-colorizer-lua
-          # true-zen-nvim
-          # winshift-nvim
-          tiny-inline-diagnostic-nvim
-          trouble-nvim
-          telescope-nvim
-          # neo-tree-nvim
-          markdown-render-nvim
-          neocodeium
-          lazy-lsp-nvim
-          # lsp_lines-nvim
-          # nvim-spectre
-          todo-comments-nvim
-          dropbar-nvim
-          # codeium-nvim
-          # telescope-fzf-native-nvim
 
-          # ---- Themes ----
+          # Formatters
+          editorconfig-vim
+          conform-nvim
 
+          # Themes
           github-nvim-theme
           neovim-ayu
           papercolor-theme
           snowy-vim
           ohlucy-nvim
-          # moonbow
           danger-vim
-          # nvim-colo
           tokyonight-nvim
-          # nightly
           nordic-nvim
-          # pineapple-nvim
           { name = "catppuccin"; path = catppuccin-nvim; }
           monet-nvim
           neofusion-nvim
           oxocarbon-nvim
-
-
-
-
-
-
-
-          # Lazy plugins we can check out later
-          # noice-nvim
-          # vim-illuminate
-          # vim-startuptime
-          # typescript-nvim
-          # tailwindcss-colorizer-nvim
+          makurai-nvim
         ];
         mkEntryFromDrv = drv:
           if lib.isDerivation drv then

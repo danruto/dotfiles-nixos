@@ -253,8 +253,20 @@ return {
 			-- refer to the configuration section below
 			animate = { enabled = false },
 			bigfile = { enabled = true },
-			dashboard = { enabled = false },
-			dim = { enabled = false },
+			dashboard = {
+				enabled = true,
+				preset = {
+					header = [[
+██████╗ ██╗██╗  ██╗███████╗██╗         ██████╗ ██████╗ ██╗   ██╗███████╗██╗  ██╗
+██╔══██╗██║╚██╗██╔╝██╔════╝██║         ██╔══██╗██╔══██╗██║   ██║██╔════╝██║  ██║
+██████╔╝██║ ╚███╔╝ █████╗  ██║         ██████╔╝██████╔╝██║   ██║███████╗███████║
+██╔═══╝ ██║ ██╔██╗ ██╔══╝  ██║         ██╔══██╗██╔══██╗██║   ██║╚════██║██╔══██║
+██║     ██║██╔╝ ██╗███████╗███████╗    ██████╔╝██║  ██║╚██████╔╝███████║██║  ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝    ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
+]],
+				},
+			},
+			dim = { enabled = true },
 			explorer = { enabled = true },
 			gitbrowse = { enabled = false },
 			indent = { enabled = true },
