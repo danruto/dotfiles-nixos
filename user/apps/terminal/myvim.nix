@@ -131,12 +131,12 @@
 
         my-snacks-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "snacks.nvim";
-          version = "2025-02-09";
+          version = "2025-02-21";
           src = pkgs.fetchFromGitHub {
             owner = "folke";
             repo = "snacks.nvim";
-            rev = "a386e4270b7c083c95028bcaa1b062b57537817b";
-            hash = "sha256-1BoY4f4jqxdzNPjZSpnrkcAfv3XKOgKb/Xic/htQ7/Y=";
+            rev = "5fa93cb6846b5998bc0b4b4ac9de47108fe39ce6";
+            hash = "sha256-mGGfZfLpSoyRsx/5wOF8KBmT02yQbIiHHmSOwdXA8KA=";
           };
         };
 
