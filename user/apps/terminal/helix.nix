@@ -105,11 +105,6 @@
           };
         };
 
-        ruff = {
-          command = "ruff";
-          args = [ "server" ];
-        };
-
         vscode-eslint-language-server = {
           config = {
             experimental = { useFlatConfig = true; };
@@ -210,7 +205,7 @@
           name = "python";
           indent = { tab-width = 4; unit = "    "; };
           auto-format = true;
-          language-servers = [ "ruff" "pyright" ];
+          language-servers = [ "ruff" "basedpyright" ];
         }
         {
           name = "nix";

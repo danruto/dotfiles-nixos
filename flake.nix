@@ -60,18 +60,20 @@
         config = {
           allowUnfree = true;
           allowUnfreePredicate = (_: true);
+          allowBroken = true;
         };
         overlays = [
           rust-overlay.overlays.default
           nur.overlays.default
-          neovim-nightly-overlay.overlays.default
-          (_final: prev: {
+          # neovim-nightly-overlay.overlays.default
+          (final: prev: {
             zjstatus = zjstatus.packages.${prev.system}.default;
             unstable = import nixpkgs-unstable {
               inherit (prev) system;
               config = {
                 allowUnfree = true;
                 allowUnfreePredicate = (_: true);
+                allowBroken = true;
               };
             };
           })
@@ -101,6 +103,7 @@
         inherit locale;
 
         inherit (inputs) blocklist-hosts;
+        inherit (inputs) neovim-nightly-overlay;
 
         channels = { inherit nixpkgs nixpkgs-unstable; };
       };
@@ -194,11 +197,14 @@
       flake = false;
     };
 
-    helix.url = "github:helix-editor/helix";
+    helix = {
+      url = "github:helix-editor/helix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
 
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # WSL inputs

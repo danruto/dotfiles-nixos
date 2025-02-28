@@ -1,11 +1,13 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, neovim-nightly-overlay, ... }:
 
 {
   programs.neovim = {
     enable = true;
-    package = pkgs.unstable.neovim-unwrapped;
     # package = pkgs.neovim-unwrapped;
-    # package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
+    # package = pkgs.unstable.neovim-unwrapped.override ({ tree-sitter = pkgs.tree-sitter; });
+    # package = pkgs.unstable.neovim-unwrapped;
+    package = neovim-nightly-overlay.packages.${pkgs.system}.default;
+
     extraPackages = with pkgs; [
       # Telescope
       ripgrep
@@ -131,12 +133,12 @@
 
         my-snacks-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "snacks.nvim";
-          version = "2025-02-21";
+          version = "2025-02-27";
           src = pkgs.fetchFromGitHub {
             owner = "folke";
             repo = "snacks.nvim";
-            rev = "5fa93cb6846b5998bc0b4b4ac9de47108fe39ce6";
-            hash = "sha256-mGGfZfLpSoyRsx/5wOF8KBmT02yQbIiHHmSOwdXA8KA=";
+            rev = "1239fb84bc426d4fcd1c8dc9dde8503c17501842";
+            hash = "sha256-7UbzP7d313TJ8/Ikk85n9Qd1JMwH0qEvEGML1P8cRpo=";
           };
         };
 

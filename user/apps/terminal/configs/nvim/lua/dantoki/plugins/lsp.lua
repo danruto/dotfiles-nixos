@@ -51,7 +51,7 @@ return {
 				"typst_lsp",
 			},
 			preferred_servers = {
-				python = { "pyright", "ruff" },
+				python = { "basedpyright", "ruff" },
 				-- rust = { "rust_analyzer" },
 				rust = {},
 				-- nix = { "nil" },
