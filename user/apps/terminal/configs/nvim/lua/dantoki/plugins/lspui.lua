@@ -51,7 +51,9 @@ return {
 		},
 	},
 	{
+		-- Disabled since it is archived
 		"lvimuser/lsp-inlayhints.nvim",
+		enabled = false,
 		event = "BufReadPost",
 		dependencies = { "williamboman/mason-lspconfig.nvim" },
 		opts = {},

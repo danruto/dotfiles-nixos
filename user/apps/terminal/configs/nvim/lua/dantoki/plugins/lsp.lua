@@ -37,6 +37,9 @@ return {
 		dependencies = {
 			"neovim/nvim-lspconfig",
 		},
+		init = function()
+			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ 0 }), { 0 })
+		end,
 		opts = {
 			excluded_servers = {
 				"sqls",

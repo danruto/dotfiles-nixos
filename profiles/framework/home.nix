@@ -11,9 +11,9 @@
     ../../user/shell/tui.nix # Useful cli/tui apps
     ../../user/apps/git/git.nix # My git config
     ../../user/lang/cc/cc.nix # C and C++ tools
-    ../../user/lang/rust/rust.nix # Rust tools
+    # ../../user/lang/rust/rust.nix # Rust tools
     ../../user/lang/typescript/typescript.nix # typescript tools
-    ../../user/lang/go/go.nix # go tools
+    # ../../user/lang/go/go.nix # go tools
     ../../user/lang/lua/lua.nix # lua tools
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
@@ -30,6 +30,7 @@
     ../../user/apps/fileman/nemo.nix
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/gui/gui.nix
+    ../../user/apps/gui/lmstudio.nix
     ../../user/apps/networking/wireguard.nix
     ../../user/apps/security/1password.nix
     ../../system/hardware/monitor.nix

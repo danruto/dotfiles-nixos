@@ -185,7 +185,7 @@
           flash-nvim
 
           # UI
-          lsp-inlayhints-nvim
+          # lsp-inlayhints-nvim
           lsp-lens-nvim
           tiny-inline-diagnostic-nvim
           nui-nvim
