@@ -1,154 +1,205 @@
 # Syntax highlighting
-# -------------------
-"attribute" = "base12"
 
-"type" = { fg = "base09" }
-"type.enum.variant" = "base08"
+"attribute" = { fg = "blue60", modifiers = [] }
 
-"constructor" = "base12"
+"type" = { fg = "cyan30", modifiers = [] }
+"type.builtin" = { fg = "cyan30", modifiers = ["bold"] }
+"type.enum.variant" = "magenta40"
 
-"constant" = "base14"
-"constant.character" = "base07"
-"constant.character.escape" = "base12"
+"constructor" = { fg = "purple40", modifiers = ["bold"] }
 
-"string" = "base14"
-"string.regexp" = "base12"
-"string.special" = "base11"
-"string.special.symbol" = "base10"
+"constant" = "teal40"
+"constant.builtin" = { fg = "teal40", modifiers = ["bold"] }
+"constant.character" = "green40"
+"constant.character.escape" = "purple40"
+"constant.numeric" = "teal30"
 
-"comment" = { fg = "base03" }
+"string" = "green50"
+"string.regexp" = "purple40"
+"string.special" = "blue40"
+"string.special.symbol" = "cyan30"
+"string.special.url" = { fg = "blue30", modifiers = ["underlined"] }
 
-"variable" = "base04"
-"variable.parameter" = { fg = "base04" }
-"variable.builtin" = "base04"
-"variable.other.member" = { fg = "base12" }
+"comment" = { fg = "gray40", modifiers = [] }
+"comment.block.documentation" = { fg = "gray40", modifiers = [] }
 
-"label" = "base09" # used for lifetimes
+"variable" = "gray70"
+"variable.builtin" = { fg = "cyan30", modifiers = ["bold"] }
+"variable.parameter" = { fg = "magenta40", modifiers = [] }
+"variable.other.member" = { fg = "magenta30", modifiers = [] }
 
-"punctuation" = "cyan10"
-"punctuation.special" = "base08"
-"punctuation.bracket" = "cyan10"
+"label" = { fg = "blue40", modifiers = [] }
 
-"keyword" = { fg = "base09" }
-"keyword.control.conditional" = { fg = "base09" }
-"keyword.function" = { fg = "aqua" }
+"punctuation" = "gray70"
+"punctuation.special" = "blue50"
+"punctuation.bracket" = "gray60"
+"punctuation.delimiter" = "gray60"
 
-"operator" = "base09"
+"keyword" = { fg = "blue50", modifiers = ["bold"] }
+"keyword.control" = { fg = "blue50", modifiers = ["bold"] }
+"keyword.control.conditional" = { fg = "blue50", modifiers = ["bold"] }
+"keyword.control.repeat" = { fg = "blue50", modifiers = ["bold"] }
+"keyword.control.import" = { fg = "purple40", modifiers = ["bold"] }
+"keyword.control.return" = { fg = "red50", modifiers = ["bold"] }
+"keyword.control.exception" = { fg = "red40", modifiers = ["bold"] }
+"keyword.operator" = "blue40"
+"keyword.function" = { fg = "teal40", modifiers = ["bold"] }
+"keyword.storage" = { fg = "purple50", modifiers = ["bold"] }
+"keyword.storage.modifier" = { fg = "purple40", modifiers = [] }
 
-"function" = { fg = "base12" }
-"function.macro" = { fg = "base07" }
+"operator" = "blue50"
 
-"tag" = "base11"
+"function" = { fg = "blue40", modifiers = ["bold"] }
+"function.builtin" = { fg = "blue50", modifiers = ["bold"] }
+"function.method" = { fg = "blue40", modifiers = ["bold"] }
+# "function.macro" = { fg = "purple30", modifiers = ["bold", ""] }
 
-"namespace" = { fg = "aqua" }
+"tag" = "cyan40"
+"tag.builtin" = { fg = "cyan40", modifiers = ["bold"] }
 
-"special" = "base11" # fuzzy highlight
+"namespace" = { fg = "teal40", modifiers = [""] }
 
-"markup.heading.marker" = { fg = "base15", modifiers = ["bold"] }
-"markup.heading.1" = "base10"
-"markup.heading.2" = "base12"
-"markup.heading.3" = "base13"
-"markup.heading.4" = "base14"
-"markup.heading.5" = "base07"
-"markup.heading.6" = "base08"
-"markup.list" = "base09"
+"special" = "purple40"
+
+# Markup
+"markup.heading" = { fg = "blue50", modifiers = ["bold"] }
+"markup.heading.marker" = { fg = "gray60", modifiers = ["bold"] }
+"markup.heading.1" = { fg = "blue40", modifiers = ["bold"] }
+"markup.heading.2" = { fg = "cyan40", modifiers = ["bold"] }
+"markup.heading.3" = { fg = "teal40", modifiers = ["bold"] }
+"markup.heading.4" = { fg = "green40", modifiers = ["bold"] }
+"markup.heading.5" = { fg = "purple40", modifiers = ["bold"] }
+"markup.heading.6" = { fg = "magenta40", modifiers = ["bold"] }
+"markup.list" = "blue30"
 "markup.bold" = { modifiers = ["bold"] }
-"markup.italic" = { modifiers = ["italic"] }
-"markup.link.url" = { fg = "base11", modifiers = ["italic", "underlined"] }
-"markup.link.text" = "base12"
-"markup.raw" = "base13"
+"markup.italic" = { modifiers = [] }
+"markup.link.url" = { fg = "blue30", modifiers = ["underlined"] }
+"markup.link.text" = "cyan30"
+"markup.quote" = { fg = "green30", modifiers = [] }
+"markup.raw" = "teal30"
 
-"diff.plus" = "base13"
-"diff.minus" = "base10"
-"diff.delta" = "base09"
+# Diff
+"diff.plus" = "green40"
+"diff.minus" = "red40"
+"diff.delta" = "blue40"
+"diff.delta.moved" = "purple40"
 
-# User Interface
-# --------------
-"ui.background" = { fg = "base04", bg = "base00" }
+# UI Elements
+"ui.background" = { fg = "gray70", bg = "gray10" }
+"ui.background.separator" = { fg = "gray30" }
 
-"ui.linenr" = { fg = "base02" }
-"ui.linenr.selected" = { fg = "base04" }
+"ui.cursor" = { fg = "gray10", bg = "blue50" }
+"ui.cursor.normal" = { fg = "gray10", bg = "blue50" }
+"ui.cursor.insert" = { fg = "gray10", bg = "green50" }
+"ui.cursor.select" = { fg = "gray10", bg = "purple50" }
+"ui.cursor.match" = { fg = "gray10", bg = "cyan40" }
 
-"ui.statusline" = { fg = "blue60", bg = "base01" }
-"ui.statusline.inactive" = { fg = "base03", bg = "base01" }
-"ui.statusline.normal" = { fg = "base00", bg = "base09", modifiers = ["bold"] }
-"ui.statusline.insert" = { fg = "base00", bg = "base13", modifiers = ["bold"] }
-"ui.statusline.select" = { fg = "base00", bg = "base12", modifiers = ["bold"] }
+"ui.cursor.primary" = { fg = "gray10", bg = "blue60" }
+"ui.cursor.primary.normal" = { fg = "gray10", bg = "blue60" }
+"ui.cursor.primary.insert" = { fg = "gray10", bg = "green60" }
+"ui.cursor.primary.select" = { fg = "gray10", bg = "purple60" }
 
-"ui.popup" = { fg = "base04", bg = "base01" }
-"ui.window" = { fg = "base01" }
-"ui.help" = { fg = "base03", bg = "base01" }
+"ui.linenr" = { fg = "gray40" }
+"ui.linenr.selected" = { fg = "gray70" }
 
-"ui.bufferline" = { fg = "base03", bg = "base01" }
-"ui.bufferline.active" = { fg = "base09", bg = "base00", underline = { color = "base09", style = "none" } }
-"ui.bufferline.background" = { bg = "base01" }
+"ui.statusline" = { fg = "gray70", bg = "gray20" }
+"ui.statusline.inactive" = { fg = "gray50", bg = "gray20" }
+"ui.statusline.normal" = { fg = "gray10", bg = "blue50", modifiers = ["bold"] }
+"ui.statusline.insert" = { fg = "gray10", bg = "green50", modifiers = ["bold"] }
+"ui.statusline.select" = { fg = "gray10", bg = "purple50", modifiers = [
+    "bold",
+] }
 
-"ui.text" = "base04"
-"ui.text.focus" = { fg = "base04", bg = "base01", modifiers = ["bold"] }
-"ui.text.inactive" = { fg = "base03" }
+"ui.popup" = { fg = "gray70", bg = "gray20" }
+"ui.popup.info" = { fg = "blue40", bg = "gray20" }
+"ui.window" = { fg = "gray30" }
+"ui.help" = { fg = "gray70", bg = "gray20" }
 
-"ui.virtual" = "base02"
-"ui.virtual.ruler" = { bg = "base01" }
-"ui.virtual.indent-guide" = "base01"
-"ui.virtual.inlay-hint" = { fg = "base03", bg = "base00" }
-"ui.virtual.jump-label" = { fg = "base07", modifiers = ["bold"] }
+"ui.text" = "gray70"
+"ui.text.focus" = { fg = "gray70", bg = "gray30", modifiers = ["bold"] }
+"ui.text.inactive" = { fg = "gray50" }
+"ui.text.info" = { fg = "blue40" }
 
-"ui.selection" = { bg = "base02" }
+"ui.virtual.ruler" = { bg = "gray20" }
+"ui.virtual.whitespace" = "gray30"
+"ui.virtual.indent-guide" = "gray30"
+"ui.virtual.inlay-hint" = { fg = "gray50", bg = "gray10" }
+"ui.virtual.jump-label" = { fg = "yellow50", bg = "gray10" }
 
-"ui.cursor" = { fg = "base00", bg = "base08" }
-"ui.cursor.primary" = { fg = "base00", bg = "base08" }
-"ui.cursor.match" = { fg = "base15", modifiers = ["bold"] }
+"ui.selection" = { bg = "gray30" }
+"ui.selection.primary" = { bg = "gray40" }
+"ui.cursorline.primary" = { bg = "gray20" }
 
-"ui.cursor.primary.normal" = { fg = "base00", bg = "green" }
-"ui.cursor.primary.insert" = { fg = "base00", bg = "base13" }
-"ui.cursor.primary.select" = { fg = "base00", bg = "base08" }
+"ui.highlight" = { bg = "gray30", modifiers = ["bold"] }
+"ui.highlight.frameline" = { bg = "blue20" }
 
-"ui.cursor.normal" = { fg = "base00", bg = "base11" }
-"ui.cursor.insert" = { fg = "base00", bg = "base13" }
-"ui.cursor.select" = { fg = "base00", bg = "base08" }
+"ui.menu" = { fg = "gray70", bg = "gray20" }
+"ui.menu.selected" = { fg = "gray70", bg = "gray30", modifiers = ["bold"] }
+"ui.menu.scroll" = { fg = "blue40", bg = "gray30" }
 
-"ui.cursorline.primary" = { bg = "base01" }
+# Diagnostics
+"diagnostic" = { fg = "gray60" }
+"diagnostic.error" = { underline = { color = "magenta30", style = "curl" } }
+"diagnostic.warning" = { underline = { color = "yellow30", style = "curl" } }
+"diagnostic.info" = { underline = { color = "blue40", style = "curl" } }
+"diagnostic.hint" = { underline = { color = "cyan40", style = "curl" } }
 
-"ui.highlight" = { bg = "base02", modifiers = ["bold"] }
-
-"ui.menu" = { fg = "white30", bg = "base01" }
-"ui.menu.selected" = { fg = "white30", bg = "base02", modifiers = ["bold"] }
-
-"diagnostic.error" = { underline = { color = "base10", style = "curl" } }
-"diagnostic.warning" = { underline = { color = "base14", style = "curl" } }
-"diagnostic.info" = { underline = { color = "base09", style = "curl" } }
-"diagnostic.hint" = { underline = { color = "base08", style = "curl" } }
-
-error = "base10"
-warning = "base14"
-info = "base09"
-hint = "base08"
+"error" = "magenta30"
+"warning" = "yellow30"
+"info" = "blue40"
+"hint" = "cyan40"
 
 [palette]
-black = "#000000"
-white = "#FFFFFF"
-base00 = "#161616"
-base01 = "#262626"
-base02 = "#393939"
-base03 = "#525252"
-base04 = "#c8ccd4"
-base05 = "#d6cedd"
-base06 = "#fdfcfd"
-base07 = "#08bdba"
-base08 = "#3ddbd9"
-base09 = "#78a9ff"
-base10 = "#ee5396"
-base11 = "#78a8ff"
-base12 = "#ff7eb6"
-base13 = "#42be65"
-base14 = "#be95ff"
-base15 = "#82cfff"
-green = "#19b06a"
-aqua = "#00dfdb"
-yellow = "#fedc69"
-blue60 = "#0043ce"
-white10 = "#f4f4f4"
-white20 = "#e0e0e0"
-white30 = "#a8a8a8"
-cyan10 = "#6bcafe"
-cyan20 = "#32afff"
+# Softer, more aesthetic color palette inspired by IBM Carbon
+gray10 = "#161616"
+gray20 = "#262626"
+gray30 = "#393939"
+gray40 = "#525252"
+gray50 = "#6F6F6F"
+gray60 = "#8D8D8D"
+gray70 = "#a8a8a8"
+gray80 = "#c8ccd4"
+
+# Softer blues
+blue20 = "#0043ce"
+blue30 = "#4589ff"
+blue40 = "#78a9ff"
+blue50 = "#82cfff"
+blue60 = "#bae6ff"
+
+# Softer cyans
+cyan30 = "#08bdba"
+cyan40 = "#3ddbd9"
+cyan50 = "#9ef0f0"
+
+# Softer, more muted greens
+green30 = "#42be65" # Softened
+green40 = "#6fdc8c" # More pastel
+green50 = "#a7f0ba" # Even softer
+green60 = "#defbe6" # Very soft
+
+# Pinks and magentas (more prominent as per your preference)
+magenta30 = "#ff7eb6" # Your original pink
+magenta40 = "#ff9ec7" # Lighter pink
+magenta50 = "#ffd6e8" # Very soft pink
+
+# Softer purples
+purple30 = "#a56eff"
+purple40 = "#be95ff"
+purple50 = "#d4bbff"
+purple60 = "#e8daff"
+
+# Softer reds with pink undertones
+red30 = "#ff8389" # Softer red
+red40 = "#ffa4a9" # Pink-red
+red50 = "#ffd7d9" # Very soft
+
+# Softer teals
+teal30 = "#08bdba"
+teal40 = "#3ddbd9"
+teal50 = "#9ef0f0"
+
+# Warmer, softer yellows
+yellow30 = "#f1c21b"
+yellow40 = "#fddc69"
+yellow50 = "#fff1d2"
