@@ -1,5 +1,10 @@
-{ ... }:
+{ pkgs, ... }:
 {
+
+  home.packages = with pkgs.unstable; [
+    aerospace
+  ];
+
   #  ${XDG_CONFIG_HOME}/aerospace/aerospace.toml
   home.file.".config/aerospace/aerospace.toml".text = ''
     start-at-login = true
@@ -78,6 +83,17 @@
     alt-shift-x = 'move-node-to-workspace X'
     alt-shift-y = 'move-node-to-workspace Y'
     alt-shift-z = 'move-node-to-workspace Z'
+
+    [[on-window-detected]]
+    if.app-id = "com.mitchellh.ghostty"
+    run = [
+      # FIX: this is a workaround for https://github.com/nikitabobko/AeroSpace/issues/68
+      # this was also observed in:
+      # - https://github.com/ghostty-org/ghostty/issues/1840
+      # - https://github.com/ghostty-org/ghostty/issues/2006
+      "layout floating",
+      "move-node-to-workspace T",
+    ]
   '';
 
   # [exec.env-vars]
