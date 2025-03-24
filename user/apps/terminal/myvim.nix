@@ -122,23 +122,23 @@
 
         neocodeium = pkgs.vimUtils.buildVimPlugin {
           pname = "neocodeium";
-          version = "2025-02-09";
+          version = "2025-03-19";
           src = pkgs.fetchFromGitHub {
             owner = "monkoose";
             repo = "neocodeium";
-            rev = "a2b5257c736886ec3ccbd961766f8ab9c82b2a72";
-            hash = "sha256-mR2fzsdCVbh7nLcsSgQnhRivoKW6oFqJwuIYfz8OV0k=";
+            rev = "8a0b9b872b7da673ad2f6f1c3d17ac5c338053a8";
+            hash = "sha256-vgnTEkVwVC52XP0GhA05I2zmhFTxhxf9BonMHULDJG8=";
           };
         };
 
         my-snacks-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "snacks.nvim";
-          version = "2025-02-27";
+          version = "2025-03-19";
           src = pkgs.fetchFromGitHub {
             owner = "folke";
             repo = "snacks.nvim";
-            rev = "1239fb84bc426d4fcd1c8dc9dde8503c17501842";
-            hash = "sha256-7UbzP7d313TJ8/Ikk85n9Qd1JMwH0qEvEGML1P8cRpo=";
+            rev = "bc0630e43be5699bb94dadc302c0d21615421d93";
+            hash = "sha256-Gw0Bp2YeoESiBLs3NPnqke3xwEjuiQDDU1CPofrhtig=";
           };
         };
 

@@ -18,7 +18,15 @@ return {
 		config = function()
 			local neocodeium = require("neocodeium")
 			neocodeium.setup()
-			-- vim.keymap.set("i", "<A-f>", neocodeium.accept)
+			vim.keymap.set("i", "<C-a>", function()
+				require("neocodeium").accept()
+			end)
+			vim.keymap.set("i", "<A-e>", function()
+				require("neocodeium").cycle_or_complete()
+			end)
+			vim.keymap.set("i", "<A-r>", function()
+				require("neocodeium").cycle_or_complete(-1)
+			end)
 		end,
 	},
 	{
@@ -159,6 +167,22 @@ return {
 				-- typescriptreact = { "eslint_d" },
 				-- typescript = { "dprint" },
 				-- typescriptreact = { "dprint" },
+				javascript = { "biome-check", "prettierd", "prettier", "eslint_d", stop_after_first = true },
+				typescript = { "biome-check", "prettierd", "prettier", "eslint_d", stop_after_first = true },
+				javascriptreact = {
+					"biome-check",
+					"prettierd",
+					"prettier",
+					"eslint_d",
+					stop_after_first = true,
+				},
+				typescriptreact = {
+					"biome-check",
+					"prettierd",
+					"prettier",
+					"eslint_d",
+					stop_after_first = true,
+				},
 			},
 			-- Set up format-on-save
 			format_on_save = { timeout_ms = 500, lsp_fallback = true },
@@ -298,7 +322,7 @@ return {
 				},
 				menu = {
 					-- auto_show = function(ctx)
-					-- 	return ctx.mode ~= "cmdline"
+					-- 	return ctx.mode ~= "default"
 					-- end,
 					-- auto_show = false,
 				},
