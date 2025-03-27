@@ -51,10 +51,10 @@
     memory_usage.threshold = -1;
   };
 
-  home.file.".config/sketchybar" = {
-    source = ../../user/config/sketchybar;
-    recursive = true;
-  };
+  # home.file.".config/sketchybar" = {
+  #   source = ../../user/config/sketchybar;
+  #   recursive = true;
+  # };
 
   # programs.fish.enable = true;
   # programs.zsh.enable = true;
@@ -77,6 +77,15 @@
     }
 
     return config
+  '';
+
+  home.file.".config/ghostty/config".text = ''
+    font-family = "Departure Mono"
+    font-size = 16
+
+    macos-option-as-alt = left
+    keybind = alt+left=unbind
+    keybind = alt+right=unbind
   '';
 }
 

@@ -94,6 +94,9 @@
       "layout floating",
       "move-node-to-workspace T",
     ]
+
+    [workspace-to-monitor-force-assignment]
+    T = ['secondary', 'main']
   '';
 
   # [exec.env-vars]
