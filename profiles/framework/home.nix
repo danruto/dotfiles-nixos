@@ -35,6 +35,7 @@
     ../../user/apps/security/1password.nix
     ../../system/hardware/monitor.nix
     ../../user/hardware/keyboard.nix
+    ../../user/apps/virt/virt.nix
   ];
 
   home.packages = with pkgs; [

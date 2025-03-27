@@ -68,16 +68,19 @@ with lib;
   users.users.${username} = {
     isNormalUser = true;
     description = username;
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "libvirtd" ];
     packages = with pkgs; [ ];
     uid = 1000;
   };
   security.sudo.wheelNeedsPassword = false;
 
+  # virt
   virtualisation.docker = {
     enable = true;
     enableOnBoot = false;
   };
+  virtualisation.libvirtd.enable = true;
+  programs.virt-manager.enable = true;
 
   services.fprintd.enable = true;
   # security.pam.services.login.fprintAuth = true;
@@ -100,6 +103,7 @@ with lib;
   # TODO: Move to modules
   services.openssh.enable = true;
   services.fwupd.enable = true;
+
 
   services.udev.extraRules = ''
     KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
