@@ -135,6 +135,26 @@ in
       # It the position is unset or results in an overlap, the output is instead placed
       # automatically.
       # (leaf "position" { x = 1280; y = 0; })
+
+      # This is below DP-1 if it exists
+      (leaf "position" { x = 1148; y = 1440; })
+    ])
+
+    (node "output" "DP-1" [
+      # Uncomment this line to disable this output.
+      # (flag "off")
+
+      # Scale is a floating-point number, but at the moment only integer values work.
+      (leaf "scale" 1.0)
+
+      # Transform allows to rotate the output counter-clockwise, valid values are:
+      # normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
+      (leaf "transform" "normal")
+
+      (leaf "mode" "3440x1440@59.973000")
+      # (leaf "mode" "3440x1440@100.000000") # Dock only goes up to 80
+
+      (leaf "position" { x = 0; y = 0; })
     ])
 
     (plain "layout" [
@@ -255,6 +275,8 @@ in
 
       # Remove a variable by using null as the value:
       # (leaf "DISPLAY" null)
+      (leaf "DISPLAY" ":0")
+      (leaf "NIXOS_OZONE_WL" "1")
     ])
 
     (plain "cursor" [

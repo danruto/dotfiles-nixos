@@ -16,5 +16,4 @@
   environment.variables.DISLPAY = ":0";
 
   programs.niri.enable = true;
-
 }
