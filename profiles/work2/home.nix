@@ -78,14 +78,5 @@
 
     return config
   '';
-
-  home.file.".config/ghostty/config".text = ''
-    font-family = "Departure Mono"
-    font-size = 16
-
-    macos-option-as-alt = left
-    keybind = alt+left=unbind
-    keybind = alt+right=unbind
-  '';
 }
 

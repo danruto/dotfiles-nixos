@@ -23,6 +23,7 @@
     ../../user/apps/terminal/helix.nix
     # ../../user/apps/terminal/alacritty.nix
     ../../user/apps/terminal/kitty.nix
+    ../../user/apps/terminal/foot.nix
     ../../user/wm/hyprland/hyprland.nix
     ../../user/wm/niri/niri.nix
     ../../user/apps/browser/brave.nix

@@ -13,7 +13,11 @@
       ripgrep
       nixpkgs-fmt
       stylua
+      mermaid-cli
+      imagemagick
     ];
+
+    extraLuaPackages = ps: [ ps.magick ];
 
     plugins = with pkgs.vimPlugins; [
       lazy-nvim
@@ -194,6 +198,8 @@
           dropbar-nvim
           markdown-render-nvim
           nvim-colorizer-lua
+          diagram-nvim
+          image-nvim
 
           # Git
           diffview-nvim

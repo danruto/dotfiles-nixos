@@ -18,6 +18,7 @@
     nerdfonts
     agave
     iosevka-comfy.comfy
+    departure-mono
   ];
 
 }

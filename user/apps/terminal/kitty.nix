@@ -4,8 +4,9 @@
     enable = true;
     package = pkgs.unstable.kitty;
     settings = {
-      font_size = 14;
-      font_family = font;
+      font_size = 10;
+      # font_family = font;
+      font_family = "Departure Mono";
 
       window_padding_width = 4;
       hide_window_decorations = "yes";

@@ -10,27 +10,13 @@ in
   home.packages = with pkgs; [
     wlr-randr
     wl-clipboard
+    xsel
     pamixer
     pavucontrol
-    fuzzel
     swayidle
     swaylock
+    rofi-wayland
   ];
-
-  programs.foot = {
-    enable = true;
-    settings = {
-      main = {
-        font = "IosevkaComfy:size=14";
-      };
-      mouse = {
-        hide-when-typing = "yes";
-      };
-      csd = {
-        size = 0;
-      };
-    };
-  };
 
   # programs.waybar.systemd.enable = true;
 
@@ -456,8 +442,12 @@ in
 
       # Suggested binds for running programs: terminal, app launcher, screen locker.
       (plain "Mod+T" [ (leaf "spawn" [ "foot" ]) ])
-      (plain "Mod+R" [ (leaf "spawn" [ "fuzzel" ]) ])
+      (plain "Mod+R" [ (leaf "spawn" [ "bash" "-c" "rofi -show drun" ]) ])
       (plain "Super+Alt+L" [ (leaf "spawn" [ "swaylock" ]) ])
+
+      # Xwayland clipboard
+      (plain "Mod+Shift+C" [ (leaf "spawn" [ "sh" "-c" "env DISPLAY=:0 xsel -ob | wl-copy" ]) ])
+      (plain "Mod+Shift+V" [ (leaf "spawn" [ "sh" "-c" "wl-paste -n | env DISPLAY=:0 xsel -ib" ]) ])
 
       # You can also use a shell:
       # (plain "Mod+T" [(leaf "spawn" [ "bash" "-c" "notify-send hello && exec alacritty" ])])

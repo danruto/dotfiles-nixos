@@ -34,6 +34,33 @@ in
           };
         };
       }
+      {
+        condition = "gitdir:~/dev/pixelbrush/";
+        contents = {
+          user = {
+            name = name;
+            email = "danny@pixelbru.sh";
+          };
+        };
+      }
+      {
+        condition = "gitdir:~/dev/terem/";
+        contents = {
+          user = {
+            name = name;
+            email = "danny.sok@terem.com.au";
+          };
+        };
+      }
+      {
+        condition = "gitdir:~/dev/terem/nearmap";
+        contents = {
+          user = {
+            name = name;
+            email = "danny.sok@nearmap.com";
+          };
+        };
+      }
     ];
   };
 

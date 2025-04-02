@@ -147,6 +147,15 @@
     }
   '';
 
+  home.file.".config/ghostty/config".text = ''
+    font-family = "Departure Mono"
+    font-size = 12
+
+    macos-option-as-alt = left
+    keybind = alt+left=unbind
+    keybind = alt+right=unbind
+  '';
+
   home.sessionVariables = {
     EDITOR = "hx";
   };

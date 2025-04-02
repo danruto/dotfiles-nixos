@@ -188,7 +188,8 @@
       * {
           /* `otf-font-awesome` is required to be installed for icons */
           /* font-family: JetBrainsMono Nerd Font Mono; */
-          font-family: VictorMono Nerd Font;
+          /* font-family: VictorMono Nerd Font; */
+          font-family: Departure Mono;
           font-size: 14px;
       }
 
@@ -204,7 +205,7 @@
       }
 
       #custom-launcher {
-          margin-left: 5px;
+          margin-left: 2px;
           margin-top: 3px;
           margin-bottom: 3px;
           padding: 0 8px;
