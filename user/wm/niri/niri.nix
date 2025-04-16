@@ -597,9 +597,9 @@ in
       # (plain "Mod+Space"       [(leaf "switch-layout" "next")])
       # (plain "Mod+Shift+Space" [(leaf "switch-layout" "prev")])
 
-      (plain "Print" [ (flag "screenshot") ])
+      (plain "Mod+Shift+S" [ (flag "screenshot") ])
       (plain "Ctrl+Print" [ (flag "screenshot-screen") ])
-      (plain "Alt+Print" [ (flag "screenshot-window") ])
+      (plain "Print" [ (flag "screenshot-window") ])
 
       # The quit action will show a confirmation dialog to avoid accidental exits.
       # If you want to skip the confirmation dialog, set the flag like so:

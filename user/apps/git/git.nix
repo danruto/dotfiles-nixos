@@ -53,7 +53,7 @@ in
         };
       }
       {
-        condition = "gitdir:~/dev/terem/nearmap";
+        condition = "gitdir:~/dev/nearmap/";
         contents = {
           user = {
             name = name;

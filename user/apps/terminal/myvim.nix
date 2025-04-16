@@ -38,34 +38,45 @@
 
         danger-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "danger";
-          version = "2024-09-30";
+          version = "2025-04-16";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
             repo = "danger";
-            rev = "804af61ada7da78e5c948abbdc04dd4e81a8a55b";
-            hash = "sha256-fNvC0YkmSWej7m/it2j9MmZsC7eMQEzZQE4HQpbYqWg=";
+            rev = "5258fe08ce490184d5fdefb51bc2c6c3c48ced1c";
+            hash = "sha256-EytucoisMWnQvPymiUepjq62TZ7QtcE+lHxNqLy63xU=";
           };
         };
 
         github-nvim-theme = pkgs.vimUtils.buildVimPlugin {
           pname = "github-nvim-theme";
-          version = "2024-07-21";
+          version = "2025-04-16";
           src = pkgs.fetchFromGitHub {
             owner = "projekt0n";
             repo = "github-nvim-theme";
-            rev = "0e4636f556880d13c00d8a8f686fae8df7c9845f";
-            hash = "sha256-EreIuni6/XR0428rO4Lbi2usIreOyPWKm7kJJA2Nwqo=";
+            rev = "c106c9472154d6b2c74b74565616b877ae8ed31d";
+            hash = "sha256-/A4hkKTzjzeoR1SuwwklraAyI8oMkhxrwBBV9xb59PA=";
           };
         };
 
         ohlucy-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "oh-lucy.nvim";
-          version = "2024-06-19";
+          version = "2025-04-16";
           src = pkgs.fetchFromGitHub {
             owner = "Yazeed1s";
             repo = "oh-lucy.nvim";
-            rev = "05a0505f5288cd0ac905842eb54e63b45ebb3ec1";
-            hash = "sha256-AgOA7otqdAu4ur1zkCw+aKS7Oi6j5XzdraKl9DKTUzs=";
+            rev = "2d94e9b03efe4c50f4653b6f2b7b200d970fe1aa";
+            hash = "sha256-tH44CJnx/ZVwD+U9V7gDVjAjGCQtcnKDxVnVd+vkLz0=";
+          };
+        };
+
+        cuddlefish-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "cuddlefish.nvim";
+          version = "2025-04-16";
+          src = pkgs.fetchFromGitHub {
+            owner = "comfysage";
+            repo = "cuddlefish.nvim";
+            rev = "0cb027aabbc1067d599209e9342bab067962874d";
+            hash = "sha256-zzKmnD3fpVgSPOrYUfoDth5vPtlfXL3gvv0F2gkjIS8=";
           };
         };
 
@@ -104,56 +115,45 @@
 
         neofusion-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "neofusion.nvim";
-          version = "2024-09-30";
+          version = "2025-04-16";
           src = pkgs.fetchFromGitHub {
             owner = "diegoulloao";
             repo = "neofusion.nvim";
-            rev = "f1776ed91ed7aa605d7827ee498b06bd8bbc37b5";
-            hash = "sha256-FrWsYxaz3tkHhfuY7umASrH7yO2wf3JSTJNd6E/NUnk=";
+            rev = "e705c8dc7ce2f50b813479400cd9a8724425a211";
+            hash = "sha256-gZQ2SIxnb2xc/6lzgb3IBxTBGBYG8+qdw1DjCoxSJ/I=";
           };
         };
 
-        markdown-render-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "markdown.nvim";
+        render-markdown-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "render-markdown.nvim";
           version = "2025-02-09";
           src = pkgs.fetchFromGitHub {
             owner = "MeanderingProgrammer";
-            repo = "markdown.nvim";
-            rev = "17a77463f945c4b9e4f371c752efd90e3e1bf604";
-            hash = "sha256-x8FJNB30uhuwkieCcGdP7ct+DxbwlyOzaFFA6DRHwbE=";
+            repo = "render-markdown.nvim";
+            rev = "a2c2493c21cf61e5554ee8bc83da75bd695921da";
+            hash = "sha256-v66YkFT1L/4xsDK3C/0BHsvtxsGhuC7qUxJCKjIrEM0=";
           };
         };
 
         neocodeium = pkgs.vimUtils.buildVimPlugin {
           pname = "neocodeium";
-          version = "2025-03-19";
+          version = "2025-04-16";
           src = pkgs.fetchFromGitHub {
             owner = "monkoose";
             repo = "neocodeium";
-            rev = "8a0b9b872b7da673ad2f6f1c3d17ac5c338053a8";
-            hash = "sha256-vgnTEkVwVC52XP0GhA05I2zmhFTxhxf9BonMHULDJG8=";
-          };
-        };
-
-        my-snacks-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "snacks.nvim";
-          version = "2025-03-19";
-          src = pkgs.fetchFromGitHub {
-            owner = "folke";
-            repo = "snacks.nvim";
-            rev = "bc0630e43be5699bb94dadc302c0d21615421d93";
-            hash = "sha256-Gw0Bp2YeoESiBLs3NPnqke3xwEjuiQDDU1CPofrhtig=";
+            rev = "1404685e72030d974f13d932fe4830ecc8a43f04";
+            hash = "sha256-+FK12qDw7EkUXjKwfAdvR1yzD/gVt+fZSWP1Ckjq+Wo=";
           };
         };
 
         makurai-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "makurai-nvim";
-          version = "2025-02-13";
+          version = "2025-04-16";
           src = pkgs.fetchFromGitHub {
             owner = "Skardyy";
             repo = "makurai-nvim";
-            rev = "8fe07dd5d836b4dd5c6fbc8c48d604fe3a12b8b9";
-            hash = "sha256-bZJU0cjtiY4l/9VhZRV70gV3U1xEZntlgiOXhnSYn04=";
+            rev = "50a9a966c41dad5cc9818c35a87cc124bddee2c1";
+            hash = "sha256-hClIMHmRH++8NP+oL9iDBNSUuIOjAZPDBodtEPxWsWY=";
           };
         };
 
@@ -169,8 +169,7 @@
           crates-nvim
           rustaceanvim
           hover-nvim
-          # snacks-nvim
-          my-snacks-nvim
+          snacks-nvim
           mini-nvim
           # my-mini-nvim
           # { name = "mini.ai"; path = mini-nvim; }
@@ -196,10 +195,10 @@
           nvim-web-devicons
           todo-comments-nvim
           dropbar-nvim
-          markdown-render-nvim
           nvim-colorizer-lua
           diagram-nvim
           image-nvim
+          render-markdown-nvim
 
           # Git
           diffview-nvim
@@ -224,6 +223,7 @@
 
           # LLM
           neocodeium
+          avante-nvim
 
           # Snippets
           friendly-snippets
@@ -247,6 +247,7 @@
           neofusion-nvim
           oxocarbon-nvim
           makurai-nvim
+          cuddlefish-nvim
         ];
         mkEntryFromDrv = drv:
           if lib.isDerivation drv then
