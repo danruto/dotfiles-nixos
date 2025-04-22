@@ -357,23 +357,23 @@ return {
 			"stevearc/dressing.nvim",
 			"nvim-lua/plenary.nvim",
 			"MunifTanjim/nui.nvim",
-			{
-				-- support for image pasting
-				"HakonHarnes/img-clip.nvim",
-				event = "VeryLazy",
-				opts = {
-					-- recommended settings
-					default = {
-						embed_image_as_base64 = false,
-						prompt_for_file_name = false,
-						drag_and_drop = {
-							insert_mode = true,
-						},
-						-- required for Windows users
-						use_absolute_path = true,
-					},
-				},
-			},
+			-- {
+			-- 	-- support for image pasting
+			-- 	"HakonHarnes/img-clip.nvim",
+			-- 	event = "VeryLazy",
+			-- 	opts = {
+			-- 		-- recommended settings
+			-- 		default = {
+			-- 			embed_image_as_base64 = false,
+			-- 			prompt_for_file_name = false,
+			-- 			drag_and_drop = {
+			-- 				insert_mode = true,
+			-- 			},
+			-- 			-- required for Windows users
+			-- 			use_absolute_path = true,
+			-- 		},
+			-- 	},
+			-- },
 			{
 				-- Make sure to set this up properly if you have lazy=true
 				"MeanderingProgrammer/render-markdown.nvim",
@@ -382,6 +382,46 @@ return {
 				},
 				ft = { "markdown", "Avante" },
 			},
+		},
+	},
+	{
+		"olimorris/codecompanion.nvim",
+		enabled = false,
+		cmd = "CodeCompanionActions",
+		opts = {
+			strategies = {
+				chat = {
+					adapter = "ollama",
+				},
+				inline = {
+					adapter = "ollama",
+				},
+				cmd = {
+					adapter = "ollama",
+				},
+			},
+			adapters = {
+				ollama = function()
+					return require("codecompanion.adapters").extend("ollama", {
+						schema = {
+							model = {
+								-- default = preferred_model_picker({
+								-- 	"qwen2.5-coder:14b",
+								-- 	"qwen2.5-coder:7b",
+								-- 	"qwen2.5-coder:3b",
+								-- 	"qwen2.5-coder:1.5b",
+								-- 	"qwen2.5-coder:0.5b",
+								-- }),
+								default = "gemma3:4b",
+							},
+						},
+					})
+				end,
+			},
+		},
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-treesitter/nvim-treesitter",
 		},
 	},
 }

@@ -223,7 +223,8 @@
 
           # LLM
           neocodeium
-          avante-nvim
+          # avante-nvim
+          # codecompanion-nvim
 
           # Snippets
           friendly-snippets
