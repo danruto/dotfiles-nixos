@@ -147,8 +147,9 @@
     }
   '';
 
+  # font-family = "Departure Mono"
   home.file.".config/ghostty/config".text = ''
-    font-family = "Departure Mono"
+    font-family = "Iosevka Comfy"
     font-size = 12
 
     macos-option-as-alt = left

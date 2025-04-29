@@ -94,6 +94,8 @@ with lib;
     home-manager
     starship
     ghostty
+    framework-tool
+    fw-ectool
   ];
 
   environment.shells = with pkgs; [ fish ];
@@ -103,6 +105,8 @@ with lib;
   # TODO: Move to modules
   services.openssh.enable = true;
   services.fwupd.enable = true;
+  services.fwupd.extraRemotes = [ "lvfs-testing" ];
+  services.fwupd.uefiCapsuleSettings.DisableCapsuleUpdateOnDisk = true;
 
 
   services.udev.extraRules = ''
