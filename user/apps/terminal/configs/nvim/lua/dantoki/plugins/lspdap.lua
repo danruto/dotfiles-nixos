@@ -1,13 +1,16 @@
+local enable_dap = true
+
 return {
 	{
 		"mfussenegger/nvim-dap",
-		enabled = false,
+		enabled = enable_dap,
 		keys = {
 			{ ",db", "<CMD>DapToggleBreakpoint<CR>", desc = "Toggle dap breakpoint" },
 			{ ",dc", "<CMD>DapContinue<CR>", desc = "Continue run" },
 			{ ",do", "<CMD>DapStepOver<CR>", desc = "Step over" },
 			{ ",de", "<CMD>DapTerminate<CR>", desc = "Terminate" },
 			{ ",dfs", "<CMD>!firefox -start-debugger-server<CR>", desc = "Start firefox debug server" },
+			{ ",dgs", require("dap-go").debug_test(), desc = "Start dap go test" },
 		},
 		dependencies = {
 			{
@@ -27,11 +30,78 @@ return {
 					},
 				},
 			},
-			-- { "nvim-neotest/nvim-nio" }
+			{ "leoluz/nvim-dap-go" },
+			{ "nvim-neotest/nvim-nio" },
 		},
 		config = function()
 			local dap = require("dap")
 			local dapui = require("dapui")
+
+			local function get_arguments()
+				return coroutine.create(function(dap_run_co)
+					local args = {}
+					vim.ui.input({ prompt = "Args: " }, function(input)
+						args = vim.split(input or "", " ")
+						coroutine.resume(dap_run_co, args)
+					end)
+				end)
+			end
+
+			require("dap-go").setup({
+				-- Additional dap configurations can be added.
+				-- dap_configurations accepts a list of tables where each entry
+				-- represents a dap configuration. For more details do:
+				-- :help dap-configuration
+				dap_configurations = {
+					{
+						type = "delve",
+						name = "Debug",
+						request = "launch",
+						program = "${file}",
+						args = get_arguments,
+					},
+					{
+						type = "delve",
+						name = "Debug test", -- configuration for debugging test files
+						request = "launch",
+						mode = "test",
+						program = "${file}",
+					},
+					-- works with go.mod packages and sub packages
+					{
+						type = "delve",
+						name = "Debug test (go.mod)",
+						request = "launch",
+						mode = "test",
+						program = "./${relativeFileDirname}",
+						args = get_arguments,
+					},
+				},
+				-- delve configurations
+				delve = {
+					-- the path to the executable dlv which will be used for debugging.
+					-- by default, this is the "dlv" executable on your PATH.
+					-- path = "dlv",
+					-- time to wait for delve to initialize the debug session.
+					-- default to 20 seconds
+					--initialize_timeout_sec = 20,
+					-- a string that defines the port to start delve debugger.
+					-- default to string "${port}" which instructs nvim-dap
+					-- to start the process in a random available port
+					port = "${port}",
+					-- additional args to pass to dlv
+					-- args = {},
+					-- the build flags that are passed to delve.
+					-- defaults to empty string, but can be used to provide flags
+					-- such as "-tags=unit" to make sure the test suite is
+					-- compiled during debugging, for example.
+					-- passing build flags using args is ineffective, as those are
+					-- ignored by delve in dap mode.
+					-- build_flags = "-tags=util,integration,core",
+					type = "server",
+					host = "127.0.0.1",
+				},
+			})
 
 			dap.adapters.codelldb = {
 				type = "server",
@@ -55,45 +125,40 @@ return {
 			dap.configurations.c = dap.configurations.cpp
 			dap.configurations.rust = dap.configurations.cpp
 
-			dap.adapters.delve = {
-				type = "server",
-				port = "${port}",
-				executable = {
-					command = vim.fn.expand("$HOME/.local/share/nvim/mason/bin/dlv"),
-					args = { "dap", "-l", "127.0.0.1:${port}" },
-				},
-			}
+			-- dap.adapters.delve = {
+			-- 	type = "server",
+			-- 	host = "127.0.0.1",
+			-- 	port = "8086",
+			-- 	executable = {
+			-- 		command = "dlv",
+			-- 		args = { "dap", "-l", "127.0.0.1:8086", "--log" },
+			-- 	},
+			-- }
 
 			-- https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_dap.md
-			dap.configurations.go = {
-				{
-					type = "delve",
-					name = "Debug",
-					request = "launch",
-					program = "${file}",
-				},
-				{
-					type = "delve",
-					name = "Debug test", -- configuration for debugging test files
-					request = "launch",
-					mode = "test",
-					program = "${file}",
-				},
-				-- works with go.mod packages and sub packages
-				{
-					type = "delve",
-					name = "Debug test (go.mod)",
-					request = "launch",
-					mode = "test",
-					program = "./${relativeFileDirname}",
-				},
-			}
-
-			dap.adapters.node2 = {
-				type = "executable",
-				command = "node",
-				args = { vim.fn.expand("$HOME/.local/share/nvim/mason/bin/node-debug2-adapter") },
-			}
+			-- dap.configurations.go = {
+			-- 	{
+			-- 		type = "delve",
+			-- 		name = "Debug",
+			-- 		request = "launch",
+			-- 		program = "${file}",
+			-- 	},
+			-- 	{
+			-- 		type = "delve",
+			-- 		name = "Debug test", -- configuration for debugging test files
+			-- 		request = "launch",
+			-- 		mode = "test",
+			-- 		program = "${file}",
+			-- 	},
+			-- 	-- works with go.mod packages and sub packages
+			-- 	{
+			-- 		type = "delve",
+			-- 		name = "Debug test (go.mod)",
+			-- 		request = "launch",
+			-- 		mode = "test",
+			-- 		program = "./${relativeFileDirname}",
+			-- 	},
+			-- }
 
 			dap.configurations.javascript = {
 				{
@@ -115,11 +180,6 @@ return {
 				},
 			}
 			dap.configurations.typescript = dap.configurations.javascript
-
-			dap.adapters.firefox = {
-				type = "executable",
-				command = vim.fn.expand("$HOME/.local/share/nvim/mason/bin/firefox-debug-adapter"),
-			}
 
 			dap.configurations.typescriptreact = {
 				{

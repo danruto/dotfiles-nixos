@@ -217,8 +217,9 @@
           blink-cmp
           lazy-lsp-nvim
           nvim-dap
-          # nvim-dap-ui
-          # nvim-nio
+          nvim-dap-ui
+          nvim-dap-go
+          nvim-nio
           # neotest
 
           # LLM
