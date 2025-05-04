@@ -6,7 +6,11 @@
     # package = pkgs.neovim-unwrapped;
     # package = pkgs.unstable.neovim-unwrapped.override ({ tree-sitter = pkgs.tree-sitter; });
     # package = pkgs.unstable.neovim-unwrapped;
-    package = neovim-nightly-overlay.packages.${pkgs.system}.default;
+    package = neovim-nightly-overlay.packages.${pkgs.system}.default.overrideAttrs (old: {
+      meta = old.meta or { } // {
+        maintainers = [ ];
+      };
+    });
 
     extraPackages = with pkgs; [
       # Telescope

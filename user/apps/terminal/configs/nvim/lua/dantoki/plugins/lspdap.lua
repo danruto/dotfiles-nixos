@@ -10,7 +10,7 @@ return {
 			{ ",do", "<CMD>DapStepOver<CR>", desc = "Step over" },
 			{ ",de", "<CMD>DapTerminate<CR>", desc = "Terminate" },
 			{ ",dfs", "<CMD>!firefox -start-debugger-server<CR>", desc = "Start firefox debug server" },
-			{ ",dgs", require("dap-go").debug_test(), desc = "Start dap go test" },
+			{ ",dgs", "<CMD>lua require'dap-go'.debug_test()", desc = "Start dap go test" },
 		},
 		dependencies = {
 			{
