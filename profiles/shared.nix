@@ -92,7 +92,7 @@
                 pane { x "50%"; y "1%"; width "45%"; height "45%"; }
             }
         }
-    
+
         default_tab_template {
 
             children

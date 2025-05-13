@@ -84,17 +84,6 @@
           };
         };
 
-        icon-picker-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "icon-picker.nvim";
-          version = "2024-02-23";
-          src = pkgs.fetchFromGitHub {
-            owner = "ziontee113";
-            repo = "icon-picker.nvim";
-            rev = "3ee9a0ea9feeef08ae35e40c8be6a2fa2c20f2d3";
-            hash = "sha256-VZKsVeSmPR3AA8267Mtd5sSTZl2CAqnbgqceCptgp4w=";
-          };
-        };
-
         lsp-lens-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "lsp-lens.nvim";
           version = "2024-02-23";
@@ -141,23 +130,23 @@
 
         neocodeium = pkgs.vimUtils.buildVimPlugin {
           pname = "neocodeium";
-          version = "2025-04-16";
+          version = "2025-05-13";
           src = pkgs.fetchFromGitHub {
             owner = "monkoose";
             repo = "neocodeium";
-            rev = "1404685e72030d974f13d932fe4830ecc8a43f04";
-            hash = "sha256-+FK12qDw7EkUXjKwfAdvR1yzD/gVt+fZSWP1Ckjq+Wo=";
+            rev = "faed0a5d0478ca293e316a07d6179aa4c430669d";
+            hash = "sha256-bd359Uid34VjZgmgMEFKEOP9RFp2TEJAdveWnQBPrLE=";
           };
         };
 
         makurai-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "makurai-nvim";
-          version = "2025-04-16";
+          version = "2025-05-13";
           src = pkgs.fetchFromGitHub {
             owner = "Skardyy";
             repo = "makurai-nvim";
-            rev = "50a9a966c41dad5cc9818c35a87cc124bddee2c1";
-            hash = "sha256-hClIMHmRH++8NP+oL9iDBNSUuIOjAZPDBodtEPxWsWY=";
+            rev = "6d32fd9378fe6d039270910f758e4c29657fddf8";
+            hash = "sha256-M7Z+5JnOy/dyMDSCR5qFPtU3mN+QZqwA7PVRH/gl9U0=";
           };
         };
 

@@ -153,8 +153,7 @@ return {
 		lazy = false,
 		priority = 1000,
 		config = function()
-			vim.opt.background = "dark"
-			vim.cmd.colorscheme("makurai")
+			vim.cmd.colorscheme("makurai_mage")
 		end,
 	},
 	{

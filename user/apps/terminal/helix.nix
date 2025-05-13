@@ -78,7 +78,11 @@
           # Switch p and P behaviour
           # "P" = [ "paste_after" ];
           # "p" = [ "paste_before" ];
-          "C-y" = [ ":sh zellij run -c -f -x 10%% -y 10%% --width 80%% --height 80%% -- bash ~/.config/helix/yazi-picker.sh open" ];
+          "C-y" = [ ":sh zellij run -fc -x 10%% -y 10%% --width 80%% --height 80%% -- bash ~/.config/helix/yazi-picker.sh open %{buffer_name}" ];
+        };
+
+        normal.space.g = {
+          "g" = [ ":sh zellij run -fc -x 10%% -y 10%% --width 80%% --height 80%% -- gitui" ];
         };
 
         select = {
