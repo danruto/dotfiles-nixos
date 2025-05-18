@@ -105,7 +105,10 @@
                   format_space "#[bg=#0a0e14]"
                   format_hide_on_overleath "true"
 
-                  hide_frame_for_single_pane "true"
+                  hide_frame_for_single_pane "false"
+                  hide_frame_execpt_for_search "false"
+                  hide_frame_except_for_fullscreen "false"
+                  hide_frame_except_for_scroll "false"
                   border_enabled  "false"
                   border_char     "─"
                   border_format   "#[fg=#6C7086]"
