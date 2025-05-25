@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, nur, ... }: {
 
   home.username = "danruto";
   home.homeDirectory = "/home/danruto";
@@ -20,6 +20,7 @@
     # ../../user/apps/terminal/lazyvim.nix
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/music.nix
+    ../../user/apps/terminal/curl.nix # network request cli/tuis
     ../../user/apps/gui/neovide.nix
     ../../user/apps/terminal/helix.nix
     # ../../user/apps/terminal/alacritty.nix
@@ -44,6 +45,8 @@
     # cachix
     diff-so-fancy
     git
+    waydroid-helper
+    fakeroot
   ];
   home.stateVersion = "24.05";
 

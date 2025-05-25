@@ -73,16 +73,16 @@
           };
         };
 
-        cuddlefish-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "cuddlefish.nvim";
-          version = "2025-04-16";
-          src = pkgs.fetchFromGitHub {
-            owner = "comfysage";
-            repo = "cuddlefish.nvim";
-            rev = "0cb027aabbc1067d599209e9342bab067962874d";
-            hash = "sha256-zzKmnD3fpVgSPOrYUfoDth5vPtlfXL3gvv0F2gkjIS8=";
-          };
-        };
+        # cuddlefish-nvim = pkgs.vimUtils.buildVimPlugin {
+        #   pname = "cuddlefish.nvim";
+        #   version = "2025-05-24";
+        #   src = pkgs.fetchFromGitHub {
+        #     owner = "comfysage";
+        #     repo = "cuddlefish.nvim";
+        #     rev = "6448a5f44628dbf8677d72bd3e9ad6e89bd6a7d8";
+        #     hash = "sha256-ZZ5kE/MikATxbtmhoXYvkxRaIgseCDAkfZse4NaWoes=";
+        #   };
+        # };
 
         lsp-lens-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "lsp-lens.nvim";
@@ -97,12 +97,12 @@
 
         monet-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "monet.nvim";
-          version = "2024-07-21";
+          version = "2025-05-24";
           src = pkgs.fetchFromGitHub {
             owner = "fynnfluegge";
             repo = "monet.nvim";
-            rev = "af6c8fb9faaae2fa7aa16dd83b1b425c2b372891";
-            hash = "sha256-zNawnZRnyvn73viNN1R1jyvgiecT522/NQSZgJvzU9Q=";
+            rev = "51a7603f505a31c1e1c9fa852b9c8a19e4beb670";
+            hash = "sha256-DoTpC8/lJ58yS01xXXL2zquRfOYDLbQ95EuHFJLEijg=";
           };
         };
 
@@ -130,12 +130,12 @@
 
         neocodeium = pkgs.vimUtils.buildVimPlugin {
           pname = "neocodeium";
-          version = "2025-05-13";
+          version = "2025-05-24";
           src = pkgs.fetchFromGitHub {
             owner = "monkoose";
             repo = "neocodeium";
-            rev = "faed0a5d0478ca293e316a07d6179aa4c430669d";
-            hash = "sha256-bd359Uid34VjZgmgMEFKEOP9RFp2TEJAdveWnQBPrLE=";
+            rev = "73689bf571518b8d4b2d333f00c21b75350d403e";
+            hash = "sha256-wB2ujxGZIfuGYmpEGLYW80vU1bS5vjZP+7/2e5XEXsg=";
           };
         };
 
@@ -242,7 +242,7 @@
           neofusion-nvim
           oxocarbon-nvim
           makurai-nvim
-          cuddlefish-nvim
+          # cuddlefish-nvim
         ];
         mkEntryFromDrv = drv:
           if lib.isDerivation drv then

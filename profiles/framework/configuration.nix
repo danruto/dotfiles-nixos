@@ -29,9 +29,12 @@ with lib;
       ../../system/wm/niri.nix
     ];
 
+
   # Setup bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  nix.settings.download-buffer-size = 524288000;
 
   # Fix nix path
   nix.nixPath = [
@@ -80,6 +83,7 @@ with lib;
     enableOnBoot = false;
   };
   virtualisation.libvirtd.enable = true;
+  virtualisation.waydroid.enable = true;
   programs.virt-manager.enable = true;
 
   services.fprintd.enable = true;

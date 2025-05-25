@@ -156,28 +156,28 @@ return {
 			vim.cmd.colorscheme("makurai_mage")
 		end,
 	},
-	{
-		"comfysage/cuddlefish.nvim",
-		config = function()
-			require("cuddlefish").setup({
-				theme = {
-					accent = "pink",
-				},
-				editor = {
-					transparent_background = false,
-				},
-				style = {
-					tabline = { "reverse" },
-					search = { "reverse" },
-					incsearch = { "reverse" },
-					-- types = { "normal" },
-					-- keyword = { "normal" },
-					-- comment = { "normal" },
-				},
-				overrides = function(colors)
-					return {}
-				end,
-			})
-		end,
-	},
+	-- {
+	-- 	"comfysage/cuddlefish.nvim",
+	-- 	config = function()
+	-- 		require("cuddlefish").setup({
+	-- 			theme = {
+	-- 				accent = "pink",
+	-- 			},
+	-- 			editor = {
+	-- 				transparent_background = false,
+	-- 			},
+	-- 			style = {
+	-- 				tabline = { "reverse" },
+	-- 				search = { "reverse" },
+	-- 				incsearch = { "reverse" },
+	-- 				-- types = { "normal" },
+	-- 				-- keyword = { "normal" },
+	-- 				-- comment = { "normal" },
+	-- 			},
+	-- 			overrides = function(colors)
+	-- 				return {}
+	-- 			end,
+	-- 		})
+	-- 	end,
+	-- },
 }

@@ -7,9 +7,9 @@ let
     gh
   ];
 
-  ## lazyjj
   unstable-packages = with pkgs.unstable; [
     jujutsu
+    lazyjj
   ];
 
   name = "Danny";

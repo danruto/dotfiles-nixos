@@ -189,7 +189,7 @@
           /* `otf-font-awesome` is required to be installed for icons */
           /* font-family: JetBrainsMono Nerd Font Mono; */
           /* font-family: VictorMono Nerd Font; */
-          font-family: Departure Mono;
+          font-family: DepartureMono Nerd Font;
           font-size: 14px;
       }
 

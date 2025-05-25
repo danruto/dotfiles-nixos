@@ -10,7 +10,6 @@ let
     pandoc
     pciutils
     tree-sitter
-    xh
     tealdeer
     just
   ] ++ lib.optionals pkgs.stdenv.isLinux [
