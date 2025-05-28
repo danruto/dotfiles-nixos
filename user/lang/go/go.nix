@@ -1,7 +1,7 @@
-{ config, pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 let
-  unstable-packages = with pkgs.unstable; [
+  unstable-packages = with pkgs-unstable; [
   ];
   stable-packages = with pkgs; [
     go

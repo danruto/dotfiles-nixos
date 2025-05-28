@@ -1,8 +1,8 @@
-{ pkgs, font, ... }:
+{ pkgs-unstable, font, ... }:
 {
   programs.kitty = {
     enable = true;
-    package = pkgs.unstable.kitty;
+    package = pkgs-unstable.kitty;
     settings = {
       font_size = 10;
       font_family = font;

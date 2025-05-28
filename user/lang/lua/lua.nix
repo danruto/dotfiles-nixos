@@ -1,15 +1,15 @@
-{ config, pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 let
-  unstable-packages = with pkgs.unstable; [
+  unstable-packages = with pkgs-unstable; [
   ];
   stable-packages = with pkgs; [
-		lua
-		sumneko-lua-language-server
-		lua52Packages.luacheck
+    lua
+    sumneko-lua-language-server
+    lua52Packages.luacheck
   ];
-  in
+in
 {
   home.packages = stable-packages
-                ++ unstable-packages;
+    ++ unstable-packages;
 }

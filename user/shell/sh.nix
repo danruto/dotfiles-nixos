@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 let
 
   # My shell aliases
@@ -70,7 +70,7 @@ in
   programs.zellij = {
     enable = true;
     enableFishIntegration = false;
-    package = pkgs.unstable.zellij;
+    package = pkgs-unstable.zellij;
   };
 
   programs.zoxide = {

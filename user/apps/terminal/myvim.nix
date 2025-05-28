@@ -1,4 +1,4 @@
-{ lib, pkgs, neovim-nightly-overlay, ... }:
+{ lib, pkgs, pkgs-unstable, neovim-nightly-overlay, ... }:
 
 {
   programs.neovim = {
@@ -150,7 +150,18 @@
           };
         };
 
-        plugins = with pkgs.unstable.vimPlugins; [
+        mssql-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "mssql.nvim";
+          version = "2025-05-28";
+          src = pkgs.fetchFromGitHub {
+            owner = "Kurren123";
+            repo = "mssql.nvim";
+            rev = "551edd9572cbe50574dacac6287faeea59c25a78";
+            hash = "sha256-/Bk9MMVol8bPPsVnn5Dtfz3cj4CPqkObFu1kulld548=";
+          };
+        };
+
+        plugins = with pkgs-unstable.vimPlugins; [
           # Basic Deps
           plenary-nvim
 
@@ -223,6 +234,9 @@
           # Snippets
           friendly-snippets
           { name = "LuaSnip"; path = luasnip; }
+
+          # UI Utils
+          # mssql-nvim
 
           # Formatters
           editorconfig-vim
@@ -313,7 +327,7 @@
     let
       parsers = pkgs.symlinkJoin {
         name = "treesitter-parsers";
-        paths = (pkgs.unstable.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
+        paths = (pkgs-unstable.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
           bash
           c
           cpp

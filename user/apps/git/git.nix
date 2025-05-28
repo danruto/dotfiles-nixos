@@ -1,4 +1,4 @@
-{ pkgs, email, ... }:
+{ pkgs, pkgs-unstable, email, ... }:
 
 let
   stable-packages = with pkgs; [
@@ -7,7 +7,7 @@ let
     gh
   ];
 
-  unstable-packages = with pkgs.unstable; [
+  unstable-packages = with pkgs-unstable; [
     jujutsu
     lazyjj
   ];

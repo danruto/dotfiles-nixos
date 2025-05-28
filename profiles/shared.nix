@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs-unstable, ... }: {
   home.file.".config/zellij/config.kdl".source = ../user/config/zellij.kdl;
   home.file.".config/zellij/layouts/default.kdl".text = ''
     layout {
@@ -98,7 +98,7 @@
             children
 
             pane size=1 borderless=true {
-                plugin location="file:${pkgs.zjstatus}/bin/zjstatus.wasm" {
+                plugin location="file:${pkgs-unstable.zjstatus}/bin/zjstatus.wasm" {
                   format_left  "{mode} #[fg=#89B4FA,bg=#0a0e14,bold] {session}#[bg=#0a0e14]"
                   format_center "{tabs}"
                   format_right "{swap_layout}#[fg=#424554,bg=#0a0e14]::{datetime}"

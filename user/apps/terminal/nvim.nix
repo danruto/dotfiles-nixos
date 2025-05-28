@@ -1,16 +1,16 @@
-{ config, pkgs, ... }:
+{ pkgs-unstable, ... }:
 
 let
-	unstable-packages = with pkgs.unstable; [
-		neovim
-	];
-	in
+  unstable-packages = with pkgs-unstable; [
+    neovim
+  ];
+in
 {
 
-	home.packages = unstable-packages;
+  home.packages = unstable-packages;
 
-	home.file.".config/nvim" = {
-		recursive = true;
-		source = ./configs/nvim;
-	};
+  home.file.".config/nvim" = {
+    recursive = true;
+    source = ./configs/nvim;
+  };
 }

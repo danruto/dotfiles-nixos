@@ -1,9 +1,9 @@
-{ config, pkgs, ... }:
+{ pkgs-unstable, ... }:
 
 {
 
 
-  environment.systemPackages = with pkgs.unstable; [ tlp ];
+  environment.systemPackages = with pkgs-unstable; [ tlp ];
 
   services.auto-cpufreq = {
     enable = true;

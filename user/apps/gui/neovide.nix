@@ -1,10 +1,10 @@
-{ pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 let
   stable-packages = with pkgs; [
   ];
 
-  unstable-packages = with pkgs.unstable; [
+  unstable-packages = with pkgs-unstable; [
     neovide
   ];
 in

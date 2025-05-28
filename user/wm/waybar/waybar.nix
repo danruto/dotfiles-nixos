@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs-unstable, ... }:
 {
   home.file.".config/waybar/scripts" = {
     source = ../../config/waybar/scripts;
@@ -7,7 +7,7 @@
 
   programs.waybar = {
     enable = true;
-    package = pkgs.unstable.waybar;
+    package = pkgs-unstable.waybar;
     systemd.enable = true;
     settings = {
       mainBar = {

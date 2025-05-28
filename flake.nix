@@ -68,14 +68,23 @@
           # neovim-nightly-overlay.overlays.default
           (final: prev: {
             zjstatus = zjstatus.packages.${prev.system}.default;
-            unstable = import nixpkgs-unstable {
-              inherit (prev) system;
-              config = {
-                allowUnfree = true;
-                allowUnfreePredicate = (_: true);
-                allowBroken = true;
-              };
-            };
+          })
+        ];
+      };
+
+      pkgs-unstable = import nixpkgs-patched {
+        inherit system;
+
+        config = {
+          allowUnfree = true;
+          allowUnfreePredicate = (_: true);
+          allowBroken = true;
+        };
+        overlays = [
+          rust-overlay.overlays.default
+          nur.overlays.default
+          (final: prev: {
+            zjstatus = zjstatus.packages.${prev.system}.default;
           })
         ];
       };
@@ -97,15 +106,15 @@
         inherit browser;
         inherit editor;
         inherit term;
-        inherit pkgs;
         inherit helix;
         inherit timezone;
         inherit locale;
+        inherit pkgs-unstable;
 
         inherit (inputs) blocklist-hosts;
         inherit (inputs) neovim-nightly-overlay;
 
-        channels = { inherit nixpkgs nixpkgs-unstable; };
+        # channels = { inherit nixpkgs nixpkgs-unstable; };
       };
 
       wslSpecialArgs = commonSpecialArgs // {

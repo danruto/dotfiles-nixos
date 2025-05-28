@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, pkgs-unstable, ... }:
 
 let
   stable-packages = with pkgs; [
@@ -6,7 +6,7 @@ let
   ];
 
   # TODO: mpv, nemo, vscode should be it's own modules as it needs settings
-  unstable-packages = with pkgs.unstable; [
+  unstable-packages = with pkgs-unstable; [
     discord
     # insomnium
     # insomnia

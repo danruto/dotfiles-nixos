@@ -40,6 +40,33 @@ return {
 		},
 	},
 	{
+		"neovim/nvim-lspconfig",
+		config = function()
+			local servers = {
+				"basedpyright",
+				"bashls",
+				"biome",
+				"dartls",
+				"dockerls",
+				"fish_lsp",
+				"gh_actions_ls",
+				"golangci-lint-langserver",
+				"gopls",
+				"graphql",
+				"html",
+				"jsonls",
+				"nil_ls",
+				"ruff",
+				"rust_analyzer",
+				"tailwindcss",
+				"ts_ls",
+				"ty",
+				"zls",
+			}
+			vim.lsp.enable(servers)
+		end,
+	},
+	{
 		"dundalek/lazy-lsp.nvim",
 		event = "InsertEnter",
 		dependencies = {

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ lib, pkgs, pkgs-unstable, ... }:
 
 let
   stable-packages = with pkgs; [
@@ -16,12 +16,12 @@ let
     brightnessctl
     hwinfo
   ];
-  unstable-packages = with pkgs.unstable; [
+  unstable-packages = with pkgs-unstable; [
     ripgrep
     yt-dlp
     asciinema
     aerc
-  ] ++ lib.optionals pkgs.unstable.stdenv.isLinux [
+  ] ++ lib.optionals pkgs-unstable.stdenv.isLinux [
     ani-cli
   ];
 in

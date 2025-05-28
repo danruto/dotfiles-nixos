@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 let
-  unstable-packages = with pkgs.unstable; [
+  unstable-packages = with pkgs-unstable; [
     zig
     zls
   ];

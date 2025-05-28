@@ -1,10 +1,10 @@
-{ pkgs, ... }:
+{ pkgs-unstable, ... }:
 
 # https://github.com/LnL7/nix-darwin/blob/master/modules/services/yabai/default.nix
 {
   services.yabai = {
     enable = true;
-    package = pkgs.unstable.yabai;
+    package = pkgs-unstable.yabai;
     enableScriptingAddition = true;
     config = {
       # Binary space partitioning layout

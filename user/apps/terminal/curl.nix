@@ -1,9 +1,9 @@
-{ pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 let
   stable-packages = with pkgs; [
     xh
   ];
-  unstable-packages = with pkgs.unstable; [
+  unstable-packages = with pkgs-unstable; [
     posting
     jnv
   ];
