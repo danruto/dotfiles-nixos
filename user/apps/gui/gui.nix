@@ -14,6 +14,7 @@ let
     slack
     vscode
     obs-studio
+    zed-editor
   ];
 in
 {

@@ -15,8 +15,24 @@ in
     pavucontrol
     swayidle
     swaylock
+    swaybg
     rofi-wayland
   ];
+
+  systemd.user.services.swaybg = {
+    Unit = {
+      Description = "Wallpaper via swaybg";
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.swaybg}/bin/swaybg -c '#000000'";
+      Restart = "on-failure";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
+
 
   # programs.waybar.systemd.enable = true;
 

@@ -42,26 +42,27 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
+			-- Not required with lazy-lsp preferred servers
 			local servers = {
-				"basedpyright",
+				-- "basedpyright",
 				"bashls",
-				"biome",
+				-- "biome",
 				"dartls",
 				"dockerls",
 				"fish_lsp",
 				"gh_actions_ls",
-				"golangci-lint-langserver",
-				"gopls",
+				"golangci_lint_ls",
+				-- "gopls",
 				"graphql",
 				"html",
 				"jsonls",
-				"nil_ls",
-				"ruff",
-				"rust_analyzer",
+				-- "nil_ls",
+				-- "ruff",
+				-- "rust_analyzer",
 				"tailwindcss",
 				"ts_ls",
 				"ty",
-				"zls",
+				-- "zls",
 			}
 			vim.lsp.enable(servers)
 		end,

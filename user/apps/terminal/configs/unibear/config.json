@@ -1,7 +1,8 @@
 {
-    "provider": "ollama",
-    "model": "qwen3:4b",
-    "port": 12496,
+    "provider": "gemini",
     "theme": "dark",
-    "user_name": "Dantoki"
+    "user_name": "Dantoki",
+    "key_bindings": {
+        "useModifyTools": "+"
+    }
 }

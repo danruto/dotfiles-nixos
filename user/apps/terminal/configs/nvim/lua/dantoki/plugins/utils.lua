@@ -274,7 +274,7 @@ return {
 			layout = { enabled = true },
 			lazygit = { enabled = false },
 			notifier = { enabled = true },
-			picker = { enabled = true },
+			picker = { enabled = true, exclude = { "vendor/*" } },
 			quickfile = { enabled = true },
 			scope = { enabled = true },
 			scratch = { enabled = true },
