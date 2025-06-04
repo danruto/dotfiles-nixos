@@ -77,7 +77,9 @@ wo.relativenumber = true -- Show line numbers as relative
 wo.number = true -- Show line numbers
 wo.wrap = false -- Disable line wrap
 wo.cursorline = true -- Highlight current line
-wo.foldmethod = "marker"
+wo.foldmethod = "expr"
+wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+wo.foldtext = ""
 
 g.python_2_host_prog = "/usr/bin/python"
 if g.os == "mac" or vim.loop.os_uname().sysname == "Darwin" then

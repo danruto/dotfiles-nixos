@@ -112,9 +112,14 @@ with lib;
   };
 
   services.openssh = {
-    enable = true;
+    enable = false;
     ports = [ 2222 ];
     settings.PasswordAuthentication = true;
+    # Force generation of host keys
+    # hostKeys = [
+    #   { type = "rsa"; }
+    #   { type = "ed25519"; }
+    # ];
   };
 
   # It is ok to leave this unchanged for compatibility purposes
