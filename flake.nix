@@ -42,7 +42,6 @@
       browser = "brave"; # Default browser; must select one from ./user/apps/browser/
       editor = "hx"; # Default editor;
       term = "alacritty"; # Default terminal command;
-      font = "VictorMono Nerd Font"; # Selected font
       fontPkg = pkgs.d2coding; # Font package
 
       # create patched nixpkgs
@@ -99,7 +98,6 @@
         inherit profile;
         inherit email;
         inherit theme;
-        inherit font;
         inherit fontPkg;
         inherit wm;
         inherit wmType;

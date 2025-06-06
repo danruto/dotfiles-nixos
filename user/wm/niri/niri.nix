@@ -9,6 +9,7 @@ in
 
   home.packages = with pkgs; [
     wlr-randr
+    # wlr-screencopy
     wl-clipboard
     xsel
     pamixer
@@ -17,6 +18,7 @@ in
     swaylock
     swaybg
     rofi-wayland
+    xdg-desktop-portal-gnome
   ];
 
   systemd.user.services.swaybg = {
@@ -142,6 +144,7 @@ in
       (leaf "position" { x = 1148; y = 1440; })
     ])
 
+    # DP
     (node "output" "DP-1" [
       # Uncomment this line to disable this output.
       # (flag "off")
@@ -158,6 +161,24 @@ in
 
       (leaf "position" { x = 0; y = 0; })
     ])
+
+    # HDMI
+    (node "output" "DP-4" [
+      # Uncomment this line to disable this output.
+      # (flag "off")
+
+      # Scale is a floating-point number, but at the moment only integer values work.
+      (leaf "scale" 1.0)
+
+      # Transform allows to rotate the output counter-clockwise, valid values are:
+      # normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
+      (leaf "transform" "normal")
+
+      (leaf "mode" "3440x1440@49.987")
+
+      (leaf "position" { x = 0; y = 0; })
+    ])
+
 
     (plain "layout" [
       # By default focus ring and border are rendered as a solid background rectangle
@@ -269,6 +290,7 @@ in
     # (leaf "spawn-at-startup" [ "alacritty" "-e" "fish" ])
     # (leaf "spawn-at-startup" [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ])
     # (leaf "spawn-at-startup" [ "waybar" ])
+    (leaf "spawn-at-startup" [ "xwayland-satellite" ])
 
     # You can override environment variables for processes spawned by niri.
     (plain "environment" [
@@ -439,6 +461,16 @@ in
       # The regular expression can match anywhere in the string.
       (leaf "match" { app-id = ''^org\.wezfurlong\.wezterm$''; })
       (plain "default-column-width" [ ])
+    ])
+
+    (plain "window-rule" [
+      (leaf "match" { app-id = ''Slack''; })
+      (leaf "block-out-from" "screencast")
+    ])
+
+    (plain "window-rule" [
+      (leaf "match" { app-id = ''1Password''; })
+      (leaf "block-out-from" "screencast")
     ])
 
     (plain "binds" [

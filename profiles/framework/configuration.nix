@@ -33,6 +33,7 @@ with lib;
   # Setup bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernelParams = [ "mem_sleep_default=deep" ];
 
   nix.settings.download-buffer-size = 524288000;
 
