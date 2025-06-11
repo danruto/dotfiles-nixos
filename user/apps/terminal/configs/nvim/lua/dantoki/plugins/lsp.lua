@@ -12,6 +12,7 @@ return {
 	},
 	{
 		"monkoose/neocodeium",
+		enabled = false,
 		event = "VeryLazy",
 		cmd = "NeoCodeium",
 		build = ":NeoCodeium auth",
@@ -372,12 +373,18 @@ return {
 		"yetone/avante.nvim",
 		event = "VeryLazy",
 		version = false, -- Never set this value to "*"! Never!
-		enabled = false,
+		enabled = true,
 		opts = {
-			provider = "ollama",
+			provider = "gemini",
 			ollama = {
 				endpoint = "http://127.0.0.1:11434", -- Note that there is no /v1 at the end.
 				model = "gemma3:4b",
+			},
+			gemini = {
+				-- GEMINI_API_KEY,
+				model = "gemini-2.0-flash",
+				-- model = "gemini-2.5-flash-preview-04-17",
+				-- model = "gemini-2.5-pro-preview-03-25"
 			},
 		},
 		dependencies = {

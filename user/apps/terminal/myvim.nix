@@ -51,17 +51,6 @@
           };
         };
 
-        github-nvim-theme = pkgs.vimUtils.buildVimPlugin {
-          pname = "github-nvim-theme";
-          version = "2025-04-16";
-          src = pkgs.fetchFromGitHub {
-            owner = "projekt0n";
-            repo = "github-nvim-theme";
-            rev = "c106c9472154d6b2c74b74565616b877ae8ed31d";
-            hash = "sha256-/A4hkKTzjzeoR1SuwwklraAyI8oMkhxrwBBV9xb59PA=";
-          };
-        };
-
         ohlucy-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "oh-lucy.nvim";
           version = "2025-04-16";
@@ -117,49 +106,36 @@
           };
         };
 
-        render-markdown-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "render-markdown.nvim";
-          version = "2025-02-09";
-          src = pkgs.fetchFromGitHub {
-            owner = "MeanderingProgrammer";
-            repo = "render-markdown.nvim";
-            rev = "a2c2493c21cf61e5554ee8bc83da75bd695921da";
-            hash = "sha256-v66YkFT1L/4xsDK3C/0BHsvtxsGhuC7qUxJCKjIrEM0=";
-          };
-        };
-
-        neocodeium = pkgs.vimUtils.buildVimPlugin {
-          pname = "neocodeium";
-          version = "2025-05-24";
-          src = pkgs.fetchFromGitHub {
-            owner = "monkoose";
-            repo = "neocodeium";
-            rev = "73689bf571518b8d4b2d333f00c21b75350d403e";
-            hash = "sha256-wB2ujxGZIfuGYmpEGLYW80vU1bS5vjZP+7/2e5XEXsg=";
-          };
-        };
+        # neocodeium = pkgs.vimUtils.buildVimPlugin {
+        #   pname = "neocodeium";
+        #   version = "2025-06-11";
+        #   src = pkgs.fetchFromGitHub {
+        #     owner = "monkoose";
+        #     repo = "neocodeium";
+        #   };
+        # };
 
         makurai-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "makurai-nvim";
-          version = "2025-05-13";
+          version = "2025-06-11";
           src = pkgs.fetchFromGitHub {
             owner = "Skardyy";
             repo = "makurai-nvim";
-            rev = "6d32fd9378fe6d039270910f758e4c29657fddf8";
-            hash = "sha256-M7Z+5JnOy/dyMDSCR5qFPtU3mN+QZqwA7PVRH/gl9U0=";
+            rev = "a273b061d7300c3e10d6202dd65c6152136f9ae0";
+            hash = "sha256-JNpMx2nUHtUlKnHaV20L+wsnr62ZHo6LzpIKdSASMJg=";
           };
         };
 
-        mssql-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "mssql.nvim";
-          version = "2025-05-28";
-          src = pkgs.fetchFromGitHub {
-            owner = "Kurren123";
-            repo = "mssql.nvim";
-            rev = "551edd9572cbe50574dacac6287faeea59c25a78";
-            hash = "sha256-/Bk9MMVol8bPPsVnn5Dtfz3cj4CPqkObFu1kulld548=";
-          };
-        };
+        # mssql-nvim = pkgs.vimUtils.buildVimPlugin {
+        #   pname = "mssql.nvim";
+        #   version = "2025-05-28";
+        #   src = pkgs.fetchFromGitHub {
+        #     owner = "Kurren123";
+        #     repo = "mssql.nvim";
+        #     rev = "551edd9572cbe50574dacac6287faeea59c25a78";
+        #     hash = "sha256-/Bk9MMVol8bPPsVnn5Dtfz3cj4CPqkObFu1kulld548=";
+        #   };
+        # };
 
         plugins = with pkgs-unstable.vimPlugins; [
           # Basic Deps
@@ -227,8 +203,8 @@
           # neotest
 
           # LLM
-          neocodeium
-          # avante-nvim
+          # neocodeium
+          avante-nvim
           # codecompanion-nvim
 
           # Snippets
