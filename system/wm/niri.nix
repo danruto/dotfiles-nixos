@@ -12,8 +12,10 @@
   environment.systemPackages = with pkgs; [
     xwayland-satellite
   ];
-  environment.variables.NIXOS_OZONE_WL = "1";
-  environment.variables.DISLPAY = ":0";
+
+  environment.variables.DISPLAY = ":0";
+  environment.variables.NIX_OZONE_WL = "1";
+  environment.variables.ELECTRON_OZONE_PLATFORM_HINT = "auto";
 
   programs.niri.enable = true;
 }

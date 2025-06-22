@@ -137,6 +137,18 @@
         #   };
         # };
 
+        debugmaster-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "debugmaster.nvim";
+          version = "2025-06-21";
+          src = pkgs.fetchFromGitHub {
+            owner = "miroshQa";
+            repo = "debugmaster.nvim";
+            rev = "aeae4c324be259856a3e9e436db89875421b78ca";
+            hash = "sha256-qsAlTBOqTXb9YpqPbKEfZkVfejZHWJZQ/CxXSTNOIa0=";
+          };
+          doCheck = false;
+        };
+
         plugins = with pkgs-unstable.vimPlugins; [
           # Basic Deps
           plenary-nvim
@@ -197,15 +209,17 @@
           blink-cmp
           lazy-lsp-nvim
           nvim-dap
-          nvim-dap-ui
+          # nvim-dap-ui
+          debugmaster-nvim
           nvim-dap-go
           nvim-nio
           # neotest
 
           # LLM
           # neocodeium
-          avante-nvim
           # codecompanion-nvim
+          avante-nvim
+          blink-cmp-avante
 
           # Snippets
           friendly-snippets

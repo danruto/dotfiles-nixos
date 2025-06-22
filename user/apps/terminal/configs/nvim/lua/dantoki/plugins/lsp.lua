@@ -360,9 +360,18 @@ return {
 			snippets = {
 				preset = "luasnip",
 			},
+
 			sources = {
-				default = { "lsp", "path", "snippets", "buffer" },
+				default = { "avante", "lsp", "path", "snippets", "buffer" },
+				providers = {
+					avante = {
+						module = "blink-cmp-avante",
+						name = "Avante",
+						opts = {},
+					},
+				},
 			},
+
 			cmdline = {
 				enabled = false,
 			},
@@ -375,19 +384,22 @@ return {
 		version = false, -- Never set this value to "*"! Never!
 		enabled = true,
 		opts = {
+			providers = {
+				ollama = {
+					endpoint = "http://127.0.0.1:11434", -- Note that there is no /v1 at the end.
+					model = "gemma3:4b",
+				},
+				gemini = {
+					-- GEMINI_API_KEY,
+					model = "gemini-2.0-flash",
+					-- model = "gemini-2.5-flash-preview-04-17",
+					-- model = "gemini-2.5-pro-preview-03-25"
+				},
+			},
 			provider = "gemini",
-			ollama = {
-				endpoint = "http://127.0.0.1:11434", -- Note that there is no /v1 at the end.
-				model = "gemma3:4b",
-			},
-			gemini = {
-				-- GEMINI_API_KEY,
-				model = "gemini-2.0-flash",
-				-- model = "gemini-2.5-flash-preview-04-17",
-				-- model = "gemini-2.5-pro-preview-03-25"
-			},
 		},
 		dependencies = {
+			"Kaiser-Yang/blink-cmp-avante",
 			"nvim-treesitter/nvim-treesitter",
 			"stevearc/dressing.nvim",
 			"nvim-lua/plenary.nvim",

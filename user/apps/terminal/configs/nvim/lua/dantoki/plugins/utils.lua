@@ -253,6 +253,7 @@ return {
 			-- refer to the configuration section below
 			animate = { enabled = false },
 			bigfile = { enabled = true },
+			bufdelete = { enabled = true },
 			dashboard = {
 				enabled = true,
 				preset = {

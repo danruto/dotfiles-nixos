@@ -51,6 +51,12 @@
         patches = [ ];
       };
 
+      nixpkgs-unstable-patched = (import nixpkgs { inherit system; }).applyPatches {
+        name = "nixpkgs-unstable-patched";
+        src = nixpkgs-unstable;
+        patches = [ ];
+      };
+
       # configure pkgs
       pkgs = import nixpkgs-patched {
         inherit system;
@@ -71,7 +77,7 @@
         ];
       };
 
-      pkgs-unstable = import nixpkgs-patched {
+      pkgs-unstable = import nixpkgs-unstable-patched {
         inherit system;
 
         config = {
