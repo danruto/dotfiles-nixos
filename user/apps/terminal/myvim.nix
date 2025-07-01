@@ -73,17 +73,6 @@
         #   };
         # };
 
-        lsp-lens-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "lsp-lens.nvim";
-          version = "2024-02-23";
-          src = pkgs.fetchFromGitHub {
-            owner = "vidocqh";
-            repo = "lsp-lens.nvim";
-            rev = "48bb1a7e271424c15f3d588d54adc9b7c319d977";
-            hash = "sha256-zj/Gn/40jnDNh05OFc23LNNuFn1PnIAUDfPquEWpAlk=";
-          };
-        };
-
         monet-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "monet.nvim";
           version = "2025-05-24";
@@ -181,7 +170,6 @@
 
           # UI
           # lsp-inlayhints-nvim
-          lsp-lens-nvim
           tiny-inline-diagnostic-nvim
           nui-nvim
           nvim-web-devicons

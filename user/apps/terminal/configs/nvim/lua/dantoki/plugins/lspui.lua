@@ -80,11 +80,6 @@ return {
 		opts = {},
 	},
 	{
-		"VidocqH/lsp-lens.nvim",
-		event = "LspAttach",
-		opts = {},
-	},
-	{
 		"SmiteshP/nvim-navic",
 		enabled = false,
 		opts = { highlight = true, lsp = { auto_attach = true } },

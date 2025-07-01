@@ -111,7 +111,7 @@ end)
 
 -- Neovide
 if g.neovide then
-	o.guifont = "IosevkaTerm Nerd Font Propo:h10"
+	o.guifont = "Iosevka Comfy:h14"
 	vim.cmd([[let g:neovide_cursor_vfx_mode = "ripple"]])
 end
 

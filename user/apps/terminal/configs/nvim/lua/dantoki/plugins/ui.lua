@@ -136,7 +136,7 @@ return {
 			{ "3rd/image.nvim", opts = { backend = "kitty" } },
 		},
 		cmd = "RenderMarkdown",
-		ft = { "markdown" },
+		-- ft = { "markdown" }, -- disable due to non-kitty terms like foot having issues
 		opts = { -- you can just pass {}, defaults below
 			events = {
 				render_buffer = { "InsertLeave", "BufWinEnter", "TextChanged" },
