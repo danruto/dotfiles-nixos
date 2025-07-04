@@ -12,13 +12,15 @@
       };
     });
 
-    extraPackages = with pkgs; [
+    extraPackages = with pkgs.unstable; [
       # Telescope
       ripgrep
       nixpkgs-fmt
       stylua
       mermaid-cli
       imagemagick
+      kulala-fmt
+      opencode
     ];
 
     extraLuaPackages = ps: [ ps.magick ];
@@ -106,12 +108,12 @@
 
         makurai-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "makurai-nvim";
-          version = "2025-06-11";
+          version = "2025-07-05";
           src = pkgs.fetchFromGitHub {
             owner = "Skardyy";
             repo = "makurai-nvim";
-            rev = "a273b061d7300c3e10d6202dd65c6152136f9ae0";
-            hash = "sha256-JNpMx2nUHtUlKnHaV20L+wsnr62ZHo6LzpIKdSASMJg=";
+            rev = "c9d4d27e682040bd4ffa7e3a63597bf75ba2e8bd";
+            hash = "sha256-WHilrgnwgAaxYXq8wOpAFoNMo51yqvTYnnkggg/0P8Y=";
           };
         };
 
@@ -205,7 +207,7 @@
 
           # LLM
           # neocodeium
-          # codecompanion-nvim
+          codecompanion-nvim
           avante-nvim
           blink-cmp-avante
 
@@ -215,6 +217,8 @@
 
           # UI Utils
           # mssql-nvim
+          nvim-dbee
+          kulala-nvim
 
           # Formatters
           editorconfig-vim
