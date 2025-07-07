@@ -2,6 +2,7 @@
 
   imports = [
     ../shared.nix # Shared home configurations
+    ../../user/apps/ai/llm.nix
     ../../user/shell/sh.nix # Fish config
     ../../user/shell/tui.nix # Useful cli/tui apps
     ../../user/apps/git/git.nix # My git config

@@ -12,7 +12,7 @@
       };
     });
 
-    extraPackages = with pkgs.unstable; [
+    extraPackages = with pkgs; [
       # Telescope
       ripgrep
       nixpkgs-fmt
@@ -20,7 +20,6 @@
       mermaid-cli
       imagemagick
       kulala-fmt
-      opencode
     ];
 
     extraLuaPackages = ps: [ ps.magick ];

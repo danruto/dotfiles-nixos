@@ -79,7 +79,6 @@
           # "P" = [ "paste_after" ];
           # "p" = [ "paste_before" ];
           "C-y" = [ ":sh zellij run -fc -x 10%% -y 10%% --width 80%% --height 80%% -- bash ~/.config/helix/yazi-picker.sh open %{buffer_name}" ];
-          "C-a" = [ ":sh unibear add_file %{buffer_name}" ];
         };
 
         normal.space.g = {
@@ -228,5 +227,4 @@
   home.file.".config/helix/themes/adwaita-light-inlay.toml".source = ./configs/helix/adwaita-light-inlay.toml;
   home.file.".config/helix/themes/oceanic-next.toml".source = ./configs/helix/oceanic-next.toml;
   home.file.".config/helix/yazi-picker.sh".source = ./configs/helix/yazi-picker.sh;
-  home.file.".config/unibear/config.json".source = ./configs/unibear/config.json;
 }

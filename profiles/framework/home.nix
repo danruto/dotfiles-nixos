@@ -28,12 +28,13 @@
     ../../user/apps/terminal/foot.nix
     ../../user/wm/hyprland/hyprland.nix
     ../../user/wm/niri/niri.nix
+    ../../user/apps/ai/llm.nix
+    ../../user/apps/ai/lmstudio.nix
     ../../user/apps/browser/brave.nix
     ../../user/apps/browser/ff.nix
     ../../user/apps/fileman/nemo.nix
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/gui/gui.nix
-    ../../user/apps/gui/lmstudio.nix
     ../../user/apps/networking/wireguard.nix
     ../../user/apps/security/1password.nix
     ../../system/hardware/monitor.nix

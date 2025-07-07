@@ -1,8 +1,0 @@
-{
-    "provider": "gemini",
-    "theme": "dark",
-    "user_name": "Dantoki",
-    "key_bindings": {
-        "useModifyTools": "+"
-    }
-}

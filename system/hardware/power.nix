@@ -1,12 +1,10 @@
 { pkgs-unstable, ... }:
 
 {
-
-
   environment.systemPackages = with pkgs-unstable; [ tlp ];
 
   services.auto-cpufreq = {
-    enable = true;
+    enable = false;
     settings = {
       battery = {
         governor = "powersave";
@@ -29,7 +27,7 @@
   #    turbo = "never";
   #  };
   #};
-  powerManagement.powertop.enable = true;
+  powerManagement.powertop.enable = false;
   # powerManagement.cpuFreqGovernor = "powersave";
 
   services.upower.enable = true;
@@ -49,11 +47,11 @@
     enable = true;
     # package = pkgs.unstable.tlp;
     settings = {
-      # CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      # CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
-      #
-      # CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
-      # CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
+
+      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
       #
       # CPU_MIN_PERF_ON_AC = 0;
       # CPU_MAX_PERF_ON_AC = 100;
