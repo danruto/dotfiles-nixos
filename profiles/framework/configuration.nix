@@ -84,7 +84,7 @@ with lib;
     enableOnBoot = false;
   };
   virtualisation.libvirtd.enable = true;
-  virtualisation.waydroid.enable = true;
+  virtualisation.waydroid.enable = false;
   programs.virt-manager.enable = true;
 
   services.fprintd.enable = true;

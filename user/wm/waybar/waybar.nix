@@ -17,7 +17,7 @@
         margin = "0 0 0 0";
         spacing = 5;
 
-        modules-left = [ "custom/launcher" "hyprland/workspaces" "niri/workspaces" ];
+        modules-left = [ "hyprland/workspaces" "niri/workspaces" "custom/spotify" ];
         modules-center = [ "hyprland/window" "niri/window" ];
         modules-right = [ "tray" "disk" "cpu" "memory" "backlight" "pulseaudio" "network" "battery" "clock" "custom/power-menu" ];
 
@@ -55,6 +55,9 @@
 
         "niri/window" = {
           "format" = "{}";
+          "rewrite" = {
+            "(.*) - Ablaze Floorp" = "🌎 $1";
+          };
         };
 
 
@@ -164,12 +167,11 @@
         };
 
         "custom/spotify" = {
-          "exec" = "python3 ~/.config/waybar/scripts/mediaplayer.py --player spotify";
+          "exec" = "bash ~/.config/waybar/scripts/spotify.sh";
           "format" = "{}  ";
-          "return-type" = "json";
-          "on-click" = "playerctl play-pause";
-          "on-double-click-right" = "playerctl next";
-          "on-scroll-down" = "playerctl previous";
+          "on-click" = "spotify_player playback play-pause";
+          "on-double-click-right" = "spotify_player playback next";
+          "on-scroll-down" = "spotify_player playback previous";
         };
 
         "custom/power-menu" = {

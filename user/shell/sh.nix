@@ -48,6 +48,7 @@ in
     nix-direnv
     starship
     fish
+    jq
   ];
 
   programs.btop = {

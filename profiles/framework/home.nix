@@ -46,7 +46,7 @@
     # cachix
     diff-so-fancy
     git
-    waydroid-helper
+    # waydroid-helper
     fakeroot
   ];
   home.stateVersion = "24.05";

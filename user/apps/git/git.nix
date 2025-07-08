@@ -10,6 +10,7 @@ let
   unstable-packages = with pkgs-unstable; [
     jujutsu
     lazyjj
+    gh-dash
   ];
 
   name = "Danny";

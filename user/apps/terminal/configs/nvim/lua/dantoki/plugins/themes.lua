@@ -132,7 +132,7 @@ return {
 		"nyoom-engineering/oxocarbon.nvim",
 		config = function()
 			vim.opt.background = "dark"
-			vim.cmd.colorscheme("oxocarbon")
+			-- vim.cmd.colorscheme("oxocarbon")
 		end,
 	},
 	{
@@ -140,7 +140,7 @@ return {
 		lazy = false,
 		priority = 1000,
 		config = function()
-			vim.cmd.colorscheme("makurai_dark")
+			vim.cmd.colorscheme("makurai_spring")
 		end,
 	},
 	-- {
