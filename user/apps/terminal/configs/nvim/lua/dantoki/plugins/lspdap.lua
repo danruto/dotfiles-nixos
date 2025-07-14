@@ -31,12 +31,7 @@ return {
 					},
 				},
 			},
-			{
-				"miroshQa/debugmaster.nvim",
-				-- osv is needed if you want to debug neovim lua code. Also can be used
-				-- as a way to quickly test-drive the plugin without configuring debug adapters
-				dependencies = { "mfussenegger/nvim-dap" },
-			},
+			{ "miroshQa/debugmaster.nvim" },
 			{ "leoluz/nvim-dap-go" },
 			{ "nvim-neotest/nvim-nio" },
 		},

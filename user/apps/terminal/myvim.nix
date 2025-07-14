@@ -107,12 +107,12 @@
 
         makurai-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "makurai-nvim";
-          version = "2025-07-05";
+          version = "2025-07-14";
           src = pkgs.fetchFromGitHub {
             owner = "Skardyy";
             repo = "makurai-nvim";
-            rev = "c9d4d27e682040bd4ffa7e3a63597bf75ba2e8bd";
-            hash = "sha256-WHilrgnwgAaxYXq8wOpAFoNMo51yqvTYnnkggg/0P8Y=";
+            rev = "823668684fd4acb05092cda13c9737837dc66417";
+            hash = "sha256-phthkoliBFysawUscAqWbfeR8bmcSh5uNeRN/UcFuVI=";
           };
         };
 

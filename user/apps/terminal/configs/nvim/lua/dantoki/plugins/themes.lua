@@ -140,7 +140,7 @@ return {
 		lazy = false,
 		priority = 1000,
 		config = function()
-			vim.cmd.colorscheme("makurai_spring")
+			vim.cmd.colorscheme("makurai_dark")
 		end,
 	},
 	-- {
