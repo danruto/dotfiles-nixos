@@ -1,34 +1,15 @@
 { pkgs-unstable, ... }:
 
 {
-  environment.systemPackages = with pkgs-unstable; [ tlp ];
+  environment.systemPackages = with pkgs-unstable; [ tlp powertop ];
 
-  services.auto-cpufreq = {
-    enable = false;
-    settings = {
-      battery = {
-        governor = "powersave";
-        turbo = "never";
-      };
-      charger = {
-        governor = "performance";
-        turbo = "auto";
-      };
-    };
-  };
-  #services.auto-cpufreq.settings = {
-  #  charger = {
-  #    governor = "performance";
-  #    turbo = "auto";
-  #  };
-  #  battery = {
-  #    governor = "schedutil";
-  #    scaling_max_freq = 3800000;
-  #    turbo = "never";
-  #  };
-  #};
-  powerManagement.powertop.enable = false;
-  # powerManagement.cpuFreqGovernor = "powersave";
+  # Disable auto-cpufreq - using TLP instead
+  services.auto-cpufreq.enable = false;
+
+  # Enable powertop auto-tuning
+  powerManagement.powertop.enable = true;
+  # Let TLP handle CPU governor instead of setting it globally
+  # powerManagement.cpuFreqGovernor = "schedutil";
 
   services.upower.enable = true;
   services.upower.criticalPowerAction = "Hibernate";
@@ -45,21 +26,71 @@
 
   services.tlp = {
     enable = true;
-    # package = pkgs.unstable.tlp;
     settings = {
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
+      # CPU governors - schedutil is best for 12th gen Intel
+      CPU_SCALING_GOVERNOR_ON_AC = "schedutil";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
-      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+      # Intel P-state energy performance preference
+      CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
       CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-      #
-      # CPU_MIN_PERF_ON_AC = 0;
-      # CPU_MAX_PERF_ON_AC = 100;
-      # CPU_MIN_PERF_ON_BAT = 0;
-      # CPU_MAX_PERF_ON_BAT = 80;
 
-      START_CHARGE_THRESH_BAT1 = 40; # 40 and bellow it starts to charge
-      STOP_CHARGE_THRESH_BAT1 = 80; # 80 and above it stops charging
+      # Intel P-state performance scaling
+      CPU_MIN_PERF_ON_AC = 0;
+      CPU_MAX_PERF_ON_AC = 100;
+      CPU_MIN_PERF_ON_BAT = 0;
+      CPU_MAX_PERF_ON_BAT = 40;  # Aggressive battery saving
+
+      # Intel Turbo Boost
+      CPU_BOOST_ON_AC = 1;
+      CPU_BOOST_ON_BAT = 0;
+
+      # Intel Hardware P-state (HWP) dynamic boost
+      CPU_HWP_DYN_BOOST_ON_AC = 1;
+      CPU_HWP_DYN_BOOST_ON_BAT = 0;
+
+      # Platform profiles for 12th gen
+      PLATFORM_PROFILE_ON_AC = "performance";
+      PLATFORM_PROFILE_ON_BAT = "low-power";
+
+      # USB power management - exclude input devices
+      USB_AUTOSUSPEND = 1;
+      USB_BLACKLIST_PHONE = 1;
+      USB_BLACKLIST_WWAN = 1;
+      # Exclude input devices from autosuspend
+      USB_DENYLIST = "1532:00a6 03f0:05b7 a8f8:1829 14ed:1012";  # Mouse, headset, keyboard, microphone
+
+      # WiFi power management
+      WIFI_PWR_ON_AC = "off";
+      WIFI_PWR_ON_BAT = "on";
+
+      # Runtime power management
+      RUNTIME_PM_ON_AC = "on";
+      RUNTIME_PM_ON_BAT = "auto";
+
+      # PCIe power management
+      PCIE_ASPM_ON_AC = "default";
+      PCIE_ASPM_ON_BAT = "powersupersave";
+
+      # Disk power management
+      DISK_APM_LEVEL_ON_AC = "254 254";
+      DISK_APM_LEVEL_ON_BAT = "128 128";
+      DISK_SPINDOWN_TIMEOUT_ON_AC = "0 0";
+      DISK_SPINDOWN_TIMEOUT_ON_BAT = "60 60";
+
+      # SATA link power management
+      SATA_LINKPWR_ON_AC = "med_power_with_dipm";
+      SATA_LINKPWR_ON_BAT = "min_power";
+
+      # Battery charge thresholds
+      START_CHARGE_THRESH_BAT1 = 40;
+      STOP_CHARGE_THRESH_BAT1 = 80;
+
+      # Kernel laptop mode
+      DISK_IDLE_SECS_ON_AC = 0;
+      DISK_IDLE_SECS_ON_BAT = 2;
+      MAX_LOST_WORK_SECS_ON_AC = 15;
+      MAX_LOST_WORK_SECS_ON_BAT = 60;
     };
   };
 }

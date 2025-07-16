@@ -1,4 +1,4 @@
-{ niri, pkgs, ... }:
+{ niri, pkgs, lib, ... }:
 let
   inherit (niri.lib.kdl) node plain leaf flag;
 in
@@ -48,7 +48,6 @@ in
 
     # prefer-no-csd = true;
 
-
     outputs = {
       # Laptop
       "eDP-1" = {
@@ -87,8 +86,13 @@ in
     layout = {
       "focus-ring" = {
         width = 4;
-        active.color = "#7fc8ff";
+        # active.color = "#7fc8ff";
         inactive.color = "#505050";
+        # angle 45 => btmLeft to topRight
+        active.gradient = { from = "#7fc8ff"; to = "#E6B673"; angle = 45; };
+        # // active-gradient from="#80c8ff" to="#bbddff" angle=45
+        # // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
+        # // urgent-gradient from="#800" to="#a33" angle=45
       };
 
       border = {
@@ -106,16 +110,12 @@ in
 
       default-column-width = { proportion = 0.5; };
 
-      gaps = 16;
+      gaps = 12;
 
       center-focused-column = "never";
     };
 
-    spawn-at-startup = [
-      { command = [ "xwayland-satellite" ]; }
-    ];
-
-    screenshot-path = "~/pictures/screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
+    screenshot-path = "~/screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
 
     animations = {
       horizontal-view-movement = {
@@ -265,6 +265,10 @@ in
       "Mod+Shift+P".action.power-off-monitors = [ ];
     };
 
+    xwayland-satellite = {
+      enable = true;
+      path = "${lib.getExe pkgs.xwayland-satellite-unstable}";
+    };
   };
 
 }

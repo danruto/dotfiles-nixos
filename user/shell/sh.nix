@@ -26,6 +26,7 @@ let
     newts = "cp ~/dev/pixelbrush/pb-flakes/.envrc . && cp ~/dev/pixelbrush/pb-flakes/.gitignore.default .gitignore && cp ~/dev/pixelbrush/pb-flakes/ts.nix flake.nix";
     newpy = "cp ~/dev/pixelbrush/pb-flakes/.envrc . && cp ~/dev/pixelbrush/pb-flakes/.gitignore.default .gitignore && cp ~/dev/pixelbrush/pb-flakes/python.nix flake.nix";
     newzig = "cp ~/dev/pixelbrush/pb-flakes/.envrc . && cp ~/dev/pixelbrush/pb-flakes/.gitignore.default .gitignore && cp ~/dev/pixelbrush/pb-flakes/zig.nix flake.nix";
+    newdn = "cp ~/dev/pixelbrush/pb-flakes/.envrc . && cp ~/dev/pixelbrush/pb-flakes/.gitignore.default .gitignore && cp ~/dev/pixelbrush/pb-flakes/dotnet.nix flake.nix";
   };
 in
 {

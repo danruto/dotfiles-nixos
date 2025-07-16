@@ -19,7 +19,6 @@
       stylua
       mermaid-cli
       imagemagick
-      kulala-fmt
     ];
 
     extraLuaPackages = ps: [ ps.magick ];
@@ -206,7 +205,7 @@
 
           # LLM
           # neocodeium
-          codecompanion-nvim
+          # codecompanion-nvim
           avante-nvim
           blink-cmp-avante
 
@@ -217,7 +216,6 @@
           # UI Utils
           # mssql-nvim
           nvim-dbee
-          kulala-nvim
 
           # Formatters
           editorconfig-vim

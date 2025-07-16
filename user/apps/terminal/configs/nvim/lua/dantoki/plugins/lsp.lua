@@ -536,7 +536,7 @@ return {
 	},
 	{
 		"olimorris/codecompanion.nvim",
-		-- enabled = false,
+		enabled = false,
 		cmd = "CodeCompanionActions",
 		opts = {
 			strategies = {
