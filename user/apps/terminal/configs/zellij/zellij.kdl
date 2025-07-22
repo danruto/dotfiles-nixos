@@ -216,6 +216,16 @@ plugins {
     }
     configuration location="zellij:configuration"
     plugin-manager location="zellij:plugin-manager"
+    zjstatus-hints location="https://github.com/b0o/zjstatus-hints/releases/latest/download/zjstatus-hints.wasm" {
+        max_length "130"
+        overflow_str ""
+        pipe_name "zjstatus_hints"
+        hide_in_base_mode true
+    }
+}
+
+load_plugins {
+    zjstatus-hints
 }
 
 // Choose what to do when zellij receives SIGTERM, SIGINT, SIGQUIT or SIGHUP
@@ -232,7 +242,7 @@ plugins {
 //    - false (Default)
 //
 // simplified_ui true
-simplified_ui true
+simplified_ui false
 
 // Choose the path to the default shell that zellij will use for opening new panes
 // Default: $SHELL
@@ -245,7 +255,13 @@ simplified_ui true
 //   - false
 //
 // pane_frames true
-pane_frames false
+pane_frames true
+
+ui {
+    pane_frames {
+        rounded_corners true
+    }
+}
 
 // Toggle between having Zellij lay out panes according to a predefined set of layouts whenever possible
 // Options:
@@ -278,6 +294,7 @@ pane_frames false
 // Default: default
 //
 // theme "default"
+theme "lavi"
 
 // The name of the default layout to load on startup
 // Default: "default"
@@ -329,6 +346,7 @@ pane_frames false
 // Default: true
 //
 // copy_on_select false
+copy_on_select true
 
 // Path to the default editor to use to edit pane scrollbuffer
 // Default: $EDITOR or $VISUAL
@@ -349,3 +367,11 @@ pane_frames false
 // The folder in which Zellij will look for themes
 //
 // theme_dir "/path/to/my/theme_dir"
+
+show_startup_tips false
+
+// Doesnt work but keeping for the name
+tab {
+    name ""
+}
+

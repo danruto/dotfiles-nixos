@@ -11,6 +11,13 @@
   # Let TLP handle CPU governor instead of setting it globally
   # powerManagement.cpuFreqGovernor = "schedutil";
 
+  # Disable NMI watchdog for power savings (PowerTOP recommendation)
+  boot.kernelParams = [
+    "nmi_watchdog=0"
+    "processor.max_cstate=10"
+    "intel_idle.max_cstate=10"
+  ];
+
   services.upower.enable = true;
   services.upower.criticalPowerAction = "Hibernate";
   services.thermald.enable = true;
@@ -23,6 +30,31 @@
   systemd.sleep.extraConfig = ''
     HibernateDelaySec=1h
   '';
+
+  # Additional power management optimizations
+  services.udev.extraRules = ''
+    # Enable runtime PM for all PCI devices (PowerTOP recommendation)
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
+    
+    # Enable autosuspend for USB devices except input devices
+    ACTION=="add", SUBSYSTEM=="usb", TEST=="power/control", ATTR{power/control}="auto"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="1532", ATTR{idProduct}=="00a6", ATTR{power/control}="on"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="03f0", ATTR{idProduct}=="05b7", ATTR{power/control}="on"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="a8f8", ATTR{idProduct}=="1829", ATTR{power/control}="on"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="14ed", ATTR{idProduct}=="1012", ATTR{power/control}="on"
+  '';
+
+  # PowerTOP auto-tune service
+  systemd.services.powertop-auto-tune = {
+    description = "PowerTOP auto-tune";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs-unstable.powertop}/bin/powertop --auto-tune";
+    };
+  };
 
   services.tlp = {
     enable = true;
@@ -59,6 +91,8 @@
       USB_BLACKLIST_WWAN = 1;
       # Exclude input devices from autosuspend
       USB_DENYLIST = "1532:00a6 03f0:05b7 a8f8:1829 14ed:1012";  # Mouse, headset, keyboard, microphone
+      # Enable USB autosuspend for all other devices (PowerTOP recommendation)
+      USB_AUTOSUSPEND_DISABLE_ON_SHUTDOWN = 0;
 
       # WiFi power management
       WIFI_PWR_ON_AC = "off";
@@ -91,6 +125,15 @@
       DISK_IDLE_SECS_ON_BAT = 2;
       MAX_LOST_WORK_SECS_ON_AC = 15;
       MAX_LOST_WORK_SECS_ON_BAT = 60;
+
+      # Audio codec power management (PowerTOP recommendation)
+      SOUND_POWER_SAVE_ON_AC = 1;
+      SOUND_POWER_SAVE_ON_BAT = 1;
+      SOUND_POWER_SAVE_CONTROLLER = "Y";
+
+      # VM writeback timeout optimization
+      DIRTY_WRITEBACK_CENTISECS_ON_AC = 1500;
+      DIRTY_WRITEBACK_CENTISECS_ON_BAT = 6000;
     };
   };
 }

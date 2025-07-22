@@ -4,7 +4,7 @@ let
     xh
   ];
   unstable-packages = with pkgs-unstable; [
-    posting
+    # posting
     jnv
   ];
 in
