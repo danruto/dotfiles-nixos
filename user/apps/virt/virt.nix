@@ -12,6 +12,9 @@
     swtpm
     # bottles
 
+    buildkit
+    docker-buildx
+
     # Filesystems
     # dosfstools
   ];

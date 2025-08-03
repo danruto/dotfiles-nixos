@@ -34,12 +34,12 @@ with lib;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelParams = [ "mem_sleep_default=deep" ];
-  boot.extraModulePackages = with pkgs.linuxPackages_latest; [
-    v4l2loopback
-  ];
-  boot.extraModprobeConfig = ''
-    options v4l2loopback devices=1 video_nr=1 card_label="OBS Cam" exclusive_caps=1
-  '';
+  # boot.extraModulePackages = with pkgs.linuxPackages_latest; [
+  #   v4l2loopback
+  # ];
+  # boot.extraModprobeConfig = ''
+  #   options v4l2loopback devices=1 video_nr=1 card_label="OBS Cam" exclusive_caps=1
+  # '';
   boot.kernel.sysctl."vm.swappiness" = 10;
 
 
@@ -116,6 +116,11 @@ with lib;
   environment.shells = with pkgs; [ fish ];
   users.defaultUserShell = pkgs.fish;
   programs.fish.enable = true;
+
+  # programs.obs-studio = {
+  #   enable = true;
+  #   enableVirtualCamera = true;
+  # };
 
   # TODO: Move to modules
   services.openssh.enable = true;

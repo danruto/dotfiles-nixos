@@ -1,4 +1,3 @@
-
 { config, lib, pkgs, username, storageDriver ? null, ... }:
 
 assert lib.asserts.assertOneOf "storageDriver" storageDriver [
@@ -18,5 +17,12 @@ assert lib.asserts.assertOneOf "storageDriver" storageDriver [
     storageDriver = storageDriver;
     autoPrune.enable = true;
   };
+
+  services.docker.settings = {
+    features = {
+      buildkit = true;
+    };
+  };
+
   users.users.${username}.extraGroups = [ "docker" ];
 }

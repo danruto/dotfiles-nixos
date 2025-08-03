@@ -148,7 +148,7 @@
           tagalong-vim
           typescript-tools-nvim
           crates-nvim
-          rustaceanvim
+          # rustaceanvim
           hover-nvim
           snacks-nvim
           mini-nvim

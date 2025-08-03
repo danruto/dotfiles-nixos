@@ -7,8 +7,8 @@
       font_size = 10;
       # font_family = font;
       # font_family = "Departure Mono";
-      # font_family = "VictorMono Nerd Font";
-      font_family = "D2CodingLigature Nerd Font";
+      font_family = "VictorMono Nerd Font";
+      # font_family = "D2CodingLigature Nerd Font";
 
       window_padding_width = 4;
       hide_window_decorations = "yes";

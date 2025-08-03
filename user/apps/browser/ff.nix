@@ -1,7 +1,13 @@
 { pkgs, ... }:
 
 {
-  home.packages = [ pkgs.floorp ];
+  # programs.floorp = {
+  #   enable = true;
+  #   profiles.default = {
+  #     name = "default";
+  #     isDefault = true;
+  #   };
+  # };
 
   xdg.mimeApps.defaultApplications = {
     "text/html" = "floorp.desktop";
@@ -11,8 +17,10 @@
     "x-scheme-handler/unknown" = "floorp.desktop";
   };
 
+
+  home.packages = [ pkgs.floorp ];
+
   home.sessionVariables = {
     DEFAULT_BROWSER = "${pkgs.floorp}/bin/floorp";
   };
-
 }

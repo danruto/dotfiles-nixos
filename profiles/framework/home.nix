@@ -38,9 +38,11 @@
     ../../user/apps/gui/gui.nix
     ../../user/apps/networking/wireguard.nix
     ../../user/apps/security/1password.nix
+    ../../user/apps/security/protonvpn.nix
     ../../system/hardware/monitor.nix
     ../../user/hardware/keyboard.nix
     ../../user/apps/virt/virt.nix
+    ../../user/style/catppuccin.nix
   ];
 
   home.packages = with pkgs; [

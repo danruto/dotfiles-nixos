@@ -16,6 +16,7 @@
     , zjstatus
     , niri
     , nixos-hardware
+    , catppuccin
     , ...
     }@inputs:
     let
@@ -130,6 +131,7 @@
         inherit (inputs) hyprland-plugins;
         inherit (inputs) niri;
         inherit (inputs) nixos-hardware;
+        inherit (inputs) catppuccin;
       };
 
     in
@@ -241,6 +243,7 @@
     #   url = "github:nix-community/lanzaboote/v0.3.0";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
+    catppuccin.url = "github:catppuccin/nix";
 
     # Mac inputs
     darwin = {

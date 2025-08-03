@@ -143,7 +143,15 @@ in
         block-out-from = "screencast";
       }
       {
+        matches = [{ app-id = "Discord"; }];
+        block-out-from = "screencast";
+      }
+      {
         matches = [{ app-id = "1Password"; }];
+        block-out-from = "screencast";
+      }
+      {
+        matches = [{ app-id = "dunst"; }];
         block-out-from = "screencast";
       }
       {

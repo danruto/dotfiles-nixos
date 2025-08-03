@@ -393,7 +393,7 @@ return {
 	{
 		"mrcjkb/rustaceanvim",
 		dependencies = { "neovim/nvim-lspconfig" },
-		version = "^5", -- Recommended
+		version = "^6", -- Recommended
 		lazy = false,
 		ft = { "rust" },
 	},

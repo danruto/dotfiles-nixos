@@ -6,6 +6,7 @@ let
   unstable-packages = with pkgs-unstable; [
     # posting
     jnv
+    hurl
   ];
 in
 {
