@@ -57,30 +57,54 @@ in
           height = 1504;
           refresh = 59.999;
         };
-        position = { x = 1148; y = 1440; };
+        # position = { x = 1148; y = 1440; };
+        position = { x = 1148; y = 2160; };
       };
 
-      # DP Adapter
-      "DP-1" = {
-        scale = 1.0;
-        mode = {
-          width = 3440;
-          height = 1440;
-          refresh = 59.999;
-        };
-        position = { x = 0; y = 0; };
-      };
+      # USB-C DP Adapter (other monitor via hub)
+      # "DP-1" = {
+      #   scale = 1.0;
+      #   mode = {
+      #     width = 3440;
+      #     height = 1440;
+      #     refresh = 59.999;
+      #   };
+      #   position = { x = 0; y = 0; };
+      # };
 
       # HDMI
-      "DP-4" = {
+      # "DP-4" = {
+      #   scale = 1.0;
+      #   mode = {
+      #     width = 3440;
+      #     height = 1440;
+      #     refresh = 49.987;
+      #   };
+      #   position = { x = 0; y = 0; };
+      # };
+
+      "Dell Inc. Dell AW3418DW #ASM/RFCGshLd" = {
         scale = 1.0;
         mode = {
           width = 3440;
           height = 1440;
-          refresh = 49.987;
+          refresh = 59.973;
         };
         position = { x = 0; y = 0; };
       };
+
+      # Dell 4K Monitor (matches by name when connected directly)
+      # "Dell Inc. DELL U3225QE 26VL734" = {
+      "Dell Inc. Dell U3225QE 26VL734" = {
+        scale = 1.0;
+        mode = {
+          width = 3840;
+          height = 2160;
+          refresh = 59.997;
+        };
+        position = { x = 0; y = 1440; };
+      };
+
     };
 
     layout = {

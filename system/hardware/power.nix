@@ -16,6 +16,7 @@
     "nmi_watchdog=0"
     "processor.max_cstate=10"
     "intel_idle.max_cstate=10"
+    "usbcore.autosuspend=-1"
   ];
 
   services.upower.enable = true;
@@ -35,13 +36,14 @@
   services.udev.extraRules = ''
     # Enable runtime PM for all PCI devices (PowerTOP recommendation)
     ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
-    
-    # Enable autosuspend for USB devices except input devices
-    ACTION=="add", SUBSYSTEM=="usb", TEST=="power/control", ATTR{power/control}="auto"
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="1532", ATTR{idProduct}=="00a6", ATTR{power/control}="on"
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="03f0", ATTR{idProduct}=="05b7", ATTR{power/control}="on"
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="a8f8", ATTR{idProduct}=="1829", ATTR{power/control}="on"
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="14ed", ATTR{idProduct}=="1012", ATTR{power/control}="on"
+
+    # Disable USB autosuspend for input devices and problematic peripherals
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{bDeviceClass}=="03", ATTR{power/control}="on"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", ATTR{power/control}="on"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="1532", ATTR{power/control}="on"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="03f0", ATTR{power/control}="on"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="a8f8", ATTR{power/control}="on"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="14ed", ATTR{power/control}="on"
   '';
 
   # PowerTOP auto-tune service
@@ -71,7 +73,7 @@
       CPU_MIN_PERF_ON_AC = 0;
       CPU_MAX_PERF_ON_AC = 100;
       CPU_MIN_PERF_ON_BAT = 0;
-      CPU_MAX_PERF_ON_BAT = 40;  # Aggressive battery saving
+      CPU_MAX_PERF_ON_BAT = 40; # Aggressive battery saving
 
       # Intel Turbo Boost
       CPU_BOOST_ON_AC = 1;
@@ -85,14 +87,10 @@
       PLATFORM_PROFILE_ON_AC = "performance";
       PLATFORM_PROFILE_ON_BAT = "low-power";
 
-      # USB power management - exclude input devices
-      USB_AUTOSUSPEND = 1;
+      # USB power management - disable to prevent disconnections
+      USB_AUTOSUSPEND = 0;
       USB_BLACKLIST_PHONE = 1;
       USB_BLACKLIST_WWAN = 1;
-      # Exclude input devices from autosuspend
-      USB_DENYLIST = "1532:00a6 03f0:05b7 a8f8:1829 14ed:1012";  # Mouse, headset, keyboard, microphone
-      # Enable USB autosuspend for all other devices (PowerTOP recommendation)
-      USB_AUTOSUSPEND_DISABLE_ON_SHUTDOWN = 0;
 
       # WiFi power management
       WIFI_PWR_ON_AC = "off";

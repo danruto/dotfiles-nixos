@@ -42,12 +42,12 @@
 
         danger-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "danger";
-          version = "2025-04-16";
+          version = "2025-08-07";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
             repo = "danger";
-            rev = "5258fe08ce490184d5fdefb51bc2c6c3c48ced1c";
-            hash = "sha256-EytucoisMWnQvPymiUepjq62TZ7QtcE+lHxNqLy63xU=";
+            rev = "8dc37307e009895f5c0c49c5ccd5d3e9eec24b61";
+            hash = "sha256-gP3wFWdlnPIoaJeXo+TkEsgR0YSQtFEoxMH0gr2uRP8=";
           };
         };
 
@@ -106,12 +106,12 @@
 
         makurai-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "makurai-nvim";
-          version = "2025-07-14";
+          version = "2025-08-07";
           src = pkgs.fetchFromGitHub {
             owner = "Skardyy";
             repo = "makurai-nvim";
-            rev = "823668684fd4acb05092cda13c9737837dc66417";
-            hash = "sha256-phthkoliBFysawUscAqWbfeR8bmcSh5uNeRN/UcFuVI=";
+            rev = "ddb5cb56c431ae9954b262730cc9739520c4ebef";
+            hash = "sha256-Elf1HkiRPQ4klyIexHI8xmQoUKw93R/gutq+/m8Lquo=";
           };
         };
 
@@ -128,12 +128,12 @@
 
         debugmaster-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "debugmaster.nvim";
-          version = "2025-06-21";
+          version = "2025-08-07";
           src = pkgs.fetchFromGitHub {
             owner = "miroshQa";
             repo = "debugmaster.nvim";
-            rev = "aeae4c324be259856a3e9e436db89875421b78ca";
-            hash = "sha256-qsAlTBOqTXb9YpqPbKEfZkVfejZHWJZQ/CxXSTNOIa0=";
+            rev = "3d144b98c2c23f39123fbf5f10fdff7d6480a0e6";
+            hash = "sha256-pdgS0z8KdLsl7VexbPaRPtYc2lebzAgTtM3B52IaCpQ=";
           };
           doCheck = false;
         };
@@ -148,7 +148,7 @@
           tagalong-vim
           typescript-tools-nvim
           crates-nvim
-          # rustaceanvim
+          rustaceanvim
           hover-nvim
           snacks-nvim
           mini-nvim

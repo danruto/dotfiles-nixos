@@ -21,7 +21,6 @@
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/music.nix
     ../../user/apps/terminal/curl.nix # network request cli/tuis
-    ../../user/apps/gui/neovide.nix
     ../../user/apps/terminal/helix.nix
     # ../../user/apps/terminal/alacritty.nix
     ../../user/apps/terminal/kitty.nix
@@ -29,13 +28,16 @@
     ../../user/wm/hyprland/hyprland.nix
     ../../user/wm/niri/niri.nix
     ../../user/apps/ai/llm.nix
-    ../../user/apps/ai/lmstudio.nix
+    # ../../user/apps/ai/lmstudio.nix
     ../../user/apps/browser/brave.nix
     ../../user/apps/browser/ff.nix
     ../../user/apps/browser/librewolf.nix
     ../../user/apps/fileman/nemo.nix
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/gui/gui.nix
+    ../../user/apps/gui/neovide.nix
+    ../../user/apps/gui/vscode.nix
+    ../../user/apps/gui/zed.nix
     ../../user/apps/networking/wireguard.nix
     ../../user/apps/security/1password.nix
     ../../user/apps/security/protonvpn.nix

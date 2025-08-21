@@ -217,6 +217,15 @@
           auto-format = true;
           formatter = { command = "nixpkgs-fmt"; };
         }
+        {
+          name = "c-sharp";
+          indent = { tab-width = 4; unit = "  "; };
+          auto-format = true;
+          language-servers = [
+            # "omnisharp"
+            "csharp-ls"
+          ];
+        }
       ];
     };
   };

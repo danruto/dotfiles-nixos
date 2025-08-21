@@ -27,6 +27,20 @@ let
     newpy = "cp ~/dev/pixelbrush/pb-flakes/.envrc . && cp ~/dev/pixelbrush/pb-flakes/.gitignore.default .gitignore && cp ~/dev/pixelbrush/pb-flakes/python.nix flake.nix";
     newzig = "cp ~/dev/pixelbrush/pb-flakes/.envrc . && cp ~/dev/pixelbrush/pb-flakes/.gitignore.default .gitignore && cp ~/dev/pixelbrush/pb-flakes/zig.nix flake.nix";
     newdn = "cp ~/dev/pixelbrush/pb-flakes/.envrc . && cp ~/dev/pixelbrush/pb-flakes/.gitignore.default .gitignore && cp ~/dev/pixelbrush/pb-flakes/dotnet.nix flake.nix";
+
+    # Git worktree aliases
+    gwt = "git worktree";
+    gwta = "git worktree add";
+    gwtl = "git worktree list";
+    gwtr = "git worktree remove";
+    gwtm = "git worktree move";
+    gwtp = "git worktree prune";
+    
+    # Git worktree with new branch: gwtab <path> <branch-name>
+    gwtab = "git worktree add -b";
+    
+    # Git worktree with existing branch: gwtae <path> <existing-branch>
+    gwtae = "git worktree add";
   };
 in
 {

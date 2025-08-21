@@ -268,7 +268,7 @@ return {
 				},
 			},
 			dim = { enabled = true },
-			explorer = { enabled = true },
+			explorer = { enabled = true, jump = { close = true } },
 			gitbrowse = { enabled = false },
 			indent = { enabled = true },
 			input = { enabled = true },
