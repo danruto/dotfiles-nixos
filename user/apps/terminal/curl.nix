@@ -2,11 +2,11 @@
 let
   stable-packages = with pkgs; [
     xh
+    hurl
   ];
   unstable-packages = with pkgs-unstable; [
     # posting
     jnv
-    hurl
   ];
 in
 {

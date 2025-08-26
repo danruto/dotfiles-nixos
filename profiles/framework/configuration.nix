@@ -27,6 +27,8 @@ with lib;
       ../../system/wm/wayland.nix
       ../../system/wm/hyprland.nix
       ../../system/wm/niri.nix
+
+      ../../system/apps/docker.nix
     ];
 
 
@@ -89,10 +91,6 @@ with lib;
   security.sudo.wheelNeedsPassword = false;
 
   # virt
-  virtualisation.docker = {
-    enable = true;
-    enableOnBoot = false;
-  };
   virtualisation.libvirtd.enable = true;
   virtualisation.waydroid.enable = false;
   programs.virt-manager.enable = true;

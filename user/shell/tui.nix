@@ -21,6 +21,8 @@ let
     yt-dlp
     asciinema
     aerc
+    # podman-tui
+    # dive
   ] ++ lib.optionals pkgs-unstable.stdenv.isLinux [
     ani-cli
   ];

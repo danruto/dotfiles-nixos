@@ -92,7 +92,7 @@ Do not ever use HTML tags or any other formatting for the todo list, as it will 
 Each time you are going to create a file, use a single concise sentence inform the user of what you are creating and why.
 
 # Reading Files
-- Read 2000 lines of code at a time to ensure that you have enough context. 
+- Read 2000 lines of code at a time to ensure that you have enough context.
 - Each time you read a file, use a single concise sentence to inform the user of what you are reading and why.
 ]]
 
@@ -145,7 +145,7 @@ return {
 			local servers = {
 				-- "basedpyright",
 				"bashls",
-				-- "biome",
+				"biome",
 				"dartls",
 				"dockerls",
 				"fish_lsp",
@@ -159,7 +159,7 @@ return {
 				-- "ruff",
 				-- "rust_analyzer",
 				"tailwindcss",
-				"ts_ls",
+				-- "ts_ls", -- Use the version from typescript-tools instead
 				"ty",
 				-- "zls",
 			}
