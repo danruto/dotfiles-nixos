@@ -1,4 +1,4 @@
-{ pkgs, niri, ... }:
+{ pkgs, pkgs-unstable, niri, ... }:
 {
   # Import wayland config
   imports = [
@@ -9,8 +9,8 @@
 
   nixpkgs.overlays = [ niri.overlays.niri ];
 
-  environment.systemPackages = with pkgs; [
-    xwayland-satellite-unstable
+  environment.systemPackages = with pkgs-unstable; [
+    xwayland-satellite
   ];
 
   # environment.variables.DISPLAY = ":0";

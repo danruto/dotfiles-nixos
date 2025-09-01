@@ -158,6 +158,7 @@ return {
 				-- "nil_ls",
 				-- "ruff",
 				-- "rust_analyzer",
+				-- "roslyn_ls", -- Use version from roslyn.nvim instead
 				"tailwindcss",
 				-- "ts_ls", -- Use the version from typescript-tools instead
 				"ty",
@@ -187,6 +188,8 @@ return {
 				"ruff_lsp",
 				"bufls",
 				"typst_lsp",
+				"omnisharp",
+				"csharp_ls",
 			},
 			preferred_servers = {
 				python = { "basedpyright", "ruff" },
@@ -396,6 +399,15 @@ return {
 		version = "^6", -- Recommended
 		lazy = false,
 		ft = { "rust" },
+	},
+	{
+		"seblyng/roslyn.nvim",
+		---@module 'roslyn.config'
+		---@type RoslynNvimConfig
+		ft = { "cs" },
+		opts = {
+			-- your configuration comes here; leave empty for default settings
+		},
 	},
 	{
 		"saghen/blink.cmp",

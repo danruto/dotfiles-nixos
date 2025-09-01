@@ -1,4 +1,4 @@
-{ niri, pkgs, lib, ... }:
+{ niri, pkgs, pkgs-unstable, lib, ... }:
 let
   inherit (niri.lib.kdl) node plain leaf flag;
 in
@@ -299,7 +299,7 @@ in
 
     xwayland-satellite = {
       enable = true;
-      path = "${lib.getExe pkgs.xwayland-satellite-unstable}";
+      path = "${lib.getExe pkgs-unstable.xwayland-satellite}";
     };
   };
 

@@ -202,6 +202,7 @@
           nvim-dap-go
           nvim-nio
           # neotest
+          roslyn-nvim
 
           # LLM
           # neocodeium
