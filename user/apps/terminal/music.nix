@@ -1,4 +1,6 @@
 { pkgs, ... }:
 {
-  home.packages = [ pkgs.spotify-player ];
+  home.packages = [
+    # pkgs.spotify-player 
+  ];
 }

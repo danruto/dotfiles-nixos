@@ -35,10 +35,10 @@ let
     gwtr = "git worktree remove";
     gwtm = "git worktree move";
     gwtp = "git worktree prune";
-    
+
     # Git worktree with new branch: gwtab <path> <branch-name>
     gwtab = "git worktree add -b";
-    
+
     # Git worktree with existing branch: gwtae <path> <existing-branch>
     gwtae = "git worktree add";
   };

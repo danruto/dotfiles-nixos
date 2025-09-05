@@ -18,9 +18,10 @@
     autoPrune.enable = true;
   };
   virtualisation.podman = {
-    enable = false;
-    dockerCompat = true;
+    enable = true;
+    dockerCompat = false;
     defaultNetwork.settings.dns_enabled = true;
+    autoPrune.enable = true;
   };
 
   # services.docker.settings = {

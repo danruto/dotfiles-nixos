@@ -1,13 +1,12 @@
 ms_to_mmss() {
-  local ms=$1
-  local total_sec=$(( ms / 1000 ))
-  local min=$(( total_sec / 60 ))
-  local sec=$(( total_sec % 60 ))
-  printf "%d:%02d" "$min" "$sec"
+    local ms=$1
+    local total_sec=$((ms / 1000))
+    local min=$((total_sec / 60))
+    local sec=$((total_sec % 60))
+    printf "%d:%02d" "$min" "$sec"
 }
 
-while true; do
-
+while false; do
     playback_data=$(spotify_player get key playback 2>/dev/null)
     player_status=$(echo "$playback_data" | jq '.is_playing')
     artist=$(echo "$playback_data" | jq '.item.artists[0].name')
@@ -29,4 +28,3 @@ while true; do
     sleep 1
 
 done
-

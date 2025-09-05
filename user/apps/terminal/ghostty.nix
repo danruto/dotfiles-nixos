@@ -3,8 +3,8 @@
   # font-family = "Departure Mono"
   # font-family = "Iosevka Comfy"
   home.file.".config/ghostty/config".text = ''
-    font-family = "DepartureMono Nerd Font"
-    font-size = 10
+    font-family = "Iosevka Comfy"
+    font-size = 14
 
     macos-option-as-alt = left
     keybind = alt+left=unbind

@@ -131,6 +131,17 @@
             # };
           };
         };
+
+        roslyn-ls = {
+          command = "Microsoft.CodeAnalysis.LanguageServer";
+          args = [
+            "--logLevel"
+            "Information"
+            "--extensionLogDirectory"
+            "/tmp/roslyn_ls/logs"
+            "--stdio"
+          ];
+        };
       };
 
       language = [
@@ -223,7 +234,8 @@
           auto-format = true;
           language-servers = [
             # "omnisharp"
-            "csharp-ls"
+            # "csharp-ls"
+            "roslyn-ls"
           ];
         }
       ];
