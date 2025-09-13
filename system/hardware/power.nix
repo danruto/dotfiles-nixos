@@ -61,8 +61,8 @@
   services.tlp = {
     enable = true;
     settings = {
-      # CPU governors - schedutil is best for 12th gen Intel
-      CPU_SCALING_GOVERNOR_ON_AC = "schedutil";
+      # CPU governors - performance for AC, powersave for battery
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
       # Intel P-state energy performance preference

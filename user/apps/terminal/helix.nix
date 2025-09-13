@@ -142,6 +142,10 @@
             "--stdio"
           ];
         };
+
+        csls = {
+          command = "csharp-language-server";
+        };
       };
 
       language = [
@@ -235,7 +239,8 @@
           language-servers = [
             # "omnisharp"
             # "csharp-ls"
-            "roslyn-ls"
+            # "roslyn-ls"
+            "csls"
           ];
         }
       ];

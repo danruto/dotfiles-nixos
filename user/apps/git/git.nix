@@ -9,7 +9,7 @@ let
 
   unstable-packages = with pkgs-unstable; [
     jujutsu
-    lazyjj
+    # lazyjj
     gh-dash
   ];
 
