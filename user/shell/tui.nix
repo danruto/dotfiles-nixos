@@ -18,13 +18,13 @@ let
   ];
   unstable-packages = with pkgs-unstable; [
     ripgrep
-    yt-dlp
     asciinema
-    aerc
+    # aerc
     # podman-tui
     # dive
   ] ++ lib.optionals pkgs-unstable.stdenv.isLinux [
     ani-cli
+    yt-dlp
   ];
 in
 {

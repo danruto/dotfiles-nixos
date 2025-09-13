@@ -2,7 +2,8 @@
 
 let
   unstable-packages = with pkgs-unstable; [
-    pnpm
+    # pnpm
+    bun
     # dprint
   ];
   stable-packages = with pkgs; [

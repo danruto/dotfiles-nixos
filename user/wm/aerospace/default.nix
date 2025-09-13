@@ -2,7 +2,7 @@
 {
 
   home.packages = with pkgs-unstable; [
-    aerospace
+    # aerospace
   ];
 
   #  ${XDG_CONFIG_HOME}/aerospace/aerospace.toml

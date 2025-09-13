@@ -30,6 +30,7 @@
     casks = [
       "1password"
       "1password-cli"
+      "nikitabobko/tap/aerospace"
       # "alacritty"
       "azure-data-studio"
       "brave-browser"
@@ -42,6 +43,7 @@
       "font-departure-mono"
       "font-jetbrains-mono-nerd-font"
       "font-victor-mono-nerd-font"
+      "flutter"
       # "ghostty"
       "iina"
       "insomnium"
@@ -56,12 +58,13 @@
       "utm"
       "vial"
       "visual-studio-code"
-      "wireshark"
+      # "wireshark"
       # "wezterm"
-      "zen-browser"
+      # "zen-browser"
     ];
     taps = [
       # "homebrew/cask-fonts"
+      "nikitabobko/tap"
     ];
   };
 
@@ -69,8 +72,9 @@
     experimental-features = nix-command flakes
   '';
 
-  security.pam.enableSudoTouchIdAuth = true;
-  services.nix-daemon.enable = true;
+  system.primaryUser = "danruto";
+
+  security.pam.services.sudo_local.touchIdAuth = true;
 
   system.activationScripts.postActivation.text = ''
     # disable spotlight
