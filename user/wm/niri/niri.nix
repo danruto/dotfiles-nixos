@@ -4,7 +4,7 @@ let
 in
 {
   imports = [
-    ../waybar/waybar.nix
+    # ../waybar/waybar.nix
   ];
 
   home.packages = with pkgs; [
@@ -13,30 +13,34 @@ in
     wl-clipboard
     xsel
     pamixer
-    pavucontrol
+    # pavucontrol
     swayidle
-    swaylock
-    swaybg
-    rofi-wayland
+    # swaylock
+    # swaybg
+    # rofi-wayland
     xdg-desktop-portal-gnome
   ];
 
 
-  systemd.user.services.swaybg = {
-    Unit = {
-      Description = "Wallpaper via swaybg";
-      After = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${pkgs.swaybg}/bin/swaybg -c '#000000'";
-      Restart = "on-failure";
-    };
-    Install = {
-      WantedBy = [ "graphical-session.target" ];
-    };
-  };
+  # systemd.user.services.swaybg = {
+  #   Unit = {
+  #     Description = "Wallpaper via swaybg";
+  #     After = [ "graphical-session.target" ];
+  #   };
+  #   Service = {
+  #     ExecStart = "${pkgs.swaybg}/bin/swaybg -c '#000000'";
+  #     Restart = "on-failure";
+  #   };
+  #   Install = {
+  #     WantedBy = [ "graphical-session.target" ];
+  #   };
+  # };
 
   programs.niri.settings = {
+    spawn-at-startup = [
+      { argv = [ "noctalia-shell" ]; }
+    ];
+
     input.touchpad = {
       tap = true;
       dwt = true;
@@ -188,14 +192,22 @@ in
       "Mod+Shift+Slash".action.show-hotkey-overlay = [ ];
 
       "Mod+T".action.spawn = "foot";
-      "Mod+R".action.spawn = [ "bash" "-c" "rofi -show drun" ];
-      "Super+Alt+L".action.spawn = "swaylock";
+      # "Mod+R".action.spawn = [ "bash" "-c" "rofi -show drun" ];
+      "Mod+R".action.spawn = [ "noctalia-shell" "ipc" "call" "launcher" "toggle" ];
+      # "Super+Alt+L".action.spawn = "swaylock";
+      "Super+Alt+L".action.spawn = [ "noctalia-shell" "ipc" "call" "lockScreen" "toggle" ];
 
       "Mod+Shift+C".action.spawn = [ "sh" "-c" "env DISPLAY=:0" "xsel" "-ob" "|" "wl-copy" ];
       "Mod+Shift+V".action.spawn = [ "sh" "-c" "wlpaste -n" "|" "env DISPLAY=:0" "xsel" "-ib" ];
 
-      "XF86AudioRaiseVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+" ];
-      "XF86AudioLowerVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-" ];
+      # "XF86AudioRaiseVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+" ];
+      # "XF86AudioLowerVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-" ];
+      XF86AudioRaiseVolume.action.spawn = [ "noctalia-shell" "ipc" "call" "volume" "increase" ];
+      XF86AudioLowerVolume.action.spawn = [ "noctalia-shell" "ipc" "call" "volume" "decrease" ];
+      XF86AudioMute.action.spawn = [ "noctalia-shell" "ipc" "call" "volume" "muteOutput" ];
+
+      XF86MonBrightnessUp.action.spawn = [ "noctalia-shell" "ipc" "call" "brightness" "increase" ];
+      XF86MonBrightnessDown.action.spawn = [ "noctalia-shell" "ipc" "call" "brightness" "decrease" ];
 
       "Mod+Q".action.close-window = [ ];
 

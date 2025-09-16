@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, niri, ... }:
+{ pkgs, pkgs-unstable, niri, noctalia, quickshell, ... }:
 {
   # Import wayland config
   imports = [
@@ -11,6 +11,8 @@
 
   environment.systemPackages = with pkgs-unstable; [
     xwayland-satellite
+    noctalia.packages.${system}.default
+    quickshell.packages.${system}.default
   ];
 
   # environment.variables.DISPLAY = ":0";

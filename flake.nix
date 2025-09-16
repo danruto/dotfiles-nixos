@@ -17,6 +17,8 @@
     , niri
     , nixos-hardware
     , catppuccin
+    , noctalia
+    , quickshell
     , ...
     }@inputs:
     let
@@ -161,6 +163,8 @@
         inherit (inputs) niri;
         inherit (inputs) nixos-hardware;
         inherit (inputs) catppuccin;
+        inherit (inputs) noctalia;
+        inherit (inputs) quickshell;
       };
 
     in
@@ -273,6 +277,17 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
     catppuccin.url = "github:catppuccin/nix";
+
+    quickshell = {
+      url = "github:outfoxxed/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.quickshell.follows = "quickshell";
+    };
 
     # Mac inputs
     darwin = {
