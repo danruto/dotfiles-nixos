@@ -1,18 +1,15 @@
 { niri, pkgs, pkgs-unstable, lib, ... }:
 let
   inherit (niri.lib.kdl) node plain leaf flag;
-in
-{
-  imports = [
-    # ../waybar/waybar.nix
-  ];
 
-  home.packages = with pkgs; [
+  stable-packages = with pkgs; [
     wlr-randr
     # wlr-screencopy
     wl-clipboard
     xsel
     pamixer
+    # pamix
+    # ncpamixer
     # pavucontrol
     swayidle
     # swaylock
@@ -20,7 +17,17 @@ in
     # rofi-wayland
     xdg-desktop-portal-gnome
   ];
+  unstable-packages = with pkgs-unstable; [
+    wiremix
+  ];
 
+in
+{
+  imports = [
+    # ../waybar/waybar.nix
+  ];
+
+  home.packages = stable-packages ++ unstable-packages;
 
   # systemd.user.services.swaybg = {
   #   Unit = {
@@ -180,6 +187,14 @@ in
       }
       {
         matches = [{ app-id = "dunst"; }];
+        block-out-from = "screencast";
+      }
+      {
+        matches = [{ app-id = "noctalia-shell"; }];
+        block-out-from = "screencast";
+      }
+      {
+        matches = [{ app-id = "quickshell"; }];
         block-out-from = "screencast";
       }
       {

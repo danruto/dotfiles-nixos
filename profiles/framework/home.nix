@@ -44,7 +44,7 @@
     ../../system/hardware/monitor.nix
     ../../user/hardware/keyboard.nix
     ../../user/apps/virt/virt.nix
-    ../../user/style/catppuccin.nix
+    # ../../user/style/catppuccin.nix
   ];
 
   home.packages = with pkgs; [

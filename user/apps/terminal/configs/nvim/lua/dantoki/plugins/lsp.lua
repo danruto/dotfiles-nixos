@@ -99,6 +99,7 @@ Each time you are going to create a file, use a single concise sentence inform t
 return {
 	{
 		"Exafunction/codeium.nvim",
+		enabled = false,
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
@@ -106,7 +107,6 @@ return {
 		cmd = "Codeium",
 		build = ":Codeium Auth",
 		opts = {},
-		enabled = false,
 	},
 	{
 		"monkoose/neocodeium",

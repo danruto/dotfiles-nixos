@@ -167,6 +167,7 @@
           # { name = "mini.statusbar"; path = mini-nvim; }
           # { name = "mini.trailspace"; path = mini-nvim; }
           flash-nvim
+          grug-far-nvim
 
           # UI
           # lsp-inlayhints-nvim
