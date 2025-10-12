@@ -21,7 +21,8 @@
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/music.nix
     ../../user/apps/terminal/curl.nix # network request cli/tuis
-    ../../user/apps/terminal/helix.nix
+    # ../../user/apps/terminal/helix.nix
+    ../../user/apps/terminal/helix-fork.nix
     # ../../user/apps/terminal/alacritty.nix
     ../../user/apps/terminal/kitty.nix
     ../../user/apps/terminal/foot.nix

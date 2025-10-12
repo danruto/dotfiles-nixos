@@ -42,12 +42,12 @@
 
         danger-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "danger";
-          version = "2025-08-07";
+          version = "2025-10-06";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
             repo = "danger";
-            rev = "8dc37307e009895f5c0c49c5ccd5d3e9eec24b61";
-            hash = "sha256-gP3wFWdlnPIoaJeXo+TkEsgR0YSQtFEoxMH0gr2uRP8=";
+            rev = "451c6780fde78961f6ed45e365cb61c3562830d9";
+            hash = "sha256-Q8N6C3u9puHlz7o1iH9dav3X9o39mo+kQJKopa0VtIQ=";
           };
         };
 
@@ -75,12 +75,12 @@
 
         monet-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "monet.nvim";
-          version = "2025-05-24";
+          version = "2025-08-11";
           src = pkgs.fetchFromGitHub {
             owner = "fynnfluegge";
             repo = "monet.nvim";
-            rev = "51a7603f505a31c1e1c9fa852b9c8a19e4beb670";
-            hash = "sha256-DoTpC8/lJ58yS01xXXL2zquRfOYDLbQ95EuHFJLEijg=";
+            rev = "f0db469c38ddcb9c12a44662a00d65e9894a5a34";
+            hash = "sha256-3Km/3QGhUGSi6Cg2lEvTOUTZwvuSt0WAvsVhXtMysho=";
           };
         };
 
@@ -106,12 +106,12 @@
 
         makurai-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "makurai-nvim";
-          version = "2025-08-07";
+          version = "2025-09-25";
           src = pkgs.fetchFromGitHub {
             owner = "Skardyy";
             repo = "makurai-nvim";
-            rev = "ddb5cb56c431ae9954b262730cc9739520c4ebef";
-            hash = "sha256-Elf1HkiRPQ4klyIexHI8xmQoUKw93R/gutq+/m8Lquo=";
+            rev = "a12c94cd9a90186189ba4434021a2deb27cfea39";
+            hash = "sha256-gNxnYpsT8Z/uruCPOzJ/RrGgjxIQYSrCFqZ2DH7KDZw=";
           };
         };
 

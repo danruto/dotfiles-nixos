@@ -12,6 +12,7 @@
     , nur
     , darwin
     , helix
+    , helix-fork
     , neovim-nightly-overlay
     , zjstatus
     , niri
@@ -143,6 +144,7 @@
         inherit editor;
         inherit term;
         inherit helix;
+        inherit helix-fork;
         inherit timezone;
         inherit locale;
         inherit pkgs-unstable;
@@ -247,6 +249,11 @@
 
     helix = {
       url = "github:helix-editor/helix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    helix-fork = {
+      url = "github:gj1118/helix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 

@@ -1,15 +1,14 @@
-{ helix, pkgs, ... }:
+{ helix-fork, pkgs, ... }:
 {
   programs.helix = {
     enable = true;
-    # package = pkgs.unstable.helix;
-    package = helix.packages.${pkgs.system}.default;
+    package = helix-fork.packages.${pkgs.system}.default;
     extraPackages = with pkgs; [
       nixpkgs-fmt
     ];
     defaultEditor = true;
     settings = {
-      theme = "ayu_evolve";
+      theme = "flexoki_dark";
       editor = {
         line-number = "relative";
         mouse = true;
@@ -61,6 +60,22 @@
         inline-diagnostics = {
           cursor-line = "hint";
           other-lines = "error";
+        };
+
+        # Fork settings
+        rounded-corners = true;
+        # cmdline.style = "popup";
+        gradient-borders = {
+          enable = true;
+          thickness = 2;
+          direction = "horizontal";
+          start-color = "#FF0080";
+          end-color = "#00FFFF";
+          animation-speed = 2;
+        };
+        inline-blame = {
+          show = "cursor-line";
+          format = "{commit} - {author} ({time-ago}): {title}";
         };
       };
 
@@ -136,7 +151,6 @@
           includeInlayPropertyDeclarationTypeHints = false;
           includeInlayVariableTypeHints = false;
         };
-
 
         biome = {
           command = "biome";
@@ -273,4 +287,6 @@
   home.file.".config/helix/themes/adwaita-light-inlay.toml".source = ./configs/helix/adwaita-light-inlay.toml;
   home.file.".config/helix/themes/oceanic-next.toml".source = ./configs/helix/oceanic-next.toml;
   home.file.".config/helix/yazi-picker.sh".source = ./configs/helix/yazi-picker.sh;
+
 }
+

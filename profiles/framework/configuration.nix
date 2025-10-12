@@ -130,8 +130,27 @@ with lib;
   services.hardware.bolt.enable = true;
 
 
+  # Systemd service to handle Thunderbolt dock USB initialization
+  systemd.services.thunderbolt-usb-rescan = {
+    description = "Rescan USB devices on Thunderbolt connection";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'echo 1 | tee /sys/bus/pci/rescan; sleep 1; for usb in /sys/bus/usb/devices/*/authorized; do echo 1 > $usb 2>/dev/null || true; done'";
+    };
+  };
+
   services.udev.extraRules = ''
+    # Keyboard rule
     KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
+
+    # Thunderbolt: Auto-authorize new devices
+    ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
+
+    # Trigger USB rescan service when Thunderbolt device connects
+    ACTION=="add", SUBSYSTEM=="thunderbolt", TAG+="systemd", ENV{SYSTEMD_WANTS}="thunderbolt-usb-rescan.service"
+
+    # Disable autosuspend for USB hubs (common in Thunderbolt docks)
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", ATTR{power/control}="on", ATTR{power/autosuspend}="-1"
   '';
 
   # It is ok to leave this unchanged for compatibility purposes
