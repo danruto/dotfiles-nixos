@@ -1,10 +1,10 @@
 { pkgs-unstable, ... }:
 {
   home.packages = with pkgs-unstable; [
-    opencode
+    # opencode
     claude-code
     gemini-cli
-    codex
-    nur.repos.charmbracelet.crush
+    # codex
+    # nur.repos.charmbracelet.crush
   ];
 }

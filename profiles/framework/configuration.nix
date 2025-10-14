@@ -67,7 +67,8 @@ with lib;
 
   nix.gc = {
     automatic = true;
-    options = "--delete-older-than 7d";
+    dates = "weekly";
+    options = "--delete-older-than 30d";
   };
 
   nixpkgs.config.allowUnfree = true;

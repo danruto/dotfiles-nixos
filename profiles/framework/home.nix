@@ -33,7 +33,8 @@
     ../../user/apps/browser/brave.nix
     ../../user/apps/browser/ff.nix
     ../../user/apps/browser/librewolf.nix
-    ../../user/apps/fileman/nemo.nix
+    ../../user/apps/fileman/dolphin.nix
+    # ../../user/apps/fileman/nemo.nix
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/gui/gui.nix
     ../../user/apps/gui/neovide.nix
