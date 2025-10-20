@@ -43,6 +43,11 @@ in
   #   };
   # };
 
+  services.vicinae = {
+    enable = true; # default: false
+  };
+
+
   programs.niri.settings = {
     spawn-at-startup = [
       { argv = [ "noctalia-shell" ]; }
@@ -208,7 +213,8 @@ in
 
       "Mod+T".action.spawn = "foot";
       # "Mod+R".action.spawn = [ "bash" "-c" "rofi -show drun" ];
-      "Mod+R".action.spawn = [ "noctalia-shell" "ipc" "call" "launcher" "toggle" ];
+      # "Mod+R".action.spawn = [ "noctalia-shell" "ipc" "call" "launcher" "toggle" ];
+      "Mod+R".action.spawn = [ "vicinae" "toggle" ];
       # "Super+Alt+L".action.spawn = "swaylock";
       "Super+Alt+L".action.spawn = [ "noctalia-shell" "ipc" "call" "lockScreen" "toggle" ];
 

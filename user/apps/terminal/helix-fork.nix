@@ -273,7 +273,7 @@
           language-servers = [
             # "omnisharp"
             # "csharp-ls"
-            # "roslyn-ls"
+            "roslyn-ls"
             "csls"
           ];
         }
@@ -286,6 +286,7 @@
   home.file.".config/helix/themes/paper-nord.toml".source = ./configs/helix/paper-nord.toml;
   home.file.".config/helix/themes/adwaita-light-inlay.toml".source = ./configs/helix/adwaita-light-inlay.toml;
   home.file.".config/helix/themes/oceanic-next.toml".source = ./configs/helix/oceanic-next.toml;
+  home.file.".config/helix/themes/panda.toml".source = ./configs/helix/panda.toml;
   home.file.".config/helix/yazi-picker.sh".source = ./configs/helix/yazi-picker.sh;
 
 }

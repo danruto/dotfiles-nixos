@@ -62,6 +62,15 @@ in
           };
         };
       }
+      {
+        condition = "gitdir:~/dev/zeroone/";
+        contents = {
+          user = {
+            name = name;
+            email = "1270619+danruto@users.noreply.github.com";
+          };
+        };
+      }
     ];
   };
 

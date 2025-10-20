@@ -1,4 +1,4 @@
-{ pkgs, nur, ... }: {
+{ pkgs, vicinae, ... }: {
 
   home.username = "danruto";
   home.homeDirectory = "/home/danruto";
@@ -6,6 +6,8 @@
   # programs.home-manager.enable = true;
 
   imports = [
+    vicinae.homeManagerModules.default
+
     ../shared.nix # Shared home configurations
     ../../user/shell/sh.nix # Fish config
     ../../user/shell/tui.nix # Useful cli/tui apps
@@ -33,7 +35,9 @@
     ../../user/apps/browser/brave.nix
     ../../user/apps/browser/ff.nix
     ../../user/apps/browser/librewolf.nix
-    ../../user/apps/fileman/dolphin.nix
+    # ../../user/apps/fileman/dolphin.nix
+    # ../../user/apps/fileman/thunar.nix
+    ../../user/apps/fileman/cosmic.nix
     # ../../user/apps/fileman/nemo.nix
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/gui/gui.nix

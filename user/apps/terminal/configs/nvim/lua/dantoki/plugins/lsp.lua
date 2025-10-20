@@ -173,10 +173,33 @@ return {
 		dependencies = {
 			"neovim/nvim-lspconfig",
 		},
-		init = function()
-			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ 0 }), { 0 })
-		end,
+		-- init = function()
+		-- 	vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ 0 }), { 0 })
+		--
+		-- 	vim.lsp.config("taplo", {
+		-- 		keys = {
+		-- 			{
+		-- 				"K",
+		-- 				function()
+		-- 					if vim.fn.expand("%:t") == "Cargo.toml" and require("crates").popup_available() then
+		-- 						require("crates").show_popup()
+		-- 					else
+		-- 						vim.lsp.buf.hover()
+		-- 					end
+		-- 				end,
+		-- 				desc = "Show Crate Documentation",
+		-- 			},
+		-- 		},
+		-- 	})
+		--
+		-- 	vim.lsp.config("gopls", {
+		-- 		settings = {
+		-- 			gofumpt = true,
+		-- 		},
+		-- 	})
+		-- end,
 		opts = {
+			use_vim_lsp_config = true,
 			excluded_servers = {
 				"sqls",
 				"denols",
@@ -210,58 +233,6 @@ return {
 				zig = { "zls" },
 			},
 			prefer_local = true,
-			configs = {
-				-- rust_analyzer = {
-				-- keys = {
-				-- 	{ "K", "<cmd>RustHoverActions<cr>", desc = "Hover Actions (Rust)" },
-				-- 	{ "<leader>cR", "<cmd>RustCodeAction<cr>", desc = "Code Action (Rust)" },
-				-- 	{ "<leader>dr", "<cmd>RustDebuggables<cr>", desc = "Run Debuggables (Rust)" },
-				-- },
-				-- settings = {
-				-- 	["rust-analyzer"] = {
-				-- 		cargo = {
-				-- 			allFeatures = true,
-				-- 			loadOutDirsFromCheck = true,
-				-- 			runBuildScripts = true,
-				-- 		},
-				-- 		-- Add clippy lints for Rust.
-				-- 		checkOnSave = {
-				-- 			allFeatures = true,
-				-- 			command = "clippy",
-				-- 			extraArgs = { "--no-deps" },
-				-- 		},
-				-- 		procMacro = {
-				-- 			enable = true,
-				-- 			ignored = {
-				-- 				["async-trait"] = { "async_trait" },
-				-- 				["napi-derive"] = { "napi" },
-				-- 				["async-recursion"] = { "async_recursion" },
-				-- 			},
-				-- 		},
-				-- 	},
-				-- },
-				-- },
-				taplo = {
-					keys = {
-						{
-							"K",
-							function()
-								if vim.fn.expand("%:t") == "Cargo.toml" and require("crates").popup_available() then
-									require("crates").show_popup()
-								else
-									vim.lsp.buf.hover()
-								end
-							end,
-							desc = "Show Crate Documentation",
-						},
-					},
-				},
-				gopls = {
-					settings = {
-						gofumpt = true,
-					},
-				},
-			},
 		},
 	},
 	{

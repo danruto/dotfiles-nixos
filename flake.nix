@@ -20,6 +20,7 @@
     , catppuccin
     , noctalia
     , quickshell
+    , vicinae
     , ...
     }@inputs:
     let
@@ -167,6 +168,7 @@
         inherit (inputs) catppuccin;
         inherit (inputs) noctalia;
         inherit (inputs) quickshell;
+        inherit (inputs) vicinae;
       };
 
     in
@@ -284,16 +286,18 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
     catppuccin.url = "github:catppuccin/nix";
-
     quickshell = {
       url = "github:outfoxxed/quickshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.quickshell.follows = "quickshell";
+    };
+    vicinae = {
+      url = "github:vicinaehq/vicinae";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Mac inputs

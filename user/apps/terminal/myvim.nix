@@ -42,18 +42,18 @@
 
         danger-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "danger";
-          version = "2025-10-06";
+          version = "2025-10-18";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
             repo = "danger";
-            rev = "451c6780fde78961f6ed45e365cb61c3562830d9";
-            hash = "sha256-Q8N6C3u9puHlz7o1iH9dav3X9o39mo+kQJKopa0VtIQ=";
+            rev = "e5582e086b263320730f05d72aa713544c7b1aee";
+            hash = "sha256-s7ExeSRZI4w84QB0PxLklo6DptXIPHYebovHD4YUQlI=";
           };
         };
 
         ohlucy-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "oh-lucy.nvim";
-          version = "2025-04-16";
+          version = "2025-04-08";
           src = pkgs.fetchFromGitHub {
             owner = "Yazeed1s";
             repo = "oh-lucy.nvim";
@@ -86,7 +86,7 @@
 
         neofusion-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "neofusion.nvim";
-          version = "2025-04-16";
+          version = "2025-03-17";
           src = pkgs.fetchFromGitHub {
             owner = "diegoulloao";
             repo = "neofusion.nvim";
@@ -134,6 +134,18 @@
             repo = "debugmaster.nvim";
             rev = "3d144b98c2c23f39123fbf5f10fdff7d6480a0e6";
             hash = "sha256-pdgS0z8KdLsl7VexbPaRPtYc2lebzAgTtM3B52IaCpQ=";
+          };
+          doCheck = false;
+        };
+
+        lazy-lsp-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "lazy-lsp.nvim";
+          version = "2025-10-15";
+          src = pkgs.fetchFromGitHub {
+            owner = "dundalek";
+            repo = "lazy-lsp.nvim";
+            rev = "d74741ce1a588fe11900b5bcd5cd160b04998f60";
+            hash = "sha256-5oiiOYMd8I00ItQsJCphbNtXzW5NgsIn4IDKGmlOues=";
           };
           doCheck = false;
         };

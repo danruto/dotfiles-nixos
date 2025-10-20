@@ -29,6 +29,8 @@ with lib;
       ../../system/wm/niri.nix
 
       ../../system/apps/docker.nix
+
+      ../../user/apps/fileman/thunar.nix
     ];
 
 
