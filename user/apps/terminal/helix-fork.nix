@@ -20,6 +20,8 @@
         popup-border = "all";
         completion-replace = true;
         continue-comments = false;
+        bufferline.render-mode = "multiple";
+        rainbow-brackets = true;
 
         cursor-shape = {
           insert = "bar";
