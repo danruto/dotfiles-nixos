@@ -138,17 +138,17 @@
           doCheck = false;
         };
 
-        lazy-lsp-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "lazy-lsp.nvim";
-          version = "2025-10-15";
-          src = pkgs.fetchFromGitHub {
-            owner = "dundalek";
-            repo = "lazy-lsp.nvim";
-            rev = "d74741ce1a588fe11900b5bcd5cd160b04998f60";
-            hash = "sha256-5oiiOYMd8I00ItQsJCphbNtXzW5NgsIn4IDKGmlOues=";
-          };
-          doCheck = false;
-        };
+        # lazy-lsp-nvim = pkgs.vimUtils.buildVimPlugin {
+        #   pname = "lazy-lsp.nvim";
+        #   version = "2025-10-15";
+        #   src = pkgs.fetchFromGitHub {
+        #     owner = "dundalek";
+        #     repo = "lazy-lsp.nvim";
+        #     rev = "d74741ce1a588fe11900b5bcd5cd160b04998f60";
+        #     hash = "sha256-5oiiOYMd8I00ItQsJCphbNtXzW5NgsIn4IDKGmlOues=";
+        #   };
+        #   doCheck = false;
+        # };
 
         plugins = with pkgs-unstable.vimPlugins; [
           # Basic Deps
