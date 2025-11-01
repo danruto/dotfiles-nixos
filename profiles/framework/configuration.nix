@@ -19,6 +19,7 @@ with lib;
       # ../../system/hardware/monitor.nix
       ../../system/hardware/opengl.nix
       ../../system/hardware/power.nix
+      ../../system/hardware/thunderbolt-reconnect.nix
       ../../system/security/gpg.nix
       ../../system/security/blocklist.nix
       ../../system/wm/fonts.nix

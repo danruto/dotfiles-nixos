@@ -77,7 +77,6 @@
           nur.overlays.default
           # neovim-nightly-overlay.overlays.default
           (final: prev: {
-            zjstatus = zjstatus.packages.${prev.system}.default;
             pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
               (python-final: python-prev: {
                 # Workaround for bug #437058
@@ -236,12 +235,12 @@
 
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     zjstatus = {
       url = "github:dj95/zjstatus";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     blocklist-hosts = {
