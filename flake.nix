@@ -27,7 +27,6 @@
       # ---- SYSTEM SETTINGS ---- #
       system = "x86_64-linux";
       # system = "x86_64-darwin";
-      hostname = "danruto"; # hostname
       # profile = "wsl";
       # profile = "vm";
       # profile = "vm-hypr";
@@ -35,11 +34,14 @@
       # profile = "work2";
       profile = "framework";
       # profile = "orb";
+      # profile = "nearmap";
+      hostname = "danruto"; # hostname
       timezone = "Australia/Sydney"; # select timezone
       locale = "en_US.UTF-8"; # select locale
 
       # ----- USER SETTINGS ----- #
       username = "danruto"; # username
+      macusername = "danny.sok"; # darwin username
       email = "danny@pixelbru.sh"; # email (used for certain configurations)
       theme = "ayu-dark"; # selcted theme from my themes directory (./themes/)
       wm = "hyprland"; # Selected window manager or desktop environment; must select one in both ./user/wm/ and ./system/wm/
@@ -132,6 +134,7 @@
 
       commonSpecialArgs = {
         inherit username;
+        inherit macusername;
         # inherit name;
         inherit hostname;
         inherit profile;
@@ -209,7 +212,7 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.danruto = import (./. + "/profiles" + ("/" + profile) + "/home.nix");
+              home-manager.users.${macusername} = import (./. + "/profiles" + ("/" + profile) + "/home.nix");
 
               # Optionally, use home-manager.extraSpecialArgs to pass
               # arguments to home.nix

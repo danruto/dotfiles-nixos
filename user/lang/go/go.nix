@@ -2,12 +2,14 @@
 
 let
   unstable-packages = with pkgs-unstable; [
-  ];
-  stable-packages = with pkgs; [
     go
     gopls
     gofumpt
     golangci-lint
+    gotestsum
+    delve
+  ];
+  stable-packages = with pkgs; [
   ];
 in
 {
