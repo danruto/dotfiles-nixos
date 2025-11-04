@@ -7,7 +7,7 @@ let
 
   # TODO: mpv, nemo, vscode should be it's own modules as it needs settings
   unstable-packages = with pkgs-unstable; [
-    discord
+    vesktop
     # insomnium
     # insomnia
     mpv

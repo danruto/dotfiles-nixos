@@ -47,24 +47,6 @@ in
     enable = true; # default: false
   };
 
-  # Automatic clipboard sync from XWayland to Wayland
-  # This allows copying from 1Password (XWayland) to native Wayland apps
-  systemd.user.services.clipboard-sync = {
-    Unit = {
-      Description = "Sync XWayland clipboard to Wayland";
-      After = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${pkgs.bash}/bin/bash -c 'while true; do DISPLAY=:0 ${pkgs.xsel}/bin/xsel -ob 2>/dev/null | ${pkgs.wl-clipboard}/bin/wl-copy --trim-newline 2>/dev/null || true; sleep 0.5; done'";
-      Restart = "always";
-      RestartSec = 1;
-    };
-    Install = {
-      WantedBy = [ "graphical-session.target" ];
-    };
-  };
-
 
   programs.niri.settings = {
     spawn-at-startup = [
@@ -130,7 +112,7 @@ in
       # Dell 4K Monitor (matches by name when connected directly)
       # "Dell Inc. DELL U3225QE 26VL734" = {
       "Dell Inc. Dell U3225QE 26VL734" = {
-        scale = 1.0;
+        scale = 1.25;
         mode = {
           width = 3840;
           height = 2160;

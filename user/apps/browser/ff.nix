@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs-unstable, ... }:
 
 {
   # programs.floorp = {
@@ -18,9 +18,9 @@
   };
 
 
-  home.packages = [ pkgs.floorp ];
+  home.packages = [ pkgs-unstable.floorp-bin ];
 
   home.sessionVariables = {
-    DEFAULT_BROWSER = "${pkgs.floorp}/bin/floorp";
+    DEFAULT_BROWSER = "${pkgs-unstable.floorp-bin}/bin/floorp";
   };
 }
