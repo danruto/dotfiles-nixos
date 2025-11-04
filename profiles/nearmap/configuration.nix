@@ -19,8 +19,6 @@
     ];
     casks = [
       "hyprspace"
-      "azure-data-studio"
-      "brave-browser"
       # "docker"
       "figma"
       "floorp"
@@ -31,7 +29,6 @@
       # "ghostty"
       "iina"
       "insomnium"
-      # "kitty"
       "raycast"
       "rectangle"
       # "spotify"
@@ -39,7 +36,6 @@
       # "orbstack"
       # "utm"
       # "vial"
-      "visual-studio-code"
       "zed"
     ];
     taps = [

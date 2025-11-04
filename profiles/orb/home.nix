@@ -1,11 +1,6 @@
-{ config, lib, pkgs, stdenv, fetchurl, stylix, username, email, theme, wm, editor, ... }:
+{ pkgs, editor, ... }:
 
 {
-  # Home Manager needs a bit of information about you and the paths it should
-  # manage.
-  home.username = username;
-  home.homeDirectory = "/home/" + username;
-
   programs.home-manager.enable = true;
 
   imports = [
@@ -15,8 +10,8 @@
     ../../user/shell/sh.nix # Fish config
     ../../user/shell/tui.nix # Useful cli/tui apps
     ../../user/apps/git/git.nix # My git config
-    ../../user/apps/terminal/lazyvim.nix
-    ../../user/apps/terminal/helix.nix
+    ../../user/apps/terminal/myvim.nix
+    ../../user/apps/terminal/helix-fork.nix
     ../../user/lang/cc/cc.nix # C and C++ tools
     ../../user/lang/rust/rust.nix # Rust tools
     ../../user/lang/typescript/typescript.nix # typescript tools
@@ -24,9 +19,10 @@
     ../../user/lang/lua/lua.nix # lua tools
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
+    ../../user/apps/fileman/yazi.nix
   ];
 
-  home.stateVersion = "24.05"; # Please read the comment before changing.
+  home.stateVersion = "25.05"; # Please read the comment before changing.
 
   home.packages = with pkgs; [
     # Core
@@ -65,10 +61,21 @@
     EDITOR = editor;
   };
 
-  # Disable manuals until sourcehut references are removed from home-manager
-  manual.manpages.enable = false;
-  manual.json.enable = false;
-  manual.html.enable = false;
+  programs.starship.enable = true;
+  programs.starship.settings = {
+    gcloud.disabled = true;
+    kubernetes.disabled = false;
+    git_branch.style = "242";
+    directory.style = "bold blue dimmed";
+    directory.truncate_to_repo = false;
+    directory.truncation_length = 8;
+    python.disabled = true;
+    ruby.disabled = true;
+    hostname.ssh_only = false;
+    hostname.style = "bold green";
+    memory_usage.disabled = false;
+    memory_usage.threshold = -1;
+  };
 
   programs.nix-index =
     {
