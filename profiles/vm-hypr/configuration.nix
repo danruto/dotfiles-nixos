@@ -10,14 +10,68 @@ with lib;
     [
       ./hardware-configuration.nix
       ../../system/security/gpg.nix
-      ../../system/security/blocklist.nix
-      ../../system/style/stylix.nix
       ../../system/wm/hyprland.nix
+      ../../system/wm/fonts.nix
+      ../../system/apps/starship.nix
+      ../../system/apps/docker.nix
     ];
 
-  # Setup bootloader
+  # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  # Use latest kernel.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  networking.hostName = "nixos"; # Define your hostname.
+
+  # Enable networking
+  networking.networkmanager.enable = true;
+
+  # Timezone and locale
+  time.timeZone = timezone;
+  i18n.defaultLocale = locale;
+
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = "en_AU.UTF-8";
+    LC_IDENTIFICATION = "en_AU.UTF-8";
+    LC_MEASUREMENT = "en_AU.UTF-8";
+    LC_MONETARY = "en_AU.UTF-8";
+    LC_NAME = "en_AU.UTF-8";
+    LC_NUMERIC = "en_AU.UTF-8";
+    LC_PAPER = "en_AU.UTF-8";
+    LC_TELEPHONE = "en_AU.UTF-8";
+    LC_TIME = "en_AU.UTF-8";
+  };
+
+  # Configure keymap in X11
+  services.xserver.xkb = {
+    layout = "gb";
+    variant = "";
+  };
+
+  # Configure console keymap
+  console.keyMap = "uk";
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # User account
+  users.users.${username} = {
+    isNormalUser = true;
+    description = username;
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    packages = with pkgs; [ ];
+    uid = 1000;
+  };
+  security.sudo.wheelNeedsPassword = false;
+
+  # Enable automatic login for the user.
+  services.getty.autologinUser = "danruto";
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
+  services.qemuGuest.enable = true;
+  services.spice-vdagentd.enable = true;
 
   # Fix nix path
   nix.nixPath = [
@@ -40,32 +94,6 @@ with lib;
     options = "--delete-older-than 7d";
   };
 
-  nixpkgs.config.allowUnfree = true;
-  nix.settings = {
-    substituters = [ "https://hyprland.cachix.org" ];
-    trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
-  };
-
-  # Use bleeding edge kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  # Networking
-  networking.hostName = hostname; # Define your hostname.
-
-  # Timezone and locale
-  time.timeZone = timezone; # time zone
-  i18n.defaultLocale = locale;
-
-  # User account
-  users.users.${username} = {
-    isNormalUser = true;
-    description = username;
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [ ];
-    uid = 1000;
-  };
-  security.sudo.wheelNeedsPassword = false;
-  virtualisation.docker.enable = true;
 
   # System packages
   environment.systemPackages = with pkgs; [
@@ -81,21 +109,6 @@ with lib;
   environment.shells = with pkgs; [ fish ];
   users.defaultUserShell = pkgs.fish;
   programs.fish.enable = true;
-  programs.starship.enable = true;
-  programs.starship.settings = {
-    gcloud.disabled = true;
-    kubernetes.disabled = false;
-    git_branch.style = "242";
-    directory.style = "bold blue dimmed";
-    directory.truncate_to_repo = false;
-    directory.truncation_length = 8;
-    python.disabled = true;
-    ruby.disabled = true;
-    hostname.ssh_only = false;
-    hostname.style = "bold green";
-    memory_usage.disabled = false;
-    memory_usage.threshold = -1;
-  };
 
   services.openssh.enable = true;
   services.openssh.settings.PasswordAuthentication = true;
@@ -108,6 +121,6 @@ with lib;
   # networking.interfaces.enp0s1.useDHCP = false;
 
   # It is ok to leave this unchanged for compatibility purposes
-  system.stateVersion = "23.11";
+  system.stateVersion = "25.05";
 
 }

@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, pkgs, username, hostname, timezone, locale, ... }:
+{ lib, pkgs, username, timezone, locale, ... }:
 
 with lib;
 {
@@ -10,7 +10,10 @@ with lib;
     [
       ./hardware-configuration.nix
       ../../system/security/gpg.nix
-      ../../system/wm/niri.nix
+      ../../system/wm/mango.nix
+      ../../system/wm/fonts.nix
+      ../../system/apps/starship.nix
+      ../../system/apps/docker.nix
     ];
 
   # Bootloader.
@@ -60,8 +63,6 @@ with lib;
     uid = 1000;
   };
   security.sudo.wheelNeedsPassword = false;
-  virtualisation.docker.enable = true;
-
 
   # Enable automatic login for the user.
   services.getty.autologinUser = "danruto";
@@ -108,21 +109,6 @@ with lib;
   environment.shells = with pkgs; [ fish ];
   users.defaultUserShell = pkgs.fish;
   programs.fish.enable = true;
-  programs.starship.enable = true;
-  programs.starship.settings = {
-    gcloud.disabled = true;
-    kubernetes.disabled = false;
-    git_branch.style = "242";
-    directory.style = "bold blue dimmed";
-    directory.truncate_to_repo = false;
-    directory.truncation_length = 8;
-    python.disabled = true;
-    ruby.disabled = true;
-    hostname.ssh_only = false;
-    hostname.style = "bold green";
-    memory_usage.disabled = false;
-    memory_usage.threshold = -1;
-  };
 
   services.openssh.enable = true;
   services.openssh.settings.PasswordAuthentication = true;

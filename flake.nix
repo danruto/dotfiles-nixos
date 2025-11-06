@@ -21,18 +21,22 @@
     , noctalia
     , quickshell
     , vicinae
+    , mango
     , ...
     }@inputs:
     let
       # ---- SYSTEM SETTINGS ---- #
-      system = "x86_64-linux";
+      # system = "x86_64-linux";
+      system = "aarch64-linux";
       # system = "x86_64-darwin";
       # profile = "wsl";
       # profile = "vm";
       # profile = "vm-hypr";
+      # profile = "vm-niri";
+      profile = "vm-mango";
       # profile = "work";
       # profile = "work2";
-      profile = "framework";
+      # profile = "framework";
       # profile = "orb";
       # profile = "nearmap";
       hostname = "danruto"; # hostname
@@ -166,6 +170,7 @@
       fwSpecialArgs = commonSpecialArgs // {
         inherit (inputs) hyprland-plugins;
         inherit (inputs) niri;
+        inherit (inputs) mango;
         inherit (inputs) nixos-hardware;
         inherit (inputs) catppuccin;
         inherit (inputs) noctalia;
@@ -177,7 +182,8 @@
     {
       nixosConfigurations = {
         system = lib.nixosSystem {
-          system = "x86_64-linux";
+          # system = "x86_64-linux";
+          inherit system;
           # inherit pkgs;
           modules = [
             # load configuration.nix from selected PROFILE
@@ -278,6 +284,7 @@
       flake = false;
     };
     niri.url = "github:sodiboo/niri-flake";
+    mango.url = "github:DreamMaoMao/mango";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     fw-ectool = {
       url = "github:tlvince/ectool.nix";
