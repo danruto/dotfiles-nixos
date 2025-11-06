@@ -18,6 +18,8 @@
   # environment.variables.DISPLAY = ":0";
   environment.variables.NIX_OZONE_WL = "1";
   environment.variables.ELECTRON_OZONE_PLATFORM_HINT = "auto";
+  # HACK: tmp until author fixes bug
+  environment.variables.USE_LAYER_SHELL = "0";
 
   programs.niri = {
     enable = true;

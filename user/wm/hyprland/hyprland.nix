@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, vicinae, ... }:
 let
   statusbar = pkgs.writeShellScriptBin "statusbar" (builtins.readFile ./statusbar.sh);
   switch = pkgs.writeShellScriptBin "switch" (builtins.readFile ./switch.sh);
@@ -101,12 +101,11 @@ in
       ];
 
       bind = [
-        "$mainMod, M, exec, kitty"
-        "$mainMod, Return, exec, alacritty"
+        "$mainMod, Return, exec, foot"
         "$mainMod, Q, killactive,"
         "$mainMod, E, exec, nemo"
         "$mainMod, V, togglefloating,"
-        "$mainMod, R, exec, rofi -show run"
+        "$mainMod, R, exec, vicinae toggle"
         "$mainMod, P, pseudo, # dwindle"
         "$mainMod, N, togglesplit, # dwindle"
 
@@ -175,7 +174,6 @@ in
     pavucontrol
     swayidle
     swaylock
-    rofi-wayland
     polkit_gnome
     libva-utils
     grimblast
