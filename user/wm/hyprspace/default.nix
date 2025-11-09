@@ -21,7 +21,7 @@
     # Scroll layout as default
     # Scroll creates a carousel layout where the focused window is centered at 80% width
     # with 10% peek margins showing neighboring windows
-    default-root-container-layout = 'scroll'
+    default-root-container-layout = 'dwindle'
 
     # Horizontal orientation recommended for scroll layout
     default-root-container-orientation = 'horizontal'

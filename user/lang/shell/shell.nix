@@ -2,6 +2,7 @@
 
 let
   unstable-packages = with pkgs-unstable; [
+    awscli2
   ];
   stable-packages = with pkgs; [
     shellcheck

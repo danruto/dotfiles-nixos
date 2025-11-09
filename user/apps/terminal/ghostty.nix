@@ -10,6 +10,6 @@
     keybind = alt+left=unbind
     keybind = alt+right=unbind
 
-    window-decoration = "none"
   '';
+  # window-decoration = "none"
 }
