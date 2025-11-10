@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-unstable, ... }:
+{ config, pkgs, vicinae, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -83,14 +83,18 @@
   programs.home-manager.enable = true;
 
   programs.fish.enable = true;
+  programs.man.enable = false;
 
   imports = [
+    # vicinae.homeManagerModules.default
+
     ../profiles/shared.nix
     ../user/shell/sh.nix
     ../user/shell/tui.nix
     ../user/apps/git/git.nix
     ../user/lang/cc/cc.nix
     ../user/lang/typescript/typescript.nix
+    ../user/lang/go/go.nix
     ../user/lang/lua/lua.nix
     ../user/lang/nix/nix.nix
     ../user/lang/shell/shell.nix

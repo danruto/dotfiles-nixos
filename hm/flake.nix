@@ -65,8 +65,6 @@
           zjstatus = zjstatus.packages.${prev.system}.default;
         })
       ];
-      # pkgs-unstable = import <nixpkgs-unstable> { inherit system; };
-      pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
 
       # Set up custom Home Manager configurations
       homeConfigurations = {

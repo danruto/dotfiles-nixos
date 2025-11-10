@@ -2,6 +2,11 @@
 
 {
 
+  # services.vicinae = {
+  #   enable = true;
+  #   autoStart = true;
+  # };
+
   # Enable Sway window manager
   wayland.windowManager.sway = {
     enable = true;
@@ -11,7 +16,7 @@
     config = rec {
       modifier = "Mod4"; # Use Super/Windows key
       terminal = "foot";
-      menu = "wofi --show drun";
+      menu = "vicinae toggle";
 
       # Startup applications
       startup = [
@@ -146,6 +151,7 @@
     # Extra Sway configuration
     extraConfig = ''
       # Additional custom configuration can go here
+      hide_edge_borders --i3 smart
     '';
   };
 
@@ -160,7 +166,7 @@
 
         modules-left = [ "sway/workspaces" "sway/mode" ];
         modules-center = [ "sway/window" ];
-        modules-right = [ "cpu" "memory" "network" "pulseaudio" "clock" ];
+        modules-right = [ "cpu" "memory" "clock" ];
 
         "sway/workspaces" = {
           disable-scroll = true;
@@ -172,7 +178,7 @@
         };
 
         clock = {
-          format = "{:%Y-%m-%d %H:%M}";
+          format = "{:%Y-%m-%d %h:%M}";
           tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
         };
 
@@ -276,7 +282,6 @@
     brightnessctl # Brightness control (if on laptop)
 
     # Additional utilities
-    rofi # Alternative launcher
     kanshi # Dynamic display configuration
   ];
 
