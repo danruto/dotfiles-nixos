@@ -20,11 +20,14 @@ in
 
   programs.git = {
     enable = true;
-    settings = {
-      init.defaultBranch = "main";
-      user.name = name;
-      user.email = email;
-    };
+    #settings = {
+      #init.defaultBranch = "main";
+      #user.name = name;
+      #user.email = email;
+    #};
+    userName=name;
+    userEmail=email;
+    extraConfig={init.defaultBranch="main";};
     includes = [
       {
         condition = "gitdir:~/dev/human/";
