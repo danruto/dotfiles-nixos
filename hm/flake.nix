@@ -2,7 +2,8 @@
   description = "Danruto Nix Home manager for VM setup on Apple Silicon";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    # nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
@@ -64,6 +65,8 @@
           zjstatus = zjstatus.packages.${prev.system}.default;
         })
       ];
+      # pkgs-unstable = import <nixpkgs-unstable> { inherit system; };
+      pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
 
       # Set up custom Home Manager configurations
       homeConfigurations = {
