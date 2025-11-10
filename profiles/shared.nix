@@ -2,6 +2,7 @@
   imports = [
     ../user/apps/terminal/ghostty.nix
     ../user/apps/terminal/zellij.nix
+    ../system/apps/starship.nix
   ];
 
   home.sessionVariables = {

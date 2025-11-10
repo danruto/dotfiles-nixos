@@ -5,7 +5,7 @@ let
   ];
   stable-packages = with pkgs; [
     lua
-    sumneko-lua-language-server
+    lua-language-server
     lua52Packages.luacheck
   ];
 in

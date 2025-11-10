@@ -20,10 +20,10 @@ in
 
   programs.git = {
     enable = true;
-    userName = name;
-    userEmail = email;
-    extraConfig = {
+    settings = {
       init.defaultBranch = "main";
+      user.name = name;
+      user.email = email;
     };
     includes = [
       {
