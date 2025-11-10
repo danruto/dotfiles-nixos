@@ -1,10 +1,12 @@
 { config, lib, pkgs, ... }:
 
 {
+
   # Enable Sway window manager
   wayland.windowManager.sway = {
     enable = true;
-    package = pkgs.sway;
+    package = null;
+    # checkConfig = false;
 
     config = rec {
       modifier = "Mod4"; # Use Super/Windows key
@@ -19,7 +21,7 @@
       # Key bindings
       keybindings = lib.mkOptionDefault {
         "${modifier}+Return" = "exec ${terminal}";
-        "${modifier}+d" = "exec ${menu}";
+        "${modifier}+r" = "exec ${menu}";
         "${modifier}+Shift+q" = "kill";
         "${modifier}+Shift+c" = "reload";
         "${modifier}+Shift+e" = "exec swaynag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit'";
@@ -84,7 +86,7 @@
       };
 
       # Bar configuration (we'll use waybar instead)
-      bars = [];
+      bars = [ ];
 
       # Input configuration
       input = {
@@ -104,7 +106,7 @@
       # Output configuration (monitors)
       output = {
         "*" = {
-          bg = "~/.config/wallpaper fill";
+          # bg = "~/.config/wallpaper fill";
         };
       };
 
@@ -250,30 +252,32 @@
   # Notification daemon
   services.mako = {
     enable = true;
-    defaultTimeout = 5000;
-    backgroundColor = "#285577";
-    textColor = "#ffffff";
-    borderColor = "#4c7899";
-    borderRadius = 5;
-    borderSize = 2;
+    settings = {
+      default-timeout = 5000;
+      border-radius = 5;
+      border-color = "#4c7899";
+      border-size = 2;
+      background-color = "#285577";
+      text-color = "#ffffff";
+    };
   };
 
   # Additional Wayland utilities
   home.packages = with pkgs; [
     # Wayland tools
-    wl-clipboard      # Clipboard utilities
-    grim              # Screenshot tool
-    slurp             # Screen area selection
-    swaylock          # Screen locker
-    swayidle          # Idle management
-    wlsunset          # Color temperature adjustment
-    wdisplays         # Display configuration GUI
-    pavucontrol       # Audio control
-    brightnessctl     # Brightness control (if on laptop)
+    wl-clipboard # Clipboard utilities
+    grim # Screenshot tool
+    slurp # Screen area selection
+    swaylock # Screen locker
+    swayidle # Idle management
+    wlsunset # Color temperature adjustment
+    wdisplays # Display configuration GUI
+    pavucontrol # Audio control
+    brightnessctl # Brightness control (if on laptop)
 
     # Additional utilities
-    rofi-wayland      # Alternative launcher
-    kanshi            # Dynamic display configuration
+    rofi # Alternative launcher
+    kanshi # Dynamic display configuration
   ];
 
   # Session variables for Wayland
@@ -282,5 +286,6 @@
     QT_QPA_PLATFORM = "wayland";
     SDL_VIDEODRIVER = "wayland";
     _JAVA_AWT_WM_NONREPARENTING = "1";
+    WLR_NO_HARDWARE_CURSORS = "1";
   };
 }
