@@ -1,29 +1,45 @@
 # Pure Home Manager config without NixOS
 
-## Installation
-Install nix. If you forget use zerotonix
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+## Add current user to sudoers
+```sh
+vi /etc/sudoers
+```
 
+## Install nix using deterministic systems
+```sh
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+```
+
+## Add home manager channels
+```sh
 nix-channel --add https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz home-manager
 nix-channel --update
+```
 
+## Install home manager
+```sh
 nix-shell '<home-manager>' -A install
+```
 
+## Activate profile
+```sh
+. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+```
 
+## Install our configs
+```sh
+make hmr
+```
 
-For debian might need to add /usr/sbin to path e.g. ``
-Add user to `/etc/sudoers`
-The `sudo` to install nix
-
-Go back to regular user to install home manager: ``
-
-Clone this repo into `~/.config/home-manager`
-
-Then run make bin
-
-Also need to manually set shell
-
+## Set fish as main shell
+```sh
 sudo nvim /etc/shells add /home/danruto/.nix-profile/bin/fish
 chsh -s /home/danruto/.nix-profile/bin/fish
+```
 
-install sway manually with sudo apt install sway
+## Install sway
+```
+  sudo apt install sway
+```
+
+Now reboot and choose `Sway` from SDDM. All should work as expected now.

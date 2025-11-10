@@ -1,4 +1,4 @@
-{ config, pkgs, vicinae, ... }:
+{ pkgs, vicinae, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -42,6 +42,8 @@
     starship
     wget
     foot
+
+    floorp
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -86,7 +88,7 @@
   programs.man.enable = false;
 
   imports = [
-    # vicinae.homeManagerModules.default
+    vicinae.homeManagerModules.default
 
     ../profiles/shared.nix
     ../user/shell/sh.nix

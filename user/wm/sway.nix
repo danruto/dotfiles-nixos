@@ -1,11 +1,11 @@
-{ config, lib, pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
 
-  # services.vicinae = {
-  #   enable = true;
-  #   autoStart = true;
-  # };
+  services.vicinae = {
+    enable = true;
+    autoStart = true;
+  };
 
   # Enable Sway window manager
   wayland.windowManager.sway = {
@@ -59,7 +59,7 @@
         "${modifier}+Shift+1" = "move container to workspace number 1";
         "${modifier}+Shift+2" = "move container to workspace number 2";
         "${modifier}+Shift+3" = "move container to workspace number 3";
-        "${modifier}+Shift+4" = "move container to workspace number 4";
+        #"${modifier}+Shift+4" = "move container to workspace number 4";
         "${modifier}+Shift+5" = "move container to workspace number 5";
         "${modifier}+Shift+6" = "move container to workspace number 6";
         "${modifier}+Shift+7" = "move container to workspace number 7";
@@ -72,16 +72,12 @@
         "${modifier}+v" = "splitv";
         "${modifier}+f" = "fullscreen toggle";
         "${modifier}+s" = "layout stacking";
-        "${modifier}+w" = "layout tabbed";
+        "${modifier}+z" = "layout tabbed";
         "${modifier}+e" = "layout toggle split";
 
         # Floating
         "${modifier}+Shift+space" = "floating toggle";
-        "${modifier}+space" = "focus mode_toggle";
-
-        # Scratchpad
-        "${modifier}+Shift+minus" = "move scratchpad";
-        "${modifier}+minus" = "scratchpad show";
+        "${modifier}+t" = "focus mode_toggle";
       };
 
       # Window and workspace settings
@@ -178,7 +174,7 @@
         };
 
         clock = {
-          format = "{:%Y-%m-%d %h:%M}";
+          format = "{:%Y-%m-%d %H:%M}";
           tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
         };
 
