@@ -89,7 +89,11 @@
             inherit noctalia;
             inherit vicinae;
 
-            pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
+            pkgs-unstable = import nixpkgs-unstable {
+              inherit system;
+              config.allowUnfree = true;
+              overlays = overlays;
+            };
 
             name = "Danny Sok";
             email = "danny.sok@nearmap.com";
