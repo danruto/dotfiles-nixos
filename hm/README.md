@@ -43,3 +43,19 @@ chsh -s /home/danruto/.nix-profile/bin/fish
 ```
 
 Now reboot and choose `Sway` from SDDM. All should work as expected now.
+
+## Mount UTM Share
+```sh
+sudo apt install spice-vdagent spice-webdavd davfs2
+```
+
+```sh
+mkdir ~/host
+sudo vi /etc/fstab
+# share /home/danruto/host 9p trans=virtio,rw,nofail 0 0
+```
+or
+```sh
+mkdir ~/host
+sudo mount -t 9p -o trans=virtio share ~/host
+```

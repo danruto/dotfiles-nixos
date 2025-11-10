@@ -78,7 +78,7 @@
   #  /etc/profiles/per-user/danruto/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
+    EDITOR = "hx";
   };
 
   # Let Home Manager install and manage itself.
@@ -105,8 +105,10 @@
     ../user/apps/terminal/helix-fork.nix
     ../user/apps/terminal/foot.nix
     ../user/apps/fileman/yazi.nix
+    ../user/apps/ai/llm.nix
     ../user/wm/fonts.nix
     ../user/wm/sway.nix
+    # ../user/wm/niri/niri.nix
 
     # ./system/apps/docker.nix
   ];

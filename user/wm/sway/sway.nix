@@ -39,70 +39,72 @@
         outer = 5;
       };
 
-      keybindings = let
-        mod = modifier;
-      in lib.mkOptionDefault {
-        # Application shortcuts
-        "${mod}+Return" = "exec ${terminal}";
-        "${mod}+q" = "kill";
-        "${mod}+d" = "exec ${menu}";
-        "Mod1+space" = "exec ${menu}"; # Alt+space for vicinae
-        "${mod}+Shift+c" = "reload";
-        "${mod}+Shift+e" = "exec swaynag -t warning -m 'Exit sway?' -B 'Yes' 'swaymsg exit'";
+      keybindings =
+        let
+          mod = modifier;
+        in
+        lib.mkOptionDefault {
+          # Application shortcuts
+          "${mod}+Return" = "exec ${terminal}";
+          "${mod}+q" = "kill";
+          "${mod}+r" = "exec ${menu}";
+          "Mod1+space" = "exec ${menu}"; # Alt+space for vicinae
+          "${mod}+Shift+c" = "reload";
+          "${mod}+Shift+e" = "exec swaynag -t warning -m 'Exit sway?' -B 'Yes' 'swaymsg exit'";
 
-        # Window focus
-        "${mod}+h" = "focus left";
-        "${mod}+j" = "focus down";
-        "${mod}+k" = "focus up";
-        "${mod}+l" = "focus right";
+          # Window focus
+          "${mod}+h" = "focus left";
+          "${mod}+j" = "focus down";
+          "${mod}+k" = "focus up";
+          "${mod}+l" = "focus right";
 
-        # Move windows
-        "${mod}+Shift+h" = "move left";
-        "${mod}+Shift+j" = "move down";
-        "${mod}+Shift+k" = "move up";
-        "${mod}+Shift+l" = "move right";
+          # Move windows
+          "${mod}+Shift+h" = "move left";
+          "${mod}+Shift+j" = "move down";
+          "${mod}+Shift+k" = "move up";
+          "${mod}+Shift+l" = "move right";
 
-        # Workspaces
-        "${mod}+1" = "workspace number 1";
-        "${mod}+2" = "workspace number 2";
-        "${mod}+3" = "workspace number 3";
-        "${mod}+4" = "workspace number 4";
-        "${mod}+5" = "workspace number 5";
-        "${mod}+6" = "workspace number 6";
-        "${mod}+7" = "workspace number 7";
-        "${mod}+8" = "workspace number 8";
-        "${mod}+9" = "workspace number 9";
+          # Workspaces
+          "${mod}+1" = "workspace number 1";
+          "${mod}+2" = "workspace number 2";
+          "${mod}+3" = "workspace number 3";
+          "${mod}+4" = "workspace number 4";
+          "${mod}+5" = "workspace number 5";
+          "${mod}+6" = "workspace number 6";
+          "${mod}+7" = "workspace number 7";
+          "${mod}+8" = "workspace number 8";
+          "${mod}+9" = "workspace number 9";
 
-        # Move windows to workspaces
-        "${mod}+Shift+1" = "move container to workspace number 1";
-        "${mod}+Shift+2" = "move container to workspace number 2";
-        "${mod}+Shift+3" = "move container to workspace number 3";
-        "${mod}+Shift+4" = "move container to workspace number 4";
-        "${mod}+Shift+5" = "move container to workspace number 5";
-        "${mod}+Shift+6" = "move container to workspace number 6";
-        "${mod}+Shift+7" = "move container to workspace number 7";
-        "${mod}+Shift+8" = "move container to workspace number 8";
-        "${mod}+Shift+9" = "move container to workspace number 9";
+          # Move windows to workspaces
+          "${mod}+Shift+1" = "move container to workspace number 1";
+          "${mod}+Shift+2" = "move container to workspace number 2";
+          "${mod}+Shift+3" = "move container to workspace number 3";
+          "${mod}+Shift+4" = "move container to workspace number 4";
+          "${mod}+Shift+5" = "move container to workspace number 5";
+          "${mod}+Shift+6" = "move container to workspace number 6";
+          "${mod}+Shift+7" = "move container to workspace number 7";
+          "${mod}+Shift+8" = "move container to workspace number 8";
+          "${mod}+Shift+9" = "move container to workspace number 9";
 
-        # Layout
-        "${mod}+b" = "splith";
-        "${mod}+v" = "splitv";
-        "${mod}+s" = "layout stacking";
-        "${mod}+w" = "layout tabbed";
-        "${mod}+e" = "layout toggle split";
-        "${mod}+f" = "fullscreen toggle";
-        "${mod}+Shift+space" = "floating toggle";
-        "${mod}+space" = "focus mode_toggle";
+          # Layout
+          "${mod}+b" = "splith";
+          "${mod}+v" = "splitv";
+          "${mod}+s" = "layout stacking";
+          "${mod}+w" = "layout tabbed";
+          "${mod}+e" = "layout toggle split";
+          "${mod}+f" = "fullscreen toggle";
+          "${mod}+Shift+space" = "floating toggle";
+          "${mod}+space" = "focus mode_toggle";
 
-        # Screenshots
-        "${mod}+Shift+s" = "exec grim -g \"$(slurp)\" - | wl-copy";
+          # Screenshots
+          "${mod}+Shift+s" = "exec grim -g \"$(slurp)\" - | wl-copy";
 
-        # Scratchpad
-        "${mod}+Shift+minus" = "move scratchpad";
-        "${mod}+minus" = "scratchpad show";
-      };
+          # Scratchpad
+          "${mod}+Shift+minus" = "move scratchpad";
+          "${mod}+minus" = "scratchpad show";
+        };
 
-      bars = []; # We'll use waybar instead
+      bars = [ ]; # We'll use waybar instead
     };
 
     extraConfig = ''
