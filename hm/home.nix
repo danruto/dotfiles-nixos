@@ -100,6 +100,7 @@
     ../user/apps/terminal/foot.nix
     ../user/apps/fileman/yazi.nix
     ../user/wm/fonts.nix
+    ../user/wm/sway.nix
 
     # ./system/apps/docker.nix
   ];
