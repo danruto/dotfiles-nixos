@@ -44,15 +44,6 @@ with lib;
     LC_TIME = "en_AU.UTF-8";
   };
 
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "gb";
-    variant = "";
-  };
-
-  # Configure console keymap
-  console.keyMap = "uk";
-
   # Define a user account. Don't forget to set a password with 'passwd'.
   # User account
   users.users.${username} = {

@@ -3,7 +3,7 @@
 {
   # Import wayland config
   imports = [
-    ./wayland.nix
+    # ./wayland.nix
     # ./pipewire.nix
   ];
 
@@ -19,7 +19,6 @@
       swayidle
       wl-clipboard
       mako
-      # alacritty
       foot
       dmenu
       grim
