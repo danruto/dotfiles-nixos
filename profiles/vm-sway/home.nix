@@ -24,7 +24,7 @@
     ../../user/lang/lua/lua.nix # lua tools
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
-    ../../user/wm/sway/sway.nix # wm
+    # ../../user/wm/sway/sway.nix # wm
     ../../user/apps/terminal/helix-fork.nix
     ../../user/apps/terminal/curl.nix # network request cli/tuis
     ../../user/apps/terminal/myvim.nix

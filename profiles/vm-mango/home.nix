@@ -24,7 +24,7 @@
     ../../user/lang/lua/lua.nix # lua tools
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
-    ../../user/wm/mango/mango.nix # wm
+    # ../../user/wm/mango/mango.nix # wm
     ../../user/apps/terminal/helix-fork.nix
     ../../user/apps/terminal/curl.nix # network request cli/tuis
     ../../user/apps/terminal/myvim.nix
@@ -33,6 +33,7 @@
     ../../user/apps/fileman/cosmic.nix
     ../../user/apps/fileman/yazi.nix
   ];
+
 
   services.vicinae = {
     enable = true; # default: false
@@ -49,7 +50,11 @@
     libffi
     zlib
     nodePackages.ungit
+
+    st
+    kitty
   ];
+  # programs.foot.enable = true;
   programs.starship.enable = true;
   programs.starship.settings = {
     gcloud.disabled = true;
@@ -71,4 +76,12 @@
       enable = true;
       enableFishIntegration = true;
     };
+
+  home.sessionVariables = {
+    # MOZ_ENABLE_WAYLAND = "1";
+    # QT_QPA_PLATFORM = "wayland";
+    # SDL_VIDEODRIVER = "wayland";
+    # _JAVA_AWT_WM_NONREPARENTING = "1";
+    WLR_NO_HARDWARE_CURSORS = "1";
+  };
 }
