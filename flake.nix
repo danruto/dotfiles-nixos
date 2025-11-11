@@ -26,17 +26,18 @@
     }@inputs:
     let
       # ---- SYSTEM SETTINGS ---- #
-      system = "x86_64-linux";
-      # system = "aarch64-linux";
+      # system = "x86_64-linux";
+      system = "aarch64-linux";
       # system = "x86_64-darwin";
       # profile = "wsl";
       # profile = "vm";
       # profile = "vm-hypr";
       # profile = "vm-niri";
-      # profile = "vm-mango";
+      profile = "vm-i3";
+      # profile = "vm-sway";
       # profile = "work";
       # profile = "work2";
-      profile = "framework";
+      # profile = "framework";
       # profile = "orb";
       # profile = "nearmap";
       hostname = "danruto"; # hostname

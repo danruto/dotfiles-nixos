@@ -28,7 +28,7 @@
     ../../user/apps/terminal/helix-fork.nix
     ../../user/apps/terminal/curl.nix # network request cli/tuis
     ../../user/apps/terminal/myvim.nix
-    ../../user/apps/terminal/foot.nix
+    ../../user/apps/terminal/kitty.nix
     ../../user/apps/browser/ff.nix
     ../../user/apps/fileman/cosmic.nix
     ../../user/apps/fileman/yazi.nix
@@ -50,9 +50,6 @@
     libffi
     zlib
     nodePackages.ungit
-
-    st
-    kitty
   ];
   # programs.foot.enable = true;
   programs.starship.enable = true;

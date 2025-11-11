@@ -4,7 +4,7 @@
     enable = true;
     package = pkgs-unstable.kitty;
     settings = {
-      font_size = 10;
+      font_size = 18;
       # font_family = font;
       # font_family = "Departure Mono";
       font_family = "VictorMono Nerd Font";
