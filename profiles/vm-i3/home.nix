@@ -29,6 +29,7 @@
     ../../user/apps/terminal/curl.nix # network request cli/tuis
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/kitty.nix
+    ../../user/apps/terminal/ghostty.nix
     ../../user/apps/browser/ff.nix
     ../../user/apps/fileman/cosmic.nix
     ../../user/apps/fileman/yazi.nix
@@ -50,6 +51,8 @@
     libffi
     zlib
     nodePackages.ungit
+
+    ghostty
   ];
   # programs.foot.enable = true;
   programs.starship.enable = true;
