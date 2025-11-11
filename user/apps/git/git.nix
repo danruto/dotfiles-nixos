@@ -21,13 +21,13 @@ in
   programs.git = {
     enable = true;
     #settings = {
-      #init.defaultBranch = "main";
-      #user.name = name;
-      #user.email = email;
+    #init.defaultBranch = "main";
+    #user.name = name;
+    #user.email = email;
     #};
-    userName=name;
-    userEmail=email;
-    extraConfig={init.defaultBranch="main";};
+    userName = name;
+    userEmail = email;
+    extraConfig = { init.defaultBranch = "main"; };
     includes = [
       {
         condition = "gitdir:~/dev/human/";
@@ -61,7 +61,16 @@ in
         contents = {
           user = {
             name = name;
-            email = "danny.sok@nearmap.com";
+            email = "1270619+danruto@users.noreply.github.com";
+          };
+        };
+      }
+      {
+        condition = "gitdir:/mnt/utm/nearmap/";
+        contents = {
+          user = {
+            name = name;
+            email = "1270619+danruto@users.noreply.github.com";
           };
         };
       }

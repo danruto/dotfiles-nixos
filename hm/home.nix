@@ -41,10 +41,8 @@
     fakeroot
     starship
     wget
-    foot
 
     floorp
-
     vscode-langservers-extracted
   ];
 
@@ -109,9 +107,8 @@
     ../user/apps/fileman/yazi.nix
     ../user/apps/ai/llm.nix
     ../user/wm/fonts.nix
-    ../user/wm/sway.nix
+    # ../user/wm/sway.nix
     # ../user/wm/niri/niri.nix
-
     # ./system/apps/docker.nix
   ];
 }

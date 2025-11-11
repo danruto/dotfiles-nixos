@@ -10,6 +10,11 @@ vi /etc/sudoers
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 ```
 
+## Activate profile
+```sh
+. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+```
+
 ## Add home manager channels
 ```sh
 nix-channel --add https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz home-manager
@@ -21,9 +26,9 @@ nix-channel --update
 nix-shell '<home-manager>' -A install
 ```
 
-## Activate profile
+## Shell git and make (if required)
 ```sh
-. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+nix-shell -p git gnumake
 ```
 
 ## Install our configs
@@ -37,7 +42,7 @@ sudo nvim /etc/shells add /home/danruto/.nix-profile/bin/fish
 chsh -s /home/danruto/.nix-profile/bin/fish
 ```
 
-## Install sway
+## Install sway (if required)
 ```
   sudo apt install sway
 ```
@@ -56,6 +61,19 @@ sudo vi /etc/fstab
 ```
 or
 ```sh
-mkdir ~/host
-sudo mount -t 9p -o trans=virtio share ~/host
+# mkdir ~/host
+# sudo mount -t 9p -o trans=virtio share ~/host
+sudo mkdir /mnt/utm
+sudo mount -t virtiofs share /mnt/utm
+```
+or
+```sh
+sudo vi /etc/fstab
+# share /mnt/utm 9p trans=virtio,version=9p2000.L,rw,_netdev,nofail,auto 0 0
+# /mnt/utm /home/user/utm fuse.bindfs map=502/1000:@20/@1000,x-systemd.requires=/mnt/utm,_netdev,nofail,auto 0 0
+
+systemctl daemon-reload
+systemctl restart network-fs.target # use remote-fs.target if not found
+systemctl list-units --type=mount
+
 ```
