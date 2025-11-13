@@ -131,10 +131,9 @@ with lib;
     };
   };
 
-  fileSystems."/home/danruto/host" = {
-    device = "virtiofs:share";
-    fsType = "virtiofs";
-    options = [ "defaults" ];
-  };
-
+  # fileSystems."/home/danruto/host" = {
+  #   device = "virtiofs_share";
+  #   fsType = "virtiofs";
+  #   options = [ "default_permissions" ];
+  # };
 }

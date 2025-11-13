@@ -33,6 +33,7 @@
     ../../user/apps/browser/ff.nix
     ../../user/apps/fileman/cosmic.nix
     ../../user/apps/fileman/yazi.nix
+    ../../user/apps/ai/llm.nix
   ];
 
 
