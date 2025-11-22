@@ -2,7 +2,7 @@
 {
   programs.helix = {
     enable = true;
-    package = helix-fork.packages.${pkgs.system}.default;
+    package = helix-fork.packages.${pkgs.stdenv.hostPlatform.system}.default;
     extraPackages = with pkgs; [
       nixpkgs-fmt
     ];

@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, niri, noctalia, quickshell, ... }:
+{ pkgs, pkgs-unstable, niri, ... }:
 {
   # Import wayland config
   imports = [
@@ -11,8 +11,8 @@
 
   environment.systemPackages = with pkgs-unstable; [
     xwayland-satellite
-    noctalia.packages.${system}.default
-    quickshell.packages.${system}.default
+    quickshell
+    noctalia-shell
   ];
 
   # environment.variables.DISPLAY = ":0";
@@ -25,4 +25,6 @@
     enable = true;
     package = pkgs.niri-unstable;
   };
+
+  # services.noctalia.enable = true;
 }

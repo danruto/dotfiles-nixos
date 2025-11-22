@@ -3,7 +3,7 @@
   programs.helix = {
     enable = true;
     # package = pkgs.unstable.helix;
-    package = helix.packages.${pkgs.system}.default;
+    package = helix.packages.${pkgs.stdenv.hostPlatform.system}.default;
     extraPackages = with pkgs; [
       nixpkgs-fmt
     ];

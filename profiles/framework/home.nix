@@ -1,4 +1,4 @@
-{ pkgs, vicinae, ... }: {
+{ pkgs, vicinae, noctalia, ... }: {
 
   home.username = "danruto";
   home.homeDirectory = "/home/danruto";
@@ -7,6 +7,7 @@
 
   imports = [
     vicinae.homeManagerModules.default
+    noctalia.homeModules.default
 
     ../shared.nix # Shared home configurations
     ../../user/shell/sh.nix # Fish config

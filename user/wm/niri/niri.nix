@@ -43,10 +43,13 @@ in
   #   };
   # };
 
+  # programs.noctalia-shell = {
+  #   enable = true;
+  # };
+
   services.vicinae = {
     enable = true; # default: false
   };
-
 
   programs.niri.settings = {
     spawn-at-startup = [

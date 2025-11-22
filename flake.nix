@@ -26,18 +26,18 @@
     }@inputs:
     let
       # ---- SYSTEM SETTINGS ---- #
-      # system = "x86_64-linux";
-      system = "aarch64-linux";
+      system = "x86_64-linux";
+      # system = "aarch64-linux";
       # system = "x86_64-darwin";
       # profile = "wsl";
       # profile = "vm";
       # profile = "vm-hypr";
       # profile = "vm-niri";
-      profile = "vm-i3";
+      # profile = "vm-i3";
       # profile = "vm-sway";
       # profile = "work";
       # profile = "work2";
-      # profile = "framework";
+      profile = "framework";
       # profile = "orb";
       # profile = "nearmap";
       hostname = "danruto"; # hostname
@@ -82,6 +82,7 @@
         overlays = [
           rust-overlay.overlays.default
           nur.overlays.default
+          quickshell.overlays.default
           # neovim-nightly-overlay.overlays.default
           (final: prev: {
             pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
@@ -114,8 +115,10 @@
         overlays = [
           rust-overlay.overlays.default
           nur.overlays.default
+          quickshell.overlays.default
+          noctalia.overlays.default
           (final: prev: {
-            zjstatus = zjstatus.packages.${prev.system}.default;
+            zjstatus = zjstatus.packages.${prev.stdenv.hostPlatform.system}.default;
             pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
               (python-final: python-prev: {
                 # Workaround for bug #437058
@@ -303,7 +306,6 @@
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.quickshell.follows = "quickshell";
     };
     vicinae = {
       url = "github:vicinaehq/vicinae";

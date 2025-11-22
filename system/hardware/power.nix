@@ -6,6 +6,10 @@
   # Disable auto-cpufreq - using TLP instead
   services.auto-cpufreq.enable = false;
 
+  # can't use this and tlp
+  services.power-profiles-daemon.enable = true;
+  # services.tuned.enable = true;
+
   # Enable powertop auto-tuning
   powerManagement.powertop.enable = true;
   # Let TLP handle CPU governor instead of setting it globally
@@ -59,7 +63,7 @@
   };
 
   services.tlp = {
-    enable = true;
+    enable = false;
     settings = {
       # CPU governors - performance for AC, powersave for battery
       CPU_SCALING_GOVERNOR_ON_AC = "performance";
