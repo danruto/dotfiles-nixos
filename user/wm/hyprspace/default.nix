@@ -9,7 +9,7 @@
     after-startup-command = []
 
     # Start AeroSpace at login
-    start-at-login = true
+    start-at-login = false
 
     # Normalizations work well with scroll layout
     enable-normalization-flatten-containers = true

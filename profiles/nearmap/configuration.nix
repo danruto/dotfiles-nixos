@@ -26,6 +26,7 @@
       "font-departure-mono"
       "font-jetbrains-mono-nerd-font"
       "font-victor-mono-nerd-font"
+      "font-aporetic"
       # "ghostty"
       # "iina"
       "insomnium"
@@ -36,7 +37,7 @@
       # "orbstack"
       # "utm"
       # "vial"
-      "zed"
+      # "zed"
     ];
     taps = [
       # "homebrew/cask-fonts"

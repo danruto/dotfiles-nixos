@@ -238,7 +238,8 @@
           # Themes
           github-nvim-theme
           neovim-ayu
-          papercolor-theme
+          # papercolor-theme
+          papercolor-theme-slim
           snowy-vim
           ohlucy-nvim
           danger-vim

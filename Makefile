@@ -101,7 +101,7 @@ vm/ssh:
 
 switch:
 ifeq ($(UNAME), Darwin)
-	nix build --extra-experimental-features nix-command flakes ".#darwinConfigurations.work.system" --show-trace
+	nix build ".#darwinConfigurations.work.system" --show-trace
 	./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#work"
 else
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake ".#system" --show-trace

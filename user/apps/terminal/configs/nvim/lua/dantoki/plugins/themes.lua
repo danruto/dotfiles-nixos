@@ -12,12 +12,13 @@ return {
 	-- 	dependencies = { "rktjmp/lush.nvim" },
 	-- 	config = function() end,
 	-- },
-	{
-		"NLKNguyen/papercolor-theme",
-		config = function()
-			-- vim.cmd([[ colorscheme papercolor ]])
-		end,
-	},
+	-- {
+	-- 	"NLKNguyen/papercolor-theme",
+	-- 	config = function()
+	-- 		-- vim.cmd([[ colorscheme papercolor ]])
+	-- 	end,
+	-- },
+	{ "pappasam/papercolor-theme-slim" },
 	{
 		"yuttie/snowy-vim",
 		config = function()

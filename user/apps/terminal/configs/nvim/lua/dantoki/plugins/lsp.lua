@@ -425,6 +425,7 @@ return {
 				prebuilt_binaries = {
 					download = false,
 				},
+				implementation = "prefer_rust_with_warning",
 			},
 
 			completion = {

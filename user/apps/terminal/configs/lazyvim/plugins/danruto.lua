@@ -10,7 +10,8 @@ return {
 		},
 	},
 	{ "Shatur/neovim-ayu" },
-	{ "NLKNguyen/papercolor-theme" },
+	-- { "NLKNguyen/papercolor-theme" },
+	{ "pappasam/papercolor-theme-slim" },
 	{
 		"LazyVim/LazyVim",
 		opts = {

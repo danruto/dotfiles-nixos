@@ -13,7 +13,7 @@
     ../../user/apps/terminal/curl.nix # network request cli/tuis
     # TODO: Kitty conf toggled by OS
     ../../user/lang/go/go.nix # go tools
-    ../../user/wm/hyprspace
+    # ../../user/wm/hyprspace
   ];
 
   home.packages = with pkgs; [
