@@ -20,6 +20,8 @@
     # cachix
     diff-so-fancy
     git
+
+    sops
   ];
   home.stateVersion = "25.05";
 

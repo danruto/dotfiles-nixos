@@ -12,7 +12,6 @@ let
     tree-sitter
     tealdeer
     just
-    yq-go
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     brightnessctl
     hwinfo

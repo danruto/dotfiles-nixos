@@ -64,6 +64,8 @@ in
     starship
     fish
     jq
+    yq-go
+    zk
   ];
 
   programs.btop = {
