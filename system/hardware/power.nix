@@ -1,9 +1,22 @@
 { pkgs-unstable, ... }:
 
 {
-  environment.systemPackages = with pkgs-unstable; [ tlp powertop ];
+  environment.systemPackages = with pkgs-unstable; [
+    powertop
+    # Helper script to adjust battery charge thresholds
+    (writeShellScriptBin "setcharge" ''
+      if [ $# -lt 2 ]; then
+        echo "Usage: setcharge START END"
+        echo "Current: start=$(cat /sys/class/power_supply/BAT1/charge_control_start_threshold) end=$(cat /sys/class/power_supply/BAT1/charge_control_end_threshold)"
+        exit 1
+      fi
+      echo "$1" | sudo tee /sys/class/power_supply/BAT1/charge_control_start_threshold
+      echo "$2" | sudo tee /sys/class/power_supply/BAT1/charge_control_end_threshold
+      echo "Set thresholds: start=$1 end=$2"
+    '')
+  ];
 
-  # Disable auto-cpufreq - using TLP instead
+  # Disable auto-cpufreq - using power-profiles-daemon instead
   services.auto-cpufreq.enable = false;
 
   # can't use this and tlp
@@ -38,6 +51,10 @@
 
   # Additional power management optimizations
   services.udev.extraRules = ''
+    # Battery charge thresholds (Framework laptop)
+    SUBSYSTEM=="power_supply", KERNEL=="BAT1", ATTR{charge_control_start_threshold}="40"
+    SUBSYSTEM=="power_supply", KERNEL=="BAT1", ATTR{charge_control_end_threshold}="80"
+
     # Enable runtime PM for all PCI devices (PowerTOP recommendation)
     ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
 
