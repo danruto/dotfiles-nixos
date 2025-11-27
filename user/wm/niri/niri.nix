@@ -25,6 +25,7 @@ in
 {
   imports = [
     # ../waybar/waybar.nix
+    ./dms.nix
   ];
 
   home.packages = stable-packages ++ unstable-packages;
@@ -53,7 +54,7 @@ in
 
   programs.niri.settings = {
     spawn-at-startup = [
-      { argv = [ "noctalia-shell" ]; }
+      # { argv = [ "noctalia-shell" ]; }
     ];
 
     input.touchpad = {
@@ -219,19 +220,19 @@ in
       # "Mod+R".action.spawn = [ "noctalia-shell" "ipc" "call" "launcher" "toggle" ];
       "Mod+R".action.spawn = [ "vicinae" "toggle" ];
       # "Super+Alt+L".action.spawn = "swaylock";
-      "Super+Alt+L".action.spawn = [ "noctalia-shell" "ipc" "call" "lockScreen" "toggle" ];
+      # "Super+Alt+L".action.spawn = [ "noctalia-shell" "ipc" "call" "lockScreen" "toggle" ];
 
       "Mod+Shift+C".action.spawn = [ "sh" "-c" "env DISPLAY=:0" "xsel" "-ob" "|" "wl-copy" ];
       "Mod+Shift+V".action.spawn = [ "sh" "-c" "wlpaste -n" "|" "env DISPLAY=:0" "xsel" "-ib" ];
 
       # "XF86AudioRaiseVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+" ];
       # "XF86AudioLowerVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-" ];
-      XF86AudioRaiseVolume.action.spawn = [ "noctalia-shell" "ipc" "call" "volume" "increase" ];
-      XF86AudioLowerVolume.action.spawn = [ "noctalia-shell" "ipc" "call" "volume" "decrease" ];
-      XF86AudioMute.action.spawn = [ "noctalia-shell" "ipc" "call" "volume" "muteOutput" ];
+      # XF86AudioRaiseVolume.action.spawn = [ "noctalia-shell" "ipc" "call" "volume" "increase" ];
+      # XF86AudioLowerVolume.action.spawn = [ "noctalia-shell" "ipc" "call" "volume" "decrease" ];
+      # XF86AudioMute.action.spawn = [ "noctalia-shell" "ipc" "call" "volume" "muteOutput" ];
 
-      XF86MonBrightnessUp.action.spawn = [ "noctalia-shell" "ipc" "call" "brightness" "increase" ];
-      XF86MonBrightnessDown.action.spawn = [ "noctalia-shell" "ipc" "call" "brightness" "decrease" ];
+      # XF86MonBrightnessUp.action.spawn = [ "noctalia-shell" "ipc" "call" "brightness" "increase" ];
+      # XF86MonBrightnessDown.action.spawn = [ "noctalia-shell" "ipc" "call" "brightness" "decrease" ];
 
       "Mod+Q".action.close-window = [ ];
 

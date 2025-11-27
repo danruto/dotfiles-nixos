@@ -49,6 +49,29 @@
         "type": "github"
       }
     },
+    "dankMaterialShell": {
+      "inputs": {
+        "dgop": [
+          "dgop"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1764199806,
+        "narHash": "sha256-MtYBHKEUwLpzXyvHGbUFBJbUZtpuzrogL4C8KY44Bs8=",
+        "owner": "AvengeMedia",
+        "repo": "DankMaterialShell",
+        "rev": "f7f1bbbdd2948a3de6706111984006965dcd37b0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AvengeMedia",
+        "repo": "DankMaterialShell",
+        "type": "github"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -67,6 +90,26 @@
         "owner": "LnL7",
         "ref": "nix-darwin-25.05",
         "repo": "nix-darwin",
+        "type": "github"
+      }
+    },
+    "dgop": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1762835999,
+        "narHash": "sha256-UykYGrGFOFTmDpKTLNxj1wvd1gbDG4TkqLNSbV0TYwk=",
+        "owner": "AvengeMedia",
+        "repo": "dgop",
+        "rev": "799301991cd5dcea9b64245f9d500dcc76615653",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AvengeMedia",
+        "repo": "dgop",
         "type": "github"
       }
     },
@@ -647,7 +690,9 @@
       "inputs": {
         "blocklist-hosts": "blocklist-hosts",
         "catppuccin": "catppuccin",
+        "dankMaterialShell": "dankMaterialShell",
         "darwin": "darwin",
+        "dgop": "dgop",
         "fw-ectool": "fw-ectool",
         "helix": "helix",
         "helix-fork": "helix-fork",
