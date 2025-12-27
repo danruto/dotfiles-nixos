@@ -1,4 +1,4 @@
-{ pkgs, vicinae, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -41,6 +41,7 @@
     fakeroot
     starship
     wget
+    pkgs-unstable.vicinae
 
     floorp
     vscode-langservers-extracted
@@ -81,6 +82,9 @@
     EDITOR = "hx";
   };
 
+  # Enable automatic start/restart of systemd user services
+  systemd.user.startServices = "sd-switch";
+
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
@@ -88,8 +92,6 @@
   programs.man.enable = false;
 
   imports = [
-    vicinae.homeManagerModules.default
-
     ../profiles/shared.nix
     ../user/shell/sh.nix
     ../user/shell/tui.nix

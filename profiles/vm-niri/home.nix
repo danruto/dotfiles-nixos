@@ -1,4 +1,4 @@
-{ config, lib, pkgs, stdenv, fetchurl, stylix, username, email, theme, wm, editor, vicinae, ... }:
+{ config, lib, pkgs, pkgs-unstable, stdenv, fetchurl, stylix, username, email, theme, wm, editor, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -9,8 +9,6 @@
   programs.home-manager.enable = true;
 
   imports = [
-    vicinae.homeManagerModules.default
-
     # stylix.homeManagerModules.stylix
     # ../../user/style/stylix.nix # Styling and themes for my apps
     ../shared.nix # Shared home configurations
@@ -63,6 +61,7 @@
   home.packages = with pkgs; [
     # Core
     git
+    pkgs-unstable.vicinae
 
     # Various dev packages
     texinfo

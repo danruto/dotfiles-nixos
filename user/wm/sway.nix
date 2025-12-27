@@ -1,9 +1,19 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, pkgs-unstable, ... }:
 
 {
-  services.vicinae = {
-    enable = true;
-    autoStart = true;
+  home.packages = [ pkgs-unstable.vicinae ];
+
+  systemd.user.services.vicinae = {
+    Unit = {
+      Description = "Vicinae launcher daemon";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs-unstable.vicinae}/bin/vicinae server";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 
   # Enable Sway window manager

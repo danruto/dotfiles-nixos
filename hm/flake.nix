@@ -34,10 +34,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.quickshell.follows = "quickshell";
     };
-    vicinae = {
-      url = "github:vicinaehq/vicinae";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -52,7 +48,6 @@
     , helix-fork
     , quickshell
     , noctalia
-    , vicinae
     , ...
     }:
     let
@@ -88,7 +83,6 @@
             inherit helix-fork;
             inherit quickshell;
             inherit noctalia;
-            inherit vicinae;
 
             pkgs-unstable = import nixpkgs-unstable {
               inherit system;

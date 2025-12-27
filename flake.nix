@@ -20,7 +20,6 @@
     , catppuccin
     , noctalia
     , quickshell
-    , vicinae
     , mango
     , dankMaterialShell
     , ...
@@ -181,7 +180,6 @@
         inherit (inputs) catppuccin;
         inherit (inputs) noctalia;
         inherit (inputs) quickshell;
-        inherit (inputs) vicinae;
         inherit (inputs) dankMaterialShell;
       };
 
@@ -308,10 +306,6 @@
     };
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    vicinae = {
-      url = "github:vicinaehq/vicinae";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     dgop = {

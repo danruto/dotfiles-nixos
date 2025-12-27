@@ -1,4 +1,4 @@
-{ pkgs, vicinae, noctalia, ... }: {
+{ pkgs, pkgs-unstable, noctalia, ... }: {
 
   home.username = "danruto";
   home.homeDirectory = "/home/danruto";
@@ -6,7 +6,6 @@
   # programs.home-manager.enable = true;
 
   imports = [
-    vicinae.homeManagerModules.default
     noctalia.homeModules.default
 
     ../shared.nix # Shared home configurations
@@ -60,8 +59,12 @@
     git
     # waydroid-helper
     fakeroot
+    pkgs-unstable.vicinae
   ];
   home.stateVersion = "24.05";
+
+  # Enable automatic start/restart of systemd user services
+  systemd.user.startServices = "sd-switch";
 
   programs.home-manager.enable = true;
 

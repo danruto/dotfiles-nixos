@@ -19,6 +19,7 @@ let
   ];
   unstable-packages = with pkgs-unstable; [
     wiremix
+    vicinae
   ];
 
 in
@@ -48,8 +49,17 @@ in
   #   enable = true;
   # };
 
-  services.vicinae = {
-    enable = true; # default: false
+  systemd.user.services.vicinae = {
+    Unit = {
+      Description = "Vicinae launcher daemon";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs-unstable.vicinae}/bin/vicinae server";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 
   programs.niri.settings = {

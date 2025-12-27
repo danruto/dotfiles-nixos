@@ -1,4 +1,4 @@
-{ pkgs, username, vicinae, ... }:
+{ pkgs, pkgs-unstable, username, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -9,8 +9,6 @@
   programs.home-manager.enable = true;
 
   imports = [
-    vicinae.homeManagerModules.default
-
     # stylix.homeManagerModules.stylix
     # ../../user/style/stylix.nix # Styling and themes for my apps
     ../shared.nix # Shared home configurations
@@ -36,16 +34,28 @@
     ../../user/apps/ai/llm.nix
   ];
 
-
-  services.vicinae = {
-    enable = true; # default: false
+  systemd.user.services.vicinae = {
+    Unit = {
+      Description = "Vicinae launcher daemon";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs-unstable.vicinae}/bin/vicinae server";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
   };
+
+  # Enable automatic start/restart of systemd user services
+  systemd.user.startServices = "sd-switch";
 
   home.stateVersion = "25.05"; # Please read the comment before changing.
 
   home.packages = with pkgs; [
     # Core
     git
+    pkgs-unstable.vicinae
 
     # Various dev packages
     texinfo

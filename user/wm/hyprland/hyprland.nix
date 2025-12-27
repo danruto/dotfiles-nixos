@@ -1,4 +1,4 @@
-{ lib, pkgs, vicinae, ... }:
+{ lib, pkgs, pkgs-unstable, ... }:
 let
   statusbar = pkgs.writeShellScriptBin "statusbar" (builtins.readFile ./statusbar.sh);
   switch = pkgs.writeShellScriptBin "switch" (builtins.readFile ./switch.sh);
@@ -9,6 +9,8 @@ in
   imports = [
     ../waybar/waybar.nix
   ];
+
+  home.packages = [ pkgs-unstable.vicinae ];
 
   wayland.windowManager.hyprland = {
     enable = true;
