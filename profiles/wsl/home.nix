@@ -28,7 +28,8 @@
     # ../../user/apps/terminal/lazyvim.nix
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/terminal/myvim.nix
-    ../../user/apps/terminal/helix.nix
+    # ../../user/apps/terminal/helix.nix
+    ../../user/apps/terminal/helix-fork.nix
   ];
 
   home.stateVersion = "24.05"; # Please read the comment before changing.

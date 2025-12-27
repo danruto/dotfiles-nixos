@@ -381,6 +381,14 @@ return {
 		},
 	},
 	{
+		"olexsmir/gopher.nvim",
+		ft = "go",
+		build = function()
+			vim.cmd.GoInstallDeps()
+		end,
+		opts = {},
+	},
+	{
 		"saghen/blink.cmp",
 		-- name = "blink-cmp",
 		lazy = false, -- lazy loading handled internally

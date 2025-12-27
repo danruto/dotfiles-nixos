@@ -42,12 +42,12 @@
 
         danger-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "danger";
-          version = "2025-10-18";
+          version = "2025-12-27";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
             repo = "danger";
-            rev = "e5582e086b263320730f05d72aa713544c7b1aee";
-            hash = "sha256-s7ExeSRZI4w84QB0PxLklo6DptXIPHYebovHD4YUQlI=";
+            rev = "7811b863c7012b3937793973200130f8964415f3";
+            hash = "sha256-SnQfJzp00L+VuWr2K0+nMT0/u8HBOgyVnKk22wBrjHs=";
           };
         };
 
@@ -75,12 +75,12 @@
 
         monet-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "monet.nvim";
-          version = "2025-08-11";
+          version = "2025-12-27";
           src = pkgs.fetchFromGitHub {
             owner = "fynnfluegge";
             repo = "monet.nvim";
-            rev = "f0db469c38ddcb9c12a44662a00d65e9894a5a34";
-            hash = "sha256-3Km/3QGhUGSi6Cg2lEvTOUTZwvuSt0WAvsVhXtMysho=";
+            rev = "8fba02c535a408d5e5255251665325a69fa12a8e";
+            hash = "sha256-fUnwv0mppD+sqlWMgbR/f/75Bau7psoSpiUVCQ/DxH4=";
           };
         };
 
@@ -106,12 +106,23 @@
 
         makurai-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "makurai-nvim";
-          version = "2025-09-25";
+          version = "2025-12-27";
           src = pkgs.fetchFromGitHub {
             owner = "Skardyy";
             repo = "makurai-nvim";
-            rev = "a12c94cd9a90186189ba4434021a2deb27cfea39";
-            hash = "sha256-gNxnYpsT8Z/uruCPOzJ/RrGgjxIQYSrCFqZ2DH7KDZw=";
+            rev = "f421ded3c242f1d89249577856f18546412a4e1b";
+            hash = "sha256-y6LKtL/HaVGc2tjZIrPwV4D7nyHmqs/gDaRVPl1UAoc=";
+          };
+        };
+
+        gopher-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "gopher.nvim";
+          version = "2025-12-27";
+          src = pkgs.fetchFromGitHub {
+            owner = "olexsmir";
+            repo = "gopher.nvim";
+            rev = "6a3924cee5a9f36d316f8e4a90c3020438d3513f";
+            hash = "sha256-iXTmgdADtZFQVm+IN+JoPActGuO8r7VTeHKJdkEgmVo=";
           };
         };
 
@@ -216,6 +227,7 @@
           nvim-nio
           # neotest
           roslyn-nvim
+          gopher-nvim
 
           # LLM
           # neocodeium
@@ -324,20 +336,22 @@
         paths = (pkgs-unstable.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
           bash
           c
+          c_sharp
           cpp
           css
           dockerfile
           fish
           gitignore
+          gleam
           go
           graphql
-          gleam
           html
           http
+          hurl
           javascript
           json
-          jsonc
           json5
+          jsonc
           just
           lua
           markdown

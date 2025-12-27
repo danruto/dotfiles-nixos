@@ -4,12 +4,6 @@
 -- Map the leader
 vim.g.mapleader = " "
 
--- VSCode style saving
-vim.keymap.set("n", "<C-s>", "<CMD>w!<CR>")
-vim.keymap.set({ "n", "i", "v" }, "<C-s>", "<ESC><CMD>w!<CR>")
-vim.keymap.set({ "n", "i", "v" }, "<C-q>", "<ESC><CMD>q!<CR>")
-vim.keymap.set("i", "<C-e>", "<C-o>A")
-
 -- move vertically by visual line on wrapped lines
 vim.keymap.set("n", "j", "gj")
 vim.keymap.set("n", "k", "gk")

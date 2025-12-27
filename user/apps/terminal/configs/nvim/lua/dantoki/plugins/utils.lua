@@ -267,15 +267,22 @@ return {
 ]],
 				},
 			},
+			debug = { enabled = false },
 			dim = { enabled = true },
 			explorer = { enabled = true, jump = { close = true } },
+			gh = { enabled = true },
+			git = { enabled = true },
 			gitbrowse = { enabled = false },
+			image = { enabled = true },
 			indent = { enabled = true },
 			input = { enabled = true },
+			keymap = { enabled = false },
 			layout = { enabled = true },
 			lazygit = { enabled = false },
 			notifier = { enabled = true },
+			notify = { enabled = true },
 			picker = { enabled = true, exclude = { "vendor/*" } },
+			profiler = { enabled = false },
 			quickfile = { enabled = true },
 			scope = { enabled = true },
 			scratch = { enabled = true },
@@ -283,6 +290,7 @@ return {
 			statuscolumn = { enabled = true },
 			terminal = { enabled = true },
 			toggle = { enabled = false },
+			util = { enabled = false },
 			win = { enabled = false },
 			words = { enabled = true },
 			zen = { enabled = true },
@@ -392,9 +400,16 @@ return {
 			{
 				"<Space>d",
 				function()
-					Snacks.picker.diagnostics()
+					Snacks.picker.diagnostics_buffer()
 				end,
 				desc = "Diagnostics",
+			},
+			{
+				"<Space>D",
+				function()
+					Snacks.picker.diagnostics()
+				end,
+				desc = "Workspace Diagnostics",
 			},
 			{
 				"]]",
