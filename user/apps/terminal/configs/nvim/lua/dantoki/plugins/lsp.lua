@@ -173,31 +173,6 @@ return {
 		dependencies = {
 			"neovim/nvim-lspconfig",
 		},
-		-- init = function()
-		-- 	vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ 0 }), { 0 })
-		--
-		-- 	vim.lsp.config("taplo", {
-		-- 		keys = {
-		-- 			{
-		-- 				"K",
-		-- 				function()
-		-- 					if vim.fn.expand("%:t") == "Cargo.toml" and require("crates").popup_available() then
-		-- 						require("crates").show_popup()
-		-- 					else
-		-- 						vim.lsp.buf.hover()
-		-- 					end
-		-- 				end,
-		-- 				desc = "Show Crate Documentation",
-		-- 			},
-		-- 		},
-		-- 	})
-		--
-		-- 	vim.lsp.config("gopls", {
-		-- 		settings = {
-		-- 			gofumpt = true,
-		-- 		},
-		-- 	})
-		-- end,
 		opts = {
 			use_vim_lsp_config = true,
 			excluded_servers = {
@@ -258,57 +233,27 @@ return {
 				desc = "Format Injected Langs",
 			},
 		},
-		opts = {
-			formatters_by_ft = {
-				lua = { "stylua" },
-				json = { "fixjson" },
-				python = { "isort", "black" },
-				nix = { "nixpkgs_fmt" },
-				-- typescript = { "eslint_d" },
-				-- typescriptreact = { "eslint_d" },
-				-- typescript = { "dprint" },
-				-- typescriptreact = { "dprint" },
-				javascript = { "biome-check", "prettierd", "prettier", "eslint_d", stop_after_first = true },
-				typescript = { "biome-check", "prettierd", "prettier", "eslint_d", stop_after_first = true },
-				javascriptreact = {
-					"biome-check",
-					"prettierd",
-					"prettier",
-					"eslint_d",
-					stop_after_first = true,
+		opts = function()
+			local js_formatters = { "biome-check", "prettierd", "prettier", "eslint_d", stop_after_first = true }
+			return {
+				formatters_by_ft = {
+					lua = { "stylua" },
+					json = { "fixjson" },
+					python = { "isort", "black" },
+					nix = { "nixpkgs_fmt" },
+					javascript = js_formatters,
+					typescript = js_formatters,
+					javascriptreact = js_formatters,
+					typescriptreact = js_formatters,
 				},
-				typescriptreact = {
-					"biome-check",
-					"prettierd",
-					"prettier",
-					"eslint_d",
-					stop_after_first = true,
+				-- Set up format-on-save
+				format_on_save = { timeout_ms = 500, lsp_fallback = true },
+				formatters = {
+					stylua = {},
 				},
-			},
-			-- Set up format-on-save
-			format_on_save = { timeout_ms = 500, lsp_fallback = true },
-			formatters = {
-				stylua = {},
-				-- prettier = {
-				-- 	require_cwd = true,
-				-- 	cwd = require("conform.util").root_file({
-				-- 		".prettierrc.yaml",
-				-- 	}),
-				-- },
-				-- eslint_d = {
-				-- 	require_cwd = true,
-				-- 	cwd = require("conform.util").root_file({
-				-- 		"eslint.config.js",
-				-- 		"eslint.config.cjs",
-				-- 	}),
-				-- },
-			},
-		},
+			}
+		end,
 	},
-	-- {
-	-- 	"jose-elias-alvarez/typescript.nvim",
-	-- 	dependencies = "jose-elias-alvarez/null-ls.nvim",
-	-- },
 	{
 		"pmizio/typescript-tools.nvim",
 		-- event = "LspAttach",
@@ -409,7 +354,13 @@ return {
 			{ "<Leader>a", vim.lsp.buf.code_action, desc = "Code actions" },
 			{ "<Leader>rn", vim.lsp.buf.rename, desc = "Rename" },
 			{ "K", vim.lsp.buf.hover, desc = "Hover" },
-			{ "<Leader>F", vim.lsp.buf.format, desc = "Format document" },
+			{
+				"<Leader>F",
+				function()
+					require("conform").format({ async = true, lsp_fallback = true })
+				end,
+				desc = "Format document",
+			},
 			{ "[d", vim.diagnostic.goto_prev, desc = "Go to prev diagnostic" },
 			{ "]d", vim.diagnostic.goto_next, desc = "Go to next diagnostic" },
 			{ "<Leader>?", vim.diagnostic.open_float, desc = "Line Diagnostics" },

@@ -3,8 +3,8 @@
 {
   imports = [
     ./quickshell-module.nix
-    dankMaterialShell.homeModules.dankMaterialShell.default
-    dankMaterialShell.homeModules.dankMaterialShell.niri
+    dankMaterialShell.homeModules.dank-material-shell
+    dankMaterialShell.homeModules.niri
   ];
 
   programs.dankMaterialShell = {
@@ -24,13 +24,9 @@
     };
 
     enableSystemMonitoring = true; # System monitoring widgets (dgop)
-    enableClipboard = false; # Clipboard history manager
     enableVPN = true; # VPN management widget
-    enableBrightnessControl = true; # Backlight/brightness controls
-    enableColorPicker = true; # Color picker tool
     enableDynamicTheming = true; # Wallpaper-based theming (matugen)
     enableAudioWavelength = true; # Audio visualizer (cava)
     enableCalendarEvents = true; # Calendar integration (khal)
-    enableSystemSound = true; # System sound effects
   };
 }
