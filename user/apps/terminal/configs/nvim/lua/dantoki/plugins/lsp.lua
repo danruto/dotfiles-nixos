@@ -377,6 +377,8 @@ return {
 
 			keymap = {
 				preset = "enter",
+				['<Tab>'] = { 'select_and_accept', 'fallback' },
+				['<S-Tab>'] = { 'select_prev', 'fallback' },
 				-- ['<CR>'] = { 'select_and_accept' },
 			},
 
