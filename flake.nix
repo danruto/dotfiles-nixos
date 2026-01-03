@@ -22,6 +22,7 @@
     , quickshell
     , mango
     , dankMaterialShell
+    , helium
     , ...
     }@inputs:
     let
@@ -181,6 +182,7 @@
         inherit (inputs) noctalia;
         inherit (inputs) quickshell;
         inherit (inputs) dankMaterialShell;
+        inherit (inputs) helium;
       };
 
     in
@@ -237,11 +239,11 @@
 
   inputs = {
     # Global shared inputs
-    nixpkgs.url = "nixpkgs/nixos-25.05";
+    nixpkgs.url = "nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -308,20 +310,15 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    dgop = {
-      url = "github:AvengeMedia/dgop";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     dankMaterialShell = {
       url = "github:AvengeMedia/DankMaterialShell";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.dgop.follows = "dgop";
     };
+    helium.url = "github:vikingnope/helium-browser-nix-flake";
 
     # Mac inputs
     darwin = {
-      url = "github:LnL7/nix-darwin/nix-darwin-25.05";
+      url = "github:LnL7/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

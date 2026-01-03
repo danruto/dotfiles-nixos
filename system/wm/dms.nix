@@ -2,13 +2,14 @@
 {
   imports = [
     # ../../user/wm/niri/quickshell-module.nix
-    dankMaterialShell.nixosModules.dankMaterialShell
+    dankMaterialShell.nixosModules.dank-material-shell
   ];
 
   systemd.user.services.niri-flake-polkit.enable = false;
 
-  programs.dankMaterialShell = {
+  programs.dank-material-shell = {
     enable = true;
     quickshell.package = quickshell.packages.${pkgs.system}.default;
+    enableSystemMonitoring = false; # Disabled: dgop not available
   };
 }

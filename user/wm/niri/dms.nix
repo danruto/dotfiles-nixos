@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ./quickshell-module.nix
+    # ./quickshell-module.nix
     dankMaterialShell.homeModules.dank-material-shell
     dankMaterialShell.homeModules.niri
   ];
@@ -23,7 +23,7 @@
       # Session state defaults
     };
 
-    enableSystemMonitoring = true; # System monitoring widgets (dgop)
+    enableSystemMonitoring = false; # System monitoring widgets (dgop) - disabled: dgop not available
     enableVPN = true; # VPN management widget
     enableDynamicTheming = true; # Wallpaper-based theming (matugen)
     enableAudioWavelength = true; # Audio visualizer (cava)
