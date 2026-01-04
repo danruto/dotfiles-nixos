@@ -2,6 +2,6 @@
 
 {
   environment.systemPackages = [
-    helium.packages.${system}.default
+    helium.packages.x86_64-linux.default
   ];
 }

@@ -33,6 +33,7 @@ with lib;
       ../../system/apps/docker.nix
 
       ../../user/apps/fileman/thunar.nix
+      ../../user/apps/browser/helium.nix
     ];
 
 
