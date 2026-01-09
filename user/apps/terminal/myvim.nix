@@ -351,7 +351,7 @@
           javascript
           json
           json5
-          jsonc
+          # jsonc
           just
           lua
           markdown

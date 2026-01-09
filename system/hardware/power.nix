@@ -40,7 +40,7 @@
   services.upower.criticalPowerAction = "Hibernate";
   services.thermald.enable = true;
   services.logind = {
-    lidSwitch = "suspend-then-hibernate";
+    settings.Login.HandleLidSwitch = "suspend-then-hibernate";
     # lidSwitch = "suspend";
     # lidSwitchExternalPower = "suspend";
   };

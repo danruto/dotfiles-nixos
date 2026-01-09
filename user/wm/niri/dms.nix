@@ -7,20 +7,16 @@
     dankMaterialShell.homeModules.niri
   ];
 
-  programs.dankMaterialShell = {
+  programs.dank-material-shell = {
     enable = true;
     niri = {
       enableSpawn = true;
     };
     quickshell.package = quickshell.packages.${pkgs.system}.default;
-    default.settings = {
+    settings = {
       theme = "dark";
       dynamicTheming = true;
       # Add any other settings here
-    };
-
-    default.session = {
-      # Session state defaults
     };
 
     enableSystemMonitoring = false; # System monitoring widgets (dgop) - disabled: dgop not available
