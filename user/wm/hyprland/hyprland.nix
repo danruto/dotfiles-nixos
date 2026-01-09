@@ -10,8 +10,6 @@ in
     ../waybar/waybar.nix
   ];
 
-  home.packages = [ pkgs-unstable.vicinae ];
-
   wayland.windowManager.hyprland = {
     enable = true;
     plugins = [
@@ -28,11 +26,13 @@ in
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
         "${lib.getExe xdg}"
         "${lib.getExe pkgs.dunst}"
-        "${lib.getExe statusbar}"
+        # "${lib.getExe statusbar}" # waybar is handled by systemd service
         # "${lib.getExe pkgs.waybar}"
       ];
 
-      env = "XCURSOR_SIZE,24";
+      env = [
+        "XCURSOR_SIZE,24"
+      ];
 
       input = {
         kb_layout = "us";
@@ -61,12 +61,16 @@ in
       decoration = {
         rounding = 10;
         blur = {
+          enabled = true;
           size = 3;
+          passes = 1;
         };
-        drop_shadow = true;
-        shadow_range = 4;
-        shadow_render_power = 3;
-        "col.shadow" = "rgba(1a1a1aee)";
+        shadow = {
+          enabled = true;
+          range = 4;
+          render_power = 3;
+          color = "rgba(1a1a1aee)";
+        };
       };
 
       animations = {
@@ -88,11 +92,9 @@ in
       };
 
       master = {
-        new_status = "master";
       };
 
       gestures = {
-        workspace_swipe = false;
       };
 
 
