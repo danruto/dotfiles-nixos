@@ -22,7 +22,7 @@ let
     # aerc
     # podman-tui
     # dive
-    openapi-tui
+    # openapi-tui
   ] ++ lib.optionals pkgs-unstable.stdenv.isLinux [
     ani-cli
     yt-dlp

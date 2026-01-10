@@ -213,9 +213,7 @@
           nvim-treesitter
           nvim-treesitter-context
           nvim-treesitter-textobjects
-          nvim-treesitter-textsubjects
           nvim-treesitter-endwise
-          nvim-treesitter-refactor
           nvim-ts-context-commentstring
           nvim-lspconfig
           blink-cmp
