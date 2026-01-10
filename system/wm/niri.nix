@@ -4,6 +4,7 @@
   imports = [
     # ./wayland.nix
 
+    niri.nixosModules.binary-cache
     niri.nixosModules.niri
   ];
 

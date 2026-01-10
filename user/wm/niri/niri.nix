@@ -1,7 +1,5 @@
 { niri, pkgs, pkgs-unstable, lib, ... }:
 let
-  inherit (niri.lib.kdl) node plain leaf flag;
-
   stable-packages = with pkgs; [
     wlr-randr
     # wlr-screencopy

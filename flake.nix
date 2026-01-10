@@ -290,7 +290,8 @@
       url = "github:hyprwm/hyprland-plugins";
       flake = false;
     };
-    niri.url = "github:sodiboo/niri-flake";
+    # niri.url = "github:sodiboo/niri-flake";
+    niri.url = "github:sodiboo/niri-flake/very-refactor";
     mango.url = "github:DreamMaoMao/mango";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     fw-ectool = {

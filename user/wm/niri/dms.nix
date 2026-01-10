@@ -4,14 +4,14 @@
   imports = [
     # ./quickshell-module.nix
     dankMaterialShell.homeModules.dank-material-shell
-    dankMaterialShell.homeModules.niri
+    # dankMaterialShell.homeModules.niri  # Disabled: conflicts with niri-flake configuration
   ];
 
   programs.dank-material-shell = {
     enable = true;
-    niri = {
-      enableSpawn = true;
-    };
+    # niri = {
+    #   enableSpawn = true;
+    # };
     quickshell.package = quickshell.packages.${pkgs.system}.default;
     settings = {
       theme = "dark";
