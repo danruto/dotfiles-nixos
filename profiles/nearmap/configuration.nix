@@ -92,7 +92,7 @@
     NSGlobalDomain = {
       "com.apple.mouse.tapBehavior" = 1.0;
       "com.apple.trackpad.scaling" = 3.0;
-      _HIHideMenuBar = true;
+      _HIHideMenuBar = false;
       AppleICUForce24HourTime = false;
       AppleInterfaceStyle = "Dark";
       AppleInterfaceStyleSwitchesAutomatically = false;

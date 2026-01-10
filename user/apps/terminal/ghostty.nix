@@ -3,7 +3,7 @@
   # font-family = "Departure Mono"
   # font-family = "Iosevka Comfy"
   home.file.".config/ghostty/config".text = ''
-    font-family = "Aporetic"
+    font-family = "Aporetic Sans Mono"
     font-size = 14
 
     macos-option-as-alt = left
