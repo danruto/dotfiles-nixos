@@ -141,6 +141,43 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
+			vim.diagnostic.config({
+				virtual_text = {
+					enabled = true,
+					prefix = function(diagnostic)
+						if diagnostic.severity == vim.diagnostic.severity.ERROR then
+							return "🭰× "
+						elseif diagnostic.severity == vim.diagnostic.severity.WARN then
+							return "🭰▲ "
+						else
+							return "🭰• "
+						end
+					end,
+					suffix = "🭵",
+				},
+				underline = true,
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = " ×",
+						[vim.diagnostic.severity.WARN] = " ▲",
+						[vim.diagnostic.severity.HINT] = " •",
+						[vim.diagnostic.severity.INFO] = " •",
+					},
+				},
+			})
+
+			vim.filetype.add({
+				extension = {
+					env = "env",
+				},
+				filename = {
+					[".env"] = "env",
+				},
+				pattern = {
+					["%.env%.[%w_.-]+"] = "env",
+				},
+			})
+
 			-- Not required with lazy-lsp preferred servers
 			local servers = {
 				-- "basedpyright",
@@ -155,6 +192,7 @@ return {
 				"graphql",
 				"html",
 				"jsonls",
+				"lua_ls",
 				-- "nil_ls",
 				-- "ruff",
 				-- "rust_analyzer",
@@ -165,6 +203,17 @@ return {
 				-- "zls",
 			}
 			vim.lsp.enable(servers)
+
+			vim.lsp.config.lua_ls = {
+				settings = {
+					Lua = {
+						workspace = {
+							ignoreSubmodules = true,
+							library = { vim.env.VIMRUNTIME },
+						},
+					},
+				},
+			}
 		end,
 	},
 	{
@@ -377,8 +426,8 @@ return {
 
 			keymap = {
 				preset = "enter",
-				['<Tab>'] = { 'select_and_accept', 'fallback' },
-				['<S-Tab>'] = { 'select_prev', 'fallback' },
+				["<Tab>"] = { "select_and_accept", "fallback" },
+				["<S-Tab>"] = { "select_prev", "fallback" },
 				-- ['<CR>'] = { 'select_and_accept' },
 			},
 
