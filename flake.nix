@@ -27,9 +27,10 @@
     }@inputs:
     let
       # Load local config if it exists
-      localConfig = if builtins.pathExists ./config.local.nix
-                    then import ./config.local.nix
-                    else {};
+      localConfig =
+        if builtins.pathExists ./config.local.nix
+        then import ./config.local.nix
+        else { };
 
       # Default configuration
       defaultConfig = {
@@ -184,9 +185,7 @@
     {
       nixosConfigurations = {
         system = lib.nixosSystem {
-          # system = "x86_64-linux";
           inherit system;
-          # inherit pkgs;
           modules = [
             # load configuration.nix from selected PROFILE
             (./. + "/profiles" + ("/" + profile) + "/configuration.nix")
@@ -211,7 +210,6 @@
           # system = "x86_64-darwin";
           inherit system;
           inherit pkgs;
-          # pkgs = import nixpkgs {inherit system;};
 
           modules = [
             # load configuration.nix from selected PROFILE

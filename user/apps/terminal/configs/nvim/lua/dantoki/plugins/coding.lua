@@ -15,91 +15,21 @@ return {
 			"RRethy/nvim-treesitter-endwise",
 		},
 		build = ":TSUpdate",
-		event = { "VeryLazy" },
-		lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
+		lazy = false,
 		cmd = {
 			"TSInstall",
-			"TSBufEnable",
-			"TSBufDisable",
-			"TSEnable",
-			"TSDisable",
-			"TSModuleInfo",
 			"TSUpdate",
+			"TSContext",
 		},
 		main = "nvim-treesitter",
-		---@type TSConfig
-		opts = {
-			auto_install = false,
-			highlight = {
-				enable = true,
-				use_languagetree = true,
-				disable = function(lang, buf)
-					-- Skip help files
-					if lang == "help" then
-						return true
-					end
-
-					-- Skip large files
-					local max_filesize = 100 * 1024 -- 100 KB
-					local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-					if ok and stats and stats.size > max_filesize then
-						return true
-					end
+		config = function()
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = { "go", "rust", "ts", "tsx" },
+				callback = function()
+					-- vim.treesitter.start()
 				end,
-			},
-			-- Textobjects configuration
-			textobjects = {
-				select = {
-					enable = true,
-					lookahead = true,
-					keymaps = {
-						["af"] = "@function.outer",
-						["if"] = "@function.inner",
-						["ac"] = "@class.outer",
-						["ic"] = "@class.inner",
-						["aa"] = "@parameter.outer",
-						["ia"] = "@parameter.inner",
-					},
-				},
-				move = {
-					enable = true,
-					set_jumps = true,
-					goto_next_start = {
-						["]f"] = "@function.outer",
-						["]c"] = "@class.outer",
-						["]a"] = "@parameter.inner",
-					},
-					goto_next_end = {
-						["]F"] = "@function.outer",
-						["]C"] = "@class.outer",
-						["]A"] = "@parameter.inner",
-					},
-					goto_previous_start = {
-						["[f"] = "@function.outer",
-						["[c"] = "@class.outer",
-						["[a"] = "@parameter.inner",
-					},
-					goto_previous_end = {
-						["[F"] = "@function.outer",
-						["[C"] = "@class.outer",
-						["[A"] = "@parameter.inner",
-					},
-				},
-				swap = {
-					enable = true,
-					swap_next = {
-						["<leader>a"] = "@parameter.inner",
-					},
-					swap_previous = {
-						["<leader>A"] = "@parameter.inner",
-					},
-				},
-			},
-			-- Endwise configuration
-			endwise = {
-				enable = true,
-			},
-		},
+			})
+		end,
 	},
 	{
 		"folke/flash.nvim",

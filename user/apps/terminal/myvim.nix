@@ -241,6 +241,42 @@
           editorconfig-vim
           conform-nvim
 
+          # Treesitter grammers
+          nvim-treesitter-parsers.bash
+          nvim-treesitter-parsers.c
+          nvim-treesitter-parsers.c_sharp
+          nvim-treesitter-parsers.cpp
+          nvim-treesitter-parsers.css
+          nvim-treesitter-parsers.dockerfile
+          nvim-treesitter-parsers.fish
+          nvim-treesitter-parsers.gitignore
+          nvim-treesitter-parsers.gleam
+          nvim-treesitter-parsers.go
+          nvim-treesitter-parsers.graphql
+          nvim-treesitter-parsers.html
+          nvim-treesitter-parsers.http
+          nvim-treesitter-parsers.hurl
+          nvim-treesitter-parsers.javascript
+          nvim-treesitter-parsers.json
+          nvim-treesitter-parsers.json5
+          # jsonc
+          nvim-treesitter-parsers.just
+          nvim-treesitter-parsers.lua
+          nvim-treesitter-parsers.markdown
+          nvim-treesitter-parsers.nix
+          nvim-treesitter-parsers.python
+          nvim-treesitter-parsers.regex
+          nvim-treesitter-parsers.rust
+          nvim-treesitter-parsers.scss
+          nvim-treesitter-parsers.sql
+          nvim-treesitter-parsers.svelte
+          nvim-treesitter-parsers.toml
+          nvim-treesitter-parsers.tsx
+          nvim-treesitter-parsers.typescript
+          nvim-treesitter-parsers.vim
+          nvim-treesitter-parsers.yaml
+          nvim-treesitter-parsers.zig
+
           # Themes
           github-nvim-theme
           neovim-ayu
@@ -281,7 +317,7 @@
             fallback = true,
           },
           spec = {
-            { "nvim-treesitter/nvim-treesitter", opts = { ensure_installed = {} } },
+            { "nvim-treesitter/nvim-treesitter", opts = { ensure_installed = {}, install_dir = "${lazyPath}" } },
             { "williamboman/mason-lspconfig.nvim", enabled = false },
             { "williamboman/mason.nvim", enabled = false },
             { import = "dantoki/plugins" },
@@ -323,49 +359,49 @@
   };
 
   # https://github.com/nvim-treesitter/nvim-treesitter#i-get-query-error-invalid-node-type-at-position
-  xdg.configFile."nvim/parser".source =
-    let
-      parsers = pkgs.symlinkJoin {
-        name = "treesitter-parsers";
-        paths = (pkgs-unstable.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
-          bash
-          c
-          c_sharp
-          cpp
-          css
-          dockerfile
-          fish
-          gitignore
-          gleam
-          go
-          graphql
-          html
-          http
-          hurl
-          javascript
-          json
-          json5
-          # jsonc
-          just
-          lua
-          markdown
-          nix
-          python
-          regex
-          rust
-          scss
-          sql
-          svelte
-          toml
-          tsx
-          typescript
-          vim
-          yaml
-          zig
-        ])).dependencies;
-      };
-    in
-    "${parsers}/parser";
+  # xdg.configFile."nvim/parser".source =
+  #   let
+  #     parsers = pkgs.symlinkJoin {
+  #       name = "treesitter-parsers";
+  #       paths = (pkgs-unstable.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
+  #         bash
+  #         c
+  #         c_sharp
+  #         cpp
+  #         css
+  #         dockerfile
+  #         fish
+  #         gitignore
+  #         gleam
+  #         go
+  #         graphql
+  #         html
+  #         http
+  #         hurl
+  #         javascript
+  #         json
+  #         json5
+  #         # jsonc
+  #         just
+  #         lua
+  #         markdown
+  #         nix
+  #         python
+  #         regex
+  #         rust
+  #         scss
+  #         sql
+  #         svelte
+  #         toml
+  #         tsx
+  #         typescript
+  #         vim
+  #         yaml
+  #         zig
+  #       ])).dependencies;
+  #     };
+  #   in
+  #   "${parsers}/parser";
 
   xdg.configFile."nvim/after".source = ./configs/nvim/after;
   xdg.configFile."nvim/lua".source = ./configs/nvim/lua;

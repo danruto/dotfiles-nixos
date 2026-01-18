@@ -6,4 +6,4 @@ result
 .env
 
 # Local machine-specific configuration
-config.local.nix
+# config.local.nix
