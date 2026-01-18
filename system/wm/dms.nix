@@ -9,7 +9,7 @@
 
   programs.dank-material-shell = {
     enable = true;
-    quickshell.package = quickshell.packages.${pkgs.system}.default;
+    quickshell.package = quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default;
     enableSystemMonitoring = false; # Disabled: dgop not available
   };
 }

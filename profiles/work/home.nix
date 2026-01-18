@@ -3,8 +3,8 @@
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "danny";
-  home.homeDirectory = "/Users/" + "danny";
+  home.username = username;
+  home.homeDirectory = "/Users/" + username;
 
   programs.home-manager.enable = true;
 

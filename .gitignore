@@ -4,3 +4,6 @@ result
 .DS_Store
 .direnv
 .env
+
+# Local machine-specific configuration
+config.local.nix

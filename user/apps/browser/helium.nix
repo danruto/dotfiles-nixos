@@ -1,7 +1,7 @@
-{ helium, ... }:
+{ helium, pkgs, ... }:
 
 {
   environment.systemPackages = [
-    helium.packages.x86_64-linux.default
+    helium.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }

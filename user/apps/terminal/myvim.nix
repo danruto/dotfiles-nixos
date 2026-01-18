@@ -6,11 +6,7 @@
     # package = pkgs.neovim-unwrapped;
     # package = pkgs.unstable.neovim-unwrapped.override ({ tree-sitter = pkgs.tree-sitter; });
     # package = pkgs.unstable.neovim-unwrapped;
-    package = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-      meta = old.meta or { } // {
-        maintainers = [ ];
-      };
-    });
+    package = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
     extraPackages = with pkgs; [
       # Telescope
@@ -161,7 +157,7 @@
         #   doCheck = false;
         # };
 
-        plugins = with pkgs-unstable.vimPlugins; [
+        plugins = with pkgs.vimPlugins; [
           # Basic Deps
           plenary-nvim
 
@@ -210,11 +206,11 @@
           neogit
 
           # LSP
-          nvim-treesitter
-          nvim-treesitter-context
-          nvim-treesitter-textobjects
-          nvim-treesitter-endwise
-          nvim-ts-context-commentstring
+          (pkgs-unstable.vimPlugins.nvim-treesitter)
+          (pkgs-unstable.vimPlugins.nvim-treesitter-context)
+          (pkgs-unstable.vimPlugins.nvim-treesitter-textobjects)
+          (pkgs-unstable.vimPlugins.nvim-treesitter-endwise)
+          (pkgs-unstable.vimPlugins.nvim-ts-context-commentstring)
           nvim-lspconfig
           blink-cmp
           lazy-lsp-nvim

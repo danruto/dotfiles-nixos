@@ -26,37 +26,35 @@
     , ...
     }@inputs:
     let
-      # ---- SYSTEM SETTINGS ---- #
-      system = "x86_64-linux";
-      # system = "aarch64-linux";
-      # system = "x86_64-darwin";
-      # system = "aarch64-darwin";
-      # profile = "wsl";
-      # profile = "vm";
-      # profile = "vm-hypr";
-      # profile = "vm-niri";
-      # profile = "vm-i3";
-      # profile = "vm-sway";
-      # profile = "work";
-      # profile = "work2";
-      profile = "framework";
-      # profile = "orb";
-      # profile = "nearmap";
-      hostname = "danruto"; # hostname
-      timezone = "Australia/Sydney"; # select timezone
-      locale = "en_US.UTF-8"; # select locale
+      # Load local config if it exists
+      localConfig = if builtins.pathExists ./config.local.nix
+                    then import ./config.local.nix
+                    else {};
 
-      # ----- USER SETTINGS ----- #
-      username = "danruto"; # username
-      macusername = "danny.sok"; # darwin username
-      email = "danny@pixelbru.sh"; # email (used for certain configurations)
-      theme = "ayu-dark"; # selcted theme from my themes directory (./themes/)
-      wm = "hyprland"; # Selected window manager or desktop environment; must select one in both ./user/wm/ and ./system/wm/
-      wmType = "wayland"; # x11 or wayland
-      browser = "brave"; # Default browser; must select one from ./user/apps/browser/
-      editor = "hx"; # Default editor;
-      term = "alacritty"; # Default terminal command;
-      fontPkg = pkgs.d2coding; # Font package
+      # Default configuration
+      defaultConfig = {
+        # ---- SYSTEM SETTINGS ---- #
+        system = "x86_64-linux";
+        profile = "framework";
+        hostname = "danruto";
+        timezone = "Australia/Sydney";
+        locale = "en_US.UTF-8";
+
+        # ----- USER SETTINGS ----- #
+        username = "danruto";
+        email = "danny@pixelbru.sh";
+        theme = "ayu-dark";
+        wm = "hyprland";
+        wmType = "wayland";
+        editor = "hx";
+        fontPkg = pkgs.d2coding;
+      };
+
+      # Merge local config with defaults (local overrides defaults)
+      config = defaultConfig // localConfig;
+
+      # Extract variables for backward compatibility
+      inherit (config) system profile hostname timezone locale username email theme wm wmType editor fontPkg;
 
       # create patched nixpkgs
       nixpkgs-patched = (import nixpkgs { inherit system; }).applyPatches {
@@ -144,7 +142,6 @@
 
       commonSpecialArgs = {
         inherit username;
-        inherit macusername;
         # inherit name;
         inherit hostname;
         inherit profile;
@@ -153,9 +150,7 @@
         inherit fontPkg;
         inherit wm;
         inherit wmType;
-        inherit browser;
         inherit editor;
-        inherit term;
         inherit helix;
         inherit helix-fork;
         inherit timezone;
@@ -225,7 +220,7 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.${macusername} = import (./. + "/profiles" + ("/" + profile) + "/home.nix");
+              home-manager.users.${username} = import (./. + "/profiles" + ("/" + profile) + "/home.nix");
 
               # Optionally, use home-manager.extraSpecialArgs to pass
               # arguments to home.nix

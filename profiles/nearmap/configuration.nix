@@ -1,4 +1,4 @@
-{ pkgs, macusername, ... }:
+{ pkgs, username, ... }:
 {
   imports = [ ];
 
@@ -85,7 +85,7 @@
 
     screencapture = {
       disable-shadow = true;
-      location = "/Users/${macusername}/Pictures/Screenshots";
+      location = "/Users/${username}/Pictures/Screenshots";
       type = "png";
     };
 
@@ -136,14 +136,14 @@
     remapCapsLockToEscape = true;
   };
 
-  users.knownUsers = [ "${macusername}" ];
-  users.knownGroups = [ "${macusername}" ];
-  users.users.${macusername} = {
-    home = /Users/${macusername};
+  users.knownUsers = [ "${username}" ];
+  users.knownGroups = [ "${username}" ];
+  users.users.${username} = {
+    home = /Users/${username};
     shell = pkgs.fish;
     uid = 502;
   };
-  system.primaryUser = "${macusername}";
+  system.primaryUser = "${username}";
 
   programs.fish = {
     enable = true;
