@@ -3,7 +3,7 @@
 let
   stable-packages = with pkgs; [
     git
-    gitui
+    # gitui
     gh
   ];
 
@@ -11,6 +11,7 @@ let
     jujutsu
     # lazyjj
     gh-dash
+    gitui
   ];
 
   name = "Danny";
@@ -85,6 +86,7 @@ in
 
 
   programs.gitui.enable = true;
+  programs.gitui.package = pkgs-unstable.gitui;
   programs.gitui.keyConfig = ''
     (
        open_help: Some(( code: F(1), modifiers: "")),
