@@ -5,10 +5,37 @@ NIXPORT ?= 22
 
 # Same as inside `flake.nix`
 NIXUSER ?= danruto
-PROFILE=$(cat flake.nix | rg '  profile = "([a-z0-9\-]+)"' --trim -or '$1$2')
+
+# Auto-detect profile from config.local.nix (if exists) or flake.nix
+PROFILE := $(shell \
+	if [ -f config.local.nix ]; then \
+		grep 'profile = ' config.local.nix | sed -E 's/.*profile = "([^"]+)".*/\1/'; \
+	else \
+		grep 'profile = ' flake.nix | head -1 | sed -E 's/.*profile = "([^"]+)".*/\1/'; \
+	fi)
 
 SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 UNAME := $(shell uname)
+ARCH := $(shell uname -m)
+
+help:
+	@echo "Detected configuration:"
+	@echo "  Profile: $(PROFILE)"
+	@echo "  OS: $(UNAME)"
+	@echo "  Architecture: $(ARCH)"
+ifeq ($(UNAME), Darwin)
+ifeq ($(ARCH), arm64)
+	@echo "  Will use: darwinConfigurations.$(PROFILE)"
+else
+	@echo "  Will use: darwinConfigurations.$(PROFILE)-x86"
+endif
+else
+	@echo "  Will use: nixosConfigurations.system"
+endif
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make switch - Build and switch to the detected configuration"
+	@echo "  make help   - Show this help message"
 
 vm/help:
 	echo "sudo -i; passwd. Set to root."
@@ -101,11 +128,22 @@ vm/ssh:
 
 switch:
 ifeq ($(UNAME), Darwin)
-	nix build ".#darwinConfigurations.work.system" --show-trace
-	./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#work"
+	@echo "Building for profile: $(PROFILE) on $(UNAME) $(ARCH)"
+ifeq ($(ARCH), arm64)
+	@echo "Using ARM64 (Apple Silicon) configuration"
+	nix build ".#darwinConfigurations.$(PROFILE).system" --show-trace
+	./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#$(PROFILE)"
 else
+	@echo "Using x86_64 (Intel) configuration"
+	nix build ".#darwinConfigurations.$(PROFILE)-x86.system" --show-trace
+	./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#$(PROFILE)-x86"
+endif
+else
+	@echo "Building for profile: $(PROFILE) on NixOS"
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake ".#system" --show-trace
 endif
 
 norb:
 	sudo nixos-rebuild switch --flake .#system
+
+.PHONY: help switch norb vm/help vm/bootstrap/0 vm/bootstrap/1 vm/bootstrap/2 vm/bootstrap/u vm/secrets vm/copy vm/git_update vm/switch vm/ssh

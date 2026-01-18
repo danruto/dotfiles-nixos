@@ -35,7 +35,6 @@
       # Default configuration
       defaultConfig = {
         # ---- SYSTEM SETTINGS ---- #
-        system = "x86_64-linux";
         profile = "framework";
         hostname = "danruto";
         timezone = "Australia/Sydney";
@@ -48,100 +47,108 @@
         wm = "hyprland";
         wmType = "wayland";
         editor = "hx";
-        fontPkg = pkgs.d2coding;
+        # fontPkg will be set per-system below
       };
 
       # Merge local config with defaults (local overrides defaults)
       config = defaultConfig // localConfig;
 
       # Extract variables for backward compatibility
-      inherit (config) system profile hostname timezone locale username email theme wm wmType editor fontPkg;
+      inherit (config) profile hostname timezone locale username email theme wm wmType editor;
 
-      # create patched nixpkgs
-      nixpkgs-patched = (import nixpkgs { inherit system; }).applyPatches {
-        name = "nixpkgs-patched";
-        src = nixpkgs;
-        patches = [ ];
-      };
+      # Helper function to create system-specific configuration
+      mkSystemConfig = system:
+        let
+          # create patched nixpkgs
+          nixpkgs-patched = (import nixpkgs { inherit system; }).applyPatches {
+            name = "nixpkgs-patched";
+            src = nixpkgs;
+            patches = [ ];
+          };
 
-      nixpkgs-unstable-patched = (import nixpkgs { inherit system; }).applyPatches {
-        name = "nixpkgs-unstable-patched";
-        src = nixpkgs-unstable;
-        patches = [ ];
-      };
+          nixpkgs-unstable-patched = (import nixpkgs { inherit system; }).applyPatches {
+            name = "nixpkgs-unstable-patched";
+            src = nixpkgs-unstable;
+            patches = [ ];
+          };
 
-      # configure pkgs
-      pkgs = import nixpkgs-patched {
-        inherit system;
-        # inherit nixpkgs-unstable;
+          # configure pkgs
+          pkgs = import nixpkgs-patched {
+            inherit system;
 
-        config = {
-          allowUnfree = true;
-          allowUnfreePredicate = (_: true);
-          allowBroken = true;
-        };
-        overlays = [
-          rust-overlay.overlays.default
-          nur.overlays.default
-          quickshell.overlays.default
-          # neovim-nightly-overlay.overlays.default
-          (final: prev: {
-            pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-              (python-final: python-prev: {
-                # Workaround for bug #437058
-                i3ipc = python-prev.i3ipc.overridePythonAttrs (oldAttrs: {
-                  doCheck = false;
-                  checkPhase = ''
-                    echo "Skipping pytest in Nix build"
-                  '';
-                  installCheckPhase = ''
-                    echo "Skipping install checks in Nix build"
-                  '';
-                });
+            config = {
+              allowUnfree = true;
+              allowUnfreePredicate = (_: true);
+              allowBroken = true;
+            };
+            overlays = [
+              rust-overlay.overlays.default
+              nur.overlays.default
+              quickshell.overlays.default
+              # neovim-nightly-overlay.overlays.default
+              (final: prev: {
+                pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+                  (python-final: python-prev: {
+                    # Workaround for bug #437058
+                    i3ipc = python-prev.i3ipc.overridePythonAttrs (oldAttrs: {
+                      doCheck = false;
+                      checkPhase = ''
+                        echo "Skipping pytest in Nix build"
+                      '';
+                      installCheckPhase = ''
+                        echo "Skipping install checks in Nix build"
+                      '';
+                    });
+                  })
+                ];
+              })
+
+            ];
+          };
+
+          pkgs-unstable = import nixpkgs-unstable-patched {
+            inherit system;
+
+            config = {
+              allowUnfree = true;
+              allowUnfreePredicate = (_: true);
+              allowBroken = true;
+            };
+            overlays = [
+              rust-overlay.overlays.default
+              nur.overlays.default
+              quickshell.overlays.default
+              noctalia.overlays.default
+              (final: prev: {
+                zjstatus = zjstatus.packages.${prev.stdenv.hostPlatform.system}.default;
+                pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+                  (python-final: python-prev: {
+                    # Workaround for bug #437058
+                    i3ipc = python-prev.i3ipc.overridePythonAttrs (oldAttrs: {
+                      doCheck = false;
+                      checkPhase = ''
+                        echo "Skipping pytest in Nix build"
+                      '';
+                      installCheckPhase = ''
+                        echo "Skipping install checks in Nix build"
+                      '';
+                    });
+                  })
+                ];
               })
             ];
-          })
+          };
 
-        ];
-      };
-
-      pkgs-unstable = import nixpkgs-unstable-patched {
-        inherit system;
-
-        config = {
-          allowUnfree = true;
-          allowUnfreePredicate = (_: true);
-          allowBroken = true;
+          fontPkg = pkgs.d2coding;
+        in
+        {
+          inherit pkgs pkgs-unstable fontPkg;
         };
-        overlays = [
-          rust-overlay.overlays.default
-          nur.overlays.default
-          quickshell.overlays.default
-          noctalia.overlays.default
-          (final: prev: {
-            zjstatus = zjstatus.packages.${prev.stdenv.hostPlatform.system}.default;
-            pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-              (python-final: python-prev: {
-                # Workaround for bug #437058
-                i3ipc = python-prev.i3ipc.overridePythonAttrs (oldAttrs: {
-                  doCheck = false;
-                  checkPhase = ''
-                    echo "Skipping pytest in Nix build"
-                  '';
-                  installCheckPhase = ''
-                    echo "Skipping install checks in Nix build"
-                  '';
-                });
-              })
-            ];
-          })
-        ];
-      };
 
       # configure lib
       lib = nixpkgs.lib;
 
-      commonSpecialArgs = {
+      mkCommonSpecialArgs = { pkgs-unstable, fontPkg }: {
         inherit username;
         # inherit name;
         inherit hostname;
@@ -164,12 +171,12 @@
         # channels = { inherit nixpkgs nixpkgs-unstable; };
       };
 
-      wslSpecialArgs = commonSpecialArgs // {
+      mkWslSpecialArgs = { pkgs-unstable, fontPkg }: (mkCommonSpecialArgs { inherit pkgs-unstable fontPkg; }) // {
         inherit (inputs) nixos-wsl;
         # inherit inputs;
       };
 
-      fwSpecialArgs = commonSpecialArgs // {
+      mkFwSpecialArgs = { pkgs-unstable, fontPkg }: (mkCommonSpecialArgs { inherit pkgs-unstable fontPkg; }) // {
         inherit (inputs) hyprland-plugins;
         inherit (inputs) niri;
         inherit (inputs) mango;
@@ -181,52 +188,106 @@
         inherit (inputs) helium;
       };
 
-    in
-    {
-      nixosConfigurations = {
-        system = lib.nixosSystem {
+      # Helper to create darwin configuration for any profile
+      mkDarwinConfig = system: profile:
+        let
+          systemConfig = mkSystemConfig system;
+        in
+        darwin.lib.darwinSystem {
           inherit system;
-          modules = [
-            # load configuration.nix from selected PROFILE
-            (./. + "/profiles" + ("/" + profile) + "/configuration.nix")
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
-              home-manager.users.${username} = import (./. + "/profiles" + ("/" + profile) + "/home.nix");
-
-              # Optionally, use home-manager.extraSpecialArgs to pass
-              # arguments to home.nix
-              home-manager.extraSpecialArgs = if (profile == "wsl") then wslSpecialArgs else fwSpecialArgs;
-            }
-          ];
-          specialArgs = if (profile == "wsl") then wslSpecialArgs else fwSpecialArgs;
-        };
-      };
-
-      darwinConfigurations = {
-        work = darwin.lib.darwinSystem {
-          # system = "x86_64-darwin";
-          inherit system;
-          inherit pkgs;
-
           modules = [
             # load configuration.nix from selected PROFILE
             (./. + "/profiles" + ("/" + profile) + "/configuration.nix")
             home-manager.darwinModules.home-manager
             {
+              nixpkgs.config = {
+                allowUnfree = true;
+                allowUnfreePredicate = (_: true);
+                allowBroken = true;
+              };
+              nixpkgs.overlays = [
+                rust-overlay.overlays.default
+                nur.overlays.default
+                quickshell.overlays.default
+              ];
+
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.${username} = import (./. + "/profiles" + ("/" + profile) + "/home.nix");
-
-              # Optionally, use home-manager.extraSpecialArgs to pass
-              # arguments to home.nix
-              home-manager.extraSpecialArgs = commonSpecialArgs;
+              home-manager.extraSpecialArgs = mkCommonSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; };
             }
           ];
-          specialArgs = commonSpecialArgs;
+          specialArgs = mkCommonSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; };
         };
+
+    in
+    {
+      nixosConfigurations =
+        let
+          systemConfig = mkSystemConfig "x86_64-linux";
+        in
+        {
+          system = lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+              # load configuration.nix from selected PROFILE
+              (./. + "/profiles" + ("/" + profile) + "/configuration.nix")
+              home-manager.nixosModules.home-manager
+              {
+                # Set nixpkgs config here instead of per-profile
+                nixpkgs.config = {
+                  allowUnfree = true;
+                  allowUnfreePredicate = (_: true);
+                  allowBroken = true;
+                };
+                nixpkgs.overlays = [
+                  rust-overlay.overlays.default
+                  nur.overlays.default
+                  quickshell.overlays.default
+                  (final: prev: {
+                    pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+                      (python-final: python-prev: {
+                        # Workaround for bug #437058
+                        i3ipc = python-prev.i3ipc.overridePythonAttrs (oldAttrs: {
+                          doCheck = false;
+                          checkPhase = ''
+                            echo "Skipping pytest in Nix build"
+                          '';
+                          installCheckPhase = ''
+                            echo "Skipping install checks in Nix build"
+                          '';
+                        });
+                      })
+                    ];
+                  })
+                ];
+
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.backupFileExtension = "backup";
+                home-manager.users.${username} = import (./. + "/profiles" + ("/" + profile) + "/home.nix");
+
+                # Optionally, use home-manager.extraSpecialArgs to pass
+                # arguments to home.nix
+                home-manager.extraSpecialArgs = if (profile == "wsl") 
+                  then mkWslSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; }
+                  else mkFwSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; };
+              }
+            ];
+            specialArgs = if (profile == "wsl")
+              then mkWslSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; }
+              else mkFwSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; };
+          };
+        };
+
+      darwinConfigurations = {
+        # Generate configurations for all Darwin profiles on both architectures
+        work = mkDarwinConfig "aarch64-darwin" "work";
+        work-x86 = mkDarwinConfig "x86_64-darwin" "work";
+        work2 = mkDarwinConfig "aarch64-darwin" "work2";
+        work2-x86 = mkDarwinConfig "x86_64-darwin" "work2";
+        nearmap = mkDarwinConfig "aarch64-darwin" "nearmap";
+        nearmap-x86 = mkDarwinConfig "x86_64-darwin" "nearmap";
       };
     };
 
