@@ -34,7 +34,7 @@
     # ../../user/apps/ai/lmstudio.nix
     ../../user/apps/browser/brave.nix
     ../../user/apps/browser/ff.nix
-    ../../user/apps/browser/librewolf.nix
+    # ../../user/apps/browser/librewolf.nix
     # ../../user/apps/fileman/dolphin.nix
     # ../../user/apps/fileman/thunar.nix
     ../../user/apps/fileman/cosmic.nix
