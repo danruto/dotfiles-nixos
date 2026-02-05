@@ -347,6 +347,45 @@ return {
 				end,
 				desc = "Grep",
 			},
+			-- Quickfix navigation (for grep results and more)
+			{
+				"]q",
+				"<cmd>cnext<cr>",
+				desc = "Next Quickfix Item",
+			},
+			{
+				"[q",
+				"<cmd>cprev<cr>",
+				desc = "Previous Quickfix Item",
+			},
+			{
+				"]Q",
+				"<cmd>clast<cr>",
+				desc = "Last Quickfix Item",
+			},
+			{
+				"[Q",
+				"<cmd>cfirst<cr>",
+				desc = "First Quickfix Item",
+			},
+			{
+				"<leader>q",
+				function()
+					local qf_exists = false
+					for _, win in pairs(vim.fn.getwininfo()) do
+						if win.quickfix == 1 then
+							qf_exists = true
+							break
+						end
+					end
+					if qf_exists then
+						vim.cmd("cclose")
+					else
+						vim.cmd("copen")
+					end
+				end,
+				desc = "Toggle Quickfix List",
+			},
 			{
 				"gd",
 				function()

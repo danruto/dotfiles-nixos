@@ -23,10 +23,46 @@ return {
 		},
 		main = "nvim-treesitter",
 		config = function()
+			-- Enable treesitter highlighting for all installed parsers
+			-- Matches the parsers installed in myvim.nix
 			vim.api.nvim_create_autocmd("FileType", {
-				pattern = { "go", "rust", "ts", "tsx" },
+				pattern = {
+					"bash",
+					"c",
+					"cs",
+					"cpp",
+					"css",
+					"dockerfile",
+					"fish",
+					"gitignore",
+					"gleam",
+					"go",
+					"graphql",
+					"html",
+					"http",
+					"hurl",
+					"javascript",
+					"json",
+					"json5",
+					"just",
+					"lua",
+					"markdown",
+					"nix",
+					"python",
+					"rust",
+					"scss",
+					"sql",
+					"svelte",
+					"toml",
+					"typescript",
+					"typescriptreact",
+					"javascriptreact",
+					"vim",
+					"yaml",
+					"zig",
+				},
 				callback = function()
-					-- vim.treesitter.start()
+					vim.treesitter.start()
 				end,
 			})
 		end,

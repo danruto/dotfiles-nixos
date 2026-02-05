@@ -135,12 +135,12 @@
 
         debugmaster-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "debugmaster.nvim";
-          version = "2025-08-07";
+          version = "2026-01-02";
           src = pkgs.fetchFromGitHub {
             owner = "miroshQa";
             repo = "debugmaster.nvim";
-            rev = "3d144b98c2c23f39123fbf5f10fdff7d6480a0e6";
-            hash = "sha256-pdgS0z8KdLsl7VexbPaRPtYc2lebzAgTtM3B52IaCpQ=";
+            rev = "505d9a269d657ce8e0fa5601e0530f0d8798038c";
+            hash = "sha256-xA0zFVgtZLsxX3gyfbLnitfNwdsn+p29euIJtnEaPv8=";
           };
           doCheck = false;
         };
