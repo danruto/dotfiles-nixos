@@ -317,7 +317,7 @@
             fallback = true,
           },
           spec = {
-            { "nvim-treesitter/nvim-treesitter", opts = { ensure_installed = {}, install_dir = "${lazyPath}" } },
+            { "nvim-treesitter/nvim-treesitter", opts = { ensure_installed = {} } },
             { "williamboman/mason-lspconfig.nvim", enabled = false },
             { "williamboman/mason.nvim", enabled = false },
             { import = "dantoki/plugins" },
@@ -359,51 +359,56 @@
   };
 
   # https://github.com/nvim-treesitter/nvim-treesitter#i-get-query-error-invalid-node-type-at-position
-  # xdg.configFile."nvim/parser".source =
-  #   let
-  #     parsers = pkgs.symlinkJoin {
-  #       name = "treesitter-parsers";
-  #       paths = (pkgs-unstable.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
-  #         bash
-  #         c
-  #         c_sharp
-  #         cpp
-  #         css
-  #         dockerfile
-  #         fish
-  #         gitignore
-  #         gleam
-  #         go
-  #         graphql
-  #         html
-  #         http
-  #         hurl
-  #         javascript
-  #         json
-  #         json5
-  #         # jsonc
-  #         just
-  #         lua
-  #         markdown
-  #         nix
-  #         python
-  #         regex
-  #         rust
-  #         scss
-  #         sql
-  #         svelte
-  #         toml
-  #         tsx
-  #         typescript
-  #         vim
-  #         yaml
-  #         zig
-  #       ])).dependencies;
-  #     };
-  #   in
-  #   "${parsers}/parser";
+  xdg.configFile."nvim/parser".source =
+    let
+      parsers = pkgs.symlinkJoin {
+        name = "treesitter-parsers";
+        paths = (pkgs-unstable.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
+          bash
+          c
+          c_sharp
+          cpp
+          css
+          dockerfile
+          fish
+          gitignore
+          gleam
+          go
+          graphql
+          html
+          http
+          hurl
+          javascript
+          json
+          json5
+          # jsonc
+          just
+          lua
+          markdown
+          nix
+          python
+          regex
+          rust
+          scss
+          sql
+          svelte
+          toml
+          tsx
+          typescript
+          vim
+          yaml
+          zig
+        ])).dependencies;
+      };
+    in
+    "${parsers}/parser";
 
   xdg.configFile."nvim/after".source = ./configs/nvim/after;
   xdg.configFile."nvim/lua".source = ./configs/nvim/lua;
+
+  # Add nvim-treesitter runtime to plugin directory for queries
+  xdg.configFile."nvim/plugin/treesitter-runtime.lua".text = ''
+    vim.opt.runtimepath:append("${pkgs-unstable.vimPlugins.nvim-treesitter}/runtime")
+  '';
 }
 

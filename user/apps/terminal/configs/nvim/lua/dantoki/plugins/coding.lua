@@ -21,48 +21,25 @@ return {
 			"TSUpdate",
 			"TSContext",
 		},
-		main = "nvim-treesitter",
 		config = function()
-			-- Enable treesitter highlighting for all installed parsers
-			-- Matches the parsers installed in myvim.nix
+			-- Treesitter works with defaults, no setup() call needed per docs
+			-- Register c_sharp -> cs filetype mapping (parser name differs from filetype)
+			vim.treesitter.language.register("c_sharp", "cs")
+
+			-- Enable treesitter highlighting automatically for ALL Nix-managed parsers
+			-- Matches parsers from myvim.nix lines 244-278
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = {
-					"bash",
-					"c",
-					"cs",
-					"cpp",
-					"css",
-					"dockerfile",
-					"fish",
-					"gitignore",
-					"gleam",
-					"go",
-					"graphql",
-					"html",
-					"http",
-					"hurl",
-					"javascript",
-					"json",
-					"json5",
-					"just",
-					"lua",
-					"markdown",
-					"nix",
-					"python",
-					"rust",
-					"scss",
-					"sql",
-					"svelte",
-					"toml",
-					"typescript",
-					"typescriptreact",
-					"javascriptreact",
-					"vim",
-					"yaml",
-					"zig",
+					"bash", "c", "cs", "cpp", "css", "dockerfile", "fish",
+					"gitignore", "gleam", "go", "graphql", "html", "http", "hurl",
+					"javascript", "json", "json5", "just", "lua", "markdown",
+					"nix", "python", "regex", "rust", "scss", "sql", "svelte", "toml",
+					"typescript", "typescriptreact", "javascriptreact", "tsx",
+					"vim", "yaml", "zig"
 				},
-				callback = function()
-					vim.treesitter.start()
+				callback = function(args)
+					local buf = args.buf
+					pcall(vim.treesitter.start, buf)
 				end,
 			})
 		end,

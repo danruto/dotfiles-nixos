@@ -37,7 +37,7 @@ return {
 		},
 		config = function()
 			local dap = require("dap")
-			local dapui = require("dapui")
+			local dapui_ok, dapui = pcall(require, "dapui")
 
 			local function get_arguments()
 				return coroutine.create(function(dap_run_co)
@@ -213,17 +213,19 @@ return {
 				},
 			}
 
-			-- DAP UI Setup
-			dapui.setup()
+			-- DAP UI Setup (optional)
+			if dapui_ok then
+				dapui.setup()
 
-			dap.listeners.after.event_initialized["dapui_config"] = function()
-				dapui.open()
-			end
-			dap.listeners.before.event_terminated["dapui_config"] = function()
-				dapui.close()
-			end
-			dap.listeners.before.event_exited["dapui_config"] = function()
-				dapui.close()
+				dap.listeners.after.event_initialized["dapui_config"] = function()
+					dapui.open()
+				end
+				dap.listeners.before.event_terminated["dapui_config"] = function()
+					dapui.close()
+				end
+				dap.listeners.before.event_exited["dapui_config"] = function()
+					dapui.close()
+				end
 			end
 		end,
 	},
