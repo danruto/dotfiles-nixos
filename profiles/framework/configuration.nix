@@ -22,6 +22,7 @@ with lib;
       ../../system/hardware/thunderbolt-reconnect.nix
       ../../system/security/gpg.nix
       ../../system/security/blocklist.nix
+      ../../system/security/sshd.nix
       ../../system/wm/fonts.nix
       ../../system/apps/starship.nix
 
@@ -126,8 +127,6 @@ with lib;
   #   enableVirtualCamera = true;
   # };
 
-  # TODO: Move to modules
-  services.openssh.enable = true;
   services.fwupd.enable = true;
   services.fwupd.extraRemotes = [ "lvfs-testing" ];
   services.fwupd.uefiCapsuleSettings.DisableCapsuleUpdateOnDisk = true;
