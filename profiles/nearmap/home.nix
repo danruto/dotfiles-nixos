@@ -1,4 +1,14 @@
-{ pkgs, ... }:
+{ pkgs, wanderer, ... }:
+let
+  wanderer-pkg = pkgs.rustPlatform.buildRustPackage {
+    pname = "wanderer";
+    version = "0.2.0";
+    src = wanderer;
+    cargoLock.lockFile = "${wanderer}/Cargo.lock";
+    nativeBuildInputs = [ ];
+    buildInputs = [ ];
+  };
+in
 {
   imports = [
     ../shared.nix
@@ -23,6 +33,8 @@
     git
 
     sops
+
+    wanderer-pkg
   ];
   home.stateVersion = "25.05";
 

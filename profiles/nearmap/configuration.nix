@@ -18,7 +18,6 @@
       "gnu-sed"
     ];
     casks = [
-      "hyprspace"
       # "docker"
       "figma"
       # "floorp"

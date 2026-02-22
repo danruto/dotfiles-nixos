@@ -167,6 +167,7 @@
 
         inherit (inputs) blocklist-hosts;
         inherit (inputs) neovim-nightly-overlay;
+        inherit (inputs) wanderer;
 
         # channels = { inherit nixpkgs nixpkgs-unstable; };
       };
@@ -371,6 +372,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     helium.url = "github:vikingnope/helium-browser-nix-flake";
+
+    wanderer = {
+      url = "github:fonger900/wanderer";
+      flake = false;
+    };
 
     # Mac inputs
     darwin = {

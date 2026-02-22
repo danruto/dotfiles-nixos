@@ -745,6 +745,7 @@
         "nur": "nur",
         "quickshell": "quickshell_2",
         "rust-overlay": "rust-overlay_3",
+        "wanderer": "wanderer",
         "zjstatus": "zjstatus"
       }
     },
@@ -895,6 +896,22 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "wanderer": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767194264,
+        "narHash": "sha256-zithlVkeOm4gPgzgoA6TisKQojKiD4h4tgjYA0GsTGo=",
+        "owner": "fonger900",
+        "repo": "wanderer",
+        "rev": "4e0d0254a6819b55d4464dec811be680a40d6f85",
+        "type": "github"
+      },
+      "original": {
+        "owner": "fonger900",
+        "repo": "wanderer",
         "type": "github"
       }
     },
