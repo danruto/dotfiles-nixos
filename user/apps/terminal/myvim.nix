@@ -359,46 +359,12 @@
   };
 
   # https://github.com/nvim-treesitter/nvim-treesitter#i-get-query-error-invalid-node-type-at-position
+  # Use pre-built allGrammars instead of building from source
   xdg.configFile."nvim/parser".source =
     let
       parsers = pkgs.symlinkJoin {
         name = "treesitter-parsers";
-        paths = (pkgs-unstable.vimPlugins.nvim-treesitter.withPlugins (plugins: with plugins; [
-          bash
-          c
-          c_sharp
-          cpp
-          css
-          dockerfile
-          fish
-          gitignore
-          gleam
-          go
-          graphql
-          html
-          http
-          hurl
-          javascript
-          json
-          json5
-          # jsonc
-          just
-          lua
-          markdown
-          nix
-          python
-          regex
-          rust
-          scss
-          sql
-          svelte
-          toml
-          tsx
-          typescript
-          vim
-          yaml
-          zig
-        ])).dependencies;
+        paths = pkgs-unstable.vimPlugins.nvim-treesitter.allGrammars;
       };
     in
     "${parsers}/parser";

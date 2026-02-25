@@ -6,12 +6,9 @@
 
   fonts.packages = with pkgs-unstable; [
     powerline
-    iosevka
     font-awesome
     terminus_font
-    font-awesome
-    jetbrains-mono
-    iosevka-comfy.comfy
+    nerd-fonts.jetbrains-mono
     nerd-fonts.noto
     nerd-fonts.hack
     nerd-fonts.agave
