@@ -60,6 +60,7 @@
     # waydroid-helper
     fakeroot
     pkgs-unstable.vicinae
+    libreoffice-fresh
   ];
   home.stateVersion = "24.05";
 
