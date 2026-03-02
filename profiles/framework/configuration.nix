@@ -25,6 +25,8 @@ with lib;
       ../../system/security/sshd.nix
       ../../system/wm/fonts.nix
       ../../system/apps/starship.nix
+      ../../system/apps/steam.nix
+      ../../system/apps/lutris.nix
 
       ../../system/wm/wayland.nix
       ../../system/wm/hyprland.nix
