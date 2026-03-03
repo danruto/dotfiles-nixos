@@ -61,6 +61,7 @@
     fakeroot
     pkgs-unstable.vicinae
     libreoffice-fresh
+    gitbutler
   ];
   home.stateVersion = "24.05";
 
