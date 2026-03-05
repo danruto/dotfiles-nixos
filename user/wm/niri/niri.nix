@@ -13,7 +13,6 @@ let
     # swaylock
     # swaybg
     # rofi-wayland
-    xdg-desktop-portal-gnome
   ];
   unstable-packages = with pkgs-unstable; [
     wiremix
