@@ -290,6 +290,22 @@
         nearmap = mkDarwinConfig "aarch64-darwin" "nearmap";
         nearmap-x86 = mkDarwinConfig "x86_64-darwin" "nearmap";
       };
+
+      homeConfigurations =
+        let
+          systemConfig = mkSystemConfig "aarch64-linux";
+        in
+        {
+          user = home-manager.lib.homeManagerConfiguration {
+            pkgs = systemConfig.pkgs;
+            modules = [
+              ./profiles/orb-arch/home.nix
+            ];
+            extraSpecialArgs = mkCommonSpecialArgs {
+              inherit (systemConfig) pkgs-unstable fontPkg;
+            };
+          };
+        };
     };
 
   inputs = {

@@ -146,4 +146,7 @@ endif
 norb:
 	sudo nixos-rebuild switch --flake .#system
 
-.PHONY: help switch norb vm/help vm/bootstrap/0 vm/bootstrap/1 vm/bootstrap/2 vm/bootstrap/u vm/secrets vm/copy vm/git_update vm/switch vm/ssh
+hm/switch:
+	nix run home-manager/release-25.11 -- switch --flake .#user
+
+.PHONY: help switch norb hm/switch vm/help vm/bootstrap/0 vm/bootstrap/1 vm/bootstrap/2 vm/bootstrap/u vm/secrets vm/copy vm/git_update vm/switch vm/ssh
