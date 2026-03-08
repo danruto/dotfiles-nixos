@@ -309,6 +309,9 @@
           defaults = {
             lazy = true,
           },
+          rocks = {
+            enabled = false,
+          },
           dev = {
             -- reuse files from pkgs.vimPlugins.*
             path = "${lazyPath}",
@@ -364,7 +367,7 @@
     let
       parsers = pkgs.symlinkJoin {
         name = "treesitter-parsers";
-        paths = pkgs-unstable.vimPlugins.nvim-treesitter.allGrammars;
+        paths = builtins.filter (g: !(builtins.elem (lib.getName g) [ "vimplugin-treesitter-grammar-bovex" ])) pkgs-unstable.vimPlugins.nvim-treesitter.allGrammars;
       };
     in
     "${parsers}/parser";

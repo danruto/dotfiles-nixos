@@ -8,7 +8,8 @@
     ../../user/shell/sh.nix
     ../../user/shell/tui.nix
     ../../user/apps/git/git.nix
-    ../../user/apps/terminal/helix-fork.nix
+    ../../user/apps/terminal/myvim.nix
+    # ../../user/apps/terminal/helix-fork.nix
     ../../user/apps/fileman/yazi.nix
   ];
 
@@ -19,6 +20,11 @@
   home.sessionVariables = {
     EDITOR = editor;
   };
+
+  programs.fish.shellInit = ''
+    fish_add_path --prepend ~/.local/state/nix/profiles/home-manager/home-path/bin
+    fish_add_path --prepend ~/.nix-profile/bin
+  '';
 
   programs.starship.enable = true;
   programs.starship.settings = {

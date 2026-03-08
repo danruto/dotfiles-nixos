@@ -133,7 +133,7 @@ return {
 	{
 		"3rd/diagram.nvim",
 		dependencies = {
-			{ "3rd/image.nvim", opts = { backend = "kitty" } },
+			{ "3rd/image.nvim", rocks = false, opts = { backend = "kitty", processor = "magick_cli" } },
 		},
 		cmd = "RenderMarkdown",
 		-- ft = { "markdown" }, -- disable due to non-kitty terms like foot having issues
