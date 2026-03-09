@@ -17,9 +17,9 @@
 
 ## Agent Model Selection
 
-- When spawning research/exploration subagents (Task tool), use `model: "sonnet"` instead of inheriting the parent Opus model
-- This applies to: codebase exploration, file searches, web research, code reading, and any non-writing task
-- Reserve Opus for subagents that write code, make architectural decisions, or need maximum reasoning
+- **Haiku** (`model: "haiku"`) — Use for code exploration subagents: file searches, codebase exploration, grep/glob tasks, code reading
+- **Sonnet** (`model: "sonnet"`) — Use for insights, explanations, web research, and mid-tier reasoning tasks
+- **Opus** (default) — Reserve for architectural decisions, writing code, and any other major decisions requiring maximum reasoning
 
 ## Clarification & Decision-Making
 
