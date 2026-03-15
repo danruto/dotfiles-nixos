@@ -5,12 +5,15 @@
 
   imports = [
     ../shared.nix
+    ../../user/apps/ai/llm.nix
     ../../user/shell/sh.nix
     ../../user/shell/tui.nix
     ../../user/apps/git/git.nix
     ../../user/apps/terminal/myvim.nix
     # ../../user/apps/terminal/helix-fork.nix
+    ../../user/apps/terminal/helix.nix
     ../../user/apps/fileman/yazi.nix
+    ../../user/lang/shell/shell.nix
   ];
 
   home.username = "danruto";
