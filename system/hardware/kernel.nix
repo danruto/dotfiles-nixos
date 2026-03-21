@@ -16,9 +16,6 @@
     # Intel audio codec power management
     options snd_hda_intel power_save=1 power_save_controller=Y
     
-    # Intel graphics power management
-    options i915 enable_rc6=1 enable_fbc=1 enable_psr=1 disable_power_well=0
-    
     # WiFi power management
     options iwlwifi power_save=1 power_level=5
   '';

@@ -21,13 +21,12 @@ return {
 			"TSUpdate",
 			"TSContext",
 		},
+		init = function(plugin)
+			vim.opt.runtimepath:prepend(plugin.dir .. "/runtime")
+		end,
 		config = function()
-			-- Treesitter works with defaults, no setup() call needed per docs
-			-- Register c_sharp -> cs filetype mapping (parser name differs from filetype)
 			vim.treesitter.language.register("c_sharp", "cs")
 
-			-- Enable treesitter highlighting automatically for ALL Nix-managed parsers
-			-- Matches parsers from myvim.nix lines 244-278
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = {
 					"bash", "c", "cs", "cpp", "css", "dockerfile", "fish",
@@ -38,8 +37,7 @@ return {
 					"vim", "yaml", "zig"
 				},
 				callback = function(args)
-					local buf = args.buf
-					pcall(vim.treesitter.start, buf)
+					pcall(vim.treesitter.start, args.buf)
 				end,
 			})
 		end,

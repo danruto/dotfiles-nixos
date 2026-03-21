@@ -23,22 +23,18 @@
   services.power-profiles-daemon.enable = true;
   # services.tuned.enable = true;
 
-  # Enable powertop auto-tuning
-  powerManagement.powertop.enable = true;
+  powerManagement.powertop.enable = false;
   # Let TLP handle CPU governor instead of setting it globally
   # powerManagement.cpuFreqGovernor = "schedutil";
 
   # Disable NMI watchdog for power savings (PowerTOP recommendation)
   boot.kernelParams = [
     "nmi_watchdog=0"
-    "processor.max_cstate=10"
-    "intel_idle.max_cstate=10"
-    "usbcore.autosuspend=-1"
   ];
 
   services.upower.enable = true;
   services.upower.criticalPowerAction = "Hibernate";
-  services.thermald.enable = true;
+  services.thermald.enable = false;
   services.logind = {
     settings.Login.HandleLidSwitch = "suspend-then-hibernate";
     # lidSwitch = "suspend";
@@ -55,29 +51,23 @@
     SUBSYSTEM=="power_supply", KERNEL=="BAT1", ATTR{charge_control_start_threshold}="40"
     SUBSYSTEM=="power_supply", KERNEL=="BAT1", ATTR{charge_control_end_threshold}="80"
 
-    # Enable runtime PM for all PCI devices (PowerTOP recommendation)
+    # Enable runtime PM for all PCI devices
     ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
 
-    # Disable USB autosuspend for input devices and problematic peripherals
+    # Disable wakeup for Framework expansion cards (prevents spurious wakes during sleep)
+    SUBSYSTEM=="usb", DRIVERS=="usb", ATTRS{idVendor}=="32ac", ATTR{power/wakeup}="disabled"
+
+    # Prevent keyboard controller from waking on AC plug-in
+    ACTION=="add", SUBSYSTEM=="serio", DRIVERS=="atkbd", ATTR{power/wakeup}="disabled"
+
+    # Keep specific problematic USB devices from autosuspending
     ACTION=="add", SUBSYSTEM=="usb", ATTR{bDeviceClass}=="03", ATTR{power/control}="on"
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", ATTR{power/control}="on"
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="1532", ATTR{power/control}="on"
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="03f0", ATTR{power/control}="on"
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="a8f8", ATTR{power/control}="on"
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="14ed", ATTR{power/control}="on"
   '';
 
-  # PowerTOP auto-tune service
-  systemd.services.powertop-auto-tune = {
-    description = "PowerTOP auto-tune";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${pkgs-unstable.powertop}/bin/powertop --auto-tune";
-    };
-  };
 
   services.tlp = {
     enable = false;
