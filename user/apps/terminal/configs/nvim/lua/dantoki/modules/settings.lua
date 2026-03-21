@@ -135,4 +135,11 @@ if os.getenv("WSL_DISTRO_NAME") ~= nil then
 		},
 		cache_enable = 0,
 	}
+elseif vim.fn.executable("/opt/orbstack-guest/bin/pbcopy") == 1 then
+	g.clipboard = {
+		name = "orbstack-clipboard",
+		copy = { ["+"] = "/opt/orbstack-guest/bin/pbcopy", ["*"] = "/opt/orbstack-guest/bin/pbcopy" },
+		paste = { ["+"] = "/opt/orbstack-guest/bin/pbpaste", ["*"] = "/opt/orbstack-guest/bin/pbpaste" },
+		cache_enabled = 0,
+	}
 end
