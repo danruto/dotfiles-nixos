@@ -62,8 +62,21 @@
     pkgs-unstable.vicinae
     libreoffice-fresh
     gitbutler
+    (pkgs.symlinkJoin {
+      name = "yaak-wrapped";
+      paths = [ yaak ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/yaak-app \
+          --set WEBKIT_DISABLE_DMABUF_RENDERER 0 \
+          --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}" \
+          --prefix XDG_DATA_DIRS : "${pkgs.adwaita-icon-theme}/share" \
+          --set GIO_MODULE_DIR "${pkgs.glib-networking}/lib/gio/modules/"
+      '';
+    })
   ];
   home.stateVersion = "24.05";
+
 
   # Enable automatic start/restart of systemd user services
   systemd.user.startServices = "sd-switch";
@@ -72,6 +85,17 @@
 
   xdg = {
     enable = true;
+  };
+
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Adwaita-dark";
+    };
+    iconTheme = {
+      name = "Adwaita";
+      package = pkgs.adwaita-icon-theme;
+    };
   };
 
   programs.starship.enable = true;
