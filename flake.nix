@@ -270,12 +270,14 @@
 
                 # Optionally, use home-manager.extraSpecialArgs to pass
                 # arguments to home.nix
-                home-manager.extraSpecialArgs = if (profile == "wsl") 
+                home-manager.extraSpecialArgs =
+                  if (profile == "wsl")
                   then mkWslSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; }
                   else mkFwSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; };
               }
             ];
-            specialArgs = if (profile == "wsl")
+            specialArgs =
+              if (profile == "wsl")
               then mkWslSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; }
               else mkFwSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; };
           };
@@ -310,8 +312,8 @@
 
   inputs = {
     # Global shared inputs
-    nixpkgs.url = "nixpkgs/nixos-25.11";
-    nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";

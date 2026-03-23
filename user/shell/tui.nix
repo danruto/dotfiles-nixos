@@ -22,6 +22,7 @@ let
     # podman-tui
     # dive
     # openapi-tui
+    television
   ] ++ lib.optionals pkgs-unstable.stdenv.isLinux [
     ani-cli
     yt-dlp
