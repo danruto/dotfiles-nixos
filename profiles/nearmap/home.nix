@@ -35,6 +35,10 @@ in
     sops
 
     wanderer-pkg
+
+    # cc-clip deps (clipboard image paste over SSH)
+    xclip
+    pngpaste
   ];
   home.stateVersion = "25.05";
 

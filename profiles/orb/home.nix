@@ -33,6 +33,10 @@
     libffi
     zlib
     nodePackages.ungit
+
+    # cc-clip deps (clipboard image paste over SSH)
+    xclip
+    curl
   ];
 
   # xdg.enable = true;
