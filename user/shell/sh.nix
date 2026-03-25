@@ -59,8 +59,6 @@ in
 
   home.packages = with pkgs; [
     fd
-    direnv
-    nix-direnv
     starship
     fish
     jq

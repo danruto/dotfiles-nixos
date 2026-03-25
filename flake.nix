@@ -210,6 +210,13 @@
                 rust-overlay.overlays.default
                 nur.overlays.default
                 quickshell.overlays.default
+                (final: prev: {
+                  direnv = prev.direnv.overrideAttrs (oldAttrs: {
+                    env = (oldAttrs.env or { }) // {
+                      CGO_ENABLED = 1;
+                    };
+                  });
+                })
               ];
 
               home-manager.useGlobalPkgs = true;
