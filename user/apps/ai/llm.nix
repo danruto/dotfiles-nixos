@@ -7,8 +7,9 @@
     # gemini-cli
     # codex
     # nur.repos.charmbracelet.crush
+    sox
   ];
 
   home.file.".claude/CLAUDE.md".source = ./configs/CLAUDE.md;
-  home.file.".claude/settings.json".source = ./configs/settings.json;
+  home.file.".claude/settings.local.json".source = ./configs/settings.local.json;
 }

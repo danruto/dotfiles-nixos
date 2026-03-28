@@ -53,5 +53,8 @@
         "explanatory-output-style@claude-plugins-official": true,
         "learning-output-style@claude-plugins-official": true
     },
-    "alwaysThinkingEnabled": true
+    "alwaysThinkingEnabled": true,
+    "attributionEnabled": false,
+    "attributionName": "",
+    "voiceEnabled": true
 }

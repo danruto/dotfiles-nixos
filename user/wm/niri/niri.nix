@@ -46,6 +46,19 @@ in
   #   enable = true;
   # };
 
+  systemd.user.services.swayidle = {
+    Unit = {
+      Description = "Idle manager for Wayland";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.swayidle}/bin/swayidle -w timeout 3600 'niri msg action power-off-monitors'";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   systemd.user.services.vicinae = {
     Unit = {
       Description = "Vicinae launcher daemon";
