@@ -104,7 +104,7 @@
 
                   format_left   "{mode} {tabs}"
                   format_center ""
-                  format_right  "{pipe_zjstatus_hints}{datetime}#[bg=#6e5fb7,fg=#ffffff,bold] {session} "
+                  format_right  "{pipe_zjstatus_hints}{command_battery}{datetime}#[bg=#6e5fb7,fg=#ffffff,bold] {session} "
                   format_space  ""
 
                   pipe_zjstatus_hints_format "{output} "
@@ -159,6 +159,11 @@
                   command_git_branch_format      "#[fg=blue] {stdout} "
                   command_git_branch_interval    "10"
                   command_git_branch_rendermode  "static"
+
+                  command_battery_command     "bash -c 'pct=$(cat /sys/class/power_supply/BAT1/capacity); if [ $pct -le 20 ]; then echo \"#[fg=#fb4934,bg=#1f2430] $pct%\"; elif [ $pct -le 50 ]; then echo \"#[fg=#fabd2f,bg=#1f2430] $pct%\"; else echo \"#[fg=#b8bb26,bg=#1f2430] $pct%\"; fi'"
+                  command_battery_format      "{stdout} "
+                  command_battery_interval    "30"
+                  command_battery_rendermode  "static"
 
                   datetime          "#[fg=#85e6cb,bg=#1f2430] {format} "
                   datetime_format   "%H:%M"
