@@ -160,10 +160,10 @@
                   command_git_branch_interval    "10"
                   command_git_branch_rendermode  "static"
 
-                  command_battery_command     "bash -c 'pct=$(cat /sys/class/power_supply/BAT1/capacity); if [ $pct -le 20 ]; then echo \"#[fg=#fb4934,bg=#1f2430] $pct%\"; elif [ $pct -le 50 ]; then echo \"#[fg=#fabd2f,bg=#1f2430] $pct%\"; else echo \"#[fg=#b8bb26,bg=#1f2430] $pct%\"; fi'"
+                  command_battery_command     "bash -c 'pct=$(cat /sys/class/power_supply/BAT1/capacity); if [ $pct -le 20 ]; then printf \"\\e[38;2;251;73;52;48;2;31;36;48m %s%%\\e[0m\" \"$pct\"; elif [ $pct -le 50 ]; then printf \"\\e[38;2;250;189;47;48;2;31;36;48m %s%%\\e[0m\" \"$pct\"; else printf \"\\e[38;2;184;187;38;48;2;31;36;48m %s%%\\e[0m\" \"$pct\"; fi'"
                   command_battery_format      "{stdout} "
                   command_battery_interval    "30"
-                  command_battery_rendermode  "static"
+                  command_battery_rendermode  "raw"
 
                   datetime          "#[fg=#85e6cb,bg=#1f2430] {format} "
                   datetime_format   "%H:%M"

@@ -1,5 +1,5 @@
 { pkgs-unstable, ... }:
 
 {
-  home.packages = [ pkgs-unstable.protonvpn-gui ];
+  home.packages = [ pkgs-unstable.proton-vpn ];
 }
