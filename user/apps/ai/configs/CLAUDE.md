@@ -28,3 +28,6 @@
 - The ultimate decision is always up to me — propose, don't prescribe
 - If unsure about scope, ask before expanding beyond what was requested
 
+
+## Code searches
+For any file search or grep in the current git indexed directory use fff tools

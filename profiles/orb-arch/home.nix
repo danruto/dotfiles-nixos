@@ -22,6 +22,7 @@
 
   home.sessionVariables = {
     EDITOR = editor;
+    TERM = "xterm-256color";
   };
 
   programs.fish.shellInit = ''

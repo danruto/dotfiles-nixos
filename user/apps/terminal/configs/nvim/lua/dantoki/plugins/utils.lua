@@ -242,6 +242,28 @@ return {
 		build = "make lib",
 	},
 	{
+		"dmtrKovalenko/fff.nvim",
+		dev = true,
+		lazy = false,
+		opts = {},
+		keys = {
+			{
+				"<Space>f",
+				function()
+					require("fff").find_files()
+				end,
+				desc = "Find Files (fff)",
+			},
+			{
+				"<Space>/",
+				function()
+					require("fff").live_grep()
+				end,
+				desc = "Live Grep (fff)",
+			},
+		},
+	},
+	{
 		enabled = finder.snacks,
 		"folke/snacks.nvim",
 		priority = 1000,
@@ -299,25 +321,9 @@ return {
 			{
 				"<leader><leader>",
 				function()
-					Snacks.picker.smart()
+					Snacks.picker.files({ hidden = true, ignored = true })
 				end,
-				desc = "Smart Find Files",
-			},
-			{
-				"<Space>f",
-				function()
-					local function files_fallback()
-						vim.fn.system("git rev-parse --is-inside-work-tree")
-						if vim.v.shell_error == 0 then
-							Snacks.picker.git_files()
-						else
-							Snacks.picker.files()
-						end
-					end
-
-					files_fallback()
-				end,
-				desc = "Find Files (Git if in .git)",
+				desc = "Find All Files",
 			},
 			{
 				"<Space>c",
@@ -339,13 +345,6 @@ return {
 					Snacks.explorer()
 				end,
 				desc = "File Explorer",
-			},
-			{
-				"<Space>/",
-				function()
-					Snacks.picker.grep()
-				end,
-				desc = "Grep",
 			},
 			-- Quickfix navigation (for grep results and more)
 			{

@@ -24,7 +24,11 @@
             "Bash(go test:*)",
             "Bash(go build:*)",
             "Bash(make:*)",
-            "Bash(just:*)"
+            "Bash(just:*)",
+            "Read(path:*.env.llm)",
+            "Read(path:*.envrc)",
+            "Bash(*.env.llm*)",
+            "Bash(*.envrc*)"
         ],
         "deny": [
             "Bash(rm -rf:*)",
@@ -34,7 +38,15 @@
             "Bash(git reset --hard:*)",
             "Bash(sudo:*)",
             "Read(path:.env)",
-            "Read(path:.env.*)"
+            "Read(path:.env.*)",
+            "Bash(cat .env*)",
+            "Bash(head .env*)",
+            "Bash(tail .env*)",
+            "Bash(less .env*)",
+            "Bash(more .env*)",
+            "Bash(echo*.env*)",
+            "Bash(source .env*)",
+            "Bash(*.env*)"
         ]
     },
     "model": "opus",

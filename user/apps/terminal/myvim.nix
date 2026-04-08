@@ -187,6 +187,7 @@
           # { name = "mini.trailspace"; path = mini-nvim; }
           flash-nvim
           grug-far-nvim
+          fff-nvim
 
           # UI
           # lsp-inlayhints-nvim

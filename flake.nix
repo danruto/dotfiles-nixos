@@ -23,6 +23,7 @@
     , mango
     , dankMaterialShell
     , helium
+    , fff
     , ...
     }@inputs:
     let
@@ -172,6 +173,7 @@
         inherit (inputs) blocklist-hosts;
         inherit (inputs) neovim-nightly-overlay;
         inherit (inputs) wanderer;
+        inherit (inputs) fff;
 
         # channels = { inherit nixpkgs nixpkgs-unstable; };
       };
@@ -405,6 +407,11 @@
     wanderer = {
       url = "github:fonger900/wanderer";
       flake = false;
+    };
+
+    fff = {
+      url = "github:dmtrKovalenko/fff.nvim";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Mac inputs
