@@ -70,11 +70,7 @@
           nixpkgs-unstable-patched = (import nixpkgs { inherit system; }).applyPatches {
             name = "nixpkgs-unstable-patched";
             src = nixpkgs-unstable;
-            patches = [
-              # Workaround: claude-code 2.1.88 was yanked from npm (nixpkgs#505962)
-              ./patches/claude-code-2.1.88-to-2.1.89.patch
-              ./patches/claude-code-2.1.89-to-2.1.90.patch
-            ];
+            patches = [ ];
           };
 
           # configure pkgs
@@ -126,6 +122,7 @@
               noctalia.overlays.default
               (final: prev: {
                 zjstatus = zjstatus.packages.${prev.stdenv.hostPlatform.system}.default;
+
                 pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
                   (python-final: python-prev: {
                     # Workaround for bug #437058

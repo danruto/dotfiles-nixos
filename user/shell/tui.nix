@@ -14,6 +14,8 @@ let
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     brightnessctl
     hwinfo
+    yt-dlp
+    ani-cli
   ];
   unstable-packages = with pkgs-unstable; [
     ripgrep
@@ -24,8 +26,6 @@ let
     # openapi-tui
     television
   ] ++ lib.optionals pkgs-unstable.stdenv.isLinux [
-    ani-cli
-    yt-dlp
   ];
 in
 {

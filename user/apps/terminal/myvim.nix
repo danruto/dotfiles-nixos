@@ -1,4 +1,4 @@
-{ lib, pkgs, pkgs-unstable, neovim-nightly-overlay, ... }:
+{ lib, pkgs, pkgs-unstable, neovim-nightly-overlay, fff, ... }:
 
 {
   programs.neovim = {
@@ -187,7 +187,7 @@
           # { name = "mini.trailspace"; path = mini-nvim; }
           flash-nvim
           grug-far-nvim
-          fff-nvim
+          fff.packages.${pkgs.stdenv.hostPlatform.system}.fff-nvim
 
           # UI
           # lsp-inlayhints-nvim

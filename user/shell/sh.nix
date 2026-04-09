@@ -64,6 +64,7 @@ in
     jq
     yq-go
     zk
+    tabiew
   ];
 
   programs.btop = {
