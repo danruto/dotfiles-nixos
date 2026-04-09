@@ -18,10 +18,7 @@
     , niri
     , nixos-hardware
     , catppuccin
-    , noctalia
-    , quickshell
     , mango
-    , dankMaterialShell
     , helium
     , fff
     , ...
@@ -85,7 +82,6 @@
             overlays = [
               rust-overlay.overlays.default
               nur.overlays.default
-              quickshell.overlays.default
               # neovim-nightly-overlay.overlays.default
               (final: prev: {
                 pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
@@ -118,8 +114,6 @@
             overlays = [
               rust-overlay.overlays.default
               nur.overlays.default
-              quickshell.overlays.default
-              noctalia.overlays.default
               (final: prev: {
                 zjstatus = zjstatus.packages.${prev.stdenv.hostPlatform.system}.default;
 
@@ -186,9 +180,6 @@
         inherit (inputs) mango;
         inherit (inputs) nixos-hardware;
         inherit (inputs) catppuccin;
-        inherit (inputs) noctalia;
-        inherit (inputs) quickshell;
-        inherit (inputs) dankMaterialShell;
         inherit (inputs) helium;
       };
 
@@ -212,8 +203,7 @@
               nixpkgs.overlays = [
                 rust-overlay.overlays.default
                 nur.overlays.default
-                quickshell.overlays.default
-                (final: prev: {
+                  (final: prev: {
                   direnv = prev.direnv.overrideAttrs (oldAttrs: {
                     env = (oldAttrs.env or { }) // {
                       CGO_ENABLED = 1;
@@ -243,6 +233,7 @@
             modules = [
               # load configuration.nix from selected PROFILE
               (./. + "/profiles" + ("/" + profile) + "/configuration.nix")
+              inputs.nix-flatpak.nixosModules.nix-flatpak
               home-manager.nixosModules.home-manager
               {
                 # Set nixpkgs config here instead of per-profile
@@ -254,8 +245,7 @@
                 nixpkgs.overlays = [
                   rust-overlay.overlays.default
                   nur.overlays.default
-                  quickshell.overlays.default
-                  (final: prev: {
+                      (final: prev: {
                     pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
                       (python-final: python-prev: {
                         # Workaround for bug #437058
@@ -331,6 +321,7 @@
     };
 
     nur.url = "github:nix-community/NUR";
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
 
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -386,19 +377,6 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
     catppuccin.url = "github:catppuccin/nix";
-    quickshell = {
-      url = "github:outfoxxed/quickshell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    dankMaterialShell = {
-      # url = "github:AvengeMedia/DankMaterialShell";
-      url = "github:AvengeMedia/DankMaterialShell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     helium.url = "github:vikingnope/helium-browser-nix-flake";
 
     wanderer = {

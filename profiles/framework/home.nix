@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, noctalia, ... }: {
+{ pkgs, pkgs-unstable, ... }: {
 
   home.username = "danruto";
   home.homeDirectory = "/home/danruto";
@@ -6,8 +6,6 @@
   # programs.home-manager.enable = true;
 
   imports = [
-    noctalia.homeModules.default
-
     ../shared.nix # Shared home configurations
     ../../user/shell/sh.nix # Fish config
     ../../user/shell/tui.nix # Useful cli/tui apps
@@ -32,7 +30,7 @@
     ../../user/wm/niri/niri.nix
     ../../user/apps/ai/llm.nix
     # ../../user/apps/ai/lmstudio.nix
-    ../../user/apps/browser/brave.nix
+    # ../../user/apps/browser/brave.nix
     ../../user/apps/browser/ff.nix
     # ../../user/apps/browser/librewolf.nix
     # ../../user/apps/fileman/dolphin.nix
@@ -41,7 +39,7 @@
     # ../../user/apps/fileman/nemo.nix
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/gui/gui.nix
-    ../../user/apps/gui/neovide.nix
+    # ../../user/apps/gui/neovide.nix
     ../../user/apps/gui/vscode.nix
     ../../user/apps/gui/zed.nix
     ../../user/apps/networking/wireguard.nix
@@ -49,7 +47,7 @@
     ../../user/apps/security/protonvpn.nix
     ../../system/hardware/monitor.nix
     ../../user/hardware/keyboard.nix
-    ../../user/apps/virt/virt.nix
+    # ../../user/apps/virt/virt.nix
     # ../../user/style/catppuccin.nix
   ];
 
@@ -61,7 +59,7 @@
     fakeroot
     pkgs-unstable.vicinae
     libreoffice-fresh
-    gitbutler
+    # gitbutler - switched to flatpak
     (pkgs.symlinkJoin {
       name = "yaak-wrapped";
       paths = [ yaak ];

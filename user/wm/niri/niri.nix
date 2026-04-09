@@ -22,8 +22,8 @@ let
 in
 {
   imports = [
-    # ../waybar/waybar.nix
-    ./dms.nix
+    ../waybar/waybar.nix
+    # ./dms.nix
   ];
 
   home.packages = stable-packages ++ unstable-packages;
@@ -123,6 +123,16 @@ in
       #   position = { x = 0; y = 0; };
       # };
 
+      "Beihai Century Joint Innovation Technology Co.,Ltd X340 PRO EVO 0000000000000" = {
+        scale = 1.0;
+        mode = {
+          width = 3440;
+          height = 1440;
+          refresh = 59.999;
+        };
+        position = { x = 0; y = 0; };
+      };
+
       "Dell Inc. Dell AW3418DW #ASM/RFCGshLd" = {
         scale = 1.0;
         mode = {
@@ -216,14 +226,6 @@ in
       }
       {
         matches = [{ app-id = "dunst"; }];
-        block-out-from = "screencast";
-      }
-      {
-        matches = [{ app-id = "noctalia-shell"; }];
-        block-out-from = "screencast";
-      }
-      {
-        matches = [{ app-id = "quickshell"; }];
         block-out-from = "screencast";
       }
       {

@@ -5,8 +5,7 @@ let
   ];
 
   unstable-packages = with pkgs-unstable; [
-    # zed-editor
-    zed-editor-fhs
+    zed-editor
   ];
 in
 {

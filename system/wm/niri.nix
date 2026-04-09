@@ -12,8 +12,6 @@
 
   environment.systemPackages = with pkgs-unstable; [
     xwayland-satellite
-    quickshell
-    noctalia-shell
   ];
 
   # environment.variables.DISPLAY = ":0";
@@ -27,5 +25,4 @@
     package = pkgs.niri-unstable;
   };
 
-  # services.noctalia.enable = true;
 }

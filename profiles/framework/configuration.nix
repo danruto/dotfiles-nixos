@@ -25,13 +25,13 @@ with lib;
       ../../system/security/sshd.nix
       ../../system/wm/fonts.nix
       ../../system/apps/starship.nix
-      ../../system/apps/steam.nix
-      ../../system/apps/lutris.nix
+      # ../../system/apps/steam.nix
+      # ../../system/apps/lutris.nix
 
       ../../system/wm/wayland.nix
       ../../system/wm/hyprland.nix
       ../../system/wm/niri.nix
-      ../../system/wm/dms.nix
+      # ../../system/wm/dms.nix
 
       ../../system/apps/docker.nix
 
@@ -100,9 +100,9 @@ with lib;
   security.sudo.wheelNeedsPassword = false;
 
   # virt
-  virtualisation.libvirtd.enable = true;
+  virtualisation.libvirtd.enable = false;
   virtualisation.waydroid.enable = false;
-  programs.virt-manager.enable = true;
+  programs.virt-manager.enable = false;
 
   services.fprintd.enable = true;
   # security.pam.services.login.fprintAuth = true;
@@ -128,6 +128,11 @@ with lib;
   #   enable = true;
   #   enableVirtualCamera = true;
   # };
+
+  services.flatpak.enable = true;
+  services.flatpak.packages = [
+    "com.gitbutler.gitbutler"
+  ];
 
   services.fwupd.enable = true;
   services.fwupd.extraRemotes = [ "lvfs-testing" ];

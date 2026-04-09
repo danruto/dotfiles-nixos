@@ -2,7 +2,7 @@
 {
   programs.vscode = {
     enable = true;
-    package = pkgs-unstable.vscode-fhs;
+    package = pkgs-unstable.vscode;
     profiles.default.extensions = with pkgs-unstable; [
       # vscode-extensions.ms-dotnettools.csdevkit
       vscode-extensions.teabyii.ayu
