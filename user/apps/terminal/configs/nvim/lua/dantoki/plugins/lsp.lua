@@ -214,6 +214,16 @@ return {
 					},
 				},
 			}
+
+			vim.lsp.config.nil_ls = {
+				settings = {
+					["nil"] = {
+						nix = {
+							autoArchive = true,
+						},
+					},
+				},
+			}
 		end,
 	},
 	{

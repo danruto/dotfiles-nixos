@@ -242,40 +242,40 @@
           editorconfig-vim
           conform-nvim
 
-          # Treesitter grammars
-          nvim-treesitter-parsers.bash
-          nvim-treesitter-parsers.c
-          nvim-treesitter-parsers.c_sharp
-          nvim-treesitter-parsers.cpp
-          nvim-treesitter-parsers.css
-          nvim-treesitter-parsers.dockerfile
-          nvim-treesitter-parsers.fish
-          nvim-treesitter-parsers.gitignore
-          nvim-treesitter-parsers.gleam
-          nvim-treesitter-parsers.go
-          nvim-treesitter-parsers.graphql
-          nvim-treesitter-parsers.html
-          nvim-treesitter-parsers.http
-          nvim-treesitter-parsers.hurl
-          nvim-treesitter-parsers.javascript
-          nvim-treesitter-parsers.json
-          nvim-treesitter-parsers.json5
-          nvim-treesitter-parsers.just
-          nvim-treesitter-parsers.lua
-          nvim-treesitter-parsers.markdown
-          nvim-treesitter-parsers.nix
-          nvim-treesitter-parsers.python
-          nvim-treesitter-parsers.regex
-          nvim-treesitter-parsers.rust
-          nvim-treesitter-parsers.scss
-          nvim-treesitter-parsers.sql
-          nvim-treesitter-parsers.svelte
-          nvim-treesitter-parsers.toml
-          nvim-treesitter-parsers.tsx
-          nvim-treesitter-parsers.typescript
-          nvim-treesitter-parsers.vim
-          nvim-treesitter-parsers.yaml
-          nvim-treesitter-parsers.zig
+          # Treesitter grammars (use pkgs-unstable to match nvim-treesitter queries)
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.bash
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.c
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.c_sharp
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.cpp
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.css
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.dockerfile
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.fish
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.gitignore
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.gleam
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.go
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.graphql
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.html
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.http
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.hurl
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.javascript
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.json
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.json5
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.just
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.lua
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.markdown
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.nix
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.python
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.regex
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.rust
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.scss
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.sql
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.svelte
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.toml
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.tsx
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.typescript
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.vim
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.yaml
+          pkgs-unstable.vimPlugins.nvim-treesitter-parsers.zig
 
           # Themes
           github-nvim-theme
@@ -365,7 +365,7 @@
     let
       parsers = pkgs.symlinkJoin {
         name = "treesitter-parsers";
-        paths = with pkgs.vimPlugins; [
+        paths = with pkgs-unstable.vimPlugins; [
           nvim-treesitter-parsers.bash
           nvim-treesitter-parsers.c
           nvim-treesitter-parsers.c_sharp
