@@ -95,6 +95,7 @@ with lib;
   environment.shells = with pkgs; [ fish ];
   users.defaultUserShell = pkgs.fish;
   programs.fish.enable = true;
+  programs.nix-ld.enable = true;
   programs.starship.enable = true;
   programs.starship.settings = {
     gcloud.disabled = true;
