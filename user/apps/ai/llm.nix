@@ -14,6 +14,7 @@ in
   ];
 
   home.file.".claude/CLAUDE.md".source = ./configs/CLAUDE.md;
+  home.file.".claude/commands/commit.md".source = ./configs/commands/commit.md;
   home.file.".claude/settings.local.json".text =
     let
       base = builtins.fromJSON (builtins.readFile ./configs/settings.local.json);
