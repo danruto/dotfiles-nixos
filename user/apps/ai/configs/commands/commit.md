@@ -24,14 +24,23 @@ Based on the staged changes above:
    - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
    - Scope is optional but encouraged
    - Subject should be concise, imperative mood, no period at end
-2. Focus on the "why" rather than the "what"
-3. Execute the commit with:
+2. Include a **body** with bullet points summarizing the key changes for context
+3. Focus on the "why" rather than the "what"
+4. Execute the commit using a HEREDOC for multi-line message:
 
 ```bash
-git commit -m "type(scope): subject"
+git commit -m "$(cat <<'EOF'
+type(scope): subject
+
+- bullet point 1
+- bullet point 2
+- bullet point 3
+EOF
+)"
 ```
 
 IMPORTANT:
+- **Do NOT run `git add`, `git stage`, or modify the staging area in any way. ONLY commit what is already staged.**
 - Do NOT push to remote
 - Do NOT include any Claude attribution or Co-Authored-By lines
 - Do NOT add the "Generated with Claude Code" footer
