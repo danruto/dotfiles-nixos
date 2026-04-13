@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, lib, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -90,13 +90,6 @@
 
   programs.fish.enable = true;
   programs.man.enable = false;
-
-  programs.git.signing = {
-    key = "FA2B29F4047C076F";
-    signByDefault = true;
-  };
-
-  programs.git.settings.user.email = lib.mkForce "1270619+danruto@users.noreply.github.com";
 
   imports = [
     ../profiles/shared.nix

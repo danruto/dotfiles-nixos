@@ -1,4 +1,4 @@
-{ pkgs, editor, ... }:
+{ pkgs, lib, editor, ... }:
 
 {
   programs.home-manager.enable = true;
@@ -9,6 +9,7 @@
     ../../user/shell/sh.nix
     ../../user/shell/tui.nix
     ../../user/apps/git/git.nix
+    ../../user/apps/terminal/gpg.nix
     ../../user/apps/terminal/myvim.nix
     # ../../user/apps/terminal/helix-fork.nix
     ../../user/apps/terminal/helix.nix
@@ -45,6 +46,13 @@
     memory_usage.disabled = false;
     memory_usage.threshold = -1;
   };
+
+  programs.git.signing = {
+    key = "FA2B29F4047C076F";
+    signByDefault = true;
+  };
+
+  programs.git.settings.user.email = lib.mkForce "1270619+danruto@users.noreply.github.com";
 
   programs.nix-index = {
     enable = true;
