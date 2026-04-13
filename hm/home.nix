@@ -91,6 +91,11 @@
   programs.fish.enable = true;
   programs.man.enable = false;
 
+  programs.git.settings = {
+    commit.gpgSign = true;
+    user.signingKey = "FA2B29F4047C076F";
+  };
+
   imports = [
     ../profiles/shared.nix
     ../user/shell/sh.nix
@@ -108,6 +113,7 @@
     ../user/apps/terminal/foot.nix
     ../user/apps/fileman/yazi.nix
     ../user/apps/ai/llm.nix
+    ../user/apps/terminal/gpg.nix
     ../user/wm/fonts.nix
     # ../user/wm/sway.nix
     # ../user/wm/niri/niri.nix
