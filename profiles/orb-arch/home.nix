@@ -47,12 +47,16 @@
     memory_usage.threshold = -1;
   };
 
-  programs.git.signing = {
-    key = "FA2B29F4047C076F";
-    signByDefault = true;
-  };
-
-  programs.git.settings.user.email = lib.mkForce "1270619+danruto@users.noreply.github.com";
+  programs.git.includes = lib.mkAfter [
+    {
+      condition = "gitdir:~/dev/nearmap/";
+      contents = {
+        commit.gpgSign = true;
+        user.signingKey = "FA2B29F4047C076F";
+        user.email = "1270619+danruto@users.noreply.github.com";
+      };
+    }
+  ];
 
   programs.nix-index = {
     enable = true;
