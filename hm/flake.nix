@@ -91,7 +91,7 @@
             };
 
             name = "Danny Sok";
-            email = "danny.sok@nearmap.com";
+            email = "1270619+danruto@users.noreply.github.com";
           };
         };
       };

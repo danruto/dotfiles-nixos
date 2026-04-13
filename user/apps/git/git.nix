@@ -60,7 +60,9 @@ in
           user = {
             name = name;
             email = "1270619+danruto@users.noreply.github.com";
+            signingKey = "FA2B29F4047C076F";
           };
+          commit.gpgSign = true;
         };
       }
       {
