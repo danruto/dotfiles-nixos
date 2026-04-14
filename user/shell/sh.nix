@@ -44,6 +44,12 @@ let
   };
 in
 {
+  home.sessionPath = [
+    "$HOME/.cargo/bin"
+    "$HOME/go/bin"
+    "$HOME/.local/bin"
+  ];
+
   programs.fish = {
     enable = true;
     shellAliases = myAliases;
