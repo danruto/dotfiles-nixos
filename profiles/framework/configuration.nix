@@ -107,6 +107,8 @@ with lib;
   services.fprintd.enable = true;
   # security.pam.services.login.fprintAuth = true;
 
+  programs.nix-ld.enable = true;
+
   # System packages
   environment.systemPackages = with pkgs; [
     vim

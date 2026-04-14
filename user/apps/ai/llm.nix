@@ -6,11 +6,11 @@ in
   home.packages = with pkgs-unstable; [
     opencode
     claude-code
-    amp-cli
+    sox # voice for cc
+    # amp-cli
     # gemini-cli
     # codex
     # nur.repos.charmbracelet.crush
-    sox
   ];
 
   home.file.".claude/CLAUDE.md".source = ./configs/CLAUDE.md;
