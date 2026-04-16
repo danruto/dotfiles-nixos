@@ -132,11 +132,11 @@ ifeq ($(UNAME), Darwin)
 ifeq ($(ARCH), arm64)
 	@echo "Using ARM64 (Apple Silicon) configuration"
 	nix build ".#darwinConfigurations.$(PROFILE).system" --show-trace
-	sudo ./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#$(PROFILE)"
+	sudo ./result/sw/bin/darwin-rebuild activate
 else
 	@echo "Using x86_64 (Intel) configuration"
 	nix build ".#darwinConfigurations.$(PROFILE)-x86.system" --show-trace
-	sudo ./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#$(PROFILE)-x86"
+	sudo ./result/sw/bin/darwin-rebuild activate
 endif
 else
 	@echo "Building for profile: $(PROFILE) on NixOS"
