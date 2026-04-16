@@ -136,9 +136,35 @@ return {
 				dependencies = {
 					{ "3rd/image.nvim", rocks = false, opts = { backend = "kitty", processor = "magick_cli" } },
 				},
+				config = function(_, opts)
+					require("diagram").setup(opts)
+					vim.api.nvim_create_user_command("DiagramRender", function()
+						local bufnr = vim.api.nvim_get_current_buf()
+						local winnr = vim.api.nvim_get_current_win()
+						local integration = require("diagram/integrations/markdown")
+						local image_nvim = require("image")
+						local diagrams = integration.query_buffer_diagrams(bufnr)
+						for _, diagram in ipairs(diagrams) do
+							local renderer = require("diagram/renderers/" .. diagram.renderer_id)
+							local result = renderer.render(diagram.source, opts.renderer_options[diagram.renderer_id] or {})
+							if result and result.file_path then
+								local image = image_nvim.from_file(result.file_path, {
+									buffer = bufnr,
+									window = winnr,
+									with_virtual_padding = true,
+									inline = true,
+									x = diagram.col,
+									y = diagram.row,
+									render_offset_top = 1,
+								})
+								if image then image:render() end
+							end
+						end
+					end, {})
+				end,
 				opts = {
 					events = {
-						render_buffer = { "InsertLeave", "BufWinEnter", "TextChanged" },
+						render_buffer = {},
 						clear_buffer = { "BufLeave" },
 					},
 					renderer_options = {
