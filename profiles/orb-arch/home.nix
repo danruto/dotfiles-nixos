@@ -58,6 +58,11 @@
     }
   ];
 
+  fonts.fontconfig.enable = true;
+  home.packages = with pkgs; [
+    noto-fonts
+  ];
+
   programs.nix-index = {
     enable = true;
     enableFishIntegration = true;

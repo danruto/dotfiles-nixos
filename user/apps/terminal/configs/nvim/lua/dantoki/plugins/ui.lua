@@ -126,46 +126,49 @@ return {
 	},
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
-		cmd = "RenderMarkdown",
-		dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use standalone mini plugins
-		opts = {},
-	},
-	{
-		"3rd/diagram.nvim",
+		ft = { "markdown", "Avante" },
 		dependencies = {
-			{ "3rd/image.nvim", rocks = false, opts = { backend = "kitty", processor = "magick_cli" } },
+			"nvim-treesitter/nvim-treesitter",
+			"echasnovski/mini.nvim",
+			{
+				"3rd/diagram.nvim",
+				ft = { "markdown" },
+				dependencies = {
+					{ "3rd/image.nvim", rocks = false, opts = { backend = "kitty", processor = "magick_cli" } },
+				},
+				opts = {
+					events = {
+						render_buffer = { "InsertLeave", "BufWinEnter", "TextChanged" },
+						clear_buffer = { "BufLeave" },
+					},
+					renderer_options = {
+						mermaid = {
+							background = nil,
+							theme = nil,
+							scale = 1,
+							cli_args = {},
+						},
+						plantuml = {
+							charset = nil,
+						},
+						d2 = {
+							theme_id = nil,
+							dark_theme_id = nil,
+							scale = nil,
+							layout = nil,
+							sketch = nil,
+						},
+						gnuplot = {
+							size = nil,
+							font = nil,
+							theme = nil,
+						},
+					},
+				},
+			},
 		},
-		cmd = "RenderMarkdown",
-		-- ft = { "markdown" }, -- disable due to non-kitty terms like foot having issues
-		opts = { -- you can just pass {}, defaults below
-			events = {
-				render_buffer = { "InsertLeave", "BufWinEnter", "TextChanged" },
-				clear_buffer = { "BufLeave" },
-			},
-			renderer_options = {
-				mermaid = {
-					background = nil, -- nil | "transparent" | "white" | "#hex"
-					theme = nil, -- nil | "default" | "dark" | "forest" | "neutral"
-					scale = 1, -- nil | 1 (default) | 2  | 3 | ...
-					width = nil, -- nil | 800 | 400 | ...
-					height = nil, -- nil | 600 | 300 | ...
-				},
-				plantuml = {
-					charset = nil,
-				},
-				d2 = {
-					theme_id = nil,
-					dark_theme_id = nil,
-					scale = nil,
-					layout = nil,
-					sketch = nil,
-				},
-				gnuplot = {
-					size = nil, -- nil | "800,600" | ...
-					font = nil, -- nil | "Arial,12" | ...
-					theme = nil, -- nil | "light" | "dark" | custom theme string
-				},
-			},
+		opts = {
+			file_types = { "markdown", "Avante" },
 		},
 	},
 	{

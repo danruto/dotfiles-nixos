@@ -468,14 +468,7 @@ return {
 			},
 
 			sources = {
-				default = { "avante", "lsp", "path", "snippets", "buffer" },
-				providers = {
-					avante = {
-						module = "blink-cmp-avante",
-						name = "Avante",
-						opts = {},
-					},
-				},
+				default = { "lsp", "path", "snippets", "buffer" },
 			},
 
 			cmdline = {
@@ -488,7 +481,7 @@ return {
 		"yetone/avante.nvim",
 		event = "VeryLazy",
 		version = false, -- Never set this value to "*"! Never!
-		enabled = true,
+		enabled = false,
 		opts = {
 			providers = {
 				ollama = {
@@ -528,14 +521,7 @@ return {
 			-- 		},
 			-- 	},
 			-- },
-			{
-				-- Make sure to set this up properly if you have lazy=true
-				"MeanderingProgrammer/render-markdown.nvim",
-				opts = {
-					file_types = { "markdown", "Avante" },
-				},
-				ft = { "markdown", "Avante" },
-			},
+			"MeanderingProgrammer/render-markdown.nvim",
 		},
 	},
 	{
