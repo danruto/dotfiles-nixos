@@ -6,7 +6,28 @@
     # package = pkgs.neovim-unwrapped;
     # package = pkgs.unstable.neovim-unwrapped.override ({ tree-sitter = pkgs.tree-sitter; });
     # package = pkgs.unstable.neovim-unwrapped;
-    package = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    package = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+      postInstall = (old.postInstall or "") + ''
+        mkdir -p $out/share/applications
+        if [ ! -f $out/share/applications/nvim.desktop ]; then
+          cat > $out/share/applications/nvim.desktop << 'DESKTOP'
+[Desktop Entry]
+Name=Neovim
+GenericName=Text Editor
+Comment=Edit text files
+TryExec=nvim
+Exec=nvim %F
+Terminal=true
+Type=Application
+Keywords=Text;editor;
+Icon=nvim
+Categories=Utility;TextEditor;
+StartupNotify=false
+MimeType=text/english;text/plain;
+DESKTOP
+        fi
+      '';
+    });
 
     extraPackages = with pkgs; [
       # Telescope
