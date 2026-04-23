@@ -2,7 +2,7 @@
 {
   home.file.".config/zellij/themes/lavi.kdl".source = ./configs/zellij/zellij-lavi.kdl;
   home.file.".config/zellij/config.kdl".source = ./configs/zellij/zellij.kdl;
-  home.file.".config/zellij/layouts/default.kdl".text = ''
+  home.file.".config/zellij/layouts/zjs.kdl".text = ''
     layout {
         swap_tiled_layout name="vertical" {
             tab max_panes=5 {
