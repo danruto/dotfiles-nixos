@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Remove .direnv/ directories under a root (default ~/dev) so their nix-direnv
+# gcroots are released. Re-entering the project with `cd` will rebuild the shell.
+#
+# Usage:
+#   direnv-prune-dev               # dry run on ~/dev
+#   direnv-prune-dev --apply       # actually delete
+#   direnv-prune-dev /some/path    # dry run on /some/path
+#   direnv-prune-dev /some/path --apply
+
+set -euo pipefail
+
+ROOT="$HOME/dev"
+APPLY=0
+
+for arg in "$@"; do
+    case "$arg" in
+        --apply) APPLY=1 ;;
+        -h|--help)
+            sed -n '2,9p' "$0" | sed 's/^# \?//'
+            exit 0
+            ;;
+        *) ROOT="$arg" ;;
+    esac
+done
+
+if [[ ! -d "$ROOT" ]]; then
+    echo "error: $ROOT is not a directory" >&2
+    exit 1
+fi
+
+mapfile -t DIRS < <(find "$ROOT" -name ".direnv" -type d -prune 2>/dev/null | sort)
+
+if [[ ${#DIRS[@]} -eq 0 ]]; then
+    echo "No .direnv directories under $ROOT"
+    exit 0
+fi
+
+TOTAL=$(du -shc "${DIRS[@]}" 2>/dev/null | tail -1 | cut -f1)
+echo "Found ${#DIRS[@]} .direnv directories under $ROOT (local size: $TOTAL)"
+echo "Note: store paths these pin are much larger — freed via 'ncg' after this."
+echo
+
+if [[ $APPLY -eq 0 ]]; then
+    printf '  %s\n' "${DIRS[@]}"
+    echo
+    echo "Dry run. Re-run with --apply to delete."
+    exit 0
+fi
+
+LOG_DIR="$HOME/.local/share/direnv-prune"
+mkdir -p "$LOG_DIR"
+LOG="$LOG_DIR/$(date +%Y%m%d-%H%M%S).log"
+printf '%s\n' "${DIRS[@]}" > "$LOG"
+echo "Saved removed list to: $LOG"
+echo
+
+for d in "${DIRS[@]}"; do
+    rm -rf "$d"
+done
+
+echo "Removed ${#DIRS[@]} .direnv directories."
+echo
+echo "Next steps:"
+echo "  1. ncg                       # GC the now-unreferenced store paths"
+echo "  2. du -sh /nix/store         # measure the floor"
+echo "  3. cd into projects you care about — direnv will rebuild silently"
