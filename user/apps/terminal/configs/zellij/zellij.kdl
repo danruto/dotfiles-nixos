@@ -370,8 +370,3 @@ copy_on_select true
 
 show_startup_tips false
 
-// Doesnt work but keeping for the name
-tab {
-    name ""
-}
-

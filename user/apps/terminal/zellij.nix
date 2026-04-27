@@ -109,10 +109,8 @@
 
                   pipe_zjstatus_hints_format "{output} "
 
-                  format_hide_on_overleath "true"
-
                   hide_frame_for_single_pane "false"
-                  hide_frame_execpt_for_search "false"
+                  hide_frame_except_for_search "false"
                   hide_frame_except_for_fullscreen "false"
                   hide_frame_except_for_scroll "false"
 
@@ -135,9 +133,9 @@
                   mode_session     "#[bg=#FF87A5,fg=#7d001f,bold] ❤ SESSION "
                   mode_tmux        "#[bg=#c9c0ff,fg=#412da2,bold] ❤ TMUX "
 
-                  tab_active              "#[bg=#0D1017,fg=#83a598,bold] {index} {name} "
-                  tab_active_fullscreen   "#[bg=#0D1017,fg=#83a598,bold] {fullscreen_indicator} {index} {name} "
-                  tab_active_sync         "#[bg=#0D1017,fg=#83a598,bold] {sync_indicator} {index} {name} "
+                  tab_active              "#[bg=#564D82,fg=#83a598,bold] {index} {name} "
+                  tab_active_fullscreen   "#[bg=#564D82,fg=#83a598,bold] {fullscreen_indicator} {index} {name} "
+                  tab_active_sync         "#[bg=#564D82,fg=#83a598,bold] {sync_indicator} {index} {name} "
 
                   tab_normal              "#[fg=#a89984,bold] {index} {name} "
                   tab_normal_fullscreen   "#[fg=#a89984,bold] {fullscreen_indicator} {index} {name} "
