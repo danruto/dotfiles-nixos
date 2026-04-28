@@ -31,7 +31,7 @@ with lib;
       ../../system/wm/wayland.nix
       ../../system/wm/hyprland.nix
       ../../system/wm/niri.nix
-      # ../../system/wm/dms.nix
+      ../../system/wm/dms.nix
 
       ../../system/apps/docker.nix
 

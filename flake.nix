@@ -21,6 +21,7 @@
     , mango
     , helium
     , fff
+    , dms
     , ...
     }@inputs:
     let
@@ -181,6 +182,7 @@
         inherit (inputs) nixos-hardware;
         inherit (inputs) catppuccin;
         inherit (inputs) helium;
+        inherit (inputs) dms;
       };
 
       # Helper to create darwin configuration for any profile
@@ -378,6 +380,11 @@
     # };
     catppuccin.url = "github:catppuccin/nix";
     helium.url = "github:vikingnope/helium-browser-nix-flake";
+
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     wanderer = {
       url = "github:fonger900/wanderer";

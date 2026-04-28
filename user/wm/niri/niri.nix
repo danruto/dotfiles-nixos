@@ -1,4 +1,4 @@
-{ niri, pkgs, pkgs-unstable, lib, ... }:
+{ config, niri, pkgs, pkgs-unstable, lib, ... }:
 let
   stable-packages = with pkgs; [
     wlr-randr
@@ -23,10 +23,12 @@ in
 {
   imports = [
     ../waybar/waybar.nix
-    # ./dms.nix
+    ./dms.nix
   ];
 
   home.packages = stable-packages ++ unstable-packages;
+
+  programs.waybar.enable = lib.mkIf config.programs.dank-material-shell.enable (lib.mkForce false);
 
   # systemd.user.services.swaybg = {
   #   Unit = {
@@ -73,8 +75,16 @@ in
   };
 
   programs.niri.settings = {
+    environment = {
+      XDG_CURRENT_DESKTOP = "niri";
+      QT_QPA_PLATFORM = "wayland";
+      ELECTRON_OZONE_PLATFORM_HINT = "auto";
+      QT_QPA_PLATFORMTHEME = "gtk3";
+      QT_QPA_PLATFORMTHEME_QT6 = "gtk3";
+    };
+
     spawn-at-startup = [
-      # { argv = [ "noctalia-shell" ]; }
+      { argv = [ "dms" "run" ]; }
     ];
 
     input.touchpad = {
@@ -157,7 +167,16 @@ in
 
     };
 
+    layer-rules = [
+      {
+        matches = [{ namespace = "^quickshell$"; }];
+        place-within-backdrop = true;
+      }
+    ];
+
     layout = {
+      background-color = "transparent";
+
       "focus-ring" = {
         width = 4;
         # active.color = "#7fc8ff";
@@ -231,6 +250,10 @@ in
       {
         matches = [{ app-id = "^org\.wezfurlong\.wezterm$"; }];
         default-column-width = { };
+      }
+      {
+        matches = [{ app-id = "org.quickshell"; }];
+        open-floating = true;
       }
     ];
 
@@ -334,8 +357,23 @@ in
       "Mod+Ctrl+8".action.move-column-to-workspace = 8;
       "Mod+Ctrl+9".action.move-column-to-workspace = 9;
 
-      "Mod+Comma".action.consume-window-into-column = [ ];
-      "Mod+Period".action.expel-window-from-column = [ ];
+      "Mod+BracketLeft".action.consume-window-into-column = [ ];
+      "Mod+BracketRight".action.expel-window-from-column = [ ];
+
+      "Mod+Space".action.spawn = [ "dms" "ipc" "call" "spotlight" "toggle" ];
+      "Mod+V".action.spawn = [ "dms" "ipc" "call" "clipboard" "toggle" ];
+      "Mod+M".action.spawn = [ "dms" "ipc" "call" "processlist" "focusOrToggle" ];
+      "Mod+Comma".action.spawn = [ "dms" "ipc" "call" "settings" "focusOrToggle" ];
+      "Mod+N".action.spawn = [ "dms" "ipc" "call" "notifications" "toggle" ];
+      "Mod+Y".action.spawn = [ "dms" "ipc" "call" "dankdash" "wallpaper" ];
+      "Mod+Alt+L".action.spawn = [ "dms" "ipc" "call" "lock" "lock" ];
+
+      XF86AudioRaiseVolume.action.spawn = [ "dms" "ipc" "call" "audio" "increment" "3" ];
+      XF86AudioLowerVolume.action.spawn = [ "dms" "ipc" "call" "audio" "decrement" "3" ];
+      XF86AudioMute.action.spawn = [ "dms" "ipc" "call" "audio" "mute" ];
+
+      XF86MonBrightnessUp.action.spawn = [ "dms" "ipc" "call" "brightness" "increment" "5" "" ];
+      XF86MonBrightnessDown.action.spawn = [ "dms" "ipc" "call" "brightness" "decrement" "5" "" ];
 
       "Mod+D".action.switch-preset-column-width = [ ];
       "Mod+F".action.maximize-column = [ ];
