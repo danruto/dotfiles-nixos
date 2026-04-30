@@ -10,9 +10,8 @@ let
     vesktop
     # insomnium
     # insomnia
-    mpv
+    # mpv - using flatpak instead
     slack
-    obs-studio
   ];
 in
 {

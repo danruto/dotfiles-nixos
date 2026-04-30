@@ -134,6 +134,9 @@ with lib;
   services.flatpak.enable = true;
   services.flatpak.packages = [
     "com.gitbutler.gitbutler"
+    "com.obsproject.Studio"
+    "io.mpv.Mpv"
+    "org.libreoffice.LibreOffice"
   ];
 
   services.fwupd.enable = true;

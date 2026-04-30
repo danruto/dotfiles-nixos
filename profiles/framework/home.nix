@@ -58,7 +58,7 @@
     # waydroid-helper
     fakeroot
     pkgs-unstable.vicinae
-    libreoffice-fresh
+    # libreoffice-fresh - switched to flatpak
     # gitbutler - switched to flatpak
     (pkgs.symlinkJoin {
       name = "yaak-wrapped";
