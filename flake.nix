@@ -21,7 +21,9 @@
     , mango
     , helium
     , fff
+    , cull-src
     , dms
+    , dms-plugin-diskusage
     , ...
     }@inputs:
     let
@@ -166,6 +168,7 @@
         inherit (inputs) neovim-nightly-overlay;
         inherit (inputs) wanderer;
         inherit (inputs) fff;
+        inherit (inputs) cull-src;
 
         # channels = { inherit nixpkgs nixpkgs-unstable; };
       };
@@ -183,6 +186,7 @@
         inherit (inputs) catppuccin;
         inherit (inputs) helium;
         inherit (inputs) dms;
+        inherit (inputs) dms-plugin-diskusage;
       };
 
       # Helper to create darwin configuration for any profile
@@ -386,6 +390,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    dms-plugin-diskusage = {
+      url = "github:alcxyz/DankDiskUsage";
+      flake = false;
+    };
+
     wanderer = {
       url = "github:fonger900/wanderer";
       flake = false;
@@ -394,6 +403,11 @@
     fff = {
       url = "github:dmtrKovalenko/fff.nvim";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    cull-src = {
+      url = "github:legostin/cull";
+      flake = false;
     };
 
     # Mac inputs

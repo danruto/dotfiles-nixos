@@ -106,6 +106,16 @@ return {
 		dependencies = {
 			-- "nvim-telescope/telescope-fzf-native.nvim",
 		},
+		opts = {
+			bar = {
+				update_events = {
+					win = { "CursorMoved", "WinResized" },
+					-- BufModifiedSet was removed in nvim 0.13-nightly; keep the rest.
+					buf = { "FileChangedShellPost", "TextChanged", "ModeChanged" },
+					global = { "DirChanged", "VimResized" },
+				},
+			},
+		},
 	},
 	{
 		"rachartier/tiny-inline-diagnostic.nvim",

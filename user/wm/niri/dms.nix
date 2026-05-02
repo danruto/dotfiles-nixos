@@ -1,4 +1,4 @@
-{ dms, ... }:
+{ dms, dms-plugin-diskusage, ... }:
 {
   imports = [
     dms.homeModules.dank-material-shell
@@ -18,5 +18,10 @@
     enableAudioWavelength = true;
     enableCalendarEvents = true;
     enableClipboardPaste = true;
+
+    plugins.DankDiskUsage = {
+      enable = true;
+      src = dms-plugin-diskusage;
+    };
   };
 }

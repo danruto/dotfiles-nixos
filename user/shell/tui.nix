@@ -45,6 +45,7 @@ in
   ];
 
   imports = [
+    ./cull.nix
   ];
 
   programs.bat.enable = true;
