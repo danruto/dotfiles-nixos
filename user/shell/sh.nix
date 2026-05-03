@@ -53,7 +53,12 @@ in
   programs.fish = {
     enable = true;
     shellAliases = myAliases;
-    interactiveShellInit = "set fish_greeting";
+    interactiveShellInit = ''
+      set fish_greeting
+       if command -q pbtk
+        pbtk init fish | source
+      end
+    '';
   };
 
   programs.zsh = {

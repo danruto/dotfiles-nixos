@@ -38,6 +38,7 @@
     ../../user/apps/fileman/cosmic.nix
     # ../../user/apps/fileman/nemo.nix
     ../../user/apps/fileman/yazi.nix
+    ../../user/apps/fileman/elio.nix
     ../../user/apps/gui/gui.nix
     # ../../user/apps/gui/neovide.nix
     ../../user/apps/gui/vscode.nix

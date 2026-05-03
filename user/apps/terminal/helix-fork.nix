@@ -96,6 +96,7 @@
           # "P" = [ "paste_after" ];
           # "p" = [ "paste_before" ];
           "C-y" = [ ":sh zellij run -fc -x 10%% -y 10%% --width 80%% --height 80%% -- bash ~/.config/helix/yazi-picker.sh open %{buffer_name}" ];
+          # "C-y" = [ ":sh zellij run -fc -x 10%% -y 10%% --width 80%% --height 80%% -- bash ~/.config/helix/elio-picker.sh open %{buffer_name}" ];
         };
 
         normal.space.g = {
@@ -290,6 +291,7 @@
   home.file.".config/helix/themes/oceanic-next.toml".source = ./configs/helix/oceanic-next.toml;
   home.file.".config/helix/themes/panda.toml".source = ./configs/helix/panda.toml;
   home.file.".config/helix/yazi-picker.sh".source = ./configs/helix/yazi-picker.sh;
+  home.file.".config/helix/elio-picker.sh".source = ./configs/helix/elio-picker.sh;
 
 }
 
