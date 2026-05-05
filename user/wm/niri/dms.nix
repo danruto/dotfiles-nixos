@@ -10,6 +10,12 @@
     settings = {
       theme = "dark";
       dynamicTheming = true;
+      use24HourClock = false;
+    };
+
+    session = {
+      weatherLocation = "Sydney, NSW";
+      weatherCoordinates = "-33.8688,151.2093";
     };
 
     enableSystemMonitoring = false;

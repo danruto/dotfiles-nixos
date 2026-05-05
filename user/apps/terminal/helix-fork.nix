@@ -66,6 +66,7 @@
 
         # Fork settings
         rounded-corners = true;
+
         # cmdline.style = "popup";
         gradient-borders = {
           enable = true;
@@ -75,9 +76,15 @@
           end-color = "#00FFFF";
           animation-speed = 2;
         };
+
         inline-blame = {
           show = "cursor-line";
           format = "{commit} - {author} ({time-ago}): {title}";
+        };
+
+        notifications = {
+          # enable = false;
+          position = "bottom-right";
         };
       };
 
