@@ -69,6 +69,8 @@
         wrapProgram $out/bin/yaak-app \
           --set WEBKIT_DISABLE_DMABUF_RENDERER 0 \
           --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}" \
+          --prefix XDG_DATA_DIRS : "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}" \
+          --prefix XDG_DATA_DIRS : "${pkgs.gtk4}/share/gsettings-schemas/${pkgs.gtk4.name}" \
           --prefix XDG_DATA_DIRS : "${pkgs.adwaita-icon-theme}/share" \
           --set GIO_MODULE_DIR "${pkgs.glib-networking}/lib/gio/modules/"
       '';

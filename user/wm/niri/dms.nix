@@ -1,4 +1,4 @@
-{ dms, dms-plugin-diskusage, ... }:
+{ dms, dms-plugin-diskusage, pkgs-unstable, ... }:
 {
   imports = [
     dms.homeModules.dank-material-shell
@@ -6,6 +6,8 @@
 
   programs.dank-material-shell = {
     enable = true;
+
+    dgop.package = pkgs-unstable.dgop;
 
     settings = {
       theme = "dark";
@@ -18,14 +20,14 @@
       weatherCoordinates = "-33.8688,151.2093";
     };
 
-    enableSystemMonitoring = false;
+    enableSystemMonitoring = true;
     enableVPN = true;
     enableDynamicTheming = true;
     enableAudioWavelength = true;
     enableCalendarEvents = true;
     enableClipboardPaste = true;
 
-    plugins.DankDiskUsage = {
+    plugins.dankDiskUsage = {
       enable = true;
       src = dms-plugin-diskusage;
     };

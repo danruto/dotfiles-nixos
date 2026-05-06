@@ -184,17 +184,37 @@ return {
 		keys = {
 			{ "<Space>e", "<cmd>Neotree toggle<cr>", desc = "NeoTree" },
 		},
-		opts = {
-			sources = { "filesystem", "buffers", "git_status", "document_symbols" },
-			open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
-			filesystem = {
-				bind_to_cwd = false,
-				follow_current_file = {
-					enabled = true,
+		opts = function()
+			return {
+				sources = { "filesystem", "buffers", "git_status", "document_symbols" },
+				open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
+				filesystem = {
+					bind_to_cwd = false,
+					follow_current_file = { enabled = true },
+					use_libuv_file_watcher = true,
+					filtered_items = {
+						visible = vim.g.neotree_show_hidden or false,
+						hide_dotfiles = not (vim.g.neotree_show_hidden or false),
+						hide_gitignored = not (vim.g.neotree_show_hidden or false),
+					},
+					window = {
+						mappings = {
+							["H"] = "toggle_hidden_persist",
+						},
+					},
+					commands = {
+						toggle_hidden_persist = function(state)
+							local show = not (vim.g.neotree_show_hidden or false)
+							vim.g.neotree_show_hidden = show
+							state.filtered_items.visible = show
+							state.filtered_items.hide_dotfiles = not show
+							state.filtered_items.hide_gitignored = not show
+							require("neo-tree.sources.manager").refresh(state.name)
+						end,
+					},
 				},
-				use_libuv_file_watcher = true,
-			},
-		},
+			}
+		end,
 	},
 	{
 		"jake-stewart/jfind.nvim",
@@ -354,7 +374,26 @@ return {
 			{
 				"<Space>e",
 				function()
-					Snacks.explorer()
+					Snacks.explorer({
+						hidden = vim.g.snacks_explorer_show_all or false,
+						ignored = vim.g.snacks_explorer_show_all or false,
+						actions = {
+							toggle_show_all = function(picker)
+								local new_state = not picker.opts.hidden
+								picker.opts.hidden = new_state
+								picker.opts.ignored = new_state
+								vim.g.snacks_explorer_show_all = new_state
+								picker:find()
+							end,
+						},
+						win = {
+							list = {
+								keys = {
+									["H"] = "toggle_show_all",
+								},
+							},
+						},
+					})
 				end,
 				desc = "File Explorer",
 			},

@@ -55,9 +55,6 @@ in
     shellAliases = myAliases;
     interactiveShellInit = ''
       set fish_greeting
-       if command -q pbtk
-        pbtk init fish | source
-      end
     '';
   };
 
