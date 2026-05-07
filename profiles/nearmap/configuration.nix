@@ -151,23 +151,6 @@
 
   programs.zsh.enable = false;
 
-  services.paneru = {
-    enable = true;
-    settings = {
-      options = {
-        focus_follows_mouse = true;
-        mouse_follows_focus = true;
-      };
-      bindings = {
-        window_focus_west = "cmd - h";
-        window_focus_east = "cmd - l";
-        window_resize = "alt - r";
-        window_center = "alt - c";
-        quit = "ctrl + alt - q";
-      };
-    };
-  };
-
   system.stateVersion = 5;
 
 }

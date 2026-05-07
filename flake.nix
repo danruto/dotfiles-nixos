@@ -199,7 +199,6 @@
           modules = [
             # load configuration.nix from selected PROFILE
             (./. + "/profiles" + ("/" + profile) + "/configuration.nix")
-            inputs.paneru.darwinModules.paneru
             home-manager.darwinModules.home-manager
             {
               nixpkgs.config = {
@@ -416,11 +415,6 @@
     # Mac inputs
     darwin = {
       url = "github:LnL7/nix-darwin/nix-darwin-25.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    paneru = {
-      url = "github:karinushka/paneru";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
