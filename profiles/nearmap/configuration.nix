@@ -28,7 +28,7 @@
       "font-aporetic"
       # "ghostty"
       # "iina"
-      "insomnium"
+      # "insomnium"
       "raycast"
       "rectangle"
       # "spotify"
@@ -36,6 +36,7 @@
       # "orbstack"
       # "utm"
       # "vial"
+      # "yaak"
       # "zed"
     ];
     taps = [
@@ -123,9 +124,6 @@
       "com.apple.DesktopServices" = {
         DSDontWriteNetworkStores = true;
       };
-      "com.apple.mail" = {
-        AddressesIncludeNameOnPasteboard = false;
-      };
     };
 
   };
@@ -152,6 +150,23 @@
   security.pam.services.sudo_local.touchIdAuth = true;
 
   programs.zsh.enable = false;
+
+  services.paneru = {
+    enable = true;
+    settings = {
+      options = {
+        focus_follows_mouse = true;
+        mouse_follows_focus = true;
+      };
+      bindings = {
+        window_focus_west = "cmd - h";
+        window_focus_east = "cmd - l";
+        window_resize = "alt - r";
+        window_center = "alt - c";
+        quit = "ctrl + alt - q";
+      };
+    };
+  };
 
   system.stateVersion = 5;
 
