@@ -217,6 +217,15 @@
                     doCheck = false;
                     doInstallCheck = false;
                   });
+
+                  # macOS strips the linker-signed adhoc signature off fish's binary,
+                  # leaving a tainted page that the kernel rejects with SIGKILL on launch.
+                  # Re-sign as the final build step so the embedded hashes match the file.
+                  fish = prev.fish.overrideAttrs (oldAttrs: {
+                    postFixup = (oldAttrs.postFixup or "") + ''
+                      ${prev.darwin.sigtool}/bin/codesign --force --sign - $out/bin/fish
+                    '';
+                  });
                 })
               ];
 
