@@ -21,6 +21,7 @@
     # ../../user/apps/terminal/alacritty.nix
     # ../../user/apps/terminal/kitty.nix
     ../../user/wm/aerospace
+    ../../user/wm/miri
   ];
 
   home.packages = with pkgs; [

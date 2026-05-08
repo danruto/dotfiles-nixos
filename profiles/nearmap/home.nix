@@ -25,6 +25,7 @@ in
     ../../user/lang/go/go.nix # go tools
     ../../user/lang/typescript/typescript.nix # go tools
     # ../../user/wm/hyprspace
+    ../../user/wm/miri
   ];
 
   home.packages = with pkgs; [

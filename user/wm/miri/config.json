@@ -1,0 +1,178 @@
+{
+    "animation_curve": "snappy",
+    "animation_duration_ms": 0,
+    "center_focused_column": true,
+    "debug_logging": false,
+    "default_width_ratio": 0.8,
+    "excluded_keybindings": [
+        "cmd+shift+5"
+    ],
+    "focus_alignment": "smart",
+    "hide_method": "skylight_alpha",
+    "hover_focus_after_trackpad_ms": 280,
+    "hover_focus_animation_ms": 0,
+    "hover_focus_delay_ms": 120,
+    "hover_focus_edge_trigger_width": 8,
+    "hover_focus_max_scroll_ratio": 0.15,
+    "hover_focus_mode": "edge_or_visible",
+    "hover_focus_requires_visible_ratio": 0.15,
+    "hover_to_focus": true,
+    "inner_gap": 0,
+    "keybindings": {
+        "column_first": [
+            "cmd+[",
+            "cmd+home"
+        ],
+        "column_last": [
+            "cmd+]",
+            "cmd+end"
+        ],
+        "column_left": [
+            "alt+h"
+        ],
+        "column_right": [
+            "alt+l"
+        ],
+        "cycle_all_width_presets_backward": [
+            "cmd+ctrl+shift+h"
+        ],
+        "cycle_all_width_presets_forward": [
+            "cmd+ctrl+shift+l"
+        ],
+        "cycle_width_preset_backward": [
+            "cmd+ctrl+h"
+        ],
+        "cycle_width_preset_forward": [
+            "cmd+ctrl+l"
+        ],
+        "focus_previous_workspace": [
+            "alt+tab"
+        ],
+        "focus_workspace_1": [
+            "alt+1"
+        ],
+        "focus_workspace_2": [
+            "alt+2"
+        ],
+        "focus_workspace_3": [
+            "alt+3"
+        ],
+        "focus_workspace_4": [
+            "alt+4"
+        ],
+        "focus_workspace_5": [
+            "alt+5"
+        ],
+        "focus_workspace_6": [
+            "alt+6"
+        ],
+        "focus_workspace_7": [
+            "alt+7"
+        ],
+        "focus_workspace_8": [
+            "alt+8"
+        ],
+        "focus_workspace_9": [
+            "alt+9"
+        ],
+        "move_column_down": [
+            "alt+shift+j"
+        ],
+        "move_column_left": [
+            "alt+shift+h"
+        ],
+        "move_column_right": [
+            "alt+shift+l"
+        ],
+        "move_column_to_first": [
+            "cmd+shift+[",
+            "cmd+shift+home"
+        ],
+        "move_column_to_last": [
+            "cmd+shift+]",
+            "cmd+shift+end"
+        ],
+        "move_column_to_workspace_1": [
+            "alt+shift+1"
+        ],
+        "move_column_to_workspace_2": [
+            "alt+shift+2"
+        ],
+        "move_column_to_workspace_3": [
+            "alt+shift+3"
+        ],
+        "move_column_to_workspace_4": [
+            "alt+shift+4"
+        ],
+        "move_column_to_workspace_5": [
+            "alt+shift+5"
+        ],
+        "move_column_to_workspace_6": [
+            "alt+shift+6"
+        ],
+        "move_column_to_workspace_7": [
+            "alt+shift+7"
+        ],
+        "move_column_to_workspace_8": [
+            "alt+shift+8"
+        ],
+        "move_column_to_workspace_9": [
+            "alt+shift+9"
+        ],
+        "move_column_up": [
+            "alt+shift+k"
+        ],
+        "nudge_all_widths_narrower": [
+            "cmd+ctrl+shift+-"
+        ],
+        "nudge_all_widths_wider": [
+            "cmd+ctrl+shift+="
+        ],
+        "nudge_width_narrower": [
+            "cmd+ctrl+-"
+        ],
+        "nudge_width_wider": [
+            "cmd+ctrl+="
+        ],
+        "workspace_down": [
+            "alt+j"
+        ],
+        "workspace_up": [
+            "alt+k"
+        ]
+    },
+    "keyboard_animation_ms": 0,
+    "move_column_animation_ms": 0,
+    "new_window_position": "after_active",
+    "outer_gap": 0,
+    "parked_sliver_width": 1,
+    "persist_layout": true,
+    "preset_width_ratios": [
+        0.5,
+        0.67,
+        0.8,
+        1
+    ],
+    "rescan_interval_ms": 1000,
+    "restore_on_exit": true,
+    "rules": [
+        {
+            "behavior": "float",
+            "bundle_id": "com.apple.finder"
+        }
+    ],
+    "trackpad_navigation": true,
+    "trackpad_navigation_deceleration": 30,
+    "trackpad_navigation_fingers": 3,
+    "trackpad_navigation_hover_suppression_ms": 280,
+    "trackpad_navigation_invert_x": false,
+    "trackpad_navigation_invert_y": false,
+    "trackpad_navigation_momentum_min_velocity": 100000,
+    "trackpad_navigation_sensitivity": 3.0,
+    "trackpad_navigation_settle_animation_ms": 60,
+    "trackpad_navigation_snap": "nearest_column",
+    "trackpad_navigation_velocity_gain": 1.35,
+    "trackpad_settle_animation_ms": 0,
+    "width_animation_ms": 0,
+    "workspace_auto_back_and_forth": true
+}
