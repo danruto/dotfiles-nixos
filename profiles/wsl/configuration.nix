@@ -32,7 +32,6 @@ with lib;
     enable = true;
     enableOnBoot = true;
     autoPrune.enable = true;
-    extraOptions = "--insecure-registry 192.168.0.252:49159";
   };
 
   # Fix nix path
@@ -57,6 +56,49 @@ with lib;
   nix.gc = {
     automatic = true;
     options = "--delete-older-than 7d";
+  };
+
+  hardware.nvidia-container-toolkit = {
+    enable = true;
+    suppressNvidiaDriverAssertion = true;
+    discovery-mode = "wsl";
+    mount-nvidia-executables = false;
+    mount-nvidia-docker-1-directories = false;
+    mounts = [{
+      hostPath = "/usr/lib/wsl/lib";
+      containerPath = "/usr/lib/wsl/lib";
+    }];
+  };
+
+  environment.etc."nvidia-container-runtime/config.toml".text = ''
+    [nvidia-container-runtime]
+    mode = "cdi"
+    runtimes = ["docker-runc", "runc", "crun"]
+    [nvidia-container-runtime-hook]
+    path = "${lib.getOutput "tools" pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime-hook"
+    [nvidia-container-runtime.modes.cdi]
+    default-kind = "nvidia.com/gpu"
+  '';
+
+  systemd.services.nvidia-container-toolkit-cdi-generator.environment = {
+    LD_LIBRARY_PATH = "/usr/lib/wsl/lib";
+  };
+
+  virtualisation.docker = {
+    extraPackages = [
+      (lib.getOutput "tools" pkgs.nvidia-container-toolkit)
+    ];
+    daemon.settings = {
+      insecure-registries = [ "192.168.0.252:49159" ];
+      runtimes.nvidia = {
+        path = "${lib.getOutput "tools" pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
+        args = [];
+      };
+    };
+  };
+
+  environment.sessionVariables = {
+    LD_LIBRARY_PATH = "/usr/lib/wsl/lib";
   };
 
   # I'm sorry Stallman-taichou

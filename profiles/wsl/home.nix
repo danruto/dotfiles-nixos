@@ -33,6 +33,10 @@
     ../../user/apps/networking/ssh.nix
   ];
 
+  home.sessionVariables = {
+    LD_LIBRARY_PATH = "/usr/lib/wsl/lib";
+  };
+
   home.stateVersion = "24.05"; # Please read the comment before changing.
 
   home.packages = with pkgs; [
