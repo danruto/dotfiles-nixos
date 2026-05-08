@@ -26,6 +26,7 @@ in
     ../../user/lang/typescript/typescript.nix # go tools
     # ../../user/wm/hyprspace
     ../../user/wm/miri
+    ../../user/apps/networking/ssh.nix
   ];
 
   home.packages = with pkgs; [

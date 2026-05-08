@@ -22,6 +22,7 @@
     # ../../user/apps/terminal/kitty.nix
     ../../user/wm/aerospace
     ../../user/wm/miri
+    ../../user/apps/networking/ssh.nix
   ];
 
   home.packages = with pkgs; [

@@ -16,6 +16,7 @@
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/fileman/elio.nix
     ../../user/lang/shell/shell.nix
+    ../../user/apps/networking/ssh.nix
   ];
 
   home.username = "danruto";

@@ -20,6 +20,7 @@
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
     ../../user/apps/fileman/yazi.nix
+    ../../user/apps/networking/ssh.nix
   ];
 
   home.stateVersion = "25.05"; # Please read the comment before changing.

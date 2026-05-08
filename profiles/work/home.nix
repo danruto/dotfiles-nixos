@@ -20,6 +20,7 @@
     ../../user/lang/lua/lua.nix # lua tools
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
+    ../../user/apps/networking/ssh.nix
   ];
 
   home.stateVersion = "24.05"; # Please read the comment before changing.

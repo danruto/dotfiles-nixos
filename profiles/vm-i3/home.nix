@@ -32,6 +32,7 @@
     ../../user/apps/fileman/cosmic.nix
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/ai/llm.nix
+    ../../user/apps/networking/ssh.nix
   ];
 
   systemd.user.services.vicinae = {
