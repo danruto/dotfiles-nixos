@@ -7,6 +7,7 @@
   # so any "global" defaults must live here as a Host * matchBlock.
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
     matchBlocks = {
       "*.pixelbru.sh" = {
         proxyCommand = "${pkgs-unstable.cloudflared}/bin/cloudflared access ssh --hostname %h";
