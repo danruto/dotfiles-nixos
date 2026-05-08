@@ -30,6 +30,7 @@
     ../../user/apps/terminal/myvim.nix
     # ../../user/apps/terminal/helix.nix
     ../../user/apps/terminal/helix-fork.nix
+    ../../user/apps/networking/cloudflared.nix
   ];
 
   home.stateVersion = "24.05"; # Please read the comment before changing.

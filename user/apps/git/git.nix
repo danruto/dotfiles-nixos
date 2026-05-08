@@ -1,10 +1,13 @@
 { pkgs, pkgs-unstable, email, ... }:
 
 let
+  hunk = pkgs.callPackage ./hunk.nix { };
+
   stable-packages = with pkgs; [
     git
     # gitui
     gh
+    hunk
   ];
 
   unstable-packages = with pkgs-unstable; [
@@ -25,6 +28,8 @@ in
       init.defaultBranch = "main";
       user.name = name;
       user.email = email;
+      core.pager = "${hunk}/bin/hunk pager";
+      alias.hd = "diff";
     };
     includes = [
       {
