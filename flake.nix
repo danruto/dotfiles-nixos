@@ -21,6 +21,7 @@
     , mango
     , helium
     , fff
+    , crit
     , cull-src
     , dms
     , dms-plugin-diskusage
@@ -168,6 +169,7 @@
         inherit (inputs) neovim-nightly-overlay;
         inherit (inputs) wanderer;
         inherit (inputs) fff;
+        inherit (inputs) crit;
         inherit (inputs) cull-src;
 
         # channels = { inherit nixpkgs nixpkgs-unstable; };
@@ -412,7 +414,12 @@
     };
 
     fff = {
-      url = "github:dmtrKovalenko/fff.nvim";
+      url = "github:dmtrKovalenko/fff";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    crit = {
+      url = "github:tomasz-tomczyk/crit";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 

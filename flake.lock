@@ -64,6 +64,26 @@
         "type": "github"
       }
     },
+    "crit": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778570595,
+        "narHash": "sha256-eQaOEE4wpqjYqQTog0LY5iCnl8h9cA44TiPosJD81aQ=",
+        "owner": "tomasz-tomczyk",
+        "repo": "crit",
+        "rev": "0efaa6f861995c03efe8648260b70a2460443c78",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tomasz-tomczyk",
+        "repo": "crit",
+        "type": "github"
+      }
+    },
     "cull-src": {
       "flake": false,
       "locked": {
@@ -153,13 +173,13 @@
         "lastModified": 1778539738,
         "narHash": "sha256-NWyg6RkQVBxQ+OOsD2yVi9GH2yLkhWJRxYHtgxtVseE=",
         "owner": "dmtrKovalenko",
-        "repo": "fff.nvim",
+        "repo": "fff",
         "rev": "39f67c0cf97c22a71408fc6de2f2888c5c4a700e",
         "type": "github"
       },
       "original": {
         "owner": "dmtrKovalenko",
-        "repo": "fff.nvim",
+        "repo": "fff",
         "type": "github"
       }
     },
@@ -809,6 +829,7 @@
       "inputs": {
         "blocklist-hosts": "blocklist-hosts",
         "catppuccin": "catppuccin",
+        "crit": "crit",
         "cull-src": "cull-src",
         "darwin": "darwin",
         "dms": "dms",

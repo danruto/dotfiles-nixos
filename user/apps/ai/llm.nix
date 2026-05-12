@@ -1,12 +1,14 @@
-{ pkgs, pkgs-unstable, fff, ... }:
+{ pkgs, pkgs-unstable, fff, crit, ... }:
 let
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  crit-pkg = crit.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   home.packages = with pkgs-unstable; [
     opencode
     claude-code
     sox # voice for cc
+    crit-pkg
     # amp-cli
     # gemini-cli
     # codex
