@@ -7,6 +7,8 @@
     # package = pkgs.unstable.neovim-unwrapped.override ({ tree-sitter = pkgs.tree-sitter; });
     # package = pkgs.unstable.neovim-unwrapped;
     package = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+      doCheck = false;
+      doInstallCheck = false;
       postInstall = (old.postInstall or "") + ''
         mkdir -p $out/share/applications
         if [ ! -f $out/share/applications/nvim.desktop ]; then
