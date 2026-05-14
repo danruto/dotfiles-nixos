@@ -50,6 +50,10 @@ in
     "$HOME/.local/bin"
   ];
 
+  home.sessionVariables = {
+    LESSCHARSET = "utf-8";
+  };
+
   programs.fish = {
     enable = true;
     shellAliases = myAliases;
