@@ -7,9 +7,9 @@ let
     let
       version = "1.3.0";
       sources = {
-        "x86_64-linux"   = { suffix = "linux_amd64";  hash = "sha256-XM29vRhL7mlyGdwtDDpS5vRiCc8lyhAofBgBTz8Nm9g="; };
-        "aarch64-linux"  = { suffix = "linux_arm64";  hash = "sha256-UTxKSUfz9BMsdICmKKB0lyEr4wNRHdf8QNvFVulAyUg="; };
-        "x86_64-darwin"  = { suffix = "darwin_amd64"; hash = "sha256-y5d6SkOI2uBu7W8BmJ1JkivQy7vrMu+LdS2jwH/r8Sg="; };
+        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-XM29vRhL7mlyGdwtDDpS5vRiCc8lyhAofBgBTz8Nm9g="; };
+        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-UTxKSUfz9BMsdICmKKB0lyEr4wNRHdf8QNvFVulAyUg="; };
+        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-y5d6SkOI2uBu7W8BmJ1JkivQy7vrMu+LdS2jwH/r8Sg="; };
         "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-f3ELNctpAGG+1DFSw4KF3Pj1DrB0sq2t8hYUsDG+P4Q="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
@@ -49,8 +49,6 @@ in
   ];
 
   home.file.".claude/CLAUDE.md".source = ./configs/CLAUDE.md;
-  home.file.".claude/commands/commit.md".source = ./configs/commands/commit.md;
-  home.file.".config/opencode/commands/commit.md".source = ./configs/opencode-commands/commit.md;
   home.file.".claude/settings.local.json".text =
     let
       base = builtins.fromJSON (builtins.readFile ./configs/settings.local.json);
