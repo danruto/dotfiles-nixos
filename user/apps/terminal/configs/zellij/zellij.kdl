@@ -216,16 +216,6 @@ plugins {
     }
     configuration location="zellij:configuration"
     plugin-manager location="zellij:plugin-manager"
-    zjstatus-hints location="https://github.com/b0o/zjstatus-hints/releases/latest/download/zjstatus-hints.wasm" {
-        max_length "130"
-        overflow_str ""
-        pipe_name "zjstatus_hints"
-        hide_in_base_mode true
-    }
-}
-
-load_plugins {
-    zjstatus-hints
 }
 
 // Choose what to do when zellij receives SIGTERM, SIGINT, SIGQUIT or SIGHUP
@@ -299,7 +289,7 @@ theme "lavi"
 // The name of the default layout to load on startup
 // Default: "default"
 //
-default_layout "compact"
+default_layout "zjsb"
 
 // Choose the mode that zellij uses when starting up.
 // Default: normal

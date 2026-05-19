@@ -15,9 +15,9 @@
       # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    zjstatus = {
-      url = "github:dj95/zjstatus";
-      # inputs.nixpkgs.follows = "nixpkgs-unstable";
+    zjsb = {
+      url = "git+ssh://git@github.com/danruto/pb-zjsb.git";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     helix-fork = {
@@ -44,7 +44,7 @@
     , neovim-nightly-overlay
     , nur
     , rust-overlay
-    , zjstatus
+    , zjsb
     , helix-fork
     , quickshell
     , noctalia
@@ -57,7 +57,7 @@
         rust-overlay.overlays.default
         nur.overlays.default
         (final: prev: {
-          zjstatus = zjstatus.packages.${prev.stdenv.hostPlatform.system}.default;
+          zjsb = zjsb.packages.${prev.stdenv.hostPlatform.system}.default;
         })
       ];
 
@@ -79,7 +79,7 @@
             inherit neovim-nightly-overlay;
             inherit nur;
             inherit rust-overlay;
-            inherit zjstatus;
+            inherit zjsb;
             inherit helix-fork;
             inherit quickshell;
             inherit noctalia;

@@ -14,7 +14,6 @@
     , helix
     , helix-fork
     , neovim-nightly-overlay
-    , zjstatus
     , niri
     , nixos-hardware
     , catppuccin
@@ -25,6 +24,7 @@
     , cull-src
     , dms
     , dms-plugin-diskusage
+    , zjsb
     , ...
     }@inputs:
     let
@@ -119,7 +119,7 @@
               rust-overlay.overlays.default
               nur.overlays.default
               (final: prev: {
-                zjstatus = zjstatus.packages.${prev.stdenv.hostPlatform.system}.default;
+                zjsb = zjsb.packages.${prev.stdenv.hostPlatform.system}.default;
 
                 pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
                   (python-final: python-prev: {
@@ -347,9 +347,9 @@
       # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    zjstatus = {
-      url = "github:dj95/zjstatus";
-      # inputs.nixpkgs.follows = "nixpkgs-unstable";
+    zjsb = {
+      url = "git+https://github.com/danruto/pb-zjsb.git";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     blocklist-hosts = {
