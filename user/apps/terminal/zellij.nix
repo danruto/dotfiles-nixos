@@ -13,6 +13,10 @@
                 plugin location="file:~/.config/zellij/plugins/zjsb.wasm" {
                     mode "bar"
                     install_claude_hooks "true"
+                    // Options: default | catppuccin-mocha | catppuccin-latte | gruvbox-dark | gruvbox-light
+                    theme "ayu-dark"
+                    // Sydney: +10:00 AEST / +11:00 AEDT — flip on DST transitions.
+                    clock_tz_offset "+10:00"
                 }
             }
         }
