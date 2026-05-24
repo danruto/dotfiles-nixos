@@ -211,7 +211,7 @@
               nixpkgs.overlays = [
                 rust-overlay.overlays.default
                 nur.overlays.default
-                  (final: prev: {
+                (final: prev: {
                   direnv = prev.direnv.overrideAttrs (oldAttrs: {
                     env = (oldAttrs.env or { }) // {
                       CGO_ENABLED = 1;
@@ -264,7 +264,7 @@
                 nixpkgs.overlays = [
                   rust-overlay.overlays.default
                   nur.overlays.default
-                      (final: prev: {
+                  (final: prev: {
                     pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
                       (python-final: python-prev: {
                         # Workaround for bug #437058
@@ -348,7 +348,7 @@
     };
 
     zjsb = {
-      url = "git+https://github.com/danruto/pb-zjsb.git";
+      url = "github:danruto/pb-zjsb";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 

@@ -1125,15 +1125,15 @@
       "locked": {
         "lastModified": 1779429819,
         "narHash": "sha256-uvHLuN5ZaVWcIiK/D8uTwR2SlzqA2SgORVCz9cBPKZo=",
-        "ref": "refs/heads/main",
+        "owner": "danruto",
+        "repo": "pb-zjsb",
         "rev": "0b37e9cfbb285d0035a4a7e315313f4c1b1af453",
-        "revCount": 15,
-        "type": "git",
-        "url": "https://github.com/danruto/pb-zjsb.git"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "https://github.com/danruto/pb-zjsb.git"
+        "owner": "danruto",
+        "repo": "pb-zjsb",
+        "type": "github"
       }
     }
   },
