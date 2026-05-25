@@ -28,6 +28,9 @@ let
     newzig = "cp ~/dev/pixelbrush/pb-flakes/.envrc . && cp ~/dev/pixelbrush/pb-flakes/.gitignore.default .gitignore && cp ~/dev/pixelbrush/pb-flakes/zig.nix flake.nix";
     newdn = "cp ~/dev/pixelbrush/pb-flakes/.envrc . && cp ~/dev/pixelbrush/pb-flakes/.gitignore.default .gitignore && cp ~/dev/pixelbrush/pb-flakes/dotnet.nix flake.nix";
 
+    # Unlock GPG key by performing a dummy sign
+    gpgu = "gpg --sign -o /dev/null /dev/null";
+
     # Git worktree aliases
     gwt = "git worktree";
     gwta = "git worktree add";
