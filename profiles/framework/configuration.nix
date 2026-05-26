@@ -102,7 +102,7 @@ with lib;
   security.pam.loginLimits = [
     { domain = "*"; type = "-"; item = "nofile"; value = "1048576"; }
   ];
-  systemd.extraConfig = "DefaultLimitNOFILE=1048576:1048576";
+  systemd.settings.Manager.DefaultLimitNOFILE = "1048576:1048576";
   systemd.user.extraConfig = "DefaultLimitNOFILE=1048576:1048576";
 
   # virt
