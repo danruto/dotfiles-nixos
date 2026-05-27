@@ -17,6 +17,8 @@
                     theme "ayu-dark"
                     // Sydney: +10:00 AEST / +11:00 AEDT — flip on DST transitions.
                     clock_tz_offset "+10:00"
+                    // TEMP — capture tab/pane event ordering for alt-l bouncing repro. Remove after diagnosis.
+                    debug_events "true"
                 }
             }
         }
