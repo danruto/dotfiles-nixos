@@ -5,6 +5,7 @@
     { self
     , nixpkgs
     , nixpkgs-unstable
+    , nixpkgs-master
     , home-manager
     , blocklist-hosts
     , rust-overlay
@@ -139,16 +140,25 @@
             ];
           };
 
+          pkgs-master = import nixpkgs-master {
+            inherit system;
+            config = {
+              allowUnfree = true;
+              allowUnfreePredicate = (_: true);
+              allowBroken = true;
+            };
+          };
+
           fontPkg = pkgs.d2coding;
         in
         {
-          inherit pkgs pkgs-unstable fontPkg;
+          inherit pkgs pkgs-unstable pkgs-master fontPkg;
         };
 
       # configure lib
       lib = nixpkgs.lib;
 
-      mkCommonSpecialArgs = { pkgs-unstable, fontPkg }: {
+      mkCommonSpecialArgs = { pkgs-unstable, pkgs-master, fontPkg }: {
         inherit username;
         # inherit name;
         inherit hostname;
@@ -164,6 +174,7 @@
         inherit timezone;
         inherit locale;
         inherit pkgs-unstable;
+        inherit pkgs-master;
 
         inherit (inputs) blocklist-hosts;
         inherit (inputs) neovim-nightly-overlay;
@@ -175,12 +186,12 @@
         # channels = { inherit nixpkgs nixpkgs-unstable; };
       };
 
-      mkWslSpecialArgs = { pkgs-unstable, fontPkg }: (mkCommonSpecialArgs { inherit pkgs-unstable fontPkg; }) // {
+      mkWslSpecialArgs = { pkgs-unstable, pkgs-master, fontPkg }: (mkCommonSpecialArgs { inherit pkgs-unstable pkgs-master fontPkg; }) // {
         inherit (inputs) nixos-wsl;
         # inherit inputs;
       };
 
-      mkFwSpecialArgs = { pkgs-unstable, fontPkg }: (mkCommonSpecialArgs { inherit pkgs-unstable fontPkg; }) // {
+      mkFwSpecialArgs = { pkgs-unstable, pkgs-master, fontPkg }: (mkCommonSpecialArgs { inherit pkgs-unstable pkgs-master fontPkg; }) // {
         inherit (inputs) hyprland-plugins;
         inherit (inputs) niri;
         inherit (inputs) mango;
@@ -234,10 +245,10 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.${username} = import (./. + "/profiles" + ("/" + profile) + "/home.nix");
-              home-manager.extraSpecialArgs = mkCommonSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; };
+              home-manager.extraSpecialArgs = mkCommonSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; };
             }
           ];
-          specialArgs = mkCommonSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; };
+          specialArgs = mkCommonSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; };
         };
 
     in
@@ -291,14 +302,14 @@
                 # arguments to home.nix
                 home-manager.extraSpecialArgs =
                   if (profile == "wsl")
-                  then mkWslSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; }
-                  else mkFwSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; };
+                  then mkWslSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; }
+                  else mkFwSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; };
               }
             ];
             specialArgs =
               if (profile == "wsl")
-              then mkWslSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; }
-              else mkFwSpecialArgs { inherit (systemConfig) pkgs-unstable fontPkg; };
+              then mkWslSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; }
+              else mkFwSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; };
           };
         };
 
@@ -323,7 +334,7 @@
               ./profiles/orb-arch/home.nix
             ];
             extraSpecialArgs = mkCommonSpecialArgs {
-              inherit (systemConfig) pkgs-unstable fontPkg;
+              inherit (systemConfig) pkgs-unstable pkgs-master fontPkg;
             };
           };
         };
@@ -333,6 +344,7 @@
     # Global shared inputs
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";

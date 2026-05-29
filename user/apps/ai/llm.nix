@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, fff, crit, ... }:
+{ pkgs, pkgs-unstable, pkgs-master, fff, crit, ... }:
 let
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
   crit-pkg = crit.packages.${pkgs.stdenv.hostPlatform.system}.default;
@@ -36,9 +36,8 @@ let
     };
 in
 {
-  home.packages = with pkgs-unstable; [
+  home.packages = (with pkgs-unstable; [
     opencode
-    claude-code
     sox # voice for cc
     crit-pkg
     revdiff
@@ -46,6 +45,8 @@ in
     # gemini-cli
     # codex
     # nur.repos.charmbracelet.crush
+  ]) ++ [
+    pkgs-master.claude-code
   ];
 
   home.file.".claude/CLAUDE.md".source = ./configs/CLAUDE.md;
