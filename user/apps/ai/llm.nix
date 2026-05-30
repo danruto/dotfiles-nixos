@@ -5,12 +5,12 @@ let
 
   revdiff =
     let
-      version = "1.3.0";
+      version = "1.4.1";
       sources = {
-        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-XM29vRhL7mlyGdwtDDpS5vRiCc8lyhAofBgBTz8Nm9g="; };
-        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-UTxKSUfz9BMsdICmKKB0lyEr4wNRHdf8QNvFVulAyUg="; };
-        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-y5d6SkOI2uBu7W8BmJ1JkivQy7vrMu+LdS2jwH/r8Sg="; };
-        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-f3ELNctpAGG+1DFSw4KF3Pj1DrB0sq2t8hYUsDG+P4Q="; };
+        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-kfWxHJDENFX8dj4/F/Hbe7yJH2dK5PDbQBMl/dHyJ3k="; };
+        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-X0tLH3W6nMYYgXvGjKvDO4aUpR6VuBshKAGSfHu/cX8="; };
+        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-wpZDEdq1LcV7WTrC9lOJu3smlteDmCBxAcG67WejgG0="; };
+        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-KmG4XGDZRQBJ9LgF81PQXLvCnM6zu6pf4MjmiDmq2H4="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
@@ -37,7 +37,8 @@ let
 in
 {
   home.packages = (with pkgs-unstable; [
-    opencode
+    # pkgs-master.opencode
+    # opencode
     sox # voice for cc
     crit-pkg
     revdiff
@@ -47,6 +48,7 @@ in
     # nur.repos.charmbracelet.crush
   ]) ++ [
     pkgs-master.claude-code
+    pkgs-master.opencode
   ];
 
   home.file.".claude/CLAUDE.md".source = ./configs/CLAUDE.md;
