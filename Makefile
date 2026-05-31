@@ -30,7 +30,7 @@ else
 	@echo "  Will use: darwinConfigurations.$(PROFILE)-x86"
 endif
 else
-	@echo "  Will use: nixosConfigurations.system"
+	@echo "  Will use: nixosConfigurations.$(PROFILE)"
 endif
 	@echo ""
 	@echo "Available targets:"
@@ -108,7 +108,7 @@ vm/copy:
 		--rsync-path="sudo rsync" \
 		$(MAKEFILE_DIR)/ $(NIXUSER)@$(NIXADDR):/nix-config
 	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR) " \
-	    cp /etc/nixos/hardware-configuration.nix /nix-config/profiles/$(PROFILE) \
+	    cp /etc/nixos/hardware-configuration.nix /nix-config/hosts/$(PROFILE) \
 	"
 
 vm/git_update:
@@ -120,7 +120,7 @@ vm/git_update:
 # have to run vm/copy before.
 vm/switch:
 	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR) " \
-		sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake \"/nix-config#system\" --show-trace \
+		sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake \"/nix-config#$(PROFILE)\" --show-trace \
 	"
 
 vm/ssh:
@@ -140,11 +140,11 @@ else
 endif
 else
 	@echo "Building for profile: $(PROFILE) on NixOS"
-	sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake ".#system" --show-trace
+	sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake ".#$(PROFILE)" --show-trace
 endif
 
 norb:
-	sudo nixos-rebuild switch --flake .#system
+	sudo nixos-rebuild switch --flake .#$(PROFILE)
 
 hm/switch:
 	nix run home-manager/release-25.11 -- switch --flake .#user

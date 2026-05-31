@@ -51,6 +51,11 @@ in
     pkgs-master.opencode
   ];
 
+  home.sessionVariables = {
+    REVDIFF_POPUP_WIDTH = "90%";
+    REVDIFF_POPUP_HEIGHT = "90%";
+  };
+
   home.file.".claude/CLAUDE.md".source = ./configs/CLAUDE.md;
   home.file.".claude/settings.local.json".text =
     let

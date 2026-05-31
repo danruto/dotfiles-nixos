@@ -22,6 +22,13 @@
                 }
             }
         }
+        // Ctrl+p w (ToggleFloatingPanes) sizes the floating pane from this swap
+        // layout: a single centered pane at 90%.
+        swap_floating_layout {
+            floating_panes max_panes=1 {
+                pane x="5%" y="5%" width="90%" height="90%"
+            }
+        }
     }
   '';
 

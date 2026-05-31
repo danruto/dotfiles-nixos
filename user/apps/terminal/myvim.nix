@@ -61,12 +61,12 @@ DESKTOP
 
         danger-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "danger";
-          version = "2025-12-27";
+          version = "2026-02-19";
           src = pkgs.fetchFromGitHub {
             owner = "igorgue";
             repo = "danger";
-            rev = "7811b863c7012b3937793973200130f8964415f3";
-            hash = "sha256-SnQfJzp00L+VuWr2K0+nMT0/u8HBOgyVnKk22wBrjHs=";
+            rev = "83b5ca019121b4540ba2687d51f14af68015cf28";
+            hash = "sha256-HaVs/mX+uF4IKMisjai4IvvpKVihui24oZKk5T7zfrw=";
           };
         };
 
@@ -105,12 +105,12 @@ DESKTOP
 
         neofusion-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "neofusion.nvim";
-          version = "2025-03-17";
+          version = "2026-03-02";
           src = pkgs.fetchFromGitHub {
             owner = "diegoulloao";
             repo = "neofusion.nvim";
-            rev = "e705c8dc7ce2f50b813479400cd9a8724425a211";
-            hash = "sha256-gZQ2SIxnb2xc/6lzgb3IBxTBGBYG8+qdw1DjCoxSJ/I=";
+            rev = "c8ef24be527be37254bf8981fa3e6216dee4f8d8";
+            hash = "sha256-exCn0tMcO/owBjAAG2MDDPixgBBKVqL+5P9MzzkvuRA=";
           };
         };
 
@@ -125,23 +125,23 @@ DESKTOP
 
         makurai-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "makurai-nvim";
-          version = "2025-12-27";
+          version = "2026-05-22";
           src = pkgs.fetchFromGitHub {
             owner = "Skardyy";
             repo = "makurai-nvim";
-            rev = "f421ded3c242f1d89249577856f18546412a4e1b";
-            hash = "sha256-y6LKtL/HaVGc2tjZIrPwV4D7nyHmqs/gDaRVPl1UAoc=";
+            rev = "138d113a190c26ef7261bc5bc6b7fb22ae72ae60";
+            hash = "sha256-8RKZMrotkDf68sAFG3Vys/CHJVnDYYfCaK5t31x6B4Q=";
           };
         };
 
         gopher-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "gopher.nvim";
-          version = "2025-12-27";
+          version = "2026-03-04";
           src = pkgs.fetchFromGitHub {
             owner = "olexsmir";
             repo = "gopher.nvim";
-            rev = "6a3924cee5a9f36d316f8e4a90c3020438d3513f";
-            hash = "sha256-iXTmgdADtZFQVm+IN+JoPActGuO8r7VTeHKJdkEgmVo=";
+            rev = "27ba078f14dd39fcd5e8a57d7009cdd77450ebbb";
+            hash = "sha256-tfagWNHlfCRQ0BMihFCubKgMUpp5QtFl91ja4/Y2/gI=";
           };
         };
 

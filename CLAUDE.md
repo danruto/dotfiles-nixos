@@ -37,27 +37,21 @@ nix-shell -p wget --run "wget https://example.com"
 ### Configuration Structure
 This is a modular NixOS configuration using Nix Flakes with clear separation of concerns:
 
-- **`flake.nix`** - Central configuration hub defining system settings, user preferences, and active profile
-- **`profiles/`** - Host-specific configurations, each containing `configuration.nix` and `home.nix`
-  - Current active profile is defined by the `profile` variable in `flake.nix:32`
-  - Profiles include: framework, wsl, vm variants, work setups, orb
-- **`system/`** - System-wide NixOS modules (hardware, security, window managers, apps)
+- **`flake.nix`** - Central hub. Exposes **every** host simultaneously via `mkSystem`/`mkHome` calls: `nixosConfigurations.<host>`, `darwinConfigurations.<host>`, `homeConfigurations.<user@host>`. No single "active profile" variable — build any host by name (`.#framework`, `.#orb`, `.#work`, …).
+- **`lib/`** - Wiring helpers: `mkPkgs.nix` (one nixpkgs/unstable/master instance per system), `overlays.nix` (shared overlay lists), `mkSystem.nix` (nixos+darwin builder, dispatches on `platform`), `mkHome.nix` (standalone home builder).
+- **`hosts/`** - Per-host entrypoints, each containing `configuration.nix` and `home.nix` (+ `hardware-configuration.nix` for bare-metal/VM). Hosts: framework, wsl, orb, vm variants, work/work2/nearmap (darwin), orb-arch (standalone home).
+- **`system/`** - System-wide NixOS/Darwin modules (hardware, security, window managers, apps)
 - **`user/`** - User-specific home-manager modules (applications, shell, languages, themes)
 - **`themes/`** - Color schemes and visual themes
 
-### Key Configuration Variables
-The main system configuration is controlled by variables in `flake.nix` lines 24-46:
-- `system` - Target architecture (currently x86_64-linux)
-- `profile` - Active configuration profile (currently "framework")
-- `hostname`, `username`, `email` - System identity
-- `theme` - Active color theme from themes/ directory
-- `wm` - Window manager (hyprland/niri)
-- `browser`, `editor`, `term` - Default applications
+### Per-host wiring
+Each host is one `mkSystem`/`mkHome` call in `flake.nix` taking `{ hostname; system; platform?; extraModules?; <identity overrides> }`. Identity defaults (`username`, `email`, `theme`, `wm`, `editor`, …) live in the `defaults` set in `flake.nix` and are overridable per host. All flake inputs a host might need are threaded through one merged `baseSpecialArgs` (Nix is lazy, so unused inputs cost nothing). `config.local.nix` is no longer read by the flake — it only tells the `Makefile` which host `make switch` should build.
 
 ### Module System Architecture
-- **System modules** (`system/`) are imported into NixOS configuration
+- **System modules** (`system/`) are imported into NixOS/Darwin configuration
 - **User modules** (`user/`) are managed by home-manager
-- **Shared configuration** (`profiles/shared.nix`) provides common user settings
+- **Shared configuration** (`hosts/shared.nix`) provides common user settings
+- Home-manager runs as a system module (`useGlobalPkgs`/`useUserPackages`) for owned NixOS/Darwin hosts, and standalone (`homeConfigurations`) for non-NixOS targets like orb-arch. Both import the same `hosts/<host>/home.nix`, differing only by the injected `platform` arg.
 - Window manager configurations exist in both `system/wm/` and `user/wm/` for system and user-level settings
 
 ### Multi-Platform Support
@@ -70,9 +64,9 @@ The main system configuration is controlled by variables in `flake.nix` lines 24
 When modifying configurations:
 
 1. Edit relevant modules in `system/` or `user/` directories
-2. For new hosts, create profile in `profiles/` and update `flake.nix` profile variable
+2. For new hosts, add a `hosts/<host>/` dir and a `mkSystem`/`mkHome` call in `flake.nix`
 3. Test changes with `nixos-rebuild dry-run` before applying
-4. Use `make switch` to apply system-wide changes
+4. Use `make switch` to apply system-wide changes (builds the host named in `config.local.nix`)
 5. Use `home-manager switch --flake ".#user"` for user-only changes
 
 The configuration supports both stable (nixos-25.05) and unstable (nixos-unstable) package channels, with unstable packages available via `pkgs-unstable` in modules.

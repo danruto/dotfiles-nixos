@@ -7,8 +7,9 @@ This repository contains my personal NixOS and macOS configurations, managed usi
 The repository is organized into the following directories:
 
 -   `flake.nix`: The entry point for the NixOS configuration. It defines the hosts, inputs, and general settings.
--   `profiles/`: Contains the main configuration files for each host (`configuration.nix` and `home.nix`). Each subdirectory represents a different machine or setup.
--   `system/`: Contains system-wide configurations that are imported into the profiles. This includes hardware settings, applications, security policies, and window manager settings.
+-   `hosts/`: Contains the main configuration files for each host (`configuration.nix` and `home.nix`). Each subdirectory represents a different machine or setup, exposed by name in `flake.nix`.
+-   `lib/`: Small `mk*` helpers (`mkPkgs`, `mkSystem`, `mkHome`) and shared `overlays` that wire each host into the flake outputs.
+-   `system/`: Contains system-wide configurations that are imported into the hosts. This includes hardware settings, applications, security policies, and window manager settings.
 -   `user/`: Contains user-specific configurations managed by `home-manager`. This includes application settings (editors, browsers, terminals), shell configurations, and language-specific development environments.
 -   `themes/`: Holds color schemes and themes that can be applied across the system.
 

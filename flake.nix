@@ -4,339 +4,83 @@
   outputs =
     { self
     , nixpkgs
-    , nixpkgs-unstable
-    , nixpkgs-master
     , home-manager
-    , blocklist-hosts
-    , rust-overlay
-    , hyprland-plugins
-    , nur
-    , darwin
-    , helix
-    , helix-fork
-    , neovim-nightly-overlay
-    , niri
-    , nixos-hardware
-    , catppuccin
-    , mango
-    , helium
-    , fff
-    , crit
-    , cull-src
-    , dms
-    , dms-plugin-diskusage
-    , zjsb
     , ...
     }@inputs:
     let
-      # Load local config if it exists
-      localConfig =
-        if builtins.pathExists ./config.local.nix
-        then import ./config.local.nix
-        else { };
+      lib = nixpkgs.lib;
+      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
 
-      # Default configuration
-      defaultConfig = {
-        # ---- SYSTEM SETTINGS ---- #
-        profile = "framework";
-        hostname = "danruto";
+      overlays = import ./lib/overlays.nix { inherit inputs; };
+
+      # Instantiate nixpkgs ONCE per system (avoid per-call fragmentation).
+      pkgsBySystem = lib.genAttrs systems (system:
+        import ./lib/mkPkgs.nix { inherit inputs system overlays; });
+
+      # Identity defaults; per-host args override these.
+      defaults = {
+        username = "danruto";
+        # email = "danny@pixelbru.sh";
+        email = "1270619+danruto@users.noreply.github.com";
+        theme = "ayu-dark";
         timezone = "Australia/Sydney";
         locale = "en_US.UTF-8";
-
-        # ----- USER SETTINGS ----- #
-        username = "danruto";
-        email = "danny@pixelbru.sh";
-        theme = "ayu-dark";
         wm = "hyprland";
         wmType = "wayland";
         editor = "hx";
-        # fontPkg will be set per-system below
       };
 
-      # Merge local config with defaults (local overrides defaults)
-      config = defaultConfig // localConfig;
-
-      # Extract variables for backward compatibility
-      inherit (config) profile hostname timezone locale username email theme wm wmType editor;
-
-      # Helper function to create system-specific configuration
-      mkSystemConfig = system:
-        let
-          # create patched nixpkgs
-          nixpkgs-patched = (import nixpkgs { inherit system; }).applyPatches {
-            name = "nixpkgs-patched";
-            src = nixpkgs;
-            patches = [ ];
-          };
-
-          nixpkgs-unstable-patched = (import nixpkgs { inherit system; }).applyPatches {
-            name = "nixpkgs-unstable-patched";
-            src = nixpkgs-unstable;
-            patches = [ ];
-          };
-
-          # configure pkgs
-          pkgs = import nixpkgs-patched {
-            inherit system;
-
-            config = {
-              allowUnfree = true;
-              allowUnfreePredicate = (_: true);
-              allowBroken = true;
-            };
-            overlays = [
-              rust-overlay.overlays.default
-              nur.overlays.default
-              # neovim-nightly-overlay.overlays.default
-              (final: prev: {
-                pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-                  (python-final: python-prev: {
-                    # Workaround for bug #437058
-                    i3ipc = python-prev.i3ipc.overridePythonAttrs (oldAttrs: {
-                      doCheck = false;
-                      checkPhase = ''
-                        echo "Skipping pytest in Nix build"
-                      '';
-                      installCheckPhase = ''
-                        echo "Skipping install checks in Nix build"
-                      '';
-                    });
-                  })
-                ];
-              })
-
-            ];
-          };
-
-          pkgs-unstable = import nixpkgs-unstable-patched {
-            inherit system;
-
-            config = {
-              allowUnfree = true;
-              allowUnfreePredicate = (_: true);
-              allowBroken = true;
-            };
-            overlays = [
-              rust-overlay.overlays.default
-              nur.overlays.default
-              (final: prev: {
-                zjsb = zjsb.packages.${prev.stdenv.hostPlatform.system}.default;
-
-                pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-                  (python-final: python-prev: {
-                    # Workaround for bug #437058
-                    i3ipc = python-prev.i3ipc.overridePythonAttrs (oldAttrs: {
-                      doCheck = false;
-                      checkPhase = ''
-                        echo "Skipping pytest in Nix build"
-                      '';
-                      installCheckPhase = ''
-                        echo "Skipping install checks in Nix build"
-                      '';
-                    });
-                  })
-                ];
-              })
-            ];
-          };
-
-          pkgs-master = import nixpkgs-master {
-            inherit system;
-            config = {
-              allowUnfree = true;
-              allowUnfreePredicate = (_: true);
-              allowBroken = true;
-            };
-          };
-
-          fontPkg = pkgs.d2coding;
-        in
-        {
-          inherit pkgs pkgs-unstable pkgs-master fontPkg;
-        };
-
-      # configure lib
-      lib = nixpkgs.lib;
-
-      mkCommonSpecialArgs = { pkgs-unstable, pkgs-master, fontPkg }: {
-        inherit username;
-        # inherit name;
-        inherit hostname;
-        inherit profile;
-        inherit email;
-        inherit theme;
-        inherit fontPkg;
-        inherit wm;
-        inherit wmType;
-        inherit editor;
-        inherit helix;
-        inherit helix-fork;
-        inherit timezone;
-        inherit locale;
-        inherit pkgs-unstable;
-        inherit pkgs-master;
-
-        inherit (inputs) blocklist-hosts;
-        inherit (inputs) neovim-nightly-overlay;
-        inherit (inputs) wanderer;
-        inherit (inputs) fff;
-        inherit (inputs) crit;
-        inherit (inputs) cull-src;
-
-        # channels = { inherit nixpkgs nixpkgs-unstable; };
+      # One merged passthrough set — every input a host might want. Nix is lazy,
+      # so unused inputs on a given host cost nothing.
+      baseSpecialArgs = {
+        inherit (inputs)
+          blocklist-hosts neovim-nightly-overlay wanderer fff crit cull-src
+          nixos-wsl hyprland-plugins niri mango nixos-hardware catppuccin
+          helium dms dms-plugin-diskusage helix helix-fork;
       };
 
-      mkWslSpecialArgs = { pkgs-unstable, pkgs-master, fontPkg }: (mkCommonSpecialArgs { inherit pkgs-unstable pkgs-master fontPkg; }) // {
-        inherit (inputs) nixos-wsl;
-        # inherit inputs;
+      mkSystem = import ./lib/mkSystem.nix {
+        inherit inputs lib pkgsBySystem overlays defaults baseSpecialArgs home-manager;
+        darwin = inputs.darwin;
       };
 
-      mkFwSpecialArgs = { pkgs-unstable, pkgs-master, fontPkg }: (mkCommonSpecialArgs { inherit pkgs-unstable pkgs-master fontPkg; }) // {
-        inherit (inputs) hyprland-plugins;
-        inherit (inputs) niri;
-        inherit (inputs) mango;
-        inherit (inputs) nixos-hardware;
-        inherit (inputs) catppuccin;
-        inherit (inputs) helium;
-        inherit (inputs) dms;
-        inherit (inputs) dms-plugin-diskusage;
+      mkHome = import ./lib/mkHome.nix {
+        inherit inputs lib pkgsBySystem defaults baseSpecialArgs home-manager;
       };
-
-      # Helper to create darwin configuration for any profile
-      mkDarwinConfig = system: profile:
-        let
-          systemConfig = mkSystemConfig system;
-        in
-        darwin.lib.darwinSystem {
-          inherit system;
-          modules = [
-            # load configuration.nix from selected PROFILE
-            (./. + "/profiles" + ("/" + profile) + "/configuration.nix")
-            home-manager.darwinModules.home-manager
-            {
-              nixpkgs.config = {
-                allowUnfree = true;
-                allowUnfreePredicate = (_: true);
-                allowBroken = true;
-              };
-              nixpkgs.overlays = [
-                rust-overlay.overlays.default
-                nur.overlays.default
-                (final: prev: {
-                  direnv = prev.direnv.overrideAttrs (oldAttrs: {
-                    env = (oldAttrs.env or { }) // {
-                      CGO_ENABLED = 1;
-                    };
-                    doCheck = false;
-                    doInstallCheck = false;
-                  });
-
-                  # macOS strips the linker-signed adhoc signature off fish's binary,
-                  # leaving a tainted page that the kernel rejects with SIGKILL on launch.
-                  # Re-sign as the final build step so the embedded hashes match the file.
-                  fish = prev.fish.overrideAttrs (oldAttrs: {
-                    postFixup = (oldAttrs.postFixup or "") + ''
-                      ${prev.darwin.sigtool}/bin/codesign --force --sign - $out/bin/fish
-                    '';
-                  });
-                })
-              ];
-
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.${username} = import (./. + "/profiles" + ("/" + profile) + "/home.nix");
-              home-manager.extraSpecialArgs = mkCommonSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; };
-            }
-          ];
-          specialArgs = mkCommonSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; };
-        };
-
     in
     {
-      nixosConfigurations =
-        let
-          systemConfig = mkSystemConfig "x86_64-linux";
-        in
-        {
-          system = lib.nixosSystem {
-            system = "x86_64-linux";
-            modules = [
-              # load configuration.nix from selected PROFILE
-              (./. + "/profiles" + ("/" + profile) + "/configuration.nix")
-              inputs.nix-flatpak.nixosModules.nix-flatpak
-              home-manager.nixosModules.home-manager
-              {
-                # Set nixpkgs config here instead of per-profile
-                nixpkgs.config = {
-                  allowUnfree = true;
-                  allowUnfreePredicate = (_: true);
-                  allowBroken = true;
-                };
-                nixpkgs.overlays = [
-                  rust-overlay.overlays.default
-                  nur.overlays.default
-                  (final: prev: {
-                    pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-                      (python-final: python-prev: {
-                        # Workaround for bug #437058
-                        i3ipc = python-prev.i3ipc.overridePythonAttrs (oldAttrs: {
-                          doCheck = false;
-                          checkPhase = ''
-                            echo "Skipping pytest in Nix build"
-                          '';
-                          installCheckPhase = ''
-                            echo "Skipping install checks in Nix build"
-                          '';
-                        });
-                      })
-                    ];
-                  })
-                ];
-
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
-                home-manager.backupFileExtension = "backup";
-                home-manager.users.${username} = import (./. + "/profiles" + ("/" + profile) + "/home.nix");
-
-                # Optionally, use home-manager.extraSpecialArgs to pass
-                # arguments to home.nix
-                home-manager.extraSpecialArgs =
-                  if (profile == "wsl")
-                  then mkWslSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; }
-                  else mkFwSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; };
-              }
-            ];
-            specialArgs =
-              if (profile == "wsl")
-              then mkWslSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; }
-              else mkFwSpecialArgs { inherit (systemConfig) pkgs-unstable pkgs-master fontPkg; };
-          };
+      nixosConfigurations = {
+        framework = mkSystem {
+          hostname = "framework";
+          system = "x86_64-linux";
+          extraModules = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
         };
+        wsl = mkSystem { hostname = "wsl"; system = "x86_64-linux"; };
+        orb = mkSystem { hostname = "orb"; system = "aarch64-linux"; };
+        vm = mkSystem { hostname = "vm"; system = "x86_64-linux"; };
+        vm-hypr = mkSystem { hostname = "vm-hypr"; system = "x86_64-linux"; };
+        vm-i3 = mkSystem { hostname = "vm-i3"; system = "x86_64-linux"; };
+        vm-niri = mkSystem { hostname = "vm-niri"; system = "x86_64-linux"; };
+        vm-sway = mkSystem { hostname = "vm-sway"; system = "x86_64-linux"; };
+      };
 
       darwinConfigurations = {
-        # Generate configurations for all Darwin profiles on both architectures
-        work = mkDarwinConfig "aarch64-darwin" "work";
-        work-x86 = mkDarwinConfig "x86_64-darwin" "work";
-        work2 = mkDarwinConfig "aarch64-darwin" "work2";
-        work2-x86 = mkDarwinConfig "x86_64-darwin" "work2";
-        nearmap = mkDarwinConfig "aarch64-darwin" "nearmap";
-        nearmap-x86 = mkDarwinConfig "x86_64-darwin" "nearmap";
+        work = mkSystem { hostname = "work"; system = "aarch64-darwin"; platform = "darwin"; };
+        work-x86 = mkSystem { hostname = "work"; system = "x86_64-darwin"; platform = "darwin"; };
+        work2 = mkSystem { hostname = "work2"; system = "aarch64-darwin"; platform = "darwin"; };
+        work2-x86 = mkSystem { hostname = "work2"; system = "x86_64-darwin"; platform = "darwin"; };
+        nearmap = mkSystem { hostname = "nearmap"; system = "aarch64-darwin"; platform = "darwin"; };
+        nearmap-x86 = mkSystem { hostname = "nearmap"; system = "x86_64-darwin"; platform = "darwin"; };
       };
 
       homeConfigurations =
         let
-          systemConfig = mkSystemConfig "aarch64-linux";
+          orbArch = mkHome { hostname = "orb-arch"; system = "aarch64-linux"; };
         in
         {
-          user = home-manager.lib.homeManagerConfiguration {
-            pkgs = systemConfig.pkgs;
-            modules = [
-              ./profiles/orb-arch/home.nix
-            ];
-            extraSpecialArgs = mkCommonSpecialArgs {
-              inherit (systemConfig) pkgs-unstable pkgs-master fontPkg;
-            };
-          };
+          "danruto@orb-arch" = orbArch;
+          # Kept for `make hm/switch` and vm/bootstrap/2 which reference .#user.
+          user = orbArch;
         };
     };
 

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, pkgs-unstable, stdenv, fetchurl, stylix, username, email, theme, wm, editor, ... }:
+{ config, lib, pkgs, pkgs-unstable, username, email, theme, wm, editor, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
