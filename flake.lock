@@ -1153,11 +1153,11 @@
         "rust-overlay": "rust-overlay_5"
       },
       "locked": {
-        "lastModified": 1779869199,
-        "narHash": "sha256-FWrG9txXNWtFSdqVxl7wGYy4Ba5j+KMVXZdW3BjURtg=",
+        "lastModified": 1780293573,
+        "narHash": "sha256-i83tSSNVAamlEH9zUm4XbgfW6O2mRHzJBSQ8ihwAEuQ=",
         "owner": "danruto",
         "repo": "pb-zjsb",
-        "rev": "589ba2a298ec17f524b7a6fe1da3ddbcb9dddbe9",
+        "rev": "71841a3a9511cd8aba72b486c460d347ac5f5f8c",
         "type": "github"
       },
       "original": {

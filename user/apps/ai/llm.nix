@@ -5,12 +5,12 @@ let
 
   revdiff =
     let
-      version = "1.4.1";
+      version = "1.5.0";
       sources = {
-        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-kfWxHJDENFX8dj4/F/Hbe7yJH2dK5PDbQBMl/dHyJ3k="; };
-        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-X0tLH3W6nMYYgXvGjKvDO4aUpR6VuBshKAGSfHu/cX8="; };
-        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-wpZDEdq1LcV7WTrC9lOJu3smlteDmCBxAcG67WejgG0="; };
-        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-KmG4XGDZRQBJ9LgF81PQXLvCnM6zu6pf4MjmiDmq2H4="; };
+        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-D+pgWTrubsZgEQx/dDs/7Jm2Ur8NW7Jm1cufivof1DU="; };
+        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-EO+I3a926ZnP9mK4mCjJdaKQtrz4oG03/zKwwgHMb+E="; };
+        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-Zu1/qUSh+kzSKBzMcmxvn+GQt8rYPqQvIaZW+Myildc="; };
+        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-f9P2wWgs6WxiU6GafaIWU2fPCqEjznO+f9WHl5RIllk="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
@@ -50,11 +50,6 @@ in
     pkgs-master.claude-code
     pkgs-master.opencode
   ];
-
-  home.sessionVariables = {
-    REVDIFF_POPUP_WIDTH = "90%";
-    REVDIFF_POPUP_HEIGHT = "90%";
-  };
 
   home.file.".claude/CLAUDE.md".source = ./configs/CLAUDE.md;
   home.file.".claude/settings.local.json".text =
