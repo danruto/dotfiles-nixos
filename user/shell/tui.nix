@@ -19,12 +19,15 @@ let
   ];
   unstable-packages = with pkgs-unstable; [
     ripgrep
-    asciinema
+    vhs
+    # asciinema
     # aerc
     # podman-tui
     # dive
     # openapi-tui
     television
+    wrkflw
+    lfk
   ] ++ lib.optionals pkgs-unstable.stdenv.isLinux [
   ];
 in
@@ -32,6 +35,7 @@ in
   home.packages = stable-packages
     ++ unstable-packages
     ++ [
+    (pkgs.callPackage ./gloomberb.nix { })
     (pkgs.writeShellScriptBin "airplane-mode" ''
       #!/bin/sh
       connectivity="$(nmcli n connectivity)"
