@@ -16,6 +16,7 @@ let
     ncu = "sudo nix-channel --update";
     ncl = "sudo nix-channel --list";
     nu = "nix flake update";
+    nua = "nix flake update --access-tokens \"github.com=$(gh auth token)\"";
     nuh = "nix flake update && hmr";
     ncg = "sudo nix-collect-garbage && sudo nix-collect-garbage -d && sudo find /nix/var/nix/gcroots/auto -mindepth 1 -delete && sudo nix-collect-garbage && sudo nix-collect-garbage -d";
 
