@@ -28,6 +28,7 @@ let
     television
     wrkflw
     lfk
+    mdfried
   ] ++ lib.optionals pkgs-unstable.stdenv.isLinux [
   ];
 in

@@ -46,6 +46,7 @@ in
     # gemini-cli
     # codex
     # nur.repos.charmbracelet.crush
+    tokscale
   ]) ++ [
     pkgs-master.claude-code
     pkgs-master.opencode
