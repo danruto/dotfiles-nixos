@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, pkgs-master, fff, crit, ... }:
+{ pkgs, pkgs-unstable, pkgs-master, fff, crit, lib, config, ... }:
 let
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
   crit-pkg = crit.packages.${pkgs.stdenv.hostPlatform.system}.default;
@@ -69,7 +69,9 @@ in
     builtins.toJSON merged;
 
   # Pi agent config. Set OPENCODE_API_KEY in your environment (e.g. via a
-  # secrets manager) so pi can authenticate against the OpenCode Go provider.
+  # secrets manager or direnv) so pi can authenticate against the OpenCode Go
+  # provider. The activation script writes auth.json from that env var so you
+  # don't have to /login manually.
   home.file.".pi/agent/settings.json".text = builtins.toJSON {
     defaultProvider = "opencode-go";
     theme = "dark";
@@ -87,6 +89,42 @@ in
       "pi-mcp-adapter"
       "pi-web-access"
       "pi-hermes-memory"
+      "npm:@ff-labs/pi-fff"
+      # "npm:pi-revdiff-plan"
+      "npm:@plannotator/pi-extension"
+      "npm:pi-ask-user"
+      "npm:pi-markdown-preview"
     ];
   };
+
+  # Custom model definitions for pi (built-in model lists are outdated in nixpkgs)
+  home.file.".pi/agent/models.json".text = builtins.toJSON {
+    providers = {
+      opencode-go = {
+        models = [
+          {
+            id = "kimi-k2.7-code";
+            name = "Kimi K2.7 Code";
+            reasoning = true;
+            input = [ "text" "image" ];
+            contextWindow = 262144;
+            maxTokens = 262144;
+          }
+        ];
+      };
+    };
+  };
+
+  home.activation.piAuth = lib.hm.dag.entryAfter [ "writeBoundary" ] (
+    let authFile = "${config.home.homeDirectory}/.pi/agent/auth.json";
+    in ''
+      if [ -n "''${OPENCODE_API_KEY:-}" ]; then
+        mkdir -p "${config.home.homeDirectory}/.pi/agent"
+        ${pkgs.jq}/bin/jq -n \
+          --arg key "$OPENCODE_API_KEY" \
+          '{ "opencode-go": { "type": "api_key", "key": $key } }' \
+          > "${authFile}"
+      fi
+    ''
+  );
 }
