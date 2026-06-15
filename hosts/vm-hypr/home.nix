@@ -44,7 +44,7 @@
     texinfo
     libffi
     zlib
-    nodePackages.ungit
+    ungit
   ];
   programs.starship.enable = true;
    programs.starship.settings = {

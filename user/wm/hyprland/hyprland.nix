@@ -12,6 +12,7 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
+    configType = "hyprlang";
     plugins = [
       #  (pkgs.callPackage ./hyprbars.nix { inherit hyprland-plugins; } )
     ];

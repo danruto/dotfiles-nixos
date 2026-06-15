@@ -47,7 +47,7 @@
     texinfo
     libffi
     zlib
-    nodePackages.ungit
+    ungit
   ];
 
   # xdg.enable = true;

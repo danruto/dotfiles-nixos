@@ -3,6 +3,8 @@
 {
   programs.neovim = {
     enable = true;
+    withRuby = true;
+    withPython3 = true;
     # package = pkgs.unstable.neovim;
     extraPackages = with pkgs; [
       # LazyVim
@@ -10,7 +12,7 @@
       # stylua
       # gopls
       # rust-analyzer
-      # nodePackages.typescript-language-server
+      # typescript-language-server
 
       # Telescope
       ripgrep
@@ -22,7 +24,7 @@
     ];
 
     # https://github.com/seppeljordan/nix-prefetch-github
-    extraLuaConfig =
+    initLua =
       let
         tailwindcss-colorizer-nvim = pkgs.vimUtils.buildVimPlugin {
           pname = "tailwindcss-colorizer-cmp.nvim";

@@ -12,10 +12,10 @@ let
     typescript
 
     # TODO: These should be from local flakes
-    nodePackages.typescript-language-server
-    nodePackages.vscode-langservers-extracted
-    # nodePackages.yaml-language-server
-    # nodePackages.prettier
+    typescript-language-server
+    vscode-langservers-extracted
+    # yaml-language-server
+    # prettier
     tailwindcss-language-server
     # prettierd
   ];

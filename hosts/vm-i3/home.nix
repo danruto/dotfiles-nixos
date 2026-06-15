@@ -62,7 +62,7 @@
     texinfo
     libffi
     zlib
-    nodePackages.ungit
+    ungit
 
     ghostty
   ];

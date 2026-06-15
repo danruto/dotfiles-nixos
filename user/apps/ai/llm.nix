@@ -50,6 +50,7 @@ in
   ]) ++ [
     pkgs-master.claude-code
     pkgs-master.opencode
+    pkgs-master.pi-coding-agent
   ];
 
   home.file.".claude/CLAUDE.md".source = ./configs/CLAUDE.md;
@@ -66,4 +67,26 @@ in
       };
     in
     builtins.toJSON merged;
+
+  # Pi agent config. Set OPENCODE_API_KEY in your environment (e.g. via a
+  # secrets manager) so pi can authenticate against the OpenCode Go provider.
+  home.file.".pi/agent/settings.json".text = builtins.toJSON {
+    defaultProvider = "opencode-go";
+    theme = "dark";
+    quietStartup = false;
+    compaction = {
+      enabled = true;
+      reserveTokens = 16384;
+      keepRecentTokens = 20000;
+    };
+    retry = {
+      enabled = true;
+      maxRetries = 3;
+    };
+    packages = [
+      "pi-mcp-adapter"
+      "pi-web-access"
+      "pi-hermes-memory"
+    ];
+  };
 }

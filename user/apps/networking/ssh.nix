@@ -8,14 +8,14 @@
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks = {
+    settings = {
       "*.pixelbru.sh" = {
-        proxyCommand = "${pkgs-unstable.cloudflared}/bin/cloudflared access ssh --hostname %h";
-        user = username;
+        ProxyCommand = "${pkgs-unstable.cloudflared}/bin/cloudflared access ssh --hostname %h";
+        User = username;
       };
 
       "*" = {
-        identityFile = "~/.ssh/dsok-pb";
+        IdentityFile = "~/.ssh/dsok-pb";
       };
     };
   };

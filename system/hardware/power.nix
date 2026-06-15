@@ -41,9 +41,7 @@
     # lidSwitchExternalPower = "suspend";
   };
 
-  systemd.sleep.extraConfig = ''
-    HibernateDelaySec=1h
-  '';
+  systemd.sleep.settings.Sleep.HibernateDelaySec = "1h";
 
   # Additional power management optimizations
   services.udev.extraRules = ''

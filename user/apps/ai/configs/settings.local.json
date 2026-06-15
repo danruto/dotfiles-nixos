@@ -28,10 +28,8 @@
             "mcp__fff__ffgrep",
             "mcp__fff__fffind",
             "mcp__fff__fff-multi-grep",
-            "Read(path:*.env.llm)",
-            "Read(path:*.envrc)",
-            "Bash(*.env.llm*)",
-            "Bash(*.envrc*)"
+            "Read(*.env.llm)",
+            "Read(*.envrc)"
         ],
         "deny": [
             "Bash(rm -rf:*)",
@@ -40,19 +38,13 @@
             "Bash(git push --force:*)",
             "Bash(git reset --hard:*)",
             "Bash(sudo:*)",
-            "Read(path:.env)",
-            "Read(path:.env.local)",
-            "Read(path:.env.*.local)",
-            "Read(path:.env.development)",
-            "Read(path:.env.production)",
-            "Read(path:.env.staging)",
-            "Read(path:.env.test)",
-            "Bash(*.env)",
-            "Bash(*.env.local*)",
-            "Bash(*.env.development*)",
-            "Bash(*.env.production*)",
-            "Bash(*.env.staging*)",
-            "Bash(*.env.test*)"
+            "Read(.env)",
+            "Read(.env.local)",
+            "Read(.env.*.local)",
+            "Read(.env.development)",
+            "Read(.env.production)",
+            "Read(.env.staging)",
+            "Read(.env.test)"
         ]
     },
     "model": "opus",

@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, ... }: {
+{ config, pkgs, pkgs-unstable, ... }: {
 
   home.username = "danruto";
   home.homeDirectory = "/home/danruto";
@@ -77,7 +77,7 @@
       '';
     })
   ];
-  home.stateVersion = "24.05";
+  home.stateVersion = "26.05";
 
 
   # Enable automatic start/restart of systemd user services
@@ -94,6 +94,7 @@
     theme = {
       name = "Adwaita-dark";
     };
+    gtk4.theme = config.gtk.theme;
     iconTheme = {
       name = "Adwaita";
       package = pkgs.adwaita-icon-theme;

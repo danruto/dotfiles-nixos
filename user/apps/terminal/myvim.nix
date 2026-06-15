@@ -3,6 +3,8 @@
 {
   programs.neovim = {
     enable = true;
+    withRuby = true;
+    withPython3 = true;
     # package = pkgs.neovim-unwrapped;
     # package = pkgs.unstable.neovim-unwrapped.override ({ tree-sitter = pkgs.tree-sitter; });
     # package = pkgs.unstable.neovim-unwrapped;
@@ -46,7 +48,7 @@ DESKTOP
       lazy-nvim
     ];
 
-    extraLuaConfig =
+    initLua =
       let
         snowy-vim = pkgs.vimUtils.buildVimPlugin {
           pname = "snowy-vim";

@@ -69,12 +69,12 @@ When modifying configurations:
 4. Use `make switch` to apply system-wide changes (builds the host named in `config.local.nix`)
 5. Use `home-manager switch --flake ".#user"` for user-only changes
 
-The configuration supports both stable (nixos-25.05) and unstable (nixos-unstable) package channels, with unstable packages available via `pkgs-unstable` in modules.
+The configuration supports both stable (nixos-26.05) and unstable (nixos-unstable) package channels, with unstable packages available via `pkgs-unstable` in modules.
 
 ## Neovim / Treesitter
 
 - Uses **neovim-nightly-overlay** with **post-rewrite nvim-treesitter** from pkgs-unstable
 - **DO NOT** use `require("nvim-treesitter.configs").setup()` — this module was removed in the nvim-treesitter rewrite. The modern API uses `vim.treesitter.start(buf)` via FileType autocmds (see `coding.lua`)
 - Treesitter queries live at `${nvim-treesitter}/runtime/queries/`, not at the plugin root
-- RTP prepend for treesitter must happen in `extraLuaConfig` BEFORE `lazy.setup()` — `plugin/` files run too late
+- RTP prepend for treesitter must happen in `initLua` BEFORE `lazy.setup()` — `plugin/` files run too late
 - Parsers come from `allGrammars` symlinked to `~/.config/nvim/parser/`

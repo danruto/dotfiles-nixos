@@ -33,7 +33,7 @@
     texinfo
     libffi
     zlib
-    nodePackages.ungit
+    ungit
 
     # cc-clip deps (clipboard image paste over SSH)
     xclip
