@@ -61,6 +61,12 @@ in
   programs.fish = {
     enable = true;
     shellAliases = myAliases;
+    functions = {
+      claude-healix = {
+        description = "Run claude with the Healix org subscription config dir";
+        body = "CLAUDE_CONFIG_DIR=$HOME/.claude-healix claude $argv";
+      };
+    };
     interactiveShellInit = ''
       set fish_greeting
     '';
