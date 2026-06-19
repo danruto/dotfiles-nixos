@@ -2,6 +2,7 @@
   imports = [
     ../user/apps/terminal/ghostty.nix
     ../user/apps/terminal/zellij.nix
+    ../user/apps/terminal/herdr.nix
     ../system/apps/starship.nix
   ];
 

@@ -1,0 +1,95 @@
+# herdr config — keybindings tuned to mirror the zellij setup so muscle
+# memory carries between the two (herdr for agent work, zellij otherwise).
+# Anything not set here inherits herdr's defaults (see `herdr --default-config`).
+#
+# herdr is prefix-based and has no modal equivalent to zellij, so the approach
+# is: daily-driver navigation is prefix-free via direct Alt keys (exactly like
+# zellij), and the prefix is reserved for the rarer tab/workspace/session ops.
+
+# Config is managed by home-manager — skip the first-run onboarding screen.
+onboarding = false
+
+[theme]
+name = "catppuccin"
+
+[keys]
+# zellij has no prefix; herdr requires one. ctrl+space wasn't delivered by
+# ghostty, so use ctrl+a (off tmux's ctrl+b and clear of the direct Alt keys).
+prefix = "ctrl+a"
+
+# --- Prefix-free daily drivers ---
+# NOTE on alt chords: on the aerospace work mac the WM owns every alt+letter and
+# alt+1-9 (workspace/tag switches), so those never reach herdr. alt+[ / alt+] and
+# their shift variants ARE delivered, so herdr's primary nav lives on brackets.
+# On hyprland/niri hosts alt+letters are free, so alt+hjkl stays as a pane fallback.
+
+# Pane focus. prefix+hjkl is reliable everywhere; alt+hjkl only fires on hosts
+# whose WM doesn't grab alt+letters (no-op under aerospace).
+focus_pane_left  = ["prefix+h", "alt+h"]
+focus_pane_down  = ["prefix+j", "alt+j"]
+focus_pane_up    = ["prefix+k", "alt+k"]
+focus_pane_right = ["prefix+l", "alt+l"]
+
+# zellij: Alt+n opens a new pane -> herdr side-by-side split.
+split_vertical = ["prefix+v", "alt+n"]
+
+# Spaces (workspaces): alt+[ / alt+] are the one prefix-free chord that
+# aerospace+ghostty reliably deliver. alt+letters/digits are eaten by aerospace,
+# and shifted brackets (alt+shift+[) arrive as alt+{ and never match. With one
+# agent per workspace, this is also how you jump between agents.
+# DO NOT bind prefix+[ — it's herdr's built-in copy_mode, and the conflict makes
+# `reload-config` reject the WHOLE keymap (status: partial, "kept current
+# keybinds"), so even the prefix change silently never applies. prefix+w (picker)
+# and prefix+g (goto) remain the prefix paths to a space.
+previous_workspace = "alt+["
+next_workspace     = "alt+]"
+
+# Tabs: alt+left / alt+right. ghostty unbinds these (passthrough) and aerospace
+# leaves the arrows free, so they reach herdr. prefix+p / prefix+n stay as the
+# prefix fallback. (Arrows are one left/right pair: tabs OR left/right pane
+# focus, not both — panes keep the full 4-way prefix+hjkl above.)
+previous_tab = ["prefix+p", "alt+left"]
+next_tab     = ["prefix+n", "alt+right"]
+
+# --- Management (prefix-mode), mirroring zellij ---
+# herdr is a flat tmux-style prefix with no zellij modes, so these mostly track
+# zellij's tmux mode. Unlike the alt drivers above, prefix-mode second keys are
+# plain chars herdr reads directly once the prefix fires, so they're reliable
+# everywhere (aerospace never sees them).
+
+# New
+new_tab       = "prefix+c"          # zellij tmux 'c'
+new_workspace = "prefix+shift+n"    # new space
+
+# Rename — modal-style 'r' for the tab (most common); pane/space on shift.
+rename_tab       = "prefix+r"       # zellij tab-mode 'r'
+rename_pane      = "prefix+shift+p"
+rename_workspace = "prefix+shift+w" # rename space
+
+# Close — plain x = pane (zellij 'x'); shift+x = tab; shift+d = space.
+close_pane      = "prefix+x"
+close_tab       = "prefix+shift+x"
+close_workspace = "prefix+shift+d"
+
+# Split downward (split right is split_vertical above, on prefix+v / alt+n).
+split_horizontal = "prefix+minus"
+
+# Session / misc.
+detach          = ["prefix+q", "prefix+d"]  # 'd' = zellij tmux/session detach
+zoom            = "prefix+z"                 # fullscreen
+edit_scrollback = "prefix+e"                 # zellij scroll-mode 'e'
+
+# 'r' cluster: rename took prefix+r, so Resize and Reload shift over to keep the
+# mnemonic (resize default was prefix+r; reload default was prefix+shift+r).
+resize_mode   = "prefix+shift+r"
+reload_config = "prefix+ctrl+r"
+
+# Open gitui in a temporary pane that closes when it exits.
+[[keys.command]]
+key = "alt+g"
+type = "pane"
+command = "gitui"
+
+[ui]
+# zellij creates tabs instantly; don't prompt for a name on every new tab.
+prompt_new_tab_name = false

@@ -36,7 +36,7 @@
         inherit (inputs)
           blocklist-hosts neovim-nightly-overlay wanderer fff crit cull-src
           nixos-wsl hyprland-plugins niri mango nixos-hardware catppuccin
-          helium dms dms-plugin-diskusage helix helix-fork;
+          helium dms dms-plugin-diskusage helix helix-fork herdr;
       };
 
       mkSystem = import ./lib/mkSystem.nix {
@@ -176,6 +176,12 @@
 
     crit = {
       url = "github:tomasz-tomczyk/crit";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    # zellij alternative focused on AI agent work
+    herdr = {
+      url = "github:ogulcancelik/herdr/v0.7.0";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
