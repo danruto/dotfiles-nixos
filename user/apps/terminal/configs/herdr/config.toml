@@ -90,6 +90,12 @@ key = "alt+g"
 type = "pane"
 command = "gitui"
 
+# Open elio in a temporary pane that closes when it exits.
+[[keys.command]]
+key = "alt+f"
+type = "pane"
+command = "elio"
+
 [ui]
 # zellij creates tabs instantly; don't prompt for a name on every new tab.
 prompt_new_tab_name = false
