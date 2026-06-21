@@ -22,19 +22,33 @@
 
 ## Clarification & Decision-Making
 
-- Always ask questions when requirements are vague or ambiguous — don't assume
-- When multiple valid approaches exist, present the options and let me choose
-- The ultimate decision is always up to me — propose, don't prescribe
-- If unsure about scope, ask before expanding beyond what was requested
+- Ask before assuming — when requirements are vague or scope is unclear, ask rather than expand beyond what was requested
+- When multiple valid approaches exist, present the options and let me decide — propose, don't prescribe
 
-## Code searches
+## Graph MCP
 
-In git-indexed dirs, prefer fff MCP over Grep/Glob/Read-then-scan: `fffind` (locate files by path/name, frecency-aware), `ffgrep` (search contents; auto-regex, fuzzy fallback on zero hits), `fff-multi-grep` (2+ content queries in one call). Fall back to Grep/Glob outside git repos, for git-specific search (`git log -S`, `git grep --cached`), or when told the path is outside fff's index.
+`pbtk-graph` is a per-repo MCP that indexes code symbols (`mcp__pbtk-graph__graph_*`)
+and markdown docs (`mcp__pbtk-graph__doc_*`). Prefer it over grep for symbol- or
+concept-shaped queries; fall back to grep for content that isn't indexed — string
+literals, comments, log messages, SQL, struct tags, config keys.
 
-## Symbol & doc graph (per-repo MCP)
+Routing:
 
-When a repo configures a graph MCP (namespaced `mcp__<name>__graph_*` / `mcp__<name>__doc_*`), prefer it over Grep/fff for **symbol-** or **concept-shaped** queries — it understands code structure and ranks docs by relevance, not text matches.
+- Definition by qualified name → `graph_definition`; by substring → `graph_search`.
+- Callers / callees → `graph_callers` / `graph_callees`.
+- File symbols → `graph_outline`; imports → `graph_imports`.
+- Diff blast radius → `graph_diff_affected`.
+- Docs → `doc_search` / `doc_outline`.
+- Intent/concept when you don't know names → `graph_semantic_search`.
+- "Find code like this" from a `file:line` → `graph_find_related`.
+- One symbol + 1-hop neighbors in a single call → `graph_context`.
+- Latest session-continuity snapshot → `session_resume` (same as `/pbtk-resume`).
 
-- Definition: `graph_definition` (qualified name) / `graph_search` (substring). Callers/callees: `graph_callers` / `graph_callees` (raise `min_confidence` in interface-heavy code). File symbols: `graph_outline`, then `Read` specific ranges. Diff blast radius: `graph_diff_affected`, then `graph_callers` per touched symbol. Imports: `graph_imports` (`direction: "out"` deps / `"in"` reverse-deps). Docs by concept: `doc_search` (BM25) / `doc_outline`.
-- `lang` is case-sensitive lowercase (`"go"`, `"rust"`, `"typescript"` — not `"Go"`/`"rs"`/`"ts"`); `kind` narrows (`"Function"`, `"Method"`, `"Struct"`, …). Empty results on a known symbol usually mean a bad filter.
-- **Not in the index** — use `ffgrep`/`Grep`: string literals, comments, log messages, embedded SQL, struct tags, config keys. After a large refactor the index may be stale (rebuild via the repo's graph build/watch — check the project's CLAUDE.md); fall back to `Grep` for unindexed/generated files.
+The two indexes are built separately — `graph_*` tools need the graph index,
+`doc_*` tools need the doc index. When either goes stale after a refactor or
+large file batch, rebuild (one-shot `build`, or `watch` to auto-refresh on
+changes):
+
+- `pbtk graph build` / `pbtk graph watch` — graph index.
+- `pbtk doc build` / `pbtk doc watch` — doc index.
+
