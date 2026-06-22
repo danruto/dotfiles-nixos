@@ -72,11 +72,13 @@ close_tab       = "prefix+shift+x"
 close_workspace = "prefix+shift+d"
 
 # Split downward (split right is split_vertical above, on prefix+v / alt+n).
-split_horizontal = "prefix+minus"
+# alt+m mirrors alt+n: a prefix-free chord for the other split direction
+# (no-op under aerospace, fires on hyprland/niri like the other alt keys).
+split_horizontal = ["prefix+minus", "alt+m"]
 
 # Session / misc.
 detach          = ["prefix+q", "prefix+d"]  # 'd' = zellij tmux/session detach
-zoom            = "prefix+z"                 # fullscreen
+zoom            = ["prefix+z", "alt+z"]      # fullscreen
 edit_scrollback = "prefix+e"                 # zellij scroll-mode 'e'
 
 # 'r' cluster: rename took prefix+r, so Resize and Reload shift over to keep the
