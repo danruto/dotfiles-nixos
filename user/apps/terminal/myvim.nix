@@ -8,30 +8,7 @@
     # package = pkgs.neovim-unwrapped;
     # package = pkgs.unstable.neovim-unwrapped.override ({ tree-sitter = pkgs.tree-sitter; });
     # package = pkgs.unstable.neovim-unwrapped;
-    package = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-      doCheck = false;
-      doInstallCheck = false;
-      postInstall = (old.postInstall or "") + ''
-        mkdir -p $out/share/applications
-        if [ ! -f $out/share/applications/nvim.desktop ]; then
-          cat > $out/share/applications/nvim.desktop << 'DESKTOP'
-[Desktop Entry]
-Name=Neovim
-GenericName=Text Editor
-Comment=Edit text files
-TryExec=nvim
-Exec=nvim %F
-Terminal=true
-Type=Application
-Keywords=Text;editor;
-Icon=nvim
-Categories=Utility;TextEditor;
-StartupNotify=false
-MimeType=text/english;text/plain;
-DESKTOP
-        fi
-      '';
-    });
+    package = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
     extraPackages = with pkgs; [
       # Telescope
@@ -384,6 +361,23 @@ DESKTOP
           },
         })
       '';
+  };
+
+  xdg.desktopEntries.nvim = {
+    name = "Neovim";
+    genericName = "Text Editor";
+    comment = "Edit text files";
+    exec = "nvim %F";
+    icon = "nvim";
+    terminal = true;
+    type = "Application";
+    categories = [ "Utility" "TextEditor" ];
+    startupNotify = false;
+    mimeType = [ "text/english" "text/plain" ];
+    settings = {
+      TryExec = "nvim";
+      Keywords = "Text;editor;";
+    };
   };
 
   xdg.configFile."nvim/parser".source =

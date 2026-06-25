@@ -57,6 +57,18 @@ with lib;
 
   nix.settings.download-buffer-size = 524288000;
 
+  # Binary caches so neovim-nightly, hyprland, and other community packages
+  # are substituted instead of built from source. (niri's cache is added by
+  # niri.nixosModules.binary-cache; cache.nixos.org is a default.)
+  nix.settings.extra-substituters = [
+    "https://nix-community.cachix.org"
+    "https://hyprland.cachix.org"
+  ];
+  nix.settings.extra-trusted-public-keys = [
+    "nix-community.cachix.org-1:mB9FSh9qf2dPimlRdkofvAVtMmnW9Y0r2/H6Iwlfzgw="
+    "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+  ];
+
   # Fix nix path
   nix.nixPath = [
     "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
