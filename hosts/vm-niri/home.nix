@@ -47,7 +47,6 @@
     # ../../user/apps/gui/gui.nix
     # ../../user/apps/gui/neovide.nix
     # ../../user/apps/gui/vscode.nix
-    # ../../user/apps/gui/zed.nix
     # ../../user/apps/networking/wireguard.nix
     # ../../user/apps/security/1password.nix
     # ../../user/apps/security/protonvpn.nix

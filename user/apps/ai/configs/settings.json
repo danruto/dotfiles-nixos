@@ -50,16 +50,36 @@
     "model": "opus",
     "enabledPlugins": {
         "rust-analyzer-lsp@claude-plugins-official": true,
-        "lua-lsp@claude-plugins-official": true,
         "gopls-lsp@claude-plugins-official": true,
         "typescript-lsp@claude-plugins-official": true,
-        "claude-md-management@claude-plugins-official": true,
         "claude-code-setup@claude-plugins-official": true,
-        "skill-creator@claude-plugins-official": true,
-        "frontend-design@claude-plugins-official": true
+        "pb@pb-skills": true,
+        "revdiff@revdiff": true
     },
     "alwaysThinkingEnabled": true,
     "attributionEnabled": false,
     "attributionName": "",
-    "voiceEnabled": true
+    "voiceEnabled": true,
+    "mcpServers": {
+        "fff": {
+            "command": "fff-mcp",
+            "args": []
+        }
+    },
+    "autoMemoryEnabled": false,
+    "effortLevel": "xhigh",
+    "hooks": {
+        "PreToolUse": [
+            {
+                "hooks": [
+                    {
+                        "command": "jq -cr '# pbtk-prehook-v3\n{hookSpecificOutput:{hookEventName:\"PreToolUse\",updatedInput:(.tool_input + {command:\n  (\"pbtk exec --shell -- \" + (.tool_input.command | @sh))})}}'",
+                        "type": "command"
+                    }
+                ],
+                "matcher": "Bash"
+            }
+        ]
+    },
+    "skipWorkflowUsageWarning": true
 }

@@ -51,22 +51,20 @@ in
     pkgs-master.claude-code
     pkgs-master.opencode
     pkgs-master.pi-coding-agent
+    fff-mcp # on PATH so the static settings.json can reference `fff-mcp` by name
   ];
 
-  home.file.".claude/CLAUDE.md".source = ./configs/CLAUDE.md;
-  home.file.".claude/settings.local.json".text =
-    let
-      base = builtins.fromJSON (builtins.readFile ./configs/settings.local.json);
-      merged = base // {
-        mcpServers = (base.mcpServers or { }) // {
-          fff = {
-            command = "${fff-mcp}/bin/fff-mcp";
-            args = [ ];
-          };
-        };
-      };
-    in
-    builtins.toJSON merged;
+  # CLAUDE.md and settings.json are out-of-store symlinks to the live working
+  # tree (like herdr's config.toml) so edits — including Claude Code's own writes
+  # to settings.json — land directly in this repo without a redeploy. Assumes the
+  # repo is checked out at ~/dotfiles-nixos. fff-mcp is on PATH (see home.packages)
+  # so the static config can reference it by bare name instead of a store path.
+  home.file.".claude/CLAUDE.md".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/CLAUDE.md";
+  home.file.".claude/settings.json".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/settings.json";
 
   # Pi agent config. Set OPENCODE_API_KEY in your environment (e.g. via a
   # secrets manager or direnv) so pi can authenticate against the OpenCode Go

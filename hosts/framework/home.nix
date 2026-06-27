@@ -42,7 +42,7 @@
     ../../user/apps/gui/gui.nix
     # ../../user/apps/gui/neovide.nix
     ../../user/apps/gui/vscode.nix
-    ../../user/apps/gui/zed.nix
+    # zed - switched to flatpak (dev.zed.Zed), see configuration.nix
     ../../user/apps/networking/wireguard.nix
     ../../user/apps/networking/ssh.nix
     ../../user/apps/security/1password.nix

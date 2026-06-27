@@ -153,9 +153,15 @@ with lib;
   services.flatpak.packages = [
     "com.gitbutler.gitbutler"
     "com.obsproject.Studio"
+    "dev.zed.Zed"
     "io.mpv.Mpv"
     "org.libreoffice.LibreOffice"
   ];
+
+  # Zed's flatpak escapes the sandbox at startup and runs the editor on the
+  # host, which fails on NixOS (no FHS libwayland/libasound) -> the window
+  # never appears. Keep it inside the Freedesktop runtime instead.
+  services.flatpak.overrides."dev.zed.Zed".Environment.ZED_FLATPAK_NO_ESCAPE = "1";
 
   services.fwupd.enable = true;
   services.fwupd.extraRemotes = [ "lvfs-testing" ];

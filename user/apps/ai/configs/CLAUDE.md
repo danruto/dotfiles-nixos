@@ -14,6 +14,12 @@
 - Don't over-engineer or add features beyond what was asked
 - Don't refactor surrounding code when fixing a bug — keep changes minimal
 
+## Offering Fixes
+
+- When offering a fix, always recommend the proper fix that keeps clean architecture — this is the default
+- Still provide the short-term/quick fix as an option, but never recommend it
+- The short fix only makes sense for brownfield projects; clean architecture wins the rest of the time
+
 ## Agent Model Selection
 
 - **Haiku** (`model: "haiku"`) — Use for code exploration subagents: file searches, codebase exploration, grep/glob tasks, code reading
