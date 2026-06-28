@@ -1,5 +1,10 @@
-{ pkgs, pkgs-unstable, pkgs-master, fff, crit, lib, config, ... }:
+{ pkgs, pkgs-unstable, pkgs-master, fff, crit, lib, config, platform, ... }:
 let
+  # Standalone home (e.g. orb-arch via `make hm/switch`) skips Pi: its install
+  # activation shells out to a global npm install that fails on read-only/Nix
+  # store setups, and Pi isn't wanted on that profile anyway.
+  piEnabled = platform != "standalone";
+
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
   crit-pkg = crit.packages.${pkgs.stdenv.hostPlatform.system}.default;
   lazypi = pkgs.callPackage ./lazypi.nix { };
@@ -82,9 +87,10 @@ in
   ]) ++ [
     pkgs-master.claude-code
     pkgs-master.opencode
+    fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name
+  ] ++ lib.optionals piEnabled [
     pi-coding-agent
     lazypi
-    fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name
   ];
 
   # CLAUDE.md and Claude Code's settings.json are out-of-store symlinks to the
@@ -104,7 +110,7 @@ in
   # Run once on first switch to seed ~/.pi/agent/settings.json; after that use
   # `lazypi update` / `lazypi remove` interactively. Compound Engineering is
   # excluded because it requires bunx and is the heaviest framework package.
-  home.activation.lazyPiInstall = lib.hm.dag.entryAfter [ "writeBoundary" ] (
+  home.activation.lazyPiInstall = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] (
     let
       settings = "${config.home.homeDirectory}/.pi/agent/settings.json";
     in
@@ -113,13 +119,13 @@ in
         ${lazypi}/bin/lazypi install --yes --except compound
       fi
     ''
-  );
+  ));
 
   # @ff-labs/pi-fff and pi-markdown-preview aren't in lazypi's catalog, so the
   # one-shot seed above drops them. Idempotently merge them into the package
   # list (preserving order, appending only what's missing) so they survive a
   # fresh ~/.pi reseed. Pi installs any newly-listed packages on next launch.
-  home.activation.piExtraExtensions = lib.hm.dag.entryAfter [ "lazyPiInstall" ] (
+  home.activation.piExtraExtensions = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "lazyPiInstall" ] (
     let
       settings = "${config.home.homeDirectory}/.pi/agent/settings.json";
       extras = builtins.toJSON [ "npm:@ff-labs/pi-fff" "npm:pi-markdown-preview" ];
@@ -132,5 +138,5 @@ in
           "${settings}" > "$tmp" && mv "$tmp" "${settings}"
       fi
     ''
-  );
+  ));
 }
