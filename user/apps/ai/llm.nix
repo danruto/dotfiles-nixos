@@ -2,6 +2,38 @@
 let
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
   crit-pkg = crit.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  lazypi = pkgs.callPackage ./lazypi.nix { };
+
+  # nixpkgs-master still ships pi-coding-agent 0.79.8, but lazypi installs
+  # community extensions (e.g. pi-web-access@0.13.0) rebuilt for Pi 0.80.x,
+  # which import `@earendil-works/pi-ai/compat` — a subpath export that only
+  # exists from 0.80.0 on. Pin to 0.80.2 to match. overrideAttrs alone updates
+  # the build src but leaves npmDeps pointing at the old 0.79.8 lockfile, so the
+  # offline cache must be rebuilt explicitly. Drop this whole override once
+  # nixpkgs-master reaches >= 0.80.2.
+  pi-src = pkgs-master.fetchFromGitHub {
+    owner = "earendil-works";
+    repo = "pi";
+    tag = "v0.80.2";
+    hash = "sha256-aKtgPc3rwHEp856jP3N7nImph0CSG+gsWq9OVci3hmE=";
+  };
+  pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
+    version = "0.80.2";
+    src = pi-src;
+    npmDeps = pkgs-master.fetchNpmDeps {
+      src = pi-src;
+      name = "pi-coding-agent-0.80.2-npm-deps";
+      hash = "sha256-1EGs8lX8XoAnRtS+pw4lBRm24U/vtVB2loVRmZyd4Z8=";
+    };
+    # pi compiles native npm modules (e.g. node-pty) when installing/updating
+    # extensions, and node-gyp needs python on PATH. Scope it to pi's own wrapper
+    # instead of the global profile (gcc/gnumake come from user/lang/cc). This
+    # replaces the upstream wrapper, so re-add its ripgrep/fd.
+    postFixup = ''
+      wrapProgram $out/bin/pi \
+        --prefix PATH : ${lib.makeBinPath (with pkgs-master; [ ripgrep fd python3 ])}
+    '';
+  });
 
   revdiff =
     let
@@ -50,15 +82,17 @@ in
   ]) ++ [
     pkgs-master.claude-code
     pkgs-master.opencode
-    pkgs-master.pi-coding-agent
-    fff-mcp # on PATH so the static settings.json can reference `fff-mcp` by name
+    pi-coding-agent
+    lazypi
+    fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name
   ];
 
-  # CLAUDE.md and settings.json are out-of-store symlinks to the live working
-  # tree (like herdr's config.toml) so edits — including Claude Code's own writes
-  # to settings.json — land directly in this repo without a redeploy. Assumes the
-  # repo is checked out at ~/dotfiles-nixos. fff-mcp is on PATH (see home.packages)
-  # so the static config can reference it by bare name instead of a store path.
+  # CLAUDE.md and Claude Code's settings.json are out-of-store symlinks to the
+  # live working tree (like herdr's config.toml) so edits — including Claude
+  # Code's own writes to settings.json — land directly in this repo without a
+  # redeploy. Assumes the repo is checked out at ~/dotfiles-nixos. fff-mcp is on
+  # PATH (see home.packages) so the static Claude/OMP MCP configs can reference
+  # it by bare name instead of a store path.
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/CLAUDE.md";
@@ -66,62 +100,36 @@ in
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/settings.json";
 
-  # Pi agent config. Set OPENCODE_API_KEY in your environment (e.g. via a
-  # secrets manager or direnv) so pi can authenticate against the OpenCode Go
-  # provider. The activation script writes auth.json from that env var so you
-  # don't have to /login manually.
-  home.file.".pi/agent/settings.json".text = builtins.toJSON {
-    defaultProvider = "opencode-go";
-    theme = "dark";
-    quietStartup = false;
-    compaction = {
-      enabled = true;
-      reserveTokens = 16384;
-      keepRecentTokens = 20000;
-    };
-    retry = {
-      enabled = true;
-      maxRetries = 3;
-    };
-    packages = [
-      "pi-mcp-adapter"
-      "pi-web-access"
-      "pi-hermes-memory"
-      "npm:@ff-labs/pi-fff"
-      # "npm:pi-revdiff-plan"
-      "npm:@plannotator/pi-extension"
-      "npm:pi-ask-user"
-      "npm:pi-markdown-preview"
-    ];
-  };
+  # LazyPi: one-shot installer for vanilla Pi + curated community packages.
+  # Run once on first switch to seed ~/.pi/agent/settings.json; after that use
+  # `lazypi update` / `lazypi remove` interactively. Compound Engineering is
+  # excluded because it requires bunx and is the heaviest framework package.
+  home.activation.lazyPiInstall = lib.hm.dag.entryAfter [ "writeBoundary" ] (
+    let
+      settings = "${config.home.homeDirectory}/.pi/agent/settings.json";
+    in
+    ''
+      if [ ! -f "${settings}" ]; then
+        ${lazypi}/bin/lazypi install --yes --except compound
+      fi
+    ''
+  );
 
-  # Custom model definitions for pi (built-in model lists are outdated in nixpkgs)
-  home.file.".pi/agent/models.json".text = builtins.toJSON {
-    providers = {
-      opencode-go = {
-        models = [
-          {
-            id = "kimi-k2.7-code";
-            name = "Kimi K2.7 Code";
-            reasoning = true;
-            input = [ "text" "image" ];
-            contextWindow = 262144;
-            maxTokens = 262144;
-          }
-        ];
-      };
-    };
-  };
-
-  home.activation.piAuth = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-    let authFile = "${config.home.homeDirectory}/.pi/agent/auth.json";
-    in ''
-      if [ -n "''${OPENCODE_API_KEY:-}" ]; then
-        mkdir -p "${config.home.homeDirectory}/.pi/agent"
-        ${pkgs.jq}/bin/jq -n \
-          --arg key "$OPENCODE_API_KEY" \
-          '{ "opencode-go": { "type": "api_key", "key": $key } }' \
-          > "${authFile}"
+  # @ff-labs/pi-fff and pi-markdown-preview aren't in lazypi's catalog, so the
+  # one-shot seed above drops them. Idempotently merge them into the package
+  # list (preserving order, appending only what's missing) so they survive a
+  # fresh ~/.pi reseed. Pi installs any newly-listed packages on next launch.
+  home.activation.piExtraExtensions = lib.hm.dag.entryAfter [ "lazyPiInstall" ] (
+    let
+      settings = "${config.home.homeDirectory}/.pi/agent/settings.json";
+      extras = builtins.toJSON [ "npm:@ff-labs/pi-fff" "npm:pi-markdown-preview" ];
+    in
+    ''
+      if [ -f "${settings}" ]; then
+        tmp="$(mktemp)"
+        ${pkgs.jq}/bin/jq --argjson e '${extras}' \
+          '.packages = ((.packages // []) + ($e - (.packages // [])))' \
+          "${settings}" > "$tmp" && mv "$tmp" "${settings}"
       fi
     ''
   );
