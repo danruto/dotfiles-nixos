@@ -67,10 +67,12 @@
     "typescript-lsp@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
     "pb@pb-skills": true,
-    "revdiff@revdiff": true
+    "revdiff@revdiff": true,
+    "crit@crit": true
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
+  "tui": "fullscreen",
   "autoMemoryEnabled": false,
   "skipWorkflowUsageWarning": true,
   "voiceEnabled": true,
@@ -81,6 +83,5 @@
       "command": "fff-mcp",
       "args": []
     }
-  },
-  "tui": "fullscreen"
+  }
 }

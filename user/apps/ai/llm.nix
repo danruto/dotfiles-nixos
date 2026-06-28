@@ -74,7 +74,6 @@ let
 in
 {
   home.packages = (with pkgs-unstable; [
-    # pkgs-master.opencode
     # opencode
     sox # voice for cc
     crit-pkg
@@ -102,9 +101,19 @@ in
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/CLAUDE.md";
-  home.file.".claude/settings.json".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/settings.json";
+
+  # settings.json can't go through home.file/mkOutOfStoreSymlink: that routes the
+  # link through the read-only home-manager-files store dir, and Claude Code
+  # rewrites settings.json atomically (write a sibling .tmp, then rename). It
+  # resolves only the first symlink hop, so the .tmp lands in /nix/store → EROFS
+  # (breaks plugin installs, /config, etc.). Create a *direct* out-of-store
+  # symlink to the live repo file instead, so the sibling .tmp lands in the
+  # writable repo dir and Claude's own edits still sync straight back into git.
+  home.activation.claudeSettingsLink = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p "${config.home.homeDirectory}/.claude"
+    run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/settings.json" \
+      "${config.home.homeDirectory}/.claude/settings.json"
+  '';
 
   # LazyPi: one-shot installer for vanilla Pi + curated community packages.
   # Run once on first switch to seed ~/.pi/agent/settings.json; after that use
