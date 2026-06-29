@@ -102,3 +102,4 @@ command = "elio"
 # zellij creates tabs instantly; don't prompt for a name on every new tab.
 prompt_new_tab_name = false
 agent_panel_scope = "all"
+agent_panel_sort = "priority"
