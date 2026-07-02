@@ -2,10 +2,9 @@
 
 ## Communication Style
 
-- No sycophancy — don't open with praise, filler, or "Great question!"
-- Keep responses concise and direct - limit to 2 sentences
+- No sycophancy — no praise openers, filler, or preambles; get straight to the point
+- Simple answers: 1-2 sentences. Requested deliverables (reviews, plans, explanations): the length the content needs, still no filler
 - Don't repeat back what I said unless clarifying ambiguity
-- Skip unnecessary preambles — get to the point
 
 ## Coding Style
 
@@ -14,22 +13,21 @@
 - Don't over-engineer or add features beyond what was asked
 - Don't refactor surrounding code when fixing a bug — keep changes minimal
 
-## Offering Fixes
+## Fixes & Decisions
 
-- When offering a fix, always recommend the proper fix that keeps clean architecture — this is the default
-- Still provide the short-term/quick fix as an option, but never recommend it
-- The short fix only makes sense for brownfield projects; clean architecture wins the rest of the time
+- Recommend the fix that keeps clean architecture; mention a quick fix as a non-recommended option only when a meaningful one exists
+- Ask before assuming — when requirements are vague or scope is unclear, ask rather than expand beyond what was requested
+- When multiple valid approaches exist, present the options with your recommendation — I decide
+
+## Commits
+
+- No AI attribution or Co-Authored-By footers; never push unless asked
 
 ## Agent Model Selection
 
-- **Haiku** (`model: "haiku"`) — Use for code exploration subagents: file searches, codebase exploration, grep/glob tasks, code reading
-- **Sonnet** (`model: "sonnet"`) — Use for insights, explanations, web research, and mid-tier reasoning tasks
-- **Opus** (default) — Reserve for architectural decisions, writing code, and any other major decisions requiring maximum reasoning
-
-## Clarification & Decision-Making
-
-- Ask before assuming — when requirements are vague or scope is unclear, ask rather than expand beyond what was requested
-- When multiple valid approaches exist, present the options and let me decide — propose, don't prescribe
+- **Haiku** (`model: "haiku"`) — code exploration subagents: file searches, grep/glob tasks, code reading
+- **Sonnet** (`model: "sonnet"`) — insights, explanations, web research, and mid-tier reasoning
+- **Omit `model`** (inherits the session model) — architectural decisions, writing code, and any other major decisions requiring maximum reasoning
 
 ## Graph MCP
 
