@@ -51,6 +51,14 @@ next_workspace     = "alt+]"
 previous_tab = ["prefix+p", "alt+left"]
 next_tab     = ["prefix+n", "alt+right"]
 
+# Agents: alt+up / alt+down walk the agent panel, which is priority-sorted
+# (agent_panel_sort below), so this jumps to whichever agent needs attention —
+# unlike alt+[ / alt+], which walks workspaces in spatial order. Vertical arrows
+# match the vertical panel. alt+up/down have no ghostty default binding and
+# aerospace leaves arrows free, so they're delivered on every host.
+previous_agent = "alt+up"
+next_agent     = "alt+down"
+
 # --- Management (prefix-mode), mirroring zellij ---
 # herdr is a flat tmux-style prefix with no zellij modes, so these mostly track
 # zellij's tmux mode. Unlike the alt drivers above, prefix-mode second keys are

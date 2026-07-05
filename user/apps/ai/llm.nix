@@ -12,23 +12,23 @@ let
   # nixpkgs-master still ships pi-coding-agent 0.79.8, but lazypi installs
   # community extensions (e.g. pi-web-access@0.13.0) rebuilt for Pi 0.80.x,
   # which import `@earendil-works/pi-ai/compat` — a subpath export that only
-  # exists from 0.80.0 on. Pin to 0.80.2 to match. overrideAttrs alone updates
+  # exists from 0.80.0 on. Pin to 0.80.3 to match. overrideAttrs alone updates
   # the build src but leaves npmDeps pointing at the old 0.79.8 lockfile, so the
   # offline cache must be rebuilt explicitly. Drop this whole override once
-  # nixpkgs-master reaches >= 0.80.2.
+  # nixpkgs-master reaches >= 0.80.3.
   pi-src = pkgs-master.fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
-    tag = "v0.80.2";
-    hash = "sha256-aKtgPc3rwHEp856jP3N7nImph0CSG+gsWq9OVci3hmE=";
+    tag = "v0.80.3";
+    hash = "sha256-wQTrWKsb2HCGwzSAFEk8NWSDpqxSY/lv1/R6ghcmbaA=";
   };
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
-    version = "0.80.2";
+    version = "0.80.3";
     src = pi-src;
     npmDeps = pkgs-master.fetchNpmDeps {
       src = pi-src;
-      name = "pi-coding-agent-0.80.2-npm-deps";
-      hash = "sha256-1EGs8lX8XoAnRtS+pw4lBRm24U/vtVB2loVRmZyd4Z8=";
+      name = "pi-coding-agent-0.80.3-npm-deps";
+      hash = "sha256-geh8LH88OZybFXkR/jDeTdew6TNMdFM6jhCSYKn//dU=";
     };
     # pi compiles native npm modules (e.g. node-pty) when installing/updating
     # extensions, and node-gyp needs python on PATH. Scope it to pi's own wrapper
