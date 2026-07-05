@@ -19,10 +19,6 @@ let
     ];
   });
 
-  zjsbOverlay = (final: prev: {
-    zjsb = inputs.zjsb.packages.${prev.stdenv.hostPlatform.system}.default;
-  });
-
   darwinOverlay = (final: prev: {
     direnv = prev.direnv.overrideAttrs (oldAttrs: {
       env = (oldAttrs.env or { }) // {
@@ -50,8 +46,7 @@ let
 in
 {
   inherit common;
-  # The unstable channel additionally exposes the zjsb package.
-  unstable = common ++ [ zjsbOverlay ];
+  unstable = common;
   # Darwin system nixpkgs needs the direnv/fish fixups.
   darwin = common ++ [ darwinOverlay ];
 }

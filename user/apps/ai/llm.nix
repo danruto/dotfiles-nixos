@@ -40,6 +40,42 @@ let
     '';
   });
 
+  # Minimal Rust coding agent (https://github.com/gi-dellav/zerostack). Not in
+  # nixpkgs; upstream's nix expr builds from source, so ship the release binary
+  # instead. musl builds are fully static — no autoPatchelfHook needed.
+  zerostack =
+    let
+      version = "1.6.0";
+      sources = {
+        "x86_64-linux" = { target = "x86_64-unknown-linux-musl"; hash = "sha256-Tki0a17xW/x35hUeTWwAc5JCD7recrWJ+QSJ7uYmapc="; };
+        "aarch64-linux" = { target = "aarch64-unknown-linux-musl"; hash = "sha256-NBXxymadLKE0dd/J90Xp7QIg7gwzRERZl7OvtDGq/jo="; };
+        "x86_64-darwin" = { target = "x86_64-apple-darwin"; hash = "sha256-GMCDDSdKlD+8OjCALJbnsydkWFNaAY3XTnq/Hh5CVDc="; };
+        "aarch64-darwin" = { target = "aarch64-apple-darwin"; hash = "sha256-9O7KKnNryN0cxfI2NYygFp0KFWaZWqAkOqx55fbgS4Q="; };
+      };
+      target = sources.${pkgs.stdenv.hostPlatform.system};
+    in
+    pkgs.stdenvNoCC.mkDerivation {
+      pname = "zerostack";
+      inherit version;
+      src = pkgs.fetchurl {
+        url = "https://github.com/gi-dellav/zerostack/releases/download/v${version}/zerostack-${target.target}.tar.gz";
+        inherit (target) hash;
+      };
+      sourceRoot = ".";
+      installPhase = ''
+        runHook preInstall
+        install -Dm755 zerostack-${target.target} $out/bin/zerostack
+        runHook postInstall
+      '';
+      meta = {
+        description = "Minimal coding agent written in Rust, inspired by pi and opencode";
+        homepage = "https://github.com/gi-dellav/zerostack";
+        license = pkgs.lib.licenses.gpl3Only;
+        mainProgram = "zerostack";
+        platforms = builtins.attrNames sources;
+      };
+    };
+
   revdiff =
     let
       version = "1.5.0";
@@ -78,6 +114,7 @@ in
     sox # voice for cc
     crit-pkg
     revdiff
+    zerostack
     # amp-cli
     # gemini-cli
     # codex
@@ -101,6 +138,14 @@ in
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/CLAUDE.md";
+
+  home.file.".claude/statusline.sh".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/statusline.sh";
+
+  home.file.".claude/subagent-statusline.sh".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/subagent-statusline.sh";
 
   # settings.json can't go through home.file/mkOutOfStoreSymlink: that routes the
   # link through the read-only home-manager-files store dir, and Claude Code

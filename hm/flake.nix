@@ -15,11 +15,6 @@
       # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    zjsb = {
-      url = "git+ssh://git@github.com/danruto/pb-zjsb.git";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     helix-fork = {
       url = "github:gj1118/helix";
       # inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -44,7 +39,6 @@
     , neovim-nightly-overlay
     , nur
     , rust-overlay
-    , zjsb
     , helix-fork
     , quickshell
     , noctalia
@@ -56,9 +50,6 @@
         neovim-nightly-overlay.overlays.default
         rust-overlay.overlays.default
         nur.overlays.default
-        (final: prev: {
-          zjsb = zjsb.packages.${prev.stdenv.hostPlatform.system}.default;
-        })
       ];
 
       # Set up custom Home Manager configurations
@@ -79,7 +70,6 @@
             inherit neovim-nightly-overlay;
             inherit nur;
             inherit rust-overlay;
-            inherit zjsb;
             inherit helix-fork;
             inherit quickshell;
             inherit noctalia;

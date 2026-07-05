@@ -3,11 +3,11 @@
 let
   stable-packages = with pkgs; [
     # blueman
+    vesktop
   ];
 
   # TODO: mpv, nemo, vscode should be it's own modules as it needs settings
   unstable-packages = with pkgs-unstable; [
-    vesktop
     # insomnium
     # insomnia
     # mpv - using flatpak instead

@@ -103,11 +103,6 @@
       # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    zjsb = {
-      url = "github:danruto/pb-zjsb";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     blocklist-hosts = {
       url = "github:StevenBlack/hosts";
       flake = false;
