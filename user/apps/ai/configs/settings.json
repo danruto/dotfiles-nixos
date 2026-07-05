@@ -8,6 +8,7 @@
     "command": "~/.claude/subagent-statusline.sh"
   },
   "permissions": {
+    "defaultMode": "auto",
     "allow": [
       "Read",
       "Edit",
