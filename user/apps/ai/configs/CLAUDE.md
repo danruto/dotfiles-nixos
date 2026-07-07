@@ -32,9 +32,14 @@
 ## Graph MCP
 
 `pbtk-graph` is a per-repo MCP that indexes code symbols (`mcp__pbtk-graph__graph_*`)
-and markdown docs (`mcp__pbtk-graph__doc_*`). Prefer it over grep for symbol- or
-concept-shaped queries; fall back to grep for content that isn't indexed — string
-literals, comments, log messages, SQL, struct tags, config keys.
+and markdown docs (`mcp__pbtk-graph__doc_*`). When it is available in the
+current repo:
+
+**Before any Grep/Glob/Read-scan for code, stop and check: is this a symbol,
+caller/callee, definition, or concept lookup? If yes, you MUST use a
+`pbtk-graph` tool first. Grep is the fallback, not the default — use it only
+for unindexed content (string literals, comments, log messages, SQL, struct
+tags, config keys) or when the graph query returns nothing.**
 
 Routing:
 
@@ -42,7 +47,7 @@ Routing:
 - Callers / callees → `graph_callers` / `graph_callees`.
 - File symbols → `graph_outline`; imports → `graph_imports`.
 - Diff blast radius → `graph_diff_affected`.
-- Docs → `doc_search` / `doc_outline`.
+- Docs → `doc_search` / `doc_outline` before any Grep over `*.md`.
 - Intent/concept when you don't know names → `graph_semantic_search`.
 - "Find code like this" from a `file:line` → `graph_find_related`.
 - One symbol + 1-hop neighbors in a single call → `graph_context`.

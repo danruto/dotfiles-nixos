@@ -1,14 +1,5 @@
 {
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.sh"
-  },
-  "subagentStatusLine": {
-    "type": "command",
-    "command": "~/.claude/subagent-statusline.sh"
-  },
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
       "Read",
       "Edit",
@@ -54,7 +45,8 @@
       "Read(.env.production)",
       "Read(.env.staging)",
       "Read(.env.test)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "claude-fable-5[1m]",
   "hooks": {
@@ -70,6 +62,14 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "subagentStatusLine": {
+    "type": "command",
+    "command": "~/.claude/subagent-statusline.sh"
+  },
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
@@ -77,7 +77,8 @@
     "claude-code-setup@claude-plugins-official": true,
     "pb@pb-skills": true,
     "revdiff@revdiff": true,
-    "crit@crit": true
+    "crit@crit": true,
+    "bb@bubblebeam": true
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
