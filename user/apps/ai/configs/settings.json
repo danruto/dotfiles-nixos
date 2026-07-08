@@ -1,4 +1,5 @@
 {
+  "$schema": "https://www.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "Read",
@@ -44,11 +45,16 @@
       "Read(.env.development)",
       "Read(.env.production)",
       "Read(.env.staging)",
-      "Read(.env.test)"
+      "Read(.env.test)",
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "DesignSync",
+      "PushNotification"
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5[1m]",
+  "model": "sonnet",
+  "disableBundledSkills": true,
   "hooks": {
     "PreToolUse": [
       {
@@ -62,6 +68,8 @@
       }
     ]
   },
+  "disableWorkflows": true,
+  "disableArtifact": true,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -77,7 +85,6 @@
     "claude-code-setup@claude-plugins-official": true,
     "pb@pb-skills": true,
     "revdiff@revdiff": true,
-    "crit@crit": true,
     "bb@bubblebeam": true
   },
   "alwaysThinkingEnabled": true,
