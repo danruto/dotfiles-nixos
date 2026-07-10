@@ -3,32 +3,32 @@ let
   # Standalone home (e.g. orb-arch via `make hm/switch`) skips Pi: its install
   # activation shells out to a global npm install that fails on read-only/Nix
   # store setups, and Pi isn't wanted on that profile anyway.
-  piEnabled = platform != "standalone";
+  # piEnabled = platform != "standalone";
+  piEnabled = true;
 
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
   crit-pkg = crit.packages.${pkgs.stdenv.hostPlatform.system}.default;
   lazypi = pkgs.callPackage ./lazypi.nix { };
 
-  # nixpkgs-master still ships pi-coding-agent 0.79.8, but lazypi installs
-  # community extensions (e.g. pi-web-access@0.13.0) rebuilt for Pi 0.80.x,
-  # which import `@earendil-works/pi-ai/compat` — a subpath export that only
-  # exists from 0.80.0 on. Pin to 0.80.3 to match. overrideAttrs alone updates
-  # the build src but leaves npmDeps pointing at the old 0.79.8 lockfile, so the
-  # offline cache must be rebuilt explicitly. Drop this whole override once
-  # nixpkgs-master reaches >= 0.80.3.
+  # nixpkgs-master lags upstream Pi releases, but lazypi installs community
+  # extensions rebuilt for the latest Pi, which can depend on newer exports of
+  # `@earendil-works/pi-ai`. Pin to the latest upstream tag to match.
+  # overrideAttrs alone updates the build src but leaves npmDeps pointing at
+  # the old lockfile, so the offline cache must be rebuilt explicitly. Drop
+  # this whole override once nixpkgs-master reaches >= 0.80.6.
   pi-src = pkgs-master.fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
-    tag = "v0.80.3";
-    hash = "sha256-wQTrWKsb2HCGwzSAFEk8NWSDpqxSY/lv1/R6ghcmbaA=";
+    tag = "v0.80.6";
+    hash = "sha256-e/wcHruEcBAHDF5tKvwew7LXjVp0eraHh2k+QaL2sCA=";
   };
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
-    version = "0.80.3";
+    version = "0.80.6";
     src = pi-src;
     npmDeps = pkgs-master.fetchNpmDeps {
       src = pi-src;
-      name = "pi-coding-agent-0.80.3-npm-deps";
-      hash = "sha256-geh8LH88OZybFXkR/jDeTdew6TNMdFM6jhCSYKn//dU=";
+      name = "pi-coding-agent-0.80.6-npm-deps";
+      hash = "sha256-xXEOR0epZcfbXayYGyJdBiFVliamBexqA+1Sd7wlGhU=";
     };
     # pi compiles native npm modules (e.g. node-pty) when installing/updating
     # extensions, and node-gyp needs python on PATH. Scope it to pi's own wrapper
@@ -45,12 +45,12 @@ let
   # instead. musl builds are fully static — no autoPatchelfHook needed.
   zerostack =
     let
-      version = "1.6.0";
+      version = "1.6.2";
       sources = {
-        "x86_64-linux" = { target = "x86_64-unknown-linux-musl"; hash = "sha256-Tki0a17xW/x35hUeTWwAc5JCD7recrWJ+QSJ7uYmapc="; };
-        "aarch64-linux" = { target = "aarch64-unknown-linux-musl"; hash = "sha256-NBXxymadLKE0dd/J90Xp7QIg7gwzRERZl7OvtDGq/jo="; };
-        "x86_64-darwin" = { target = "x86_64-apple-darwin"; hash = "sha256-GMCDDSdKlD+8OjCALJbnsydkWFNaAY3XTnq/Hh5CVDc="; };
-        "aarch64-darwin" = { target = "aarch64-apple-darwin"; hash = "sha256-9O7KKnNryN0cxfI2NYygFp0KFWaZWqAkOqx55fbgS4Q="; };
+        "x86_64-linux" = { target = "x86_64-unknown-linux-musl"; hash = "sha256-uuRjPazVSvE8GlMW6yFkt2WdZZ5NjfkdLkSEF23yjOI="; };
+        "aarch64-linux" = { target = "aarch64-unknown-linux-musl"; hash = "sha256-FMXmVQssmTtnXSkZtkP8pzGmQEs15IFUT2+2yNypFnM="; };
+        "x86_64-darwin" = { target = "x86_64-apple-darwin"; hash = "sha256-ZcTYmqEb6nxIoNpAwjmCxCSEQo+vJdO2Q+XyVSr5U+U="; };
+        "aarch64-darwin" = { target = "aarch64-apple-darwin"; hash = "sha256-3ln8Yq2POjWqCxngjoVndSoyLvoerD9OJxUft7Cr9ew="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
@@ -78,12 +78,12 @@ let
 
   revdiff =
     let
-      version = "1.5.0";
+      version = "1.10.0";
       sources = {
-        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-D+pgWTrubsZgEQx/dDs/7Jm2Ur8NW7Jm1cufivof1DU="; };
-        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-EO+I3a926ZnP9mK4mCjJdaKQtrz4oG03/zKwwgHMb+E="; };
-        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-Zu1/qUSh+kzSKBzMcmxvn+GQt8rYPqQvIaZW+Myildc="; };
-        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-f9P2wWgs6WxiU6GafaIWU2fPCqEjznO+f9WHl5RIllk="; };
+        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-sh/aRX5toQJZQyiBQdgow2sL/Y33x+UX3uYd9qllKTM="; };
+        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-fusqKrZkfZgEAL0kRDYadGI7ZTmwy1eswX3DdME4lFA="; };
+        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-R+snH/SXgGC+sAtWZBVSOOs2l6ScMuErBnn9q6vC6y8="; };
+        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-wxPrcrRG/WtuwtFRnnm+BOt+riAqSF7xg1xh2pQUkpI="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
@@ -123,6 +123,7 @@ in
   ]) ++ [
     pkgs-master.claude-code
     pkgs-master.opencode
+    pkgs-master.codex
     fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name
   ] ++ lib.optionals piEnabled [
     pi-coding-agent
