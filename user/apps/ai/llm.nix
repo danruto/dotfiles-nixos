@@ -168,10 +168,15 @@ in
   home.activation.lazyPiInstall = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] (
     let
       settings = "${config.home.homeDirectory}/.pi/agent/settings.json";
+      # Activation runs with a minimal PATH: without the nix-built `pi`, lazypi
+      # falls back to `npm install -g` (EACCES on the read-only store); git is
+      # needed for git: extensions, and make/gcc for node-gyp native builds
+      # (interactively those come from the user profile via user/lang/cc).
+      path = lib.makeBinPath [ pi-coding-agent pkgs.git pkgs.gnumake pkgs.gcc ];
     in
     ''
       if [ ! -f "${settings}" ]; then
-        ${lazypi}/bin/lazypi install --yes --except compound
+        PATH="${path}:$PATH" ${lazypi}/bin/lazypi install --yes --except compound
       fi
     ''
   ));
