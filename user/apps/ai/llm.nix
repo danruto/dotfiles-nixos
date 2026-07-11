@@ -30,13 +30,14 @@ let
       name = "pi-coding-agent-0.80.6-npm-deps";
       hash = "sha256-xXEOR0epZcfbXayYGyJdBiFVliamBexqA+1Sd7wlGhU=";
     };
-    # pi compiles native npm modules (e.g. node-pty) when installing/updating
-    # extensions, and node-gyp needs python on PATH. Scope it to pi's own wrapper
-    # instead of the global profile (gcc/gnumake come from user/lang/cc). This
+    # pi spawns `npm install` at runtime for package extensions and compiles
+    # native npm modules (e.g. node-pty) when installing/updating them;
+    # node-gyp needs python on PATH. Scope these to pi's own wrapper instead
+    # of the global profile (gcc/gnumake come from user/lang/cc). This
     # replaces the upstream wrapper, so re-add its ripgrep/fd.
     postFixup = ''
       wrapProgram $out/bin/pi \
-        --prefix PATH : ${lib.makeBinPath (with pkgs-master; [ ripgrep fd python3 ])}
+        --prefix PATH : ${lib.makeBinPath (with pkgs-master; [ nodejs ripgrep fd python3 ])}
     '';
   });
 
