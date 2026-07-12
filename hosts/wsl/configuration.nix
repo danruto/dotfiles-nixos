@@ -118,6 +118,9 @@ with lib;
     extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [ ];
     uid = 1000;
+    # Keep the systemd user manager running so home-manager activation
+    # (and other user units) work outside of a full graphical login.
+    linger = true;
   };
 
   # System packages
