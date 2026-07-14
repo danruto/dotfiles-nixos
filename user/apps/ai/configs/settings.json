@@ -87,7 +87,7 @@
     "revdiff@revdiff": true,
     "bb@bubblebeam": true
   },
-  "alwaysThinkingEnabled": true,
+  "alwaysThinkingEnabled": false,
   "effortLevel": "high",
   "tui": "fullscreen",
   "autoMemoryEnabled": false,

@@ -1,0 +1,49 @@
+{
+  "subagents": {
+    "agentOverrides": {
+      "context-builder": { "model": "" },
+      "planner": { "model": "" },
+      "researcher": { "model": "" },
+      "reviewer": { "model": "" },
+      "scout": { "model": "" },
+      "worker": { "model": "" }
+    }
+  },
+  "packages": [
+    "../../dev/nearmap/bubblebeam",
+    "../../dev/pixelbrush/pb-skills",
+    "git:github.com/DietrichGebert/ponytail",
+    "git:github.com/VandeeFeng/pi-memory-md",
+    "git:github.com/davebcn87/pi-autoresearch",
+    "git:github.com/javierportillo/pi-hackerman@63b0a3ef2c7b14985ffeb6cac44614ba59cd5693",
+    "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359",
+    "npm:@devkade/pi-plan",
+    "npm:@ff-labs/pi-fff",
+    "npm:@juanibiapina/pi-extension-settings",
+    "npm:@plannotator/pi-extension",
+    "npm:@tmustier/pi-raw-paste",
+    "npm:@tmustier/pi-usage-extension",
+    "npm:pi-add-dir",
+    "npm:pi-ask-user",
+    "npm:pi-btw",
+    "npm:pi-claude-cli",
+    "npm:pi-interactive-shell",
+    "npm:pi-lens",
+    "npm:pi-markdown-preview",
+    "npm:pi-mcp-adapter",
+    "npm:pi-prompt-template-model",
+    "npm:pi-simplify",
+    "npm:pi-slopchop",
+    "npm:pi-subagents",
+    "npm:pi-web-access",
+    "npm:pi-zentui"
+  ],
+  "lastChangelogVersion": "0.80.6",
+  "theme": "flexoki-dark",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-sol",
+  "hideThinkingBlock": false,
+  "defaultThinkingLevel": "medium",
+  "quietStartup": true,
+  "enableInstallTelemetry": false
+}

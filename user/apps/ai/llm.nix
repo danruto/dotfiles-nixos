@@ -162,42 +162,14 @@ in
       "${config.home.homeDirectory}/.claude/settings.json"
   '';
 
-  # LazyPi: one-shot installer for vanilla Pi + curated community packages.
-  # Run once on first switch to seed ~/.pi/agent/settings.json; after that use
-  # `lazypi update` / `lazypi remove` interactively. Compound Engineering is
-  # excluded because it requires bunx and is the heaviest framework package.
-  home.activation.lazyPiInstall = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] (
-    let
-      settings = "${config.home.homeDirectory}/.pi/agent/settings.json";
-      # Activation runs with a minimal PATH: without the nix-built `pi`, lazypi
-      # falls back to `npm install -g` (EACCES on the read-only store); git is
-      # needed for git: extensions, and make/gcc for node-gyp native builds
-      # (interactively those come from the user profile via user/lang/cc).
-      path = lib.makeBinPath [ pi-coding-agent pkgs.git pkgs.gnumake pkgs.gcc ];
-    in
-    ''
-      if [ ! -f "${settings}" ]; then
-        PATH="${path}:$PATH" ${lazypi}/bin/lazypi install --yes --except compound
-      fi
-    ''
-  ));
-
-  # @ff-labs/pi-fff and pi-markdown-preview aren't in lazypi's catalog, so the
-  # one-shot seed above drops them. Idempotently merge them into the package
-  # list (preserving order, appending only what's missing) so they survive a
-  # fresh ~/.pi reseed. Pi installs any newly-listed packages on next launch.
-  home.activation.piExtraExtensions = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "lazyPiInstall" ] (
-    let
-      settings = "${config.home.homeDirectory}/.pi/agent/settings.json";
-      extras = builtins.toJSON [ "npm:@ff-labs/pi-fff" "npm:pi-markdown-preview" ];
-    in
-    ''
-      if [ -f "${settings}" ]; then
-        tmp="$(mktemp)"
-        ${pkgs.jq}/bin/jq --argjson e '${extras}' \
-          '.packages = ((.packages // []) + ($e - (.packages // [])))' \
-          "${settings}" > "$tmp" && mv "$tmp" "${settings}"
-      fi
-    ''
-  ));
+  # Pi rewrites settings.json atomically, so use direct out-of-store symlinks
+  # for the same reason as Claude's settings above. Pi's own settings changes
+  # then land in this repo, while listed packages install on the next launch.
+  home.activation.piConfigLinks = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p "${config.home.homeDirectory}/.pi/agent"
+    run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-settings.json" \
+      "${config.home.homeDirectory}/.pi/agent/settings.json"
+    run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-models.json" \
+      "${config.home.homeDirectory}/.pi/agent/models.json"
+  '');
 }
