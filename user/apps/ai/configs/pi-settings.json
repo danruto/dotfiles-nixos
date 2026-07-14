@@ -1,12 +1,24 @@
 {
   "subagents": {
     "agentOverrides": {
-      "context-builder": { "model": "" },
-      "planner": { "model": "" },
-      "researcher": { "model": "" },
-      "reviewer": { "model": "" },
-      "scout": { "model": "" },
-      "worker": { "model": "" }
+      "context-builder": {
+        "model": ""
+      },
+      "planner": {
+        "model": ""
+      },
+      "researcher": {
+        "model": ""
+      },
+      "reviewer": {
+        "model": ""
+      },
+      "scout": {
+        "model": ""
+      },
+      "worker": {
+        "model": ""
+      }
     }
   },
   "packages": [
@@ -20,11 +32,13 @@
     "npm:@devkade/pi-plan",
     "npm:@ff-labs/pi-fff",
     "npm:@juanibiapina/pi-extension-settings",
+    "npm:@juanibiapina/pi-usage",
     "npm:@plannotator/pi-extension",
     "npm:@tmustier/pi-raw-paste",
     "npm:@tmustier/pi-usage-extension",
     "npm:pi-add-dir",
     "npm:pi-ask-user",
+    "npm:pi-ayu-themes",
     "npm:pi-btw",
     "npm:pi-claude-cli",
     "npm:pi-interactive-shell",
@@ -34,16 +48,18 @@
     "npm:pi-prompt-template-model",
     "npm:pi-simplify",
     "npm:pi-slopchop",
+    "npm:pi-skill-arg-hints",
     "npm:pi-subagents",
     "npm:pi-web-access",
     "npm:pi-zentui"
   ],
   "lastChangelogVersion": "0.80.6",
-  "theme": "flexoki-dark",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
   "hideThinkingBlock": false,
   "defaultThinkingLevel": "medium",
   "quietStartup": true,
-  "enableInstallTelemetry": false
+  "enableInstallTelemetry": false,
+  "theme": "ayu-mirage",
+  "autocompleteMaxVisible": 5
 }

@@ -10,6 +10,26 @@ let
   crit-pkg = crit.packages.${pkgs.stdenv.hostPlatform.system}.default;
   lazypi = pkgs.callPackage ./lazypi.nix { };
 
+  # nixpkgs is pinned to tokscale 4.0.4, whose checkPhase fails on a broken unit
+  # test (usage_reset_button_renders_when_credit_available). Bump to the latest
+  # upstream tag where the test passes. As with pi-coding-agent above, the src
+  # override needs cargoHash recomputed since deps changed. Drop this once
+  # nixpkgs advances past 4.0.4.
+  tokscale = pkgs-unstable.tokscale.overrideAttrs (o: rec {
+    version = "4.5.2";
+    src = pkgs-unstable.fetchFromGitHub {
+      owner = "junhoyeo";
+      repo = "tokscale";
+      tag = "v${version}";
+      hash = "sha256-oscf5CGmvrps8XoO1OJ1Y+GmanIgpGNy0TR+vj5xoo4=";
+    };
+    cargoDeps = pkgs-unstable.rustPlatform.fetchCargoVendor {
+      inherit src;
+      name = "tokscale-${version}-vendor";
+      hash = "sha256-Wh2sYJitlDYJMiwze77988sydrYc8m3mNcwvpNvzMQc=";
+    };
+  });
+
   # nixpkgs-master lags upstream Pi releases, but lazypi installs community
   # extensions rebuilt for the latest Pi, which can depend on newer exports of
   # `@earendil-works/pi-ai`. Pin to the latest upstream tag to match.
@@ -120,8 +140,8 @@ in
     # gemini-cli
     # codex
     # nur.repos.charmbracelet.crush
-    tokscale
   ]) ++ [
+    tokscale
     pkgs-master.claude-code
     pkgs-master.opencode
     pkgs-master.codex
@@ -166,10 +186,12 @@ in
   # for the same reason as Claude's settings above. Pi's own settings changes
   # then land in this repo, while listed packages install on the next launch.
   home.activation.piConfigLinks = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    run mkdir -p "${config.home.homeDirectory}/.pi/agent"
+    run mkdir -p "${config.home.homeDirectory}/.pi/agent/extensions"
     run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-settings.json" \
       "${config.home.homeDirectory}/.pi/agent/settings.json"
     run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-models.json" \
       "${config.home.homeDirectory}/.pi/agent/models.json"
+    run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-usage-status.ts" \
+      "${config.home.homeDirectory}/.pi/agent/extensions/pi-usage-status.ts"
   '');
 }

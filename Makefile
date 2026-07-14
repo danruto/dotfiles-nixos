@@ -147,6 +147,6 @@ norb:
 	sudo nixos-rebuild switch --flake .#$(PROFILE)
 
 hm/switch:
-	nix run home-manager/release-25.11 -- switch --flake .#user
+	nix run home-manager/release-26.05 -- switch --flake .#user
 
 .PHONY: help switch norb hm/switch vm/help vm/bootstrap/0 vm/bootstrap/1 vm/bootstrap/2 vm/bootstrap/u vm/secrets vm/copy vm/git_update vm/switch vm/ssh
