@@ -35,20 +35,20 @@ let
   # `@earendil-works/pi-ai`. Pin to the latest upstream tag to match.
   # overrideAttrs alone updates the build src but leaves npmDeps pointing at
   # the old lockfile, so the offline cache must be rebuilt explicitly. Drop
-  # this whole override once nixpkgs-master reaches >= 0.80.6.
+  # this whole override once nixpkgs-master reaches >= 0.80.7.
   pi-src = pkgs-master.fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
-    tag = "v0.80.6";
-    hash = "sha256-e/wcHruEcBAHDF5tKvwew7LXjVp0eraHh2k+QaL2sCA=";
+    tag = "v0.80.7";
+    hash = "sha256-s7dD82fugvWRvqL1VTcEwCIR5JI6t7VeFHR9NdMtG00=";
   };
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
-    version = "0.80.6";
+    version = "0.80.7";
     src = pi-src;
     npmDeps = pkgs-master.fetchNpmDeps {
       src = pi-src;
-      name = "pi-coding-agent-0.80.6-npm-deps";
-      hash = "sha256-xXEOR0epZcfbXayYGyJdBiFVliamBexqA+1Sd7wlGhU=";
+      name = "pi-coding-agent-0.80.7-npm-deps";
+      hash = "sha256-Bd/NIt3lyQR5Y7P+HksPxMQvJc0AjVfDi1M1bH3/eOg=";
     };
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
@@ -99,12 +99,12 @@ let
 
   revdiff =
     let
-      version = "1.10.0";
+      version = "1.11.1";
       sources = {
-        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-sh/aRX5toQJZQyiBQdgow2sL/Y33x+UX3uYd9qllKTM="; };
-        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-fusqKrZkfZgEAL0kRDYadGI7ZTmwy1eswX3DdME4lFA="; };
-        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-R+snH/SXgGC+sAtWZBVSOOs2l6ScMuErBnn9q6vC6y8="; };
-        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-wxPrcrRG/WtuwtFRnnm+BOt+riAqSF7xg1xh2pQUkpI="; };
+        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-eVimvvcjJn/tGLC+lkdrt2djav6WYzjtfjcMClBv1Uw="; };
+        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-h8UiUW4tDvETt0/3KaHpByqtmVjxrraDa5DSuPouB2I="; };
+        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-qOwp5pWNIIiVNt6WfQsSP0useXkVgVy9IP+6RNWEL4U="; };
+        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-s+HYMqhS2LqKki0CPsKTQ7EdUgmtbNhNCeSnEP6NH74="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
