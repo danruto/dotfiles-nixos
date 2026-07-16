@@ -23,6 +23,15 @@
 
 - No AI attribution or Co-Authored-By footers; never push unless asked
 
+## gh-stack (stacked PRs)
+
+`/pb:work --stack` freezes phases onto local stacked branches. The finish cycle is:
+`gh stack submit --auto` (create the PRs) → merge on GitHub → `gh stack sync` (fast-forwards
+trunk, retires merged branches) → `gh stack trunk` (checkout main) → rebuild the repo's
+pbtk graph index if one exists (`pbtk graph build`).
+`sync` never switches branches, and it pushes every stack branch even when no PRs exist yet —
+don't run it as a "finish" command before `submit`.
+
 ## Agent Model Selection
 
 - **Haiku** (`model: "haiku"`) — code exploration subagents: file searches, grep/glob tasks, code reading
