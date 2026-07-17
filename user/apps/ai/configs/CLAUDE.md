@@ -29,6 +29,9 @@
 `gh stack submit --auto` (create the PRs) → merge on GitHub → `gh stack sync` (fast-forwards
 trunk, retires merged branches) → `gh stack trunk` (checkout main) → rebuild the repo's
 pbtk graph index if one exists (`pbtk graph build`).
+`submit` creates the PRs as drafts with empty bodies — after it, finish each PR: write a
+useful description of its contents (`gh pr edit --body-file`), fix any stub title, and mark
+it ready for review (`gh pr ready`).
 `sync` never switches branches, and it pushes every stack branch even when no PRs exist yet —
 don't run it as a "finish" command before `submit`.
 
