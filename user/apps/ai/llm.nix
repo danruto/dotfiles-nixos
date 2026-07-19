@@ -61,6 +61,21 @@ let
     '';
   });
 
+  # opencode 1.18.3's build script runs a smoke test that executes the freshly
+  # built binary. In the Nix sandbox (notably WSL) this binary segfaults
+  # (exit code 139), failing the build even though the produced artifact is fine
+  # for normal use. Skip the smoke test and the post-install shell completion
+  # generation (which also invokes the binary) so the build can finish.
+  opencode = pkgs-master.opencode.overrideAttrs (o: {
+    postPatch = (o.postPatch or "") + ''
+      substituteInPlace packages/opencode/script/build.ts \
+        --replace-fail 'if (item.os === process.platform && item.arch === process.arch && !item.abi) {' \
+                       'if (false) {'
+    '';
+    postInstall = "";
+    doInstallCheck = false;
+  });
+
   # Minimal Rust coding agent (https://github.com/gi-dellav/zerostack). Not in
   # nixpkgs; upstream's nix expr builds from source, so ship the release binary
   # instead. musl builds are fully static — no autoPatchelfHook needed.
@@ -143,7 +158,7 @@ in
   ]) ++ [
     tokscale
     pkgs-master.claude-code
-    pkgs-master.opencode
+    opencode
     pkgs-master.codex
     fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name
   ] ++ lib.optionals piEnabled [
