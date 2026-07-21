@@ -17,7 +17,8 @@ eval "$(jq -r '
   @sh "rl5_reset=\(.rate_limits.five_hour.resets_at // "")",
   @sh "rl7=\(.rate_limits.seven_day.used_percentage // "")",
   @sh "rl7_reset=\(.rate_limits.seven_day.resets_at // "")",
-  @sh "pr=\(.pr.number // "")"
+  @sh "pr=\(.pr.number // "")",
+  @sh "sid=\(.session_id // "")"
 ' <<<"$input")"
 
 RESET=$'\033[0m'
@@ -65,7 +66,28 @@ fi
 cache_total=$(( ${cache_read:-0} + ${cache_write:-0} + ${fresh_in:-0} ))
 if (( cache_total > 0 )); then
   hit=$(( cache_read * 100 / cache_total ))
-  segments+=("${DIM}cache${RESET} ${hit}%")
+  seg="${DIM}cache${RESET} ${hit}%"
+
+  # age of cache entry: persist timestamp of the last API call per session,
+  # detected by the usage numbers changing between renders
+  if [[ -n "$sid" ]]; then
+    state="${XDG_RUNTIME_DIR:-/tmp}/claude-statusline-cache-${sid}"
+    now=$(date +%s)
+    sig="${cache_read}:${cache_write}:${fresh_in}"
+    ts=$now
+    if [[ -f "$state" ]]; then
+      read -r old_sig old_ts <"$state"
+      [[ "$sig" == "$old_sig" ]] && ts=${old_ts:-$now}
+    fi
+    [[ "$ts" == "$now" ]] && printf '%s %s\n' "$sig" "$now" >"$state"
+    age_m=$(( (now - ts) / 60 ))
+    if (( age_m >= 60 )); then age_c=$'\033[31m'   # 1h TTL blown
+    elif (( age_m >= 45 )); then age_c=$'\033[33m'
+    else age_c=$'\033[32m'; fi
+    seg+=" ${age_c}${age_m}m${RESET}"
+  fi
+
+  segments+=("$seg")
 fi
 
 if [[ -n "$rl5" ]]; then

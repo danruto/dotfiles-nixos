@@ -1,106 +1,107 @@
 {
-    "$schema": "https://www.schemastore.org/claude-code-settings.json",
-    "permissions": {
-        "allow": [
-            "Read",
-            "Edit",
-            "Write",
-            "Glob",
-            "Grep",
-            "NotebookEdit",
-            "WebFetch",
-            "WebSearch",
-            "Bash(git status:*)",
-            "Bash(git diff:*)",
-            "Bash(git log:*)",
-            "Bash(git show:*)",
-            "Bash(git branch:*)",
-            "Bash(ls:*)",
-            "Bash(npm run:*)",
-            "Bash(npm test:*)",
-            "Bash(yarn run:*)",
-            "Bash(yarn test:*)",
-            "Bash(bun run:*)",
-            "Bash(bun test:*)",
-            "Bash(go test:*)",
-            "Bash(go build:*)",
-            "Bash(make:*)",
-            "Bash(just:*)",
-            "mcp__fff__ffgrep",
-            "mcp__fff__fffind",
-            "mcp__fff__fff-multi-grep",
-            "Read(*.env.llm)",
-            "Read(*.envrc)"
+  "$schema": "https://www.schemastore.org/claude-code-settings.json",
+  "alwaysThinkingEnabled": true,
+  "attributionEnabled": false,
+  "attributionName": "",
+  "autoMemoryEnabled": false,
+  "disableArtifact": true,
+  "disableBundledSkills": true,
+  "disableWorkflows": true,
+  "effortLevel": "high",
+  "enabledPlugins": {
+    "bb@bubblebeam": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "pb@pb-skills": true,
+    "revdiff@revdiff": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "jq -cr '# pbtk-prehook-v3\n{hookSpecificOutput:{hookEventName:\"PreToolUse\",updatedInput:(.tool_input + {command:\n  (\"pbtk exec --shell -- \" + (.tool_input.command | @sh))})}}'",
+            "type": "command"
+          }
         ],
-        "deny": [
-            "Bash(rm -rf:*)",
-            "Bash(git push:*)",
-            "Bash(but push:*)",
-            "Bash(git push --force:*)",
-            "Bash(git reset --hard:*)",
-            "Bash(sudo:*)",
-            "Read(.env)",
-            "Read(.env.local)",
-            "Read(.env.*.local)",
-            "Read(.env.development)",
-            "Read(.env.production)",
-            "Read(.env.staging)",
-            "Read(.env.test)",
-            "EnterPlanMode",
-            "ExitPlanMode",
-            "DesignSync",
-            "PushNotification"
-        ],
-        "defaultMode": "auto"
-    },
-    "model": "opus[1m]",
-    "disableBundledSkills": true,
-    "hooks": {
-        "PreToolUse": [
-            {
-                "matcher": "Bash",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "jq -cr '# pbtk-prehook-v3\n{hookSpecificOutput:{hookEventName:\"PreToolUse\",updatedInput:(.tool_input + {command:\n  (\"pbtk exec --shell -- \" + (.tool_input.command | @sh))})}}'"
-                    }
-                ]
-            }
-        ]
-    },
-    "disableWorkflows": true,
-    "disableArtifact": true,
-    "statusLine": {
-        "type": "command",
-        "command": "~/.claude/statusline.sh"
-    },
-    "subagentStatusLine": {
-        "type": "command",
-        "command": "~/.claude/subagent-statusline.sh"
-    },
-    "enabledPlugins": {
-        "rust-analyzer-lsp@claude-plugins-official": true,
-        "gopls-lsp@claude-plugins-official": true,
-        "typescript-lsp@claude-plugins-official": true,
-        "claude-code-setup@claude-plugins-official": true,
-        "pb@pb-skills": true,
-        "revdiff@revdiff": true,
-        "bb@bubblebeam": true
-    },
-    "alwaysThinkingEnabled": true,
-    "effortLevel": "xhigh",
-    "tui": "fullscreen",
-    "autoMemoryEnabled": false,
-    "skipWorkflowUsageWarning": true,
-    "theme": "dark",
-    "remoteControlAtStartup": false,
-    "voiceEnabled": true,
-    "attributionEnabled": false,
-    "attributionName": "",
-    "mcpServers": {
-        "fff": {
-            "command": "fff-mcp",
-            "args": []
-        }
+        "matcher": "Bash"
+      }
+    ]
+  },
+  "mcpServers": {
+    "fff": {
+      "args": [],
+      "command": "fff-mcp"
     }
+  },
+  "model": "claude-fable-5[1m]",
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "NotebookEdit",
+      "WebFetch",
+      "WebSearch",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(ls:*)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(yarn run:*)",
+      "Bash(yarn test:*)",
+      "Bash(bun run:*)",
+      "Bash(bun test:*)",
+      "Bash(go test:*)",
+      "Bash(go build:*)",
+      "Bash(make:*)",
+      "Bash(just:*)",
+      "mcp__fff__ffgrep",
+      "mcp__fff__fffind",
+      "mcp__fff__fff-multi-grep",
+      "Read(*.env.llm)",
+      "Read(*.envrc)"
+    ],
+    "defaultMode": "auto",
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push:*)",
+      "Bash(but push:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(sudo:*)",
+      "Read(.env)",
+      "Read(.env.local)",
+      "Read(.env.*.local)",
+      "Read(.env.development)",
+      "Read(.env.production)",
+      "Read(.env.staging)",
+      "Read(.env.test)",
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "DesignSync",
+      "PushNotification"
+    ]
+  },
+  "remoteControlAtStartup": false,
+  "skipWorkflowUsageWarning": true,
+  "statusLine": {
+    "command": "~/.claude/statusline.sh",
+    "refreshInterval": 30,
+    "type": "command"
+  },
+  "subagentStatusLine": {
+    "command": "~/.claude/subagent-statusline.sh",
+    "type": "command"
+  },
+  "theme": "auto",
+  "tui": "fullscreen",
+  "voiceEnabled": true
 }
