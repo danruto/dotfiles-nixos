@@ -10,11 +10,8 @@ let
   crit-pkg = crit.packages.${pkgs.stdenv.hostPlatform.system}.default;
   lazypi = pkgs.callPackage ./lazypi.nix { };
 
-  # nixpkgs is pinned to tokscale 4.0.4, whose checkPhase fails on a broken unit
-  # test (usage_reset_button_renders_when_credit_available). Bump to the latest
-  # upstream tag where the test passes. As with pi-coding-agent above, the src
-  # override needs cargoHash recomputed since deps changed. Drop this once
-  # nixpkgs advances past 4.0.4.
+  # Keep tokscale pinned to 4.5.2: newer releases have repeatedly broken builds.
+  # Do not bump it as part of general version updates; only change it when asked.
   tokscale = pkgs-unstable.tokscale.overrideAttrs (o: rec {
     version = "4.5.2";
     src = pkgs-unstable.fetchFromGitHub {
@@ -35,21 +32,27 @@ let
   # `@earendil-works/pi-ai`. Pin to the latest upstream tag to match.
   # overrideAttrs alone updates the build src but leaves npmDeps pointing at
   # the old lockfile, so the offline cache must be rebuilt explicitly. Drop
-  # this whole override once nixpkgs-master reaches >= 0.80.10.
-  pi-src = pkgs-master.fetchFromGitHub {
-    owner = "earendil-works";
-    repo = "pi";
-    tag = "v0.80.10";
-    hash = "sha256-Vs/ndHYzFyfN4CjPV2zMYblLXe9IuM13UrPJI1VsZEQ=";
+  # this whole override once nixpkgs-master reaches >= 0.81.1.
+  pi-src = pkgs-master.fetchurl {
+    url = "https://github.com/earendil-works/pi/releases/download/v0.81.1/pi-0.81.1-source.tar.gz";
+    hash = "sha256-+5u31+iIfokIJKCN5YgSQ1AEXaLM52PF5v2Y1xQa8xw=";
+  };
+  # Generated provider JSON is npm-only; the source archive omits it.
+  pi-model-data = pkgs-master.fetchzip {
+    url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.81.1.tgz";
+    hash = "sha256-V0Y25hxMHxPS7D+u/mAYUsmTvX3Q5zLP09biC7dLHHI=";
   };
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
-    version = "0.80.10";
+    version = "0.81.1";
     src = pi-src;
     npmDeps = pkgs-master.fetchNpmDeps {
       src = pi-src;
-      name = "pi-coding-agent-0.80.10-npm-deps";
-      hash = "sha256-XGvDNH+eilsgc0Z7ITqbitB/9RVc+WuDfCcr1pibNqk=";
+      name = "pi-coding-agent-0.81.1-npm-deps";
+      hash = "sha256-lzKQZbnITzgV9koucsMno6f61ubBLYUcwQEXtak1r1s=";
     };
+    postPatch = (o.postPatch or "") + ''
+      cp -r ${pi-model-data}/dist/providers/data packages/ai/src/providers/
+    '';
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
     # node-gyp needs python on PATH. Scope these to pi's own wrapper instead
@@ -81,12 +84,12 @@ let
   # instead. musl builds are fully static — no autoPatchelfHook needed.
   zerostack =
     let
-      version = "1.6.2";
+      version = "1.7.1";
       sources = {
-        "x86_64-linux" = { target = "x86_64-unknown-linux-musl"; hash = "sha256-uuRjPazVSvE8GlMW6yFkt2WdZZ5NjfkdLkSEF23yjOI="; };
-        "aarch64-linux" = { target = "aarch64-unknown-linux-musl"; hash = "sha256-FMXmVQssmTtnXSkZtkP8pzGmQEs15IFUT2+2yNypFnM="; };
-        "x86_64-darwin" = { target = "x86_64-apple-darwin"; hash = "sha256-ZcTYmqEb6nxIoNpAwjmCxCSEQo+vJdO2Q+XyVSr5U+U="; };
-        "aarch64-darwin" = { target = "aarch64-apple-darwin"; hash = "sha256-3ln8Yq2POjWqCxngjoVndSoyLvoerD9OJxUft7Cr9ew="; };
+        "x86_64-linux" = { target = "x86_64-unknown-linux-musl"; hash = "sha256-OVt89ykTmDt64A4JyOGLHGKjl90qHp6JqHAuohbHIJk="; };
+        "aarch64-linux" = { target = "aarch64-unknown-linux-musl"; hash = "sha256-Pe6rhm4MU/Cnkizats8G6rFhcaujCC7knDuJ9xd2+Y0="; };
+        "x86_64-darwin" = { target = "x86_64-apple-darwin"; hash = "sha256-6xAoq3Aq8Cli+S2sbPFiGQBLp+47eOuOrtaCMECtQW4="; };
+        "aarch64-darwin" = { target = "aarch64-apple-darwin"; hash = "sha256-oSmg1xxfB6MWmmY2Gz4/+OU39Pt8PKN3sSwpJ2pMpzE="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
