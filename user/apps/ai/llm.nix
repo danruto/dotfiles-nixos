@@ -32,23 +32,23 @@ let
   # `@earendil-works/pi-ai`. Pin to the latest upstream tag to match.
   # overrideAttrs alone updates the build src but leaves npmDeps pointing at
   # the old lockfile, so the offline cache must be rebuilt explicitly. Drop
-  # this whole override once nixpkgs-master reaches >= 0.81.1.
+  # this whole override once nixpkgs-master reaches >= 0.82.0.
   pi-src = pkgs-master.fetchurl {
-    url = "https://github.com/earendil-works/pi/releases/download/v0.81.1/pi-0.81.1-source.tar.gz";
-    hash = "sha256-+5u31+iIfokIJKCN5YgSQ1AEXaLM52PF5v2Y1xQa8xw=";
+    url = "https://github.com/earendil-works/pi/releases/download/v0.82.0/pi-0.82.0-source.tar.gz";
+    hash = "sha256-5GZ88KpY6vNLSCMsKqPFP6M8dxRVIkzMgisl3fFneAg=";
   };
   # Generated provider JSON is npm-only; the source archive omits it.
   pi-model-data = pkgs-master.fetchzip {
-    url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.81.1.tgz";
-    hash = "sha256-V0Y25hxMHxPS7D+u/mAYUsmTvX3Q5zLP09biC7dLHHI=";
+    url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.82.0.tgz";
+    hash = "sha256-u0+6Jg5NmHzG5P6er9NXedXglwBDDG7s8a+BuYVfaHM=";
   };
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
-    version = "0.81.1";
+    version = "0.82.0";
     src = pi-src;
     npmDeps = pkgs-master.fetchNpmDeps {
       src = pi-src;
-      name = "pi-coding-agent-0.81.1-npm-deps";
-      hash = "sha256-lzKQZbnITzgV9koucsMno6f61ubBLYUcwQEXtak1r1s=";
+      name = "pi-coding-agent-0.82.0-npm-deps";
+      hash = "sha256-3oqrN/uguYfkUHlfmKGxnLIvUo484IMGlydz6p9o/Dw=";
     };
     postPatch = (o.postPatch or "") + ''
       cp -r ${pi-model-data}/dist/providers/data packages/ai/src/providers/
