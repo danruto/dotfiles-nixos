@@ -50,7 +50,12 @@ let
     nixpkgsModule
     hmSystemModule
     hmModule
-  ] ++ extraModules;
+  ]
+  # Shared community binary caches for all NixOS hosts. Excluded on darwin,
+  # where nix may be managed by Determinate (nix.enable = false) and setting
+  # nix.settings would conflict.
+  ++ lib.optional (!isDarwin) ../system/nix/binary-caches.nix
+  ++ extraModules;
 
   builder = if isDarwin then darwin.lib.darwinSystem else lib.nixosSystem;
 in

@@ -34,7 +34,7 @@
       # so unused inputs on a given host cost nothing.
       baseSpecialArgs = {
         inherit (inputs)
-          blocklist-hosts neovim-nightly-overlay wanderer fff crit cull-src
+          blocklist-hosts neovim-nightly-overlay wanderer fff
           nixos-wsl hyprland-plugins niri mango nixos-hardware catppuccin
           helium dms dms-plugin-diskusage helix helix-fork herdr;
       };
@@ -169,20 +169,10 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    crit = {
-      url = "github:tomasz-tomczyk/crit";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     # zellij alternative focused on AI agent work
     herdr = {
       url = "github:ogulcancelik/herdr";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    cull-src = {
-      url = "github:legostin/cull";
-      flake = false;
     };
 
     # Mac inputs

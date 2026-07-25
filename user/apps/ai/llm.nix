@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, pkgs-master, fff, crit, lib, config, platform, ... }:
+{ pkgs, pkgs-unstable, pkgs-master, fff, lib, config, platform, ... }:
 let
   # Standalone home (e.g. orb-arch via `make hm/switch`) skips Pi: its install
   # activation shells out to a global npm install that fails on read-only/Nix
@@ -7,7 +7,6 @@ let
   piEnabled = true;
 
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  crit-pkg = crit.packages.${pkgs.stdenv.hostPlatform.system}.default;
   lazypi = pkgs.callPackage ./lazypi.nix { };
 
   # Keep tokscale pinned to 4.5.2: newer releases have repeatedly broken builds.
@@ -37,11 +36,6 @@ let
     url = "https://github.com/earendil-works/pi/releases/download/v0.82.0/pi-0.82.0-source.tar.gz";
     hash = "sha256-5GZ88KpY6vNLSCMsKqPFP6M8dxRVIkzMgisl3fFneAg=";
   };
-  # Generated provider JSON is npm-only; the source archive omits it.
-  pi-model-data = pkgs-master.fetchzip {
-    url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.82.0.tgz";
-    hash = "sha256-u0+6Jg5NmHzG5P6er9NXedXglwBDDG7s8a+BuYVfaHM=";
-  };
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
     version = "0.82.0";
     src = pi-src;
@@ -50,9 +44,14 @@ let
       name = "pi-coding-agent-0.82.0-npm-deps";
       hash = "sha256-3oqrN/uguYfkUHlfmKGxnLIvUo484IMGlydz6p9o/Dw=";
     };
-    postPatch = (o.postPatch or "") + ''
-      cp -r ${pi-model-data}/dist/providers/data packages/ai/src/providers/
-    '';
+    # nixpkgs fetches the pi-ai npm tarball itself (modelData) for the generated
+    # provider catalog and untars it in its own postPatch, but pins the hash to
+    # nixpkgs' Pi version. The URL tracks finalAttrs.version, so bumping version
+    # leaves that hash stale — refresh it to the 0.82.0 tarball.
+    modelData = pkgs-master.fetchurl {
+      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.82.0.tgz";
+      hash = "sha256-dh4kktq3v1YBFD0AW5+C7JAAM40C0G9ze2V04Ff9YcM=";
+    };
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
     # node-gyp needs python on PATH. Scope these to pi's own wrapper instead
@@ -63,6 +62,33 @@ let
         --prefix PATH : ${lib.makeBinPath (with pkgs-master; [ nodejs ripgrep fd python3 ])}
     '';
   });
+
+  # nixpkgs-master lags the latest claude-code release and Opus 5 needs the
+  # newest CLI. The derivation reads its version + per-platform sha256 from a
+  # committed manifest.json, so override version + src to the latest release,
+  # taking checksums from the upstream release manifest at
+  # https://downloads.claude.ai/claude-code-releases/2.1.219/manifest.json.
+  # Drop this override once nixpkgs-master reaches >= 2.1.219.
+  claude-code =
+    let
+      version = "2.1.219";
+      baseUrl = "https://downloads.claude.ai/claude-code-releases";
+      platformKey = "${pkgs-master.stdenv.hostPlatform.node.platform}-${pkgs-master.stdenv.hostPlatform.node.arch}";
+      # sha256 (hex) per platform, copied from the upstream manifest.json.
+      checksums = {
+        "darwin-arm64" = "a8e806faaefac53c7a0f26523d8a45c60dbef3407b14ef990c75765d08febc82";
+        "darwin-x64" = "03be9f988ed88391b4a5f08e4c5dc317ce2fffa4a9dc66c01106326e7698ee76";
+        "linux-arm64" = "1f834b322ba9d1291cc7ffeff16a6795a59145bda279dbd59cd7ecebc7b7f15a";
+        "linux-x64" = "22cfd6f5b3061c0391ba84e9cf8c9deaa37783aac18b004d42ec061e98f00691";
+      };
+    in
+    pkgs-master.claude-code.overrideAttrs (o: {
+      inherit version;
+      src = pkgs-master.fetchurl {
+        url = "${baseUrl}/${version}/${platformKey}/claude";
+        sha256 = checksums.${platformKey};
+      };
+    });
 
   # opencode 1.18.3's build script runs a smoke test that executes the freshly
   # built binary. In the Nix sandbox (notably WSL) this binary segfaults
@@ -151,7 +177,6 @@ in
   home.packages = (with pkgs-unstable; [
     # opencode
     sox # voice for cc
-    crit-pkg
     revdiff
     zerostack
     # amp-cli
@@ -160,7 +185,7 @@ in
     # nur.repos.charmbracelet.crush
   ]) ++ [
     tokscale
-    pkgs-master.claude-code
+    claude-code
     opencode
     pkgs-master.codex
     fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name
