@@ -31,26 +31,26 @@ let
   # `@earendil-works/pi-ai`. Pin to the latest upstream tag to match.
   # overrideAttrs alone updates the build src but leaves npmDeps pointing at
   # the old lockfile, so the offline cache must be rebuilt explicitly. Drop
-  # this whole override once nixpkgs-master reaches >= 0.82.0.
+  # this whole override once nixpkgs-master reaches >= 0.82.1.
   pi-src = pkgs-master.fetchurl {
-    url = "https://github.com/earendil-works/pi/releases/download/v0.82.0/pi-0.82.0-source.tar.gz";
-    hash = "sha256-5GZ88KpY6vNLSCMsKqPFP6M8dxRVIkzMgisl3fFneAg=";
+    url = "https://github.com/earendil-works/pi/releases/download/v0.82.1/pi-0.82.1-source.tar.gz";
+    hash = "sha256-5+37qJvEsxaD95IJtZoBudYnMC1p/y34ve6o9fY87XM=";
   };
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
-    version = "0.82.0";
+    version = "0.82.1";
     src = pi-src;
     npmDeps = pkgs-master.fetchNpmDeps {
       src = pi-src;
-      name = "pi-coding-agent-0.82.0-npm-deps";
-      hash = "sha256-3oqrN/uguYfkUHlfmKGxnLIvUo484IMGlydz6p9o/Dw=";
+      name = "pi-coding-agent-0.82.1-npm-deps";
+      hash = "sha256-5pHRwxpKg95/phOcYHeWdvPJNtSOhiw7PRoVxsuh0RM=";
     };
     # nixpkgs fetches the pi-ai npm tarball itself (modelData) for the generated
     # provider catalog and untars it in its own postPatch, but pins the hash to
     # nixpkgs' Pi version. The URL tracks finalAttrs.version, so bumping version
-    # leaves that hash stale — refresh it to the 0.82.0 tarball.
+    # leaves that hash stale — refresh it to the 0.82.1 tarball.
     modelData = pkgs-master.fetchurl {
-      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.82.0.tgz";
-      hash = "sha256-dh4kktq3v1YBFD0AW5+C7JAAM40C0G9ze2V04Ff9YcM=";
+      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.82.1.tgz";
+      hash = "sha256-L535UigItiHNNEmHZTfwPYqN+LjX7C1bGMapEKqFtJA=";
     };
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
