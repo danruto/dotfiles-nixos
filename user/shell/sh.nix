@@ -71,6 +71,13 @@ in
       set fish_greeting
       set -gx GPG_TTY (tty)
       gpg-connect-agent updatestartuptty /bye > /dev/null 2>&1
+
+      # iris execs itself over the shell and runs fish in its own inner pty,
+      # which hides the agent process (and its OSC titles) from herdr's pane —
+      # agents then never appear in herdr's sidebar. Skip it in herdr panes.
+      if type -q iris; and not set -q HERDR_ENV
+          iris init fish | source
+      end
     '';
   };
 
