@@ -10,22 +10,22 @@ let
   };
 in
 {
+  # Dev work happens in the VM, so this host keeps only the terminal spine:
+  # shell, git, ssh, editors, and the tooling needed to edit this repo.
+  # Deliberately not imported (see below for what each dropped):
+  #   ../shared.nix          - ghostty/zellij/herdr configs are hand-managed now
+  #   user/shell/tui.nix     - cli grab-bag; rg/lfk already come from brew
+  #   user/apps/fileman/yazi.nix
+  #   user/apps/terminal/curl.nix
+  #   user/lang/{go,typescript} - toolchains live in the VM
+  #   user/wm/miri           - replaced by rift, no longer installed
   imports = [
-    ../shared.nix
     ../../user/shell/sh.nix # Fish config
-    ../../user/shell/tui.nix # Useful cli/tui apps
     ../../user/apps/git/git.nix # My git config
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
-    ../../user/apps/fileman/yazi.nix
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/helix-fork.nix
-    ../../user/apps/terminal/curl.nix # network request cli/tuis
-    # TODO: Kitty conf toggled by OS
-    ../../user/lang/go/go.nix # go tools
-    ../../user/lang/typescript/typescript.nix # go tools
-    # ../../user/wm/hyprspace
-    ../../user/wm/miri
     ../../user/apps/networking/ssh.nix
   ];
 
@@ -45,6 +45,19 @@ in
   home.stateVersion = "25.05";
 
   programs.home-manager.enable = true;
+
+  # Carried over from ../shared.nix, which this host no longer imports.
+  home.sessionVariables = {
+    EDITOR = "hx";
+  };
+
+  # Disable manuals until sourcehut references are removed from home-manager
+  manual.manpages.enable = false;
+  manual.json.enable = false;
+  manual.html.enable = false;
+
+  # sh.nix aliases `cat = "bat"`, and bat came from the dropped tui.nix.
+  programs.bat.enable = true;
 
   xdg = {
     enable = true;

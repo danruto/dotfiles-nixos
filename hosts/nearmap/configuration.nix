@@ -17,33 +17,18 @@
     brews = [
       "gnu-sed"
     ];
+    # Only fonts are declared here now — everything else (figma, raycast,
+    # rectangle, obs, ghostty, aerospace, ...) is installed but left
+    # unmanaged. onActivation.cleanup defaults to "none", so undeclared
+    # packages are never uninstalled.
     casks = [
-      # "docker"
-      "figma"
-      # "floorp"
       "font-d2coding"
       "font-departure-mono"
       "font-jetbrains-mono-nerd-font"
       "font-victor-mono-nerd-font"
       "font-aporetic"
-      # "ghostty"
-      # "iina"
-      # "insomnium"
-      "raycast"
-      "rectangle"
-      # "spotify"
-      "obs"
-      # "orbstack"
-      # "utm"
-      # "vial"
-      # "yaak"
-      # "zed"
     ];
-    taps = [
-      # "homebrew/cask-fonts"
-      # "nikitabobko/tap"
-      "BarutSRB/tap"
-    ];
+    taps = [ ];
   };
 
   nix.extraOptions = ''

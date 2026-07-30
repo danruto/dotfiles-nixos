@@ -363,20 +363,23 @@
       '';
   };
 
-  xdg.desktopEntries.nvim = {
-    name = "Neovim";
-    genericName = "Text Editor";
-    comment = "Edit text files";
-    exec = "nvim %F";
-    icon = "nvim";
-    terminal = true;
-    type = "Application";
-    categories = [ "Utility" "TextEditor" ];
-    startupNotify = false;
-    mimeType = [ "text/english" "text/plain" ];
-    settings = {
-      TryExec = "nvim";
-      Keywords = "Text;editor;";
+  # xdg.desktopEntries is Linux-only in home-manager
+  xdg.desktopEntries = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+    nvim = {
+      name = "Neovim";
+      genericName = "Text Editor";
+      comment = "Edit text files";
+      exec = "nvim %F";
+      icon = "nvim";
+      terminal = true;
+      type = "Application";
+      categories = [ "Utility" "TextEditor" ];
+      startupNotify = false;
+      mimeType = [ "text/english" "text/plain" ];
+      settings = {
+        TryExec = "nvim";
+        Keywords = "Text;editor;";
+      };
     };
   };
 

@@ -69,8 +69,8 @@
         work-x86 = mkSystem { hostname = "work"; system = "x86_64-darwin"; platform = "darwin"; };
         work2 = mkSystem { hostname = "work2"; system = "aarch64-darwin"; platform = "darwin"; };
         work2-x86 = mkSystem { hostname = "work2"; system = "x86_64-darwin"; platform = "darwin"; };
-        nearmap = mkSystem { hostname = "nearmap"; system = "aarch64-darwin"; platform = "darwin"; };
-        nearmap-x86 = mkSystem { hostname = "nearmap"; system = "x86_64-darwin"; platform = "darwin"; };
+        nearmap = mkSystem { hostname = "nearmap"; system = "aarch64-darwin"; platform = "darwin"; username = "danny.sok"; };
+        nearmap-x86 = mkSystem { hostname = "nearmap"; system = "x86_64-darwin"; platform = "darwin"; username = "danny.sok"; };
       };
 
       homeConfigurations =

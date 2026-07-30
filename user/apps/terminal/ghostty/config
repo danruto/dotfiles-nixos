@@ -1,0 +1,11 @@
+font-family = "Aporetic Sans Mono"
+font-size = 14
+
+macos-option-as-alt = left
+keybind = alt+left=unbind
+keybind = alt+right=unbind
+
+window-decoration = "none"
+
+background-opacity = 0.65
+background-blur = true
