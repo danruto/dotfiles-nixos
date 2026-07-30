@@ -51,6 +51,11 @@ in
     EDITOR = "hx";
   };
 
+  # home-manager owns ~/.ssh/config, so OrbStack's `orb` host has to be
+  # included declaratively or it disappears on rebuild. OrbStack requires the
+  # include to precede any Host block; home-manager emits includes first.
+  programs.ssh.includes = [ "~/.orbstack/ssh/config" ];
+
   # Disable manuals until sourcehut references are removed from home-manager
   manual.manpages.enable = false;
   manual.json.enable = false;

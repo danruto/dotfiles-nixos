@@ -70,7 +70,9 @@ in
     interactiveShellInit = ''
       set fish_greeting
       set -gx GPG_TTY (tty)
-      gpg-connect-agent updatestartuptty /bye > /dev/null 2>&1
+      if type -q gpg-connect-agent
+          gpg-connect-agent updatestartuptty /bye > /dev/null 2>&1
+      end
 
       # iris execs itself over the shell and runs fish in its own inner pty,
       # which hides the agent process (and its OSC titles) from herdr's pane —
