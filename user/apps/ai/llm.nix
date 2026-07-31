@@ -26,32 +26,11 @@ let
     };
   });
 
-  # nixpkgs-master lags upstream Pi releases, but lazypi installs community
-  # extensions rebuilt for the latest Pi, which can depend on newer exports of
-  # `@earendil-works/pi-ai`. Pin to the latest upstream tag to match.
-  # overrideAttrs alone updates the build src but leaves npmDeps pointing at
-  # the old lockfile, so the offline cache must be rebuilt explicitly. Drop
-  # this whole override once nixpkgs-master reaches >= 0.83.0.
-  pi-src = pkgs-master.fetchurl {
-    url = "https://github.com/earendil-works/pi/releases/download/v0.83.0/pi-0.83.0-source.tar.gz";
-    hash = "sha256-8iW4fsO0gl3VuU6SKoYpVYrdyjGhtNLCBq5Zio4mksA=";
-  };
+  # nixpkgs-master now tracks upstream Pi closely enough that no version pin is
+  # needed; if it falls behind again, re-add an overrideAttrs for version, src,
+  # npmDeps and modelData (the latter two are hash-pinned separately and go
+  # stale when only version + src are bumped).
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
-    version = "0.83.0";
-    src = pi-src;
-    npmDeps = pkgs-master.fetchNpmDeps {
-      src = pi-src;
-      name = "pi-coding-agent-0.83.0-npm-deps";
-      hash = "sha256-AbSfP1Ion8bN309NUBQb1QSn2cIIUjNONmZgls9vnYE=";
-    };
-    # nixpkgs fetches the pi-ai npm tarball itself (modelData) for the generated
-    # provider catalog and untars it in its own postPatch, but pins the hash to
-    # nixpkgs' Pi version. The URL tracks finalAttrs.version, so bumping version
-    # leaves that hash stale — refresh it to the 0.83.0 tarball.
-    modelData = pkgs-master.fetchurl {
-      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.83.0.tgz";
-      hash = "sha256-+YPCiiEgkwXtnCdJd+KRMPpNiEjfbN836QlNlcx7xtQ=";
-    };
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
     # node-gyp needs python on PATH. Scope these to pi's own wrapper instead
@@ -67,19 +46,19 @@ let
   # newest CLI. The derivation reads its version + per-platform sha256 from a
   # committed manifest.json, so override version + src to the latest release,
   # taking checksums from the upstream release manifest at
-  # https://downloads.claude.ai/claude-code-releases/2.1.219/manifest.json.
-  # Drop this override once nixpkgs-master reaches >= 2.1.219.
+  # https://downloads.claude.ai/claude-code-releases/2.1.220/manifest.json.
+  # Drop this override once nixpkgs-master reaches >= 2.1.220.
   claude-code =
     let
-      version = "2.1.219";
+      version = "2.1.220";
       baseUrl = "https://downloads.claude.ai/claude-code-releases";
       platformKey = "${pkgs-master.stdenv.hostPlatform.node.platform}-${pkgs-master.stdenv.hostPlatform.node.arch}";
       # sha256 (hex) per platform, copied from the upstream manifest.json.
       checksums = {
-        "darwin-arm64" = "a8e806faaefac53c7a0f26523d8a45c60dbef3407b14ef990c75765d08febc82";
-        "darwin-x64" = "03be9f988ed88391b4a5f08e4c5dc317ce2fffa4a9dc66c01106326e7698ee76";
-        "linux-arm64" = "1f834b322ba9d1291cc7ffeff16a6795a59145bda279dbd59cd7ecebc7b7f15a";
-        "linux-x64" = "22cfd6f5b3061c0391ba84e9cf8c9deaa37783aac18b004d42ec061e98f00691";
+        "darwin-arm64" = "8addc857f3fe64d5a0368af9ee50321b50afb4a6918ba3ef018ab84f5dbbe081";
+        "darwin-x64" = "dca7be0aa7d3d924836d440e0c6d8e3d47ef3c8e61fa5809b54b9017170ce2f3";
+        "linux-arm64" = "159e4a51d796f3bf14677577100f7efb845611b1ceaf0c30cbd8d4650d942185";
+        "linux-x64" = "674f61f20ff306f3100cf9200e4c36c4b70278b5bef2884549819b942a89c863";
       };
     in
     pkgs-master.claude-code.overrideAttrs (o: {
@@ -105,39 +84,33 @@ let
     doInstallCheck = false;
   });
 
-  # Minimal Rust coding agent (https://github.com/gi-dellav/zerostack). Not in
-  # nixpkgs; upstream's nix expr builds from source, so ship the release binary
-  # instead. musl builds are fully static — no autoPatchelfHook needed.
-  zerostack =
+  # Rust TUI coding agent (https://github.com/1jehuang/jcode). Not in nixpkgs
+  # and upstream ships no nix expr, so build the `jcode` bin from the release
+  # tag. The workspace also declares dev/bench bins, hence the explicit
+  # --bin jcode.
+  jcode =
     let
-      version = "1.7.1";
-      sources = {
-        "x86_64-linux" = { target = "x86_64-unknown-linux-musl"; hash = "sha256-OVt89ykTmDt64A4JyOGLHGKjl90qHp6JqHAuohbHIJk="; };
-        "aarch64-linux" = { target = "aarch64-unknown-linux-musl"; hash = "sha256-Pe6rhm4MU/Cnkizats8G6rFhcaujCC7knDuJ9xd2+Y0="; };
-        "x86_64-darwin" = { target = "x86_64-apple-darwin"; hash = "sha256-6xAoq3Aq8Cli+S2sbPFiGQBLp+47eOuOrtaCMECtQW4="; };
-        "aarch64-darwin" = { target = "aarch64-apple-darwin"; hash = "sha256-oSmg1xxfB6MWmmY2Gz4/+OU39Pt8PKN3sSwpJ2pMpzE="; };
+      version = "0.64.2";
+      src = pkgs-unstable.fetchFromGitHub {
+        owner = "1jehuang";
+        repo = "jcode";
+        tag = "v${version}";
+        hash = "sha256-yT7TUztsE8oiVyKt6ZlPGpLZE0FTJ5UZVxLUTXBFRxg=";
       };
-      target = sources.${pkgs.stdenv.hostPlatform.system};
     in
-    pkgs.stdenvNoCC.mkDerivation {
-      pname = "zerostack";
-      inherit version;
-      src = pkgs.fetchurl {
-        url = "https://github.com/gi-dellav/zerostack/releases/download/v${version}/zerostack-${target.target}.tar.gz";
-        inherit (target) hash;
-      };
-      sourceRoot = ".";
-      installPhase = ''
-        runHook preInstall
-        install -Dm755 zerostack-${target.target} $out/bin/zerostack
-        runHook postInstall
-      '';
+    pkgs-unstable.rustPlatform.buildRustPackage {
+      pname = "jcode";
+      inherit version src;
+      cargoHash = "sha256-wagEh+yIFi2uuAe/NXNIwoyK8qrzbTDbCmHyOpO+83k=";
+      cargoBuildFlags = [ "--bin" "jcode" ];
+      nativeBuildInputs = [ pkgs-unstable.pkg-config ];
+      buildInputs = [ pkgs-unstable.openssl ];
+      doCheck = false;
       meta = {
-        description = "Minimal coding agent written in Rust, inspired by pi and opencode";
-        homepage = "https://github.com/gi-dellav/zerostack";
-        license = pkgs.lib.licenses.gpl3Only;
-        mainProgram = "zerostack";
-        platforms = builtins.attrNames sources;
+        description = "RAM-efficient multi-model TUI coding agent";
+        homepage = "https://github.com/1jehuang/jcode";
+        license = pkgs.lib.licenses.mit;
+        mainProgram = "jcode";
       };
     };
 
@@ -178,7 +151,7 @@ in
     # opencode
     sox # voice for cc
     revdiff
-    zerostack
+    jcode
     # amp-cli
     # gemini-cli
     # codex
