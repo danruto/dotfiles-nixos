@@ -36,7 +36,8 @@
         inherit (inputs)
           blocklist-hosts neovim-nightly-overlay wanderer fff
           nixos-wsl hyprland-plugins niri mango nixos-hardware catppuccin
-          helium dms dms-plugin-diskusage helix helix-fork herdr;
+          helium dms dms-plugin-diskusage helix helix-fork herdr
+          nix-doom-emacs-unstraightened;
       };
 
       mkSystem = import ./lib/mkSystem.nix {
@@ -121,6 +122,17 @@
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
       # inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    nix-doom-emacs-unstraightened = {
+      url = "github:marienz/nix-doom-emacs-unstraightened";
+      inputs = {
+        doomdir = {
+          url = "./user/apps/emacs/doom";
+          flake = false;
+        };
+        nixpkgs.follows = "";
+      };
     };
 
     # WSL inputs
