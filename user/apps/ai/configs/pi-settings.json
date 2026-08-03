@@ -50,7 +50,8 @@
     "npm:pi-skill-arg-hints",
     "npm:pi-subagents",
     "npm:pi-web-access",
-    "npm:pi-zentui"
+    "npm:pi-zentui",
+    "git:github.com/algal/pi-openai-server-compaction"
   ],
   "lastChangelogVersion": "0.83.0",
   "defaultProvider": "openai-codex",

@@ -9,21 +9,28 @@ let
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
   lazypi = pkgs.callPackage ./lazypi.nix { };
 
-  # Keep tokscale pinned to 4.5.2: newer releases have repeatedly broken builds.
-  # Do not bump it as part of general version updates; only change it when asked.
+  # tokscale is pinned here because pkgs-unstable lags well behind (4.0.4) and
+  # newer releases have repeatedly broken builds. Do not bump it as part of
+  # general version updates; only change it when asked, and build it first.
+  # 4.9.0's cli_tests assume a non-UTC local timezone, which never holds in the
+  # Nix sandbox (TZ=UTC), so skip the offending test — nixpkgs already skips its
+  # sibling test for the same reason.
   tokscale = pkgs-unstable.tokscale.overrideAttrs (o: rec {
-    version = "4.5.2";
+    version = "4.9.0";
     src = pkgs-unstable.fetchFromGitHub {
       owner = "junhoyeo";
       repo = "tokscale";
       tag = "v${version}";
-      hash = "sha256-oscf5CGmvrps8XoO1OJ1Y+GmanIgpGNy0TR+vj5xoo4=";
+      hash = "sha256-LrzN+z4WqZoajDs3b1ihN9DPnAKIKPZZ+S666IZxs7o=";
     };
     cargoDeps = pkgs-unstable.rustPlatform.fetchCargoVendor {
       inherit src;
       name = "tokscale-${version}-vendor";
-      hash = "sha256-Wh2sYJitlDYJMiwze77988sydrYc8m3mNcwvpNvzMQc=";
+      hash = "sha256-dogo+GXM8CwzyFJq6ryGaXAY1a4P3nR7LeYwPH2fGCI=";
     };
+    checkFlags = (o.checkFlags or [ ]) ++ [
+      "--skip=test_submit_dry_run_preserves_local_date_ahead_of_utc"
+    ];
   });
 
   # nixpkgs-master now tracks upstream Pi closely enough that no version pin is
@@ -42,66 +49,24 @@ let
     '';
   });
 
-  # nixpkgs-master lags the latest claude-code release and Opus 5 needs the
-  # newest CLI. The derivation reads its version + per-platform sha256 from a
-  # committed manifest.json, so override version + src to the latest release,
-  # taking checksums from the upstream release manifest at
-  # https://downloads.claude.ai/claude-code-releases/2.1.220/manifest.json.
-  # Drop this override once nixpkgs-master reaches >= 2.1.220.
-  claude-code =
-    let
-      version = "2.1.220";
-      baseUrl = "https://downloads.claude.ai/claude-code-releases";
-      platformKey = "${pkgs-master.stdenv.hostPlatform.node.platform}-${pkgs-master.stdenv.hostPlatform.node.arch}";
-      # sha256 (hex) per platform, copied from the upstream manifest.json.
-      checksums = {
-        "darwin-arm64" = "8addc857f3fe64d5a0368af9ee50321b50afb4a6918ba3ef018ab84f5dbbe081";
-        "darwin-x64" = "dca7be0aa7d3d924836d440e0c6d8e3d47ef3c8e61fa5809b54b9017170ce2f3";
-        "linux-arm64" = "159e4a51d796f3bf14677577100f7efb845611b1ceaf0c30cbd8d4650d942185";
-        "linux-x64" = "674f61f20ff306f3100cf9200e4c36c4b70278b5bef2884549819b942a89c863";
-      };
-    in
-    pkgs-master.claude-code.overrideAttrs (o: {
-      inherit version;
-      src = pkgs-master.fetchurl {
-        url = "${baseUrl}/${version}/${platformKey}/claude";
-        sha256 = checksums.${platformKey};
-      };
-    });
-
-  # opencode 1.18.3's build script runs a smoke test that executes the freshly
-  # built binary. In the Nix sandbox (notably WSL) this binary segfaults
-  # (exit code 139), failing the build even though the produced artifact is fine
-  # for normal use. Skip the smoke test and the post-install shell completion
-  # generation (which also invokes the binary) so the build can finish.
-  opencode = pkgs-master.opencode.overrideAttrs (o: {
-    postPatch = (o.postPatch or "") + ''
-      substituteInPlace packages/opencode/script/build.ts \
-        --replace-fail 'if (item.os === process.platform && item.arch === process.arch && !item.abi) {' \
-                       'if (false) {'
-    '';
-    postInstall = "";
-    doInstallCheck = false;
-  });
-
   # Rust TUI coding agent (https://github.com/1jehuang/jcode). Not in nixpkgs
   # and upstream ships no nix expr, so build the `jcode` bin from the release
   # tag. The workspace also declares dev/bench bins, hence the explicit
   # --bin jcode.
   jcode =
     let
-      version = "0.64.2";
+      version = "0.67.0";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-yT7TUztsE8oiVyKt6ZlPGpLZE0FTJ5UZVxLUTXBFRxg=";
+        hash = "sha256-E623Mf3DzSL5YhbqaL2onEVCsrEM8XQuhoi//JrdA7M=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-wagEh+yIFi2uuAe/NXNIwoyK8qrzbTDbCmHyOpO+83k=";
+      cargoHash = "sha256-mDmwylu0GG5xguXsJefbQH1e+WjQ8rFHZcBNPtoy6k0=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
@@ -158,8 +123,8 @@ in
     # nur.repos.charmbracelet.crush
   ]) ++ [
     tokscale
-    claude-code
-    opencode
+    pkgs-master.claude-code
+    pkgs-master.opencode
     pkgs-master.codex
     fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name
   ] ++ lib.optionals piEnabled [
