@@ -23,6 +23,10 @@
     # packages are never uninstalled.
     casks = [
       "font-d2coding"
+      # Provides "D2KodingLigature Nerd Font Mono" (Nerd Fonts renamed the
+      # patched D2Coding family to D2Koding*). Referenced by the alacritty and
+      # contour configs.
+      "font-d2coding-nerd-font"
       "font-departure-mono"
       "font-jetbrains-mono-nerd-font"
       "font-victor-mono-nerd-font"

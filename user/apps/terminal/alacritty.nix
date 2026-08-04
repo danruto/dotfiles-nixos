@@ -1,17 +1,10 @@
-{ pkgs, lib, font, ... }:
+{ pkgs, ... }:
 
+# Config is the verbatim file from ./configs/alacritty/, not `programs.alacritty.settings`.
+# Both write ~/.config/alacritty/alacritty.toml, so enabling the program module here
+# would collide with the raw file.
 {
-  programs.alacritty = {
-    enable = true;
-    settings = {
-      window.opacity = lib.mkForce 0.65;
-      window.decorations = "none";
-      font.size = 14.0;
-      font.normal.family = font;
-      colors.draw_bold_text_with_bright_colors = true;
-      window.padding.x = 5;
-      window.padding.y = 5;
-      window.option_as_alt = "Both";
-    };
-  };
+  home.packages = [ pkgs.alacritty ];
+
+  home.file.".config/alacritty/alacritty.toml".source = ./configs/alacritty/alacritty.toml;
 }
