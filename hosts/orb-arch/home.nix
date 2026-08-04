@@ -62,6 +62,7 @@
   fonts.fontconfig.enable = true;
   home.packages = with pkgs; [
     noto-fonts
+    acli
   ];
 
   programs.nix-index = {

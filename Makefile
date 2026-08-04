@@ -81,7 +81,7 @@ vm/bootstrap/1:
 vm/bootstrap/2:
 	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR) " \
 		nix profile list; \
-		home-manager switch -b backup --flake /nix-config#user; \
+		home-manager switch -b backup --flake /nix-config#danruto@orb-arch; \
 	"
 
 vm/bootstrap/u:
@@ -147,7 +147,7 @@ norb:
 	sudo nixos-rebuild switch --flake .#$(PROFILE)
 
 hm/switch:
-	nix run home-manager/release-26.05 -- switch --flake .#user
+	nix run home-manager/release-26.05 -- switch --flake '.#danruto@orb-arch'
 
 # Normalize claude settings.json (Claude Code rewrites it with its own key order)
 fmt/settings:

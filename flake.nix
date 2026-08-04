@@ -74,15 +74,9 @@
         nearmap-x86 = mkSystem { hostname = "nearmap"; system = "x86_64-darwin"; platform = "darwin"; username = "danny.sok"; };
       };
 
-      homeConfigurations =
-        let
-          orbArch = mkHome { hostname = "orb-arch"; system = "aarch64-linux"; };
-        in
-        {
-          "danruto@orb-arch" = orbArch;
-          # Kept for `make hm/switch` and vm/bootstrap/2 which reference .#user.
-          user = orbArch;
-        };
+      homeConfigurations = {
+        "danruto@orb-arch" = mkHome { hostname = "orb-arch"; system = "aarch64-linux"; };
+      };
     };
 
   inputs = {
