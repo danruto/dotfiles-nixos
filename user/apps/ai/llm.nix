@@ -33,11 +33,56 @@ let
     ];
   });
 
-  # nixpkgs-master now tracks upstream Pi closely enough that no version pin is
-  # needed; if it falls behind again, re-add an overrideAttrs for version, src,
-  # npmDeps and modelData (the latter two are hash-pinned separately and go
-  # stale when only version + src are bumped).
+  # nixpkgs-master lags upstream Pi (0.83.0 vs 0.84.0), so pin version + src
+  # here. npmDeps and modelData are hash-pinned separately in the nixpkgs
+  # derivation and go stale when only version + src are bumped, so both must be
+  # rebuilt explicitly. Drop this whole pin once nixpkgs-master reaches >= 0.84.0.
+  pi-src = pkgs-master.fetchFromGitHub {
+    owner = "earendil-works";
+    repo = "pi";
+    tag = "v0.84.0";
+    hash = "sha256-qySIyclHsWUo/Uap9rCl97amvKBbHfRXlOB16t8t3Ns=";
+  };
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
+    version = "0.84.0";
+    src = pi-src;
+    npmDeps = pkgs-master.fetchNpmDeps {
+      src = pi-src;
+      name = "pi-coding-agent-0.84.0-npm-deps";
+      hash = "sha256-pIpwMAmSWjJKM5P+jltU/L/vS+d5JWNJYiIChfSZGOE=";
+    };
+    modelData = pkgs-master.fetchurl {
+      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.84.0.tgz";
+      hash = "sha256-WWDOeXctyqZZmC8LENp3qeMvapehFSu7LMfsZh/LzOo=";
+    };
+    # 0.84.0 adds three workspace packages the upstream buildPhase doesn't know
+    # about: pi-telemetry (used by ai + agent) and pi-protocol/pi-client (used by
+    # coding-agent). Compile them in dependency order before their consumers.
+    buildPhase = ''
+      runHook preBuild
+
+      npx tsgo -p packages/telemetry/tsconfig.build.json
+      npx tsgo -p packages/protocol/tsconfig.build.json
+      npx tsgo -p packages/ai/tsconfig.build.json
+      npx tsgo -p packages/tui/tsconfig.build.json
+      npx tsgo -p packages/agent/tsconfig.build.json
+      npx tsgo -p packages/client/tsconfig.build.json
+      npm run build --workspace=packages/coding-agent
+
+      runHook postBuild
+    '';
+    # Those three are runtime deps too (pi-agent-core re-exports pi-telemetry),
+    # but the upstream postInstall only materialises ai/agent/tui and then
+    # deletes every remaining workspace symlink — materialise them first.
+    postInstall = ''
+      for extraWs in @earendil-works/pi-telemetry:packages/telemetry \
+                     @earendil-works/pi-protocol:packages/protocol \
+                     @earendil-works/pi-client:packages/client; do
+        IFS=: read -r pkg src <<< "$extraWs"
+        rm "$out/lib/node_modules/pi-monorepo/node_modules/$pkg"
+        cp -r "$src" "$out/lib/node_modules/pi-monorepo/node_modules/$pkg"
+      done
+    '' + o.postInstall;
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
     # node-gyp needs python on PATH. Scope these to pi's own wrapper instead
