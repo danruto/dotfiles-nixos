@@ -30,12 +30,6 @@
       }
     ]
   },
-  "mcpServers": {
-    "fff": {
-      "args": [],
-      "command": "fff-mcp"
-    }
-  },
   "model": "claude-fable-5[1m]",
   "permissions": {
     "allow": [
@@ -63,11 +57,11 @@
       "Bash(go build:*)",
       "Bash(make:*)",
       "Bash(just:*)",
-      "mcp__fff__ffgrep",
-      "mcp__fff__fffind",
-      "mcp__fff__fff-multi-grep",
       "Read(*.env.llm)",
-      "Read(*.envrc)"
+      "Read(*.envrc)",
+      "mcp__fff__grep",
+      "mcp__fff__find_files",
+      "mcp__fff__multi_grep"
     ],
     "defaultMode": "auto",
     "deny": [

@@ -33,64 +33,38 @@ let
     ];
   });
 
-  # nixpkgs-master lags upstream Pi (0.83.0 vs 0.84.0), so pin version + src
+  # nixpkgs-master lags upstream Pi (0.84.0 vs 0.84.1), so pin version + src
   # here. npmDeps and modelData are hash-pinned separately in the nixpkgs
   # derivation and go stale when only version + src are bumped, so both must be
-  # rebuilt explicitly. Drop this whole pin once nixpkgs-master reaches >= 0.84.0.
+  # rebuilt explicitly. Drop this whole pin once nixpkgs-master reaches >= 0.84.1.
   pi-src = pkgs-master.fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
-    tag = "v0.84.0";
-    hash = "sha256-qySIyclHsWUo/Uap9rCl97amvKBbHfRXlOB16t8t3Ns=";
+    tag = "v0.84.1";
+    hash = "sha256-lg+I4S/aAjazjhGZU567ow+rksoNiqOqjHl//TjAMes=";
   };
-  pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (o: {
-    version = "0.84.0";
+  pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (_: {
+    version = "0.84.1";
     src = pi-src;
     npmDeps = pkgs-master.fetchNpmDeps {
       src = pi-src;
-      name = "pi-coding-agent-0.84.0-npm-deps";
-      hash = "sha256-pIpwMAmSWjJKM5P+jltU/L/vS+d5JWNJYiIChfSZGOE=";
+      name = "pi-coding-agent-0.84.1-npm-deps";
+      hash = "sha256-tufyZQRPAUeDtiq0UQodbKA/Y9xUAvNT8K+NWFjkeME=";
     };
     modelData = pkgs-master.fetchurl {
-      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.84.0.tgz";
-      hash = "sha256-WWDOeXctyqZZmC8LENp3qeMvapehFSu7LMfsZh/LzOo=";
+      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.84.1.tgz";
+      hash = "sha256-araJGJ58s95c2xJjEqPmDorDX+XuXxtj0A9xHIpDDHM=";
     };
-    # 0.84.0 adds three workspace packages the upstream buildPhase doesn't know
-    # about: pi-telemetry (used by ai + agent) and pi-protocol/pi-client (used by
-    # coding-agent). Compile them in dependency order before their consumers.
-    buildPhase = ''
-      runHook preBuild
-
-      npx tsgo -p packages/telemetry/tsconfig.build.json
-      npx tsgo -p packages/protocol/tsconfig.build.json
-      npx tsgo -p packages/ai/tsconfig.build.json
-      npx tsgo -p packages/tui/tsconfig.build.json
-      npx tsgo -p packages/agent/tsconfig.build.json
-      npx tsgo -p packages/client/tsconfig.build.json
-      npm run build --workspace=packages/coding-agent
-
-      runHook postBuild
-    '';
-    # Those three are runtime deps too (pi-agent-core re-exports pi-telemetry),
-    # but the upstream postInstall only materialises ai/agent/tui and then
-    # deletes every remaining workspace symlink — materialise them first.
-    postInstall = ''
-      for extraWs in @earendil-works/pi-telemetry:packages/telemetry \
-                     @earendil-works/pi-protocol:packages/protocol \
-                     @earendil-works/pi-client:packages/client; do
-        IFS=: read -r pkg src <<< "$extraWs"
-        rm "$out/lib/node_modules/pi-monorepo/node_modules/$pkg"
-        cp -r "$src" "$out/lib/node_modules/pi-monorepo/node_modules/$pkg"
-      done
-    '' + o.postInstall;
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
     # node-gyp needs python on PATH. Scope these to pi's own wrapper instead
     # of the global profile (gcc/gnumake come from user/lang/cc). This
-    # replaces the upstream wrapper, so re-add its ripgrep/fd.
+    # replaces the upstream wrapper, so re-add its ripgrep/fd and env defaults.
     postFixup = ''
       wrapProgram $out/bin/pi \
-        --prefix PATH : ${lib.makeBinPath (with pkgs-master; [ nodejs ripgrep fd python3 ])}
+        --prefix PATH : ${lib.makeBinPath (with pkgs-master; [ nodejs ripgrep fd python3 ])} \
+        --set-default PI_SKIP_VERSION_CHECK 1 \
+        --set-default PI_TELEMETRY 0
     '';
   });
 
@@ -183,6 +157,14 @@ in
   # redeploy. Assumes the repo is checked out at ~/dotfiles-nixos. fff-mcp is on
   # PATH (see home.packages) so the static Claude/OMP MCP configs can reference
   # it by bare name instead of a store path.
+  #
+  # NOTE: Claude Code does NOT read `mcpServers` from settings.json — the key is
+  # not in the settings schema and is silently ignored. MCP servers only load
+  # from ~/.claude.json or a repo's .mcp.json. ~/.claude.json is mutable state
+  # this flake does not manage, so on a fresh machine register fff manually:
+  #     claude mcp add --scope user fff fff-mcp
+  # Verify with `claude mcp list` (expect "fff: fff-mcp - ✔ Connected").
+  # Pi's MCP config is unaffected and still reads its own settings file.
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/CLAUDE.md";
