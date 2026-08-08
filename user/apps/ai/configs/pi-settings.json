@@ -27,15 +27,11 @@
     "git:github.com/DietrichGebert/ponytail",
     "git:github.com/VandeeFeng/pi-memory-md",
     "git:github.com/davebcn87/pi-autoresearch",
-    "git:github.com/javierportillo/pi-hackerman@63b0a3ef2c7b14985ffeb6cac44614ba59cd5693",
     "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359",
-    "npm:@devkade/pi-plan",
     "npm:@ff-labs/pi-fff",
     "npm:@juanibiapina/pi-extension-settings",
-    "npm:@juanibiapina/pi-usage",
     "npm:@plannotator/pi-extension",
     "npm:@tmustier/pi-raw-paste",
-    "npm:@tmustier/pi-usage-extension",
     "npm:pi-add-dir",
     "npm:pi-ask-user",
     "npm:pi-ayu-themes",
@@ -61,5 +57,6 @@
   "quietStartup": true,
   "enableInstallTelemetry": false,
   "theme": "ayu-mirage",
-  "autocompleteMaxVisible": 5
+  "autocompleteMaxVisible": 5,
+  "tuiMode": "fullscreen"
 }

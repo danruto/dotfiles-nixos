@@ -16,7 +16,11 @@
     package = pkgs.docker_29;
     enableOnBoot = false;
     # storageDriver = storageDriver;
-    autoPrune.enable = true;
+    # --volumes only removes anonymous volumes (Docker >= 23); named volumes are kept
+    autoPrune = {
+      enable = true;
+      flags = [ "--all" "--volumes" ];
+    };
   };
   virtualisation.podman = {
     enable = true;
