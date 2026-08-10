@@ -68,24 +68,128 @@ let
     '';
   });
 
+  # Prime Intellect's fork of pi (same monorepo layout, `.prime/agent` config
+  # dir, `prime-agent` bin). Not in nixpkgs, so build it the same way nixpkgs
+  # builds pi-coding-agent: tsgo the workspace deps in order, then the
+  # coding-agent, then repair the workspace symlinks in the output. Unlike pi,
+  # the model catalog (models.generated.ts) is committed upstream, so no
+  # modelData fetch is needed — we only skip pi-ai's networked generate-models
+  # script by calling tsgo directly.
+  prime-agent =
+    let
+      version = "0.7.1";
+      rawSrc = pkgs-master.fetchFromGitHub {
+        owner = "PrimeIntellect-ai";
+        repo = "prime-agent";
+        tag = "v${version}";
+        hash = "sha256-TaDa5Iflg6eGW9Hzd6alAcwF8PU0SBG2MCLiM313YqY=";
+      };
+
+      # The committed package-lock.json is unusable offline: ~230 entries carry
+      # no `resolved`/`integrity` (npm strips those under the repo's
+      # `min-release-age` .npmrc cooldown), so the Nix npm fetcher can't
+      # prefetch them. Regenerate the lock in a fixed-output derivation, which
+      # is the only place network access is allowed. Version resolution stays
+      # pinned by the hash below, so this is still reproducible. @opentelemetry
+      # /api is an optional peer of @mistralai/mistralai that npm skips but
+      # esbuild needs to bundle, so pull it in here; that changes package.json
+      # too, hence both files are captured.
+      lock = pkgs-master.runCommand "prime-agent-${version}-lock"
+        {
+          nativeBuildInputs = [ pkgs-master.nodejs pkgs-master.cacert ];
+          outputHashMode = "recursive";
+          outputHashAlgo = "sha256";
+          outputHash = "sha256-5psmmrHMxjPxQGHN7wl/A8TFkkF7J7Lcn1bIT1B4E/M=";
+        } ''
+        cp -r ${rawSrc} src
+        chmod -R u+w src
+        cd src
+        export HOME=$TMPDIR
+        rm -f .npmrc package-lock.json
+        npm install --package-lock-only --ignore-scripts --no-audit --no-fund @opentelemetry/api
+        mkdir -p $out
+        cp package.json package-lock.json $out/
+      '';
+    in
+    pkgs-master.buildNpmPackage {
+      pname = "prime-agent";
+      inherit version;
+
+      # .npmrc's `min-release-age=7` makes npm reject freshly published
+      # versions even when the lock pins them, which fails the offline install.
+      src = pkgs-master.runCommand "prime-agent-${version}-src" { } ''
+        cp -r ${rawSrc} $out
+        chmod -R u+w $out
+        cp ${lock}/package.json ${lock}/package-lock.json $out/
+        rm -f $out/.npmrc
+      '';
+
+      npmDepsHash = "sha256-bbZ2QU1ApUwVRnDCsyJbKxiw15Jwz9T6rd7ixVYBYRs=";
+      npmDepsFetcherVersion = 2;
+      npmWorkspace = "packages/coding-agent";
+      npmRebuildFlags = [ "--ignore-scripts" ];
+      nativeBuildInputs = [ pkgs-master.makeBinaryWrapper ];
+
+      buildPhase = ''
+        runHook preBuild
+        npx tsgo -p packages/tui/tsconfig.build.json
+        npx tsgo -p packages/ai/tsconfig.build.json
+        npx tsgo -p packages/agent/tsconfig.build.json
+        npm run build --workspace=packages/coding-agent
+        runHook postBuild
+      '';
+
+      # Workspace symlinks in the output point at packages/, which isn't there.
+      # Replace the runtime ones with real copies and drop the rest. The source
+      # bin is still named `pi` (the release tooling renames it at publish
+      # time), so rename it here to avoid colliding with pi-coding-agent.
+      postInstall = ''
+        nm="$out/lib/node_modules/prime-agent/node_modules"
+        for ws in @earendil-works/pi-ai:packages/ai \
+                  @earendil-works/pi-agent-core:packages/agent \
+                  @earendil-works/pi-tui:packages/tui; do
+          IFS=: read -r pkg src <<< "$ws"
+          rm "$nm/$pkg"
+          cp -r "$src" "$nm/$pkg"
+        done
+        find "$nm" -type l -lname '*/packages/*' -delete
+        find "$nm/.bin" -xtype l -delete
+        mv "$out/bin/pi" "$out/bin/prime-agent"
+      '';
+
+      # Same runtime needs as pi: ripgrep/fd for search, node+python for the
+      # IPython kernel and npm extension installs.
+      postFixup = ''
+        wrapProgram $out/bin/prime-agent \
+          --prefix PATH : ${lib.makeBinPath (with pkgs-master; [ nodejs ripgrep fd python3 ])}
+      '';
+
+      meta = {
+        description = "Self-improving RLM coding agent (Prime Intellect's pi fork)";
+        homepage = "https://github.com/PrimeIntellect-ai/prime-agent";
+        license = pkgs.lib.licenses.mit;
+        mainProgram = "prime-agent";
+      };
+    };
+
   # Rust TUI coding agent (https://github.com/1jehuang/jcode). Not in nixpkgs
   # and upstream ships no nix expr, so build the `jcode` bin from the release
   # tag. The workspace also declares dev/bench bins, hence the explicit
   # --bin jcode.
   jcode =
     let
-      version = "0.67.0";
+      version = "0.73.0";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-E623Mf3DzSL5YhbqaL2onEVCsrEM8XQuhoi//JrdA7M=";
+        hash = "sha256-n+6dmo2a060zFUj6om8fyETl4xI1CnFQq1gsppqtorA=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-mDmwylu0GG5xguXsJefbQH1e+WjQ8rFHZcBNPtoy6k0=";
+      cargoHash = "sha256-zR3zIjwZrO9lwq8r/lKwXn3eEqNFY367ORequVipn5Y=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
@@ -100,12 +204,12 @@ let
 
   revdiff =
     let
-      version = "1.11.1";
+      version = "1.12.0";
       sources = {
-        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-eVimvvcjJn/tGLC+lkdrt2djav6WYzjtfjcMClBv1Uw="; };
-        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-h8UiUW4tDvETt0/3KaHpByqtmVjxrraDa5DSuPouB2I="; };
-        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-qOwp5pWNIIiVNt6WfQsSP0useXkVgVy9IP+6RNWEL4U="; };
-        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-s+HYMqhS2LqKki0CPsKTQ7EdUgmtbNhNCeSnEP6NH74="; };
+        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-OzZHjDudbG9VV1Ff7YduiM4cPRRWRxSj7VrvuQPMcVQ="; };
+        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-V6t+VbfVufDNA5NZRtMzpm3cT9Tv4Bm5h+GFpy/DVOE="; };
+        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-U0qrpuGOSJxUWiAquNayRtAJZHiwBJClLmxUcWUFQ4g="; };
+        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-nWyoQLmMZID8HjmAOmOF9JtjidKMnrRtog+U861pHWg="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
@@ -142,6 +246,7 @@ in
     # nur.repos.charmbracelet.crush
   ]) ++ [
     tokscale
+    prime-agent
     pkgs-master.claude-code
     pkgs-master.opencode
     pkgs-master.codex
