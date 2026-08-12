@@ -7,13 +7,14 @@
 , system
 , platform ? "nixos"
 , extraModules ? [ ]
+, hostDir ? hostname
 , ...
 }@hostArgs:
 let
   p = pkgsBySystem.${system};
 
   # Per-host identity overrides are any args beyond the structural keys.
-  identity = removeAttrs hostArgs [ "hostname" "system" "platform" "extraModules" ];
+  identity = removeAttrs hostArgs [ "hostname" "system" "platform" "extraModules" "hostDir" ];
   id = defaults // identity;
 
   isDarwin = platform == "darwin";
@@ -36,7 +37,7 @@ let
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
     home-manager.backupFileExtension = "backup";
-    home-manager.users.${id.username} = import (../hosts + "/${hostname}/home.nix");
+    home-manager.users.${id.username} = import (../hosts + "/${hostDir}/home.nix");
     home-manager.extraSpecialArgs = specialArgs;
   };
 
@@ -46,7 +47,7 @@ let
     else home-manager.nixosModules.home-manager;
 
   modules = [
-    (../hosts + "/${hostname}/configuration.nix")
+    (../hosts + "/${hostDir}/configuration.nix")
     nixpkgsModule
     hmSystemModule
     hmModule
