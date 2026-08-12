@@ -25,6 +25,10 @@
   home.sessionVariables = {
     EDITOR = editor;
     TERM = "xterm-256color";
+    # SSH forwards the Mac's LANG/LC_ALL (en_AU/en_US); this Arch guest only
+    # has C/C.utf8 generated, so every glibc program warns on startup.
+    LANG = "C.UTF-8";
+    LC_ALL = "C.UTF-8";
   };
 
   programs.fish.shellInit = ''

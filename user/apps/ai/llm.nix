@@ -77,12 +77,12 @@ let
   # script by calling tsgo directly.
   prime-agent =
     let
-      version = "0.7.1";
+      version = "0.7.2";
       rawSrc = pkgs-master.fetchFromGitHub {
         owner = "PrimeIntellect-ai";
         repo = "prime-agent";
         tag = "v${version}";
-        hash = "sha256-TaDa5Iflg6eGW9Hzd6alAcwF8PU0SBG2MCLiM313YqY=";
+        hash = "sha256-rOKFkKoV2Mfg2wHioZ+2Eo3Js6C4489hxTxVu38cgbA=";
       };
 
       # The committed package-lock.json is unusable offline: ~230 entries carry
@@ -99,7 +99,7 @@ let
           nativeBuildInputs = [ pkgs-master.nodejs pkgs-master.cacert ];
           outputHashMode = "recursive";
           outputHashAlgo = "sha256";
-          outputHash = "sha256-5psmmrHMxjPxQGHN7wl/A8TFkkF7J7Lcn1bIT1B4E/M=";
+          outputHash = "sha256-kGe70lFKNeEG5/AjdAWAZ4m7fO0Uq5kOkzaNYEwIrsA=";
         } ''
         cp -r ${rawSrc} src
         chmod -R u+w src
@@ -124,7 +124,7 @@ let
         rm -f $out/.npmrc
       '';
 
-      npmDepsHash = "sha256-bbZ2QU1ApUwVRnDCsyJbKxiw15Jwz9T6rd7ixVYBYRs=";
+      npmDepsHash = "sha256-i/8sMEoMwklI2nLpXBuY+yC9yafBtF+DCygeufM/6jg=";
       npmDepsFetcherVersion = 2;
       npmWorkspace = "packages/coding-agent";
       npmRebuildFlags = [ "--ignore-scripts" ];
@@ -178,18 +178,18 @@ let
   # --bin jcode.
   jcode =
     let
-      version = "0.73.0";
+      version = "0.75.3";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-n+6dmo2a060zFUj6om8fyETl4xI1CnFQq1gsppqtorA=";
+        hash = "sha256-0dNE5PtYxozTLCxnntQMcr5xIQtZYtPCfuH1N4zR/ds=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-zR3zIjwZrO9lwq8r/lKwXn3eEqNFY367ORequVipn5Y=";
+      cargoHash = "sha256-mFAQiaRkLOj96nTJjonWbrUDUt8a+2WnTinKc5BDERA=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
