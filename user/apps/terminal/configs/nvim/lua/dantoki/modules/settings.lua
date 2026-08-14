@@ -71,6 +71,7 @@ bo.iskeyword = "-"
 bo.formatoptions = bo.formatoptions:gsub("[cro]", "")
 -- TODO: How to do this via lua?
 vim.cmd([[ autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o ]])
+vim.cmd([[ autocmd FileType markdown setlocal foldlevel=99 ]])
 
 -- Window settings
 wo.relativenumber = true -- Show line numbers as relative

@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, pkgs-master, fff, lib, config, platform, ... }:
+{ pkgs, pkgs-unstable, pkgs-master, fff, lib, config, ... }:
 let
   # Standalone home (e.g. orb-arch via `make hm/switch`) skips Pi: its install
   # activation shells out to a global npm install that fails on read-only/Nix
@@ -67,110 +67,6 @@ let
         --set-default PI_TELEMETRY 0
     '';
   });
-
-  # Prime Intellect's fork of pi (same monorepo layout, `.prime/agent` config
-  # dir, `prime-agent` bin). Not in nixpkgs, so build it the same way nixpkgs
-  # builds pi-coding-agent: tsgo the workspace deps in order, then the
-  # coding-agent, then repair the workspace symlinks in the output. Unlike pi,
-  # the model catalog (models.generated.ts) is committed upstream, so no
-  # modelData fetch is needed — we only skip pi-ai's networked generate-models
-  # script by calling tsgo directly.
-  prime-agent =
-    let
-      version = "0.7.2";
-      rawSrc = pkgs-master.fetchFromGitHub {
-        owner = "PrimeIntellect-ai";
-        repo = "prime-agent";
-        tag = "v${version}";
-        hash = "sha256-rOKFkKoV2Mfg2wHioZ+2Eo3Js6C4489hxTxVu38cgbA=";
-      };
-
-      # The committed package-lock.json is unusable offline: ~230 entries carry
-      # no `resolved`/`integrity` (npm strips those under the repo's
-      # `min-release-age` .npmrc cooldown), so the Nix npm fetcher can't
-      # prefetch them. Regenerate the lock in a fixed-output derivation, which
-      # is the only place network access is allowed. Version resolution stays
-      # pinned by the hash below, so this is still reproducible. @opentelemetry
-      # /api is an optional peer of @mistralai/mistralai that npm skips but
-      # esbuild needs to bundle, so pull it in here; that changes package.json
-      # too, hence both files are captured.
-      lock = pkgs-master.runCommand "prime-agent-${version}-lock"
-        {
-          nativeBuildInputs = [ pkgs-master.nodejs pkgs-master.cacert ];
-          outputHashMode = "recursive";
-          outputHashAlgo = "sha256";
-          outputHash = "sha256-kGe70lFKNeEG5/AjdAWAZ4m7fO0Uq5kOkzaNYEwIrsA=";
-        } ''
-        cp -r ${rawSrc} src
-        chmod -R u+w src
-        cd src
-        export HOME=$TMPDIR
-        rm -f .npmrc package-lock.json
-        npm install --package-lock-only --ignore-scripts --no-audit --no-fund @opentelemetry/api
-        mkdir -p $out
-        cp package.json package-lock.json $out/
-      '';
-    in
-    pkgs-master.buildNpmPackage {
-      pname = "prime-agent";
-      inherit version;
-
-      # .npmrc's `min-release-age=7` makes npm reject freshly published
-      # versions even when the lock pins them, which fails the offline install.
-      src = pkgs-master.runCommand "prime-agent-${version}-src" { } ''
-        cp -r ${rawSrc} $out
-        chmod -R u+w $out
-        cp ${lock}/package.json ${lock}/package-lock.json $out/
-        rm -f $out/.npmrc
-      '';
-
-      npmDepsHash = "sha256-i/8sMEoMwklI2nLpXBuY+yC9yafBtF+DCygeufM/6jg=";
-      npmDepsFetcherVersion = 2;
-      npmWorkspace = "packages/coding-agent";
-      npmRebuildFlags = [ "--ignore-scripts" ];
-      nativeBuildInputs = [ pkgs-master.makeBinaryWrapper ];
-
-      buildPhase = ''
-        runHook preBuild
-        npx tsgo -p packages/tui/tsconfig.build.json
-        npx tsgo -p packages/ai/tsconfig.build.json
-        npx tsgo -p packages/agent/tsconfig.build.json
-        npm run build --workspace=packages/coding-agent
-        runHook postBuild
-      '';
-
-      # Workspace symlinks in the output point at packages/, which isn't there.
-      # Replace the runtime ones with real copies and drop the rest. The source
-      # bin is still named `pi` (the release tooling renames it at publish
-      # time), so rename it here to avoid colliding with pi-coding-agent.
-      postInstall = ''
-        nm="$out/lib/node_modules/prime-agent/node_modules"
-        for ws in @earendil-works/pi-ai:packages/ai \
-                  @earendil-works/pi-agent-core:packages/agent \
-                  @earendil-works/pi-tui:packages/tui; do
-          IFS=: read -r pkg src <<< "$ws"
-          rm "$nm/$pkg"
-          cp -r "$src" "$nm/$pkg"
-        done
-        find "$nm" -type l -lname '*/packages/*' -delete
-        find "$nm/.bin" -xtype l -delete
-        mv "$out/bin/pi" "$out/bin/prime-agent"
-      '';
-
-      # Same runtime needs as pi: ripgrep/fd for search, node+python for the
-      # IPython kernel and npm extension installs.
-      postFixup = ''
-        wrapProgram $out/bin/prime-agent \
-          --prefix PATH : ${lib.makeBinPath (with pkgs-master; [ nodejs ripgrep fd python3 ])}
-      '';
-
-      meta = {
-        description = "Self-improving RLM coding agent (Prime Intellect's pi fork)";
-        homepage = "https://github.com/PrimeIntellect-ai/prime-agent";
-        license = pkgs.lib.licenses.mit;
-        mainProgram = "prime-agent";
-      };
-    };
 
   # Rust TUI coding agent (https://github.com/1jehuang/jcode). Not in nixpkgs
   # and upstream ships no nix expr, so build the `jcode` bin from the release
@@ -246,7 +142,6 @@ in
     # nur.repos.charmbracelet.crush
   ]) ++ [
     tokscale
-    prime-agent
     pkgs-master.claude-code
     pkgs-master.opencode
     pkgs-master.codex
