@@ -33,27 +33,27 @@ let
     ];
   });
 
-  # nixpkgs-master lags upstream Pi (0.84.0 vs 0.84.1), so pin version + src
+  # nixpkgs-master lags upstream Pi (0.84.1 vs 0.84.2), so pin version + src
   # here. npmDeps and modelData are hash-pinned separately in the nixpkgs
   # derivation and go stale when only version + src are bumped, so both must be
-  # rebuilt explicitly. Drop this whole pin once nixpkgs-master reaches >= 0.84.1.
+  # rebuilt explicitly. Drop this whole pin once nixpkgs-master reaches >= 0.84.2.
   pi-src = pkgs-master.fetchFromGitHub {
     owner = "earendil-works";
     repo = "pi";
-    tag = "v0.84.1";
-    hash = "sha256-lg+I4S/aAjazjhGZU567ow+rksoNiqOqjHl//TjAMes=";
+    tag = "v0.84.2";
+    hash = "sha256-d29ft9otYxdHRWYIAX8KMHPpppToX9ME5LbPb1rPcYo=";
   };
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (_: {
-    version = "0.84.1";
+    version = "0.84.2";
     src = pi-src;
     npmDeps = pkgs-master.fetchNpmDeps {
       src = pi-src;
-      name = "pi-coding-agent-0.84.1-npm-deps";
-      hash = "sha256-tufyZQRPAUeDtiq0UQodbKA/Y9xUAvNT8K+NWFjkeME=";
+      name = "pi-coding-agent-0.84.2-npm-deps";
+      hash = "sha256-6J5Efe+6ptCuR3VZojwYPZO8BBnnZsOQ4OAeB64uYOY=";
     };
     modelData = pkgs-master.fetchurl {
-      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.84.1.tgz";
-      hash = "sha256-araJGJ58s95c2xJjEqPmDorDX+XuXxtj0A9xHIpDDHM=";
+      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.84.2.tgz";
+      hash = "sha256-AmJ4Wnaw6y7sWWzYp6su4j7vidLvG7EhHE8KGUTaz0E=";
     };
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
@@ -178,18 +178,18 @@ let
   # --bin jcode.
   jcode =
     let
-      version = "0.75.3";
+      version = "0.75.5";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-0dNE5PtYxozTLCxnntQMcr5xIQtZYtPCfuH1N4zR/ds=";
+        hash = "sha256-4LI5yI4URZAnnrkQRuTbJXT3YeoNWia168qoE6GEERA=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-mFAQiaRkLOj96nTJjonWbrUDUt8a+2WnTinKc5BDERA=";
+      cargoHash = "sha256-trj9MKyrnQGwVl2CyP7KJ7lkzRV8dAWNlTwnoYKPSfg=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
