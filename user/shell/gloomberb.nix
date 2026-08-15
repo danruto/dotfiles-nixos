@@ -58,7 +58,7 @@ in
 # NixOS. Run it unmodified inside an FHS env so the loader resolves without
 # touching the binary and /proc/self/exe stays the real binary (Bun reads it to
 # locate its embedded payload).
-if stdenvNoCC.isDarwin then raw
+if stdenvNoCC.hostPlatform.isDarwin then raw
 else buildFHSEnv {
   pname = "gloomberb";
   inherit version meta;

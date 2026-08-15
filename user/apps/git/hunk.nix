@@ -34,7 +34,7 @@ stdenv.mkDerivation {
     inherit (src) sha256;
   };
 
-  nativeBuildInputs = lib.optional stdenv.isLinux autoPatchelfHook;
+  nativeBuildInputs = lib.optional stdenv.hostPlatform.isLinux autoPatchelfHook;
 
   sourceRoot = src.asset;
 

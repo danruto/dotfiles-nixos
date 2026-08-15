@@ -53,7 +53,7 @@ let
     '';
   };
 in
-if stdenvNoCC.isDarwin then raw
+if stdenvNoCC.hostPlatform.isDarwin then raw
 else buildFHSEnv {
   pname = "noodle";
   inherit version meta;

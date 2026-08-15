@@ -11,7 +11,7 @@ let
     pciutils
     tealdeer
     just
-  ] ++ lib.optionals pkgs.stdenv.isLinux [
+  ] ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
     brightnessctl
     hwinfo
     yt-dlp
@@ -29,7 +29,7 @@ let
     wrkflw
     lfk
     mdfried
-  ] ++ lib.optionals pkgs-unstable.stdenv.isLinux [
+  ] ++ lib.optionals pkgs-unstable.stdenv.hostPlatform.isLinux [
   ];
 in
 {

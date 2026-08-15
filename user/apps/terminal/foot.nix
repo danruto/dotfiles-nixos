@@ -7,7 +7,7 @@
         # font = "IosevkaComfy:size=14";
         # font = "DepartureMono:size=12";
         # font = "AdwaitaMono Nerd Font:size=14";
-        font = "D2CodingLigature Nerd Font:size=14";
+        font = "D2KodingLigature Nerd Font Mono:size=14";
       };
       mouse = {
         hide-when-typing = "yes";
