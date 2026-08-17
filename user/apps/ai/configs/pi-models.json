@@ -1,5 +1,51 @@
 {
   "providers": {
+    "omlx": {
+      "baseUrl": "http://host.orb.internal:8000/v1",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "Qwen3.8-27B-MTPLX-Optimized-Quality",
+          "name": "Qwen3.8 27B Quality (oMLX)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "compat": { "thinkingFormat": "qwen-chat-template" }
+        },
+        {
+          "id": "Qwen3.8-27B-MTPLX-Optimized-Speed",
+          "name": "Qwen3.8 27B Speed (oMLX)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "compat": { "thinkingFormat": "qwen-chat-template" }
+        },
+        {
+          "id": "Qwen3.8-9B-mlx-4Bit",
+          "name": "Qwen3.8 9B 4bit (oMLX)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "compat": { "thinkingFormat": "qwen-chat-template" }
+        },
+        {
+          "id": "Qwen3.8-9B-s.chsu-MLX-MLS",
+          "name": "Qwen3.8 9B s.chsu MLX (MLS)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 272000,
+          "maxTokens": 32768,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+          "compat": { "thinkingFormat": "qwen-chat-template" }
+        }
+      ]
+    },
     "openai": {
       "modelOverrides": {
         "gpt-5.6-sol": { "contextWindow": 272000 },

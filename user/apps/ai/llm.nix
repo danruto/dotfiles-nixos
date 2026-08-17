@@ -74,18 +74,18 @@ let
   # --bin jcode.
   jcode =
     let
-      version = "0.76.0";
+      version = "0.77.1";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-xvZoVZp8+PGeY791lpOrTu2Tr8cAMKic8Kp/TeH02/4=";
+        hash = "sha256-QBFPhUWBfwBIHPUqw9UGyQwFS+3xC2tbZD2znVhYDXM=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-DIlgO98u18eY9EXclemBKNndI5dn8Ud40nCThpuWY4g=";
+      cargoHash = "sha256-/xud5rR4/ixf2pVAlNPLLEwxAh9hLGHGGYPLeGiKSWc=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
@@ -108,12 +108,12 @@ let
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-dev-202608171132";
+      version = "0.0.0-dev-202608171943";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha256-YnICeevcxm/sJiZxMw8/2kYpJAw2cXFOlxxy1GngrcQ="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha256-fUAq2gyuM/FE1pfGcq5CTEuKJx63enrgcp8oJnTRqkY="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha256-OLkqVXl94obfP46VCCPoc66OQhaN9hC/SMpWPWUS1nA="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha256-nA9oEu4EKNHXoQi/rLZ/Vmih2xvK4k0ZPeD1LV6w09s="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha256-NUO6H8tzM0JHcB5owPLeA4XSaPTukaSa2m7emMnMiFc="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha256-uJ7Wnqgrni1ehDb+B1krPxx3TjwROlPYWuNldFqm+lM="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha256-k+myzRdQB/R6BtQDRjraRXwszOnrh3vFH33W7NpnnDY="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha256-wRh+KW34D+CSFLG9ib12wakJBQEvOBMiNkIE+1ahdcU="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
@@ -236,6 +236,16 @@ in
     run mkdir -p "${config.home.homeDirectory}/.claude"
     run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/settings.json" \
       "${config.home.homeDirectory}/.claude/settings.json"
+  '';
+
+  # opencode rewrites its global config in place (it injects "$schema" when
+  # missing), so use a direct out-of-store symlink for the same reason as
+  # Claude's settings above. The repo file already sets $schema, so no rewrite
+  # should happen, but the direct link keeps writes inside the repo either way.
+  home.activation.opencodeConfigLink = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p "${config.home.homeDirectory}/.config/opencode"
+    run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/opencode.json" \
+      "${config.home.homeDirectory}/.config/opencode/opencode.json"
   '';
 
   # Pi rewrites settings.json atomically, so use direct out-of-store symlinks
