@@ -98,6 +98,51 @@ let
       };
     };
 
+  # opencode v2 (the `beta` channel). v2 lives on the `beta` branch with no git
+  # tags and a rewritten layout (packages/cli, not packages/opencode), so the
+  # nixpkgs 1.x source build doesn't apply — install upstream's own prebuilt
+  # bun binary from npm instead. This pins one dated snapshot: it does NOT track
+  # the channel, bumping means a new timestamp version + four hashes. Drop this
+  # whole thing once v2 ships tagged releases and lands in nixpkgs.
+  opencode-beta =
+    let
+      version = "0.0.0-beta-202608110357";
+      hashes = {
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha256-4fXraqo/TpSKA/OidLQo1xeai+w12pPTqqtBAAGUHzs="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha256-rAlgJlKDSZo8MeQGnSX10/DkEeW0u20W9jSmBr8lXHo="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha256-ncUtoQJA2OxszCT4cRc352+IT6jAscOWlZLir3gh3mA="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha256-vI3tD1c1nKN6IH2phFaXUgPGP9PgKemLAeBzU5+2+Xc="; };
+      };
+      target = hashes.${pkgs.stdenv.hostPlatform.system};
+    in
+    pkgs.stdenvNoCC.mkDerivation {
+      pname = "opencode";
+      inherit version;
+      src = pkgs.fetchurl {
+        url = "https://registry.npmjs.org/opencode-${target.plat}/-/opencode-${target.plat}-${version}.tgz";
+        inherit (target) hash;
+      };
+      nativeBuildInputs = [ pkgs.makeBinaryWrapper ]
+        ++ pkgs.lib.optional pkgs.stdenv.hostPlatform.isLinux pkgs.autoPatchelfHook;
+      installPhase = ''
+        runHook preInstall
+        install -Dm755 bin/opencode $out/bin/opencode
+        wrapProgram $out/bin/opencode \
+          --prefix PATH : ${lib.makeBinPath [ pkgs.ripgrep ]} \
+          --set OPENCODE_DISABLE_AUTOUPDATE true
+        runHook postInstall
+      '';
+      # bun --compile binary: the JS payload is appended to the ELF, stripping
+      # it corrupts the executable (nixpkgs' own opencode does the same).
+      dontStrip = true;
+      meta = {
+        description = "AI coding agent built for the terminal (v2 beta channel)";
+        homepage = "https://github.com/anomalyco/opencode";
+        platforms = builtins.attrNames hashes;
+        mainProgram = "opencode";
+      };
+    };
+
   revdiff =
     let
       version = "1.12.0";
@@ -144,7 +189,7 @@ in
     dsh
     tokscale
     pkgs-master.claude-code
-    pkgs-master.opencode
+    opencode-beta
     pkgs-master.codex
     fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name
   ] ++ lib.optionals piEnabled [
