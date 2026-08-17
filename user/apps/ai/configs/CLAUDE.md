@@ -27,6 +27,11 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 - Recommend the fix that keeps clean architecture; mention a quick fix as a non-recommended option only when a meaningful one exists
 - Ask before assuming — when requirements are vague or scope is unclear, ask rather than expand beyond what was requested
 - When multiple valid approaches exist, present the options with your recommendation — I decide
+- Every fix you recommend must be durable, maintainable, and future-proof — the fix that stays
+  correct when the surrounding code changes. Never a fix shaped to pass the task in front of
+  you: no narrowing an assertion, weakening a spec, special-casing the current input, or
+  patching the symptom the ticket names. If the durable fix is out of scope, say so and name
+  it rather than shipping the expedient one silently.
 
 ## Commits
 
