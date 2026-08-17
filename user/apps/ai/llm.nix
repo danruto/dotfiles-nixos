@@ -98,20 +98,22 @@ let
       };
     };
 
-  # opencode v2 (the `beta` channel). v2 lives on the `beta` branch with no git
-  # tags and a rewritten layout (packages/cli, not packages/opencode), so the
-  # nixpkgs 1.x source build doesn't apply — install upstream's own prebuilt
-  # bun binary from npm instead. This pins one dated snapshot: it does NOT track
-  # the channel, bumping means a new timestamp version + four hashes. Drop this
+  # opencode v2 (the `beta`/`dev` channel). v2 lives on an untagged dev branch
+  # with a rewritten layout (packages/cli, not packages/opencode), so the
+  # nixpkgs 1.x source build (a *different*, v1 package) doesn't apply —
+  # install upstream's own prebuilt bun binary from npm instead. This pins one
+  # dated snapshot: it does NOT track the channel, bumping means a new
+  # timestamp version + four hashes. The npm dist-tag prefix switched from
+  # `beta-` to `dev-` around 2026-08-12; check both when bumping. Drop this
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-beta-202608110357";
+      version = "0.0.0-dev-202608171132";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha256-4fXraqo/TpSKA/OidLQo1xeai+w12pPTqqtBAAGUHzs="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha256-rAlgJlKDSZo8MeQGnSX10/DkEeW0u20W9jSmBr8lXHo="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha256-ncUtoQJA2OxszCT4cRc352+IT6jAscOWlZLir3gh3mA="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha256-vI3tD1c1nKN6IH2phFaXUgPGP9PgKemLAeBzU5+2+Xc="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha256-YnICeevcxm/sJiZxMw8/2kYpJAw2cXFOlxxy1GngrcQ="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha256-fUAq2gyuM/FE1pfGcq5CTEuKJx63enrgcp8oJnTRqkY="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha256-OLkqVXl94obfP46VCCPoc66OQhaN9hC/SMpWPWUS1nA="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha256-nA9oEu4EKNHXoQi/rLZ/Vmih2xvK4k0ZPeD1LV6w09s="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
@@ -136,7 +138,7 @@ let
       # it corrupts the executable (nixpkgs' own opencode does the same).
       dontStrip = true;
       meta = {
-        description = "AI coding agent built for the terminal (v2 beta channel)";
+        description = "AI coding agent built for the terminal (v2 beta/dev channel)";
         homepage = "https://github.com/anomalyco/opencode";
         platforms = builtins.attrNames hashes;
         mainProgram = "opencode";

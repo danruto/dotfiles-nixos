@@ -9,5 +9,13 @@ writeShellScriptBin "dsh" ''
   # PATH (gcc/gnumake come from user/lang/cc), and `dsh plugin` forwards to
   # pnpm in the profile directory.
   export PATH="${lib.makeBinPath [ nodejs pnpm python3 ]}:$PATH"
-  exec npx --yes @deepseek-ai/dsh@0.1.0-rc.6 "$@"
+
+  # dsh always boots a patch-file watcher backed by @deepseek-ai/cordis-plugin-hmr
+  # (see runProfile in @deepseek-ai/dsh's profile-boot-*.js), which requires the
+  # node --expose-internals flag or it throws on startup. Running it via plain
+  # `npx ... dsh` executes bin.js through its `#!/usr/bin/env node` shebang,
+  # which can't carry extra node flags, so resolve the installed entry point
+  # first and invoke node on it directly with the flag.
+  bin="$(npx --yes --package=@deepseek-ai/dsh@0.1.0-rc.6 -c 'realpath "$(command -v dsh)"')"
+  exec node --expose-internals "$bin" "$@"
 ''
