@@ -8,7 +8,11 @@
     # package = pkgs.neovim-unwrapped;
     # package = pkgs.unstable.neovim-unwrapped.override ({ tree-sitter = pkgs.tree-sitter; });
     # package = pkgs.unstable.neovim-unwrapped;
-    package = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    # Nightly's checkPhase runs `make functionaltest__treesitter`; upstream test
+    # breakage otherwise blocks the whole rebuild.
+    package = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
+      doCheck = false;
+    });
 
     extraPackages = with pkgs; [
       # Telescope
