@@ -4,31 +4,222 @@
     "omlx": {
       "name": "oMLX",
       "npm": "@ai-sdk/openai-compatible",
-      "options": { "baseURL": "http://host.orb.internal:8000/v1", "apiKey": "sk-omlx-VXAH1QIZNnRzSShyMeGC7ico" },
+      "options": {
+        "baseURL": "http://host.orb.internal:8000/v1",
+        "apiKey": "omlx"
+      },
       "models": {
         "Qwen3.8-27B-MTPLX-Optimized-Quality": {
           "name": "Qwen3.8 27B Quality (oMLX)",
           "reasoning": true,
           "tool_call": true,
-          "limit": { "context": 262144, "output": 32768 }
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
         },
         "Qwen3.8-27B-MTPLX-Optimized-Speed": {
           "name": "Qwen3.8 27B Speed (oMLX)",
           "reasoning": true,
           "tool_call": true,
-          "limit": { "context": 262144, "output": 32768 }
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
         },
         "Qwen3.8-9B-mlx-4Bit": {
           "name": "Qwen3.8 9B 4bit (oMLX)",
           "reasoning": true,
           "tool_call": true,
-          "limit": { "context": 262144, "output": 32768 }
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
         },
         "Qwen3.8-9B-s.chsu-MLX-MLS": {
           "name": "Qwen3.8 9B s.chsu MLX (MLS)",
           "reasoning": true,
           "tool_call": true,
-          "limit": { "context": 272000, "output": 32768 }
+          "limit": {
+            "context": 272000,
+            "output": 32768
+          }
+        },
+        "mlx-community--Qwen3.8-27B-4bit": {
+          "name": "Qwen3.8 27B 4bit (oMLX)",
+          "reasoning": true,
+          "tool_call": true,
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
+        },
+        "ornith-ai--Ornith-1.5-9B-MLX-4bit": {
+          "name": "Ornith 1.5 9B 4bit (oMLX)",
+          "reasoning": true,
+          "tool_call": true,
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
+        },
+        "Ornith-1.5-9B-MLX": {
+          "name": "Ornith 1.5 9B (oMLX)",
+          "reasoning": true,
+          "tool_call": true,
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
+        }
+      }
+    },
+    "dspark": {
+      "name": "mlx-dspark (auto)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://host.orb.internal:8484/v1",
+        "apiKey": "dspark"
+      },
+      "models": {
+        "Qwen3.8-27B-4bit": {
+          "name": "Qwen3.8 27B 4bit DFlash temp=auto",
+          "reasoning": true,
+          "tool_call": true,
+          "options": {
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          },
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
+        }
+      }
+    },
+    "dspark-t02": {
+      "name": "mlx-dspark (0.2)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://host.orb.internal:8484/v1",
+        "apiKey": "dspark"
+      },
+      "models": {
+        "Qwen3.8-27B-4bit": {
+          "name": "Qwen3.8 27B 4bit DFlash temp=0.2",
+          "reasoning": true,
+          "tool_call": true,
+          "options": {
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            },
+            "temperature": 0.2
+          },
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
+        }
+      }
+    },
+    "dspark-t04": {
+      "name": "mlx-dspark (0.4)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://host.orb.internal:8484/v1",
+        "apiKey": "dspark"
+      },
+      "models": {
+        "Qwen3.8-27B-4bit": {
+          "name": "Qwen3.8 27B 4bit DFlash temp=0.4",
+          "reasoning": true,
+          "tool_call": true,
+          "options": {
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            },
+            "temperature": 0.4
+          },
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
+        }
+      }
+    },
+    "dspark-t07": {
+      "name": "mlx-dspark (0.7)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://host.orb.internal:8484/v1",
+        "apiKey": "dspark"
+      },
+      "models": {
+        "Qwen3.8-27B-4bit": {
+          "name": "Qwen3.8 27B 4bit DFlash temp=0.7",
+          "reasoning": true,
+          "tool_call": true,
+          "options": {
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            },
+            "temperature": 0.7
+          },
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
+        }
+      }
+    },
+    "dspark-t00": {
+      "name": "mlx-dspark (0)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://host.orb.internal:8484/v1",
+        "apiKey": "dspark"
+      },
+      "models": {
+        "Qwen3.8-27B-4bit": {
+          "name": "Qwen3.8 27B 4bit DFlash temp=0",
+          "reasoning": true,
+          "tool_call": true,
+          "options": {
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            },
+            "temperature": 0
+          },
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
+        }
+      }
+    },
+    "dspark-t20": {
+      "name": "mlx-dspark (2.0)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://host.orb.internal:8484/v1",
+        "apiKey": "dspark"
+      },
+      "models": {
+        "Qwen3.8-27B-4bit": {
+          "name": "Qwen3.8 27B 4bit DFlash temp=2.0",
+          "reasoning": true,
+          "tool_call": true,
+          "options": {
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            },
+            "temperature": 2.0
+          },
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
         }
       }
     }

@@ -8,55 +8,352 @@
           "id": "Qwen3.8-27B-MTPLX-Optimized-Quality",
           "name": "Qwen3.8 27B Quality (oMLX)",
           "reasoning": true,
-          "input": ["text"],
+          "input": [
+            "text"
+          ],
           "contextWindow": 262144,
           "maxTokens": 32768,
-          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
-          "compat": { "thinkingFormat": "qwen-chat-template" }
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "qwen-chat-template"
+          }
         },
         {
           "id": "Qwen3.8-27B-MTPLX-Optimized-Speed",
           "name": "Qwen3.8 27B Speed (oMLX)",
           "reasoning": true,
-          "input": ["text"],
+          "input": [
+            "text"
+          ],
           "contextWindow": 262144,
           "maxTokens": 32768,
-          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
-          "compat": { "thinkingFormat": "qwen-chat-template" }
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "qwen-chat-template"
+          }
         },
         {
           "id": "Qwen3.8-9B-mlx-4Bit",
           "name": "Qwen3.8 9B 4bit (oMLX)",
           "reasoning": true,
-          "input": ["text"],
+          "input": [
+            "text"
+          ],
           "contextWindow": 262144,
           "maxTokens": 32768,
-          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
-          "compat": { "thinkingFormat": "qwen-chat-template" }
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "qwen-chat-template"
+          }
         },
         {
           "id": "Qwen3.8-9B-s.chsu-MLX-MLS",
           "name": "Qwen3.8 9B s.chsu MLX (MLS)",
           "reasoning": true,
-          "input": ["text"],
+          "input": [
+            "text"
+          ],
           "contextWindow": 272000,
           "maxTokens": 32768,
-          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
-          "compat": { "thinkingFormat": "qwen-chat-template" }
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "qwen-chat-template"
+          }
+        },
+        {
+          "id": "mlx-community--Qwen3.8-27B-4bit",
+          "name": "Qwen3.8 27B 4bit (oMLX)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "supportsReasoningEffort": false,
+            "thinkingFormat": "qwen-chat-template"
+          }
+        },
+        {
+          "id": "ornith-ai--Ornith-1.5-9B-MLX-4bit",
+          "name": "Ornith 1.5 9B 4bit (oMLX)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "supportsReasoningEffort": false
+          }
+        },
+        {
+          "id": "Ornith-1.5-9B-MLX",
+          "name": "Ornith 1.5 9B (oMLX)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "supportsReasoningEffort": false
+          }
+        }
+      ]
+    },
+    "dspark": {
+      "baseUrl": "http://host.orb.internal:8484/v1",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "Qwen3.8-27B-4bit",
+          "name": "Qwen3.8 27B 4bit DFlash (dspark)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "chat-template",
+            "chatTemplateKwargs": {
+              "enable_thinking": false
+            },
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": false
+          }
         }
       ]
     },
     "openai": {
       "modelOverrides": {
-        "gpt-5.6-sol": { "contextWindow": 272000 },
-        "gpt-5.6-terra": { "contextWindow": 272000 }
+        "gpt-5.6-sol": {
+          "contextWindow": 272000
+        },
+        "gpt-5.6-terra": {
+          "contextWindow": 272000
+        }
       }
     },
     "openai-codex": {
       "modelOverrides": {
-        "gpt-5.6-sol": { "contextWindow": 272000 },
-        "gpt-5.6-terra": { "contextWindow": 272000 }
+        "gpt-5.6-sol": {
+          "contextWindow": 272000
+        },
+        "gpt-5.6-terra": {
+          "contextWindow": 272000
+        }
       }
+    },
+    "dspark-t02": {
+      "baseUrl": "http://host.orb.internal:8484/v1",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "Qwen3.8-27B-4bit",
+          "name": "Qwen3.8 27B 4bit DFlash temp=0.2",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "chat-template",
+            "chatTemplateKwargs": {
+              "enable_thinking": false
+            },
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": false
+          },
+          "samplingParams": {
+            "temperature": 0.2
+          }
+        }
+      ]
+    },
+    "dspark-t04": {
+      "baseUrl": "http://host.orb.internal:8484/v1",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "Qwen3.8-27B-4bit",
+          "name": "Qwen3.8 27B 4bit DFlash temp=0.4",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "chat-template",
+            "chatTemplateKwargs": {
+              "enable_thinking": false
+            },
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": false
+          },
+          "samplingParams": {
+            "temperature": 0.4
+          }
+        }
+      ]
+    },
+    "dspark-t07": {
+      "baseUrl": "http://host.orb.internal:8484/v1",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "Qwen3.8-27B-4bit",
+          "name": "Qwen3.8 27B 4bit DFlash temp=0.7",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "chat-template",
+            "chatTemplateKwargs": {
+              "enable_thinking": false
+            },
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": false
+          },
+          "samplingParams": {
+            "temperature": 0.7
+          }
+        }
+      ]
+    },
+    "dspark-t00": {
+      "baseUrl": "http://host.orb.internal:8484/v1",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "Qwen3.8-27B-4bit",
+          "name": "Qwen3.8 27B 4bit DFlash temp=0",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "chat-template",
+            "chatTemplateKwargs": {
+              "enable_thinking": false
+            },
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": false
+          },
+          "samplingParams": {
+            "temperature": 0
+          }
+        }
+      ]
+    },
+    "dspark-t20": {
+      "baseUrl": "http://host.orb.internal:8484/v1",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "Qwen3.8-27B-4bit",
+          "name": "Qwen3.8 27B 4bit DFlash temp=2",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "compat": {
+            "thinkingFormat": "chat-template",
+            "chatTemplateKwargs": {
+              "enable_thinking": false
+            },
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": false
+          },
+          "samplingParams": {
+            "temperature": 2
+          }
+        }
+      ]
     }
   }
 }

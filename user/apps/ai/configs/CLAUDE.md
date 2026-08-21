@@ -36,6 +36,7 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 ## Commits
 
 - No AI attribution or Co-Authored-By footers; never push unless asked
+- Don't commit unless asked. Edit in place first.
 
 ## gh-stack (stacked PRs)
 
