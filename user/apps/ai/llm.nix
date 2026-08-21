@@ -33,28 +33,8 @@ let
     doCheck = false;
   });
 
-  # nixpkgs-master lags upstream Pi (0.84.1 vs 0.84.2), so pin version + src
-  # here. npmDeps and modelData are hash-pinned separately in the nixpkgs
-  # derivation and go stale when only version + src are bumped, so both must be
-  # rebuilt explicitly. Drop this whole pin once nixpkgs-master reaches >= 0.84.2.
-  pi-src = pkgs-master.fetchFromGitHub {
-    owner = "earendil-works";
-    repo = "pi";
-    tag = "v0.84.2";
-    hash = "sha256-d29ft9otYxdHRWYIAX8KMHPpppToX9ME5LbPb1rPcYo=";
-  };
+  # Version + src come from nixpkgs-master; only the wrapper is overridden.
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (_: {
-    version = "0.84.2";
-    src = pi-src;
-    npmDeps = pkgs-master.fetchNpmDeps {
-      src = pi-src;
-      name = "pi-coding-agent-0.84.2-npm-deps";
-      hash = "sha256-6J5Efe+6ptCuR3VZojwYPZO8BBnnZsOQ4OAeB64uYOY=";
-    };
-    modelData = pkgs-master.fetchurl {
-      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.84.2.tgz";
-      hash = "sha256-AmJ4Wnaw6y7sWWzYp6su4j7vidLvG7EhHE8KGUTaz0E=";
-    };
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
     # node-gyp needs python on PATH. Scope these to pi's own wrapper instead
@@ -74,18 +54,18 @@ let
   # --bin jcode.
   jcode =
     let
-      version = "0.77.1";
+      version = "0.78.1";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-QBFPhUWBfwBIHPUqw9UGyQwFS+3xC2tbZD2znVhYDXM=";
+        hash = "sha256-RrdGuKxGKn5txGWE8+oQLRRpmbRBktkzM94UCItQM3c=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-/xud5rR4/ixf2pVAlNPLLEwxAh9hLGHGGYPLeGiKSWc=";
+      cargoHash = "sha256-bx8nIjXMFJxElmIIkgHQ3y0ouMOjluXcPFkhG1+i2Qs=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
@@ -108,12 +88,12 @@ let
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-dev-202608171943";
+      version = "0.0.0-dev-202608201855";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha256-NUO6H8tzM0JHcB5owPLeA4XSaPTukaSa2m7emMnMiFc="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha256-uJ7Wnqgrni1ehDb+B1krPxx3TjwROlPYWuNldFqm+lM="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha256-k+myzRdQB/R6BtQDRjraRXwszOnrh3vFH33W7NpnnDY="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha256-wRh+KW34D+CSFLG9ib12wakJBQEvOBMiNkIE+1ahdcU="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha256-g8y0kj6Sp94SNu1aVV3lLaloY9pstn3PXwHF4Yum2P0="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha256-Q5Fgh5Rcfb4/ZVffNM0JN8pq/EW5l0fWnvOXarMXMCo="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha256-fWFGzYFpxEZ18sSNaOQzqHItJ3HQB42hF4PuWZ48KL0="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha256-ECUDRJ8sv1kdf2XPFYMYhuMpA+Q5cIYzvhKFFK/K4ao="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
