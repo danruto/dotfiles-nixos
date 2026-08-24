@@ -354,38 +354,6 @@
           }
         }
       ]
-    },
-    "opencode-zen": {
-      "apiKey": "...",
-      "baseUrl": "https://opencode.ai/zen/v1",
-      "api": "openai-completions",
-      "models": [
-        {
-          "id": "x-preview-f-free",
-          "name": "Ox Alpha Free",
-          "reasoning": true,
-          "thinkingLevelMap": {
-            "minimal": null,
-            "low": "low",
-            "medium": null,
-            "high": "high",
-            "xhigh": null,
-            "max": "max"
-          },
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1000000,
-          "maxTokens": 131072,
-          "cost": {
-            "input": 0,
-            "output": 0,
-            "cacheRead": 0,
-            "cacheWrite": 0
-          }
-        }
-      ]
     }
   }
 }

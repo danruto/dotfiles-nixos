@@ -119,6 +119,14 @@ with lib;
   # security.pam.services.login.fprintAuth = true;
 
   programs.nix-ld.enable = true;
+  # GPUI/Zed-based binaries (e.g. waku) need these at runtime
+  programs.nix-ld.libraries = with pkgs; [
+    libxcb
+    libxkbcommon
+    wayland
+    vulkan-loader
+    libx11
+  ];
 
   # System packages
   environment.systemPackages = with pkgs; [

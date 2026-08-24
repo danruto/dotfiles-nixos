@@ -54,18 +54,18 @@ let
   # --bin jcode.
   jcode =
     let
-      version = "0.78.1";
+      version = "0.80.0";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-RrdGuKxGKn5txGWE8+oQLRRpmbRBktkzM94UCItQM3c=";
+        hash = "sha256-AVm2eZkVfQSuDCXDLcwyRzCLpi69/mHB9nW9WUnJMtA=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-bx8nIjXMFJxElmIIkgHQ3y0ouMOjluXcPFkhG1+i2Qs=";
+      cargoHash = "sha256-XARbKIa6Hd7VXFxNXNS3AKMh7o6oCXLakLpjgG3euOE=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
@@ -88,12 +88,12 @@ let
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-dev-202608201855";
+      version = "0.0.0-dev-202608240735";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha256-g8y0kj6Sp94SNu1aVV3lLaloY9pstn3PXwHF4Yum2P0="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha256-Q5Fgh5Rcfb4/ZVffNM0JN8pq/EW5l0fWnvOXarMXMCo="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha256-fWFGzYFpxEZ18sSNaOQzqHItJ3HQB42hF4PuWZ48KL0="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha256-ECUDRJ8sv1kdf2XPFYMYhuMpA+Q5cIYzvhKFFK/K4ao="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha256-TYXVvRFOP72YqcBo6xln4fRcbB7MMjg5GIwg7ooubDY="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha256-ifaK/IXSAzm2AW16ruMDZ9BMZgsO1gHybdyhM7Zkr4U="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha256-4dni4w4t+7RnrpGgEN7EIfoB4NYLQ0ApaQK3aNlExSA="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha256-90AyqUdxB4kq1mSQpJ/NRaHecfRSnUHq0GfsJoEOuVg="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
