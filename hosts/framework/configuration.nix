@@ -128,9 +128,13 @@ with lib;
     libx11
   ];
 
+  # Prebuilt bundles ship an FHS-built libxkbcommon that looks in /usr/share/X11/xkb
+  environment.sessionVariables.XKB_CONFIG_ROOT = "/run/current-system/sw/share/X11/xkb";
+
   # System packages
   environment.systemPackages = with pkgs; [
     vim
+    xkeyboard-config
     wget
     fish
     git
