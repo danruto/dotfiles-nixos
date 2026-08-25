@@ -156,6 +156,12 @@ let
         platforms = builtins.attrNames sources;
       };
     };
+
+  aiConfigs = "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs";
+
+  # Both Claude Code subscriptions share one config set: ~/.claude (default) and
+  # ~/.claude-healix (selected with CLAUDE_CONFIG_DIR).
+  claudeDirs = [ ".claude" ".claude-healix" ];
 in
 {
   home.packages = (with pkgs-unstable; [
@@ -179,12 +185,13 @@ in
     lazypi
   ];
 
-  # CLAUDE.md and Claude Code's settings.json are out-of-store symlinks to the
-  # live working tree (like herdr's config.toml) so edits — including Claude
-  # Code's own writes to settings.json — land directly in this repo without a
-  # redeploy. Assumes the repo is checked out at ~/dotfiles-nixos. fff-mcp is on
-  # PATH (see home.packages) so the static Claude/OMP MCP configs can reference
-  # it by bare name instead of a store path.
+  # CLAUDE.md, the statusline scripts and settings.json are out-of-store symlinks
+  # to the live working tree (like herdr's config.toml) so edits — including
+  # Claude Code's own writes to settings.json — land directly in this repo
+  # without a redeploy. Both subscription dirs in `claudeDirs` get the same set,
+  # so there is nothing to hand-copy between them. Assumes the repo is checked
+  # out at ~/dotfiles-nixos. fff-mcp is on PATH (see home.packages) so the static
+  # Claude/OMP MCP configs can reference it by bare name instead of a store path.
   #
   # NOTE: Claude Code does NOT read `mcpServers` from settings.json — the key is
   # not in the settings schema and is silently ignored. MCP servers only load
@@ -193,17 +200,16 @@ in
   #     claude mcp add --scope user fff fff-mcp
   # Verify with `claude mcp list` (expect "fff: fff-mcp - ✔ Connected").
   # Pi's MCP config is unaffected and still reads its own settings file.
-  home.file.".claude/CLAUDE.md".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/CLAUDE.md";
-
-  home.file.".claude/statusline.sh".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/statusline.sh";
-
-  home.file.".claude/subagent-statusline.sh".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/subagent-statusline.sh";
+  home.file = lib.foldl' lib.mergeAttrs { } (map
+    (dir: {
+      "${dir}/CLAUDE.md".source =
+        config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/CLAUDE.md";
+      "${dir}/statusline.sh".source =
+        config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/statusline.sh";
+      "${dir}/subagent-statusline.sh".source =
+        config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/subagent-statusline.sh";
+    })
+    claudeDirs);
 
   # settings.json can't go through home.file/mkOutOfStoreSymlink: that routes the
   # link through the read-only home-manager-files store dir, and Claude Code
@@ -212,10 +218,24 @@ in
   # (breaks plugin installs, /config, etc.). Create a *direct* out-of-store
   # symlink to the live repo file instead, so the sibling .tmp lands in the
   # writable repo dir and Claude's own edits still sync straight back into git.
+  #
+  # rename() replaces the symlink itself, so an in-place rewrite can still leave a
+  # detached regular file behind (this happened to ~/.claude/settings.json). The
+  # loop below heals that: a non-symlink target newer than the repo file is copied
+  # back into the repo first — never discarded — then re-linked.
   home.activation.claudeSettingsLink = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    run mkdir -p "${config.home.homeDirectory}/.claude"
-    run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/settings.json" \
-      "${config.home.homeDirectory}/.claude/settings.json"
+    settings="${aiConfigs}/settings.json"
+    for dir in ${lib.concatMapStringsSep " " (d: ''"${config.home.homeDirectory}/${d}"'') claudeDirs}; do
+      target="$dir/settings.json"
+      run mkdir -p "$dir"
+      if [ -f "$target" ] && [ ! -L "$target" ]; then
+        if [ "$target" -nt "$settings" ]; then
+          run cp -f "$target" "$settings"
+        fi
+        run rm -f "$target"
+      fi
+      run ln -sfn "$settings" "$target"
+    done
   '';
 
   # opencode rewrites its global config in place (it injects "$schema" when
