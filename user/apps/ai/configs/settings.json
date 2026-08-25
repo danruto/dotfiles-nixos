@@ -4,6 +4,22 @@
   "attributionEnabled": false,
   "attributionName": "",
   "autoMemoryEnabled": false,
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(oxlint:*)",
+      "Bash(oxfmt:*)",
+      "Bash(pbtk graph:*)",
+      "Bash(pbtk doc:*)",
+      "Bash(gh pr view:*)"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Bash(just deploy-local:*)",
+      "Bash(pulumi up:*)",
+      "Bash(pulumi destroy:*)"
+    ]
+  },
   "disableArtifact": true,
   "disableBundledSkills": true,
   "disableWorkflows": true,
@@ -13,9 +29,25 @@
     "claude-code-setup@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
     "pb@pb-skills": true,
+    "ponytail@ponytail": true,
     "revdiff@revdiff": true,
+    "runpod@runpod": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "ponytail": {
+      "source": {
+        "repo": "DietrichGebert/ponytail",
+        "source": "github"
+      }
+    },
+    "runpod": {
+      "source": {
+        "repo": "runpod/runpod-plugins-official",
+        "source": "github"
+      }
+    }
   },
   "hooks": {
     "PreToolUse": [
@@ -30,7 +62,7 @@
       }
     ]
   },
-  "model": "claude-fable-5[1m]",
+  "model": "opus[1m]",
   "permissions": {
     "allow": [
       "Read",
@@ -78,7 +110,10 @@
       "Read(.env.production)",
       "Read(.env.staging)",
       "Read(.env.test)",
-      "ExitPlanMode"
+      "ExitPlanMode",
+      "EnterPlanMode",
+      "DesignSync",
+      "PushNotification"
     ]
   },
   "remoteControlAtStartup": false,
