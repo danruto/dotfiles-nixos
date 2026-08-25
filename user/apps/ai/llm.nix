@@ -33,8 +33,32 @@ let
     doCheck = false;
   });
 
-  # Version + src come from nixpkgs-master; only the wrapper is overridden.
-  pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (_: {
+  # nixpkgs-master lags upstream pi releases, so version/src/hashes are pinned
+  # here too. Drop the version, src, npmDepsHash and modelData overrides (keep
+  # postFixup) once nixpkgs-master ships this version or newer.
+  pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (final: _: {
+    version = "0.84.3";
+    src = pkgs-master.fetchFromGitHub {
+      owner = "earendil-works";
+      repo = "pi";
+      tag = "v${final.version}";
+      hash = "sha256-fC9pKgP2qD61ae5d7iOqP8anl88J1N1Bq8X8+aAjA2A=";
+    };
+    # npmDeps must be overridden directly, not via npmDepsHash: buildNpmPackage
+    # bakes the resolved npmDeps into the derivation attrs, so on overrideAttrs
+    # the hash argument is ignored and the old lockfile cache would be reused.
+    npmDeps = pkgs-master.fetchNpmDeps {
+      inherit (final) src;
+      name = "pi-coding-agent-${final.version}-npm-deps";
+      hash = "sha256-cDx28+c4bwtQpiy5+BCvZhZezoZb4WRqfZj2eoEeMbw=";
+      fetcherVersion = 1;
+    };
+    # Hydrated model catalog; gitignored upstream, see nixpkgs' package.nix.
+    modelData = pkgs-master.fetchurl {
+      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${final.version}.tgz";
+      hash = "sha256-nECvL0OVD46U57vNDBs1SPAAly2gDE+5wNBSnU19VDE=";
+    };
+
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
     # node-gyp needs python on PATH. Scope these to pi's own wrapper instead
