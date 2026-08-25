@@ -7,7 +7,7 @@
   "disableArtifact": true,
   "disableBundledSkills": true,
   "disableWorkflows": true,
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "enabledPlugins": {
     "bb@bubblebeam": true,
     "claude-code-setup@claude-plugins-official": true,
@@ -78,10 +78,7 @@
       "Read(.env.production)",
       "Read(.env.staging)",
       "Read(.env.test)",
-      "EnterPlanMode",
-      "ExitPlanMode",
-      "DesignSync",
-      "PushNotification"
+      "ExitPlanMode"
     ]
   },
   "remoteControlAtStartup": false,
@@ -97,5 +94,9 @@
   },
   "theme": "auto",
   "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
   "voiceEnabled": true
 }
