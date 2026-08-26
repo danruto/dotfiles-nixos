@@ -27,11 +27,7 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 - Recommend the fix that keeps clean architecture; mention a quick fix as a non-recommended option only when a meaningful one exists
 - Ask before assuming — when requirements are vague or scope is unclear, ask rather than expand beyond what was requested
 - When multiple valid approaches exist, present the options with your recommendation — I decide
-- Every fix you recommend must be durable, maintainable, and future-proof — the fix that stays
-  correct when the surrounding code changes. Never a fix shaped to pass the task in front of
-  you: no narrowing an assertion, weakening a spec, special-casing the current input, or
-  patching the symptom the ticket names. If the durable fix is out of scope, say so and name
-  it rather than shipping the expedient one silently.
+- Prefer fixes that stay correct as the surrounding code changes. Never narrow an assertion, weaken a spec, special-case the current input, or patch only the named symptom. If such a fix is out of scope, say so rather than shipping an expedient one silently.
 
 ## Commits
 
@@ -43,7 +39,7 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 `/pb:work --stack` freezes phases onto local stacked branches. The finish cycle is:
 `gh stack submit --auto` (create the PRs) → merge on GitHub → `gh stack sync` (fast-forwards
 trunk, retires merged branches) → `gh stack trunk` (checkout main) → rebuild the repo's
-pbtk graph index if one exists (`pbtk graph build`).
+pbtk graph index if one exists.
 `submit` creates the PRs as drafts with empty bodies — after it, finish each PR: write a
 useful description of its contents (`gh pr edit --body-file`), fix any stub title, and mark
 it ready for review (`gh pr ready`).
@@ -52,19 +48,19 @@ don't run it as a "finish" command before `submit`.
 
 ## Agent Model Selection
 
-- **Haiku** (`model: "haiku"`) — code exploration subagents: file searches, grep/glob tasks, code reading
-- **Sonnet** (`model: "sonnet"`) — insights, explanations, web research, and mid-tier reasoning
-- **Omit `model`** (inherits the session model) — architectural decisions, writing code, and any other major decisions requiring maximum reasoning
+- **Cheap model** — code exploration subagents: file searches, grep tasks, code reading
+- **Mid model** — insights, explanations, web research, and mid-tier reasoning
+- **Frontier model** (or omit the override so it inherits the session model) — architectural decisions, writing code, and any other major decisions requiring maximum reasoning
 
 ## Graph MCP
 
-`pbtk-graph` is a per-repo MCP that indexes code symbols (`mcp__pbtk-graph__graph_*`)
-and markdown docs (`mcp__pbtk-graph__doc_*`). When it is available in the
+`pbtk-graph` is a per-repo MCP exposing two tool families: `graph_*` indexes
+code symbols and `doc_*` indexes markdown docs. When it is available in the
 current repo:
 
-**Before any Grep/Glob/Read-scan for code, stop and check: is this a symbol,
-caller/callee, definition, or concept lookup? If yes, you MUST use a
-`pbtk-graph` tool first. Grep is the fallback, not the default — use it only
+**Before any grep/find/file-read scan for code, stop and check: is this a symbol,
+caller/callee, definition, or concept lookup? If yes, use a
+`graph_*` tool first. Raw search is the fallback, not the default — use it only
 for unindexed content (string literals, comments, log messages, SQL, struct
 tags, config keys) or when the graph query returns nothing.**
 
@@ -74,7 +70,7 @@ Routing:
 - Callers / callees → `graph_callers` / `graph_callees`.
 - File symbols → `graph_outline`; imports → `graph_imports`.
 - Diff blast radius → `graph_diff_affected`.
-- Docs → `doc_search` / `doc_outline` before any Grep over `*.md`.
+- Docs → `doc_search` / `doc_outline` before any grep over `*.md`.
 - Intent/concept when you don't know names → `graph_semantic_search`.
 - "Find code like this" from a `file:line` → `graph_find_related`.
 - One symbol + 1-hop neighbors in a single call → `graph_context`.
@@ -82,9 +78,6 @@ Routing:
 
 The two indexes are built separately — `graph_*` tools need the graph index,
 `doc_*` tools need the doc index. When either goes stale after a refactor or
-large file batch, rebuild (one-shot `build`, or `watch` to auto-refresh on
-changes):
-
-- `pbtk graph build` / `pbtk graph watch` — graph index.
-- `pbtk doc build` / `pbtk doc watch` — doc index.
+large file batch, rebuild it: one-shot `pbtk graph build` / `pbtk doc build`,
+or `watch` to auto-refresh on changes.
 

@@ -224,7 +224,7 @@ in
   #     claude mcp add --scope user fff fff-mcp
   # Verify with `claude mcp list` (expect "fff: fff-mcp - ✔ Connected").
   # Pi's MCP config is unaffected and still reads its own settings file.
-  home.file = lib.foldl' lib.mergeAttrs { } (map
+  home.file = (lib.foldl' lib.mergeAttrs { } (map
     (dir: {
       "${dir}/CLAUDE.md".source =
         config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/CLAUDE.md";
@@ -233,7 +233,18 @@ in
       "${dir}/subagent-statusline.sh".source =
         config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/subagent-statusline.sh";
     })
-    claudeDirs);
+    claudeDirs)) // {
+    # Non-Claude harnesses read their own global-instructions filename; point
+    # both at the same canonical file so every agent gets identical rules.
+    # opencode's global precedence makes ~/.config/opencode/AGENTS.md win over
+    # the ~/.claude/CLAUDE.md fallback (first match wins), so this replaces —
+    # not duplicates — that fallback.
+    ".config/opencode/AGENTS.md".source =
+      config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/CLAUDE.md";
+  } // lib.optionalAttrs piEnabled {
+    ".pi/agent/AGENTS.md".source =
+      config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/CLAUDE.md";
+  };
 
   # settings.json can't go through home.file/mkOutOfStoreSymlink: that routes the
   # link through the read-only home-manager-files store dir, and Claude Code
