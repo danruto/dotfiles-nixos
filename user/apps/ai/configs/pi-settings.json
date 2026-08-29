@@ -25,7 +25,6 @@
     "../../dev/nearmap/bubblebeam",
     "../../dev/pixelbrush/pb-skills",
     "git:github.com/DietrichGebert/ponytail",
-    "git:github.com/VandeeFeng/pi-memory-md",
     "git:github.com/davebcn87/pi-autoresearch",
     "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359",
     "npm:@ff-labs/pi-fff",
@@ -49,7 +48,8 @@
     "npm:pi-web-access",
     "npm:pi-zentui",
     "git:github.com/algal/pi-openai-server-compaction",
-    "npm:@narumitw/pi-usage"
+    "npm:@narumitw/pi-usage",
+    "npm:pi-hermes-memory"
   ],
   "lastChangelogVersion": "0.84.3",
   "defaultProvider": "openai-codex",
