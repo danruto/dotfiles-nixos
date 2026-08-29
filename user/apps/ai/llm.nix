@@ -10,39 +10,60 @@ let
   lazypi = pkgs.callPackage ./lazypi.nix { };
   dsh = pkgs-unstable.callPackage ./dsh.nix { };
 
-  # tokscale is pinned here because pkgs-unstable lags well behind (4.0.4) and
-  # newer releases have repeatedly broken builds. Do not bump it as part of
-  # general version updates; only change it when asked, and build it first.
-  # doCheck = false: the inherited check phase compiles the full test suite on
-  # top of an already-slow Rust build and upstream's cli_tests assume a non-UTC
-  # local timezone, which never holds in the Nix sandbox (TZ=UTC). nixpkgs' CI
-  # runs the tests; the base doInstallCheck still smoke-checks the binary.
-  tokscale = pkgs-unstable.tokscale.overrideAttrs (o: rec {
-    version = "4.13.0";
-    src = pkgs-unstable.fetchFromGitHub {
-      owner = "junhoyeo";
-      repo = "tokscale";
-      tag = "v${version}";
-      hash = "sha256-0BQnoIDETgh6S806mHvxqDBpcJJQZbhl46yj6ctUTsk=";
+  claude-code = pkgs-master.claude-code.override {
+    manifest = {
+      version = "2.1.251";
+      platforms = {
+        "darwin-arm64".checksum = "625869b01e0050f260b2980fac248fd9cef9e462612bded4ec9d3d49ff8969a5";
+        "darwin-x64".checksum = "44221d72a3f35772faa85ad9a36a678084a516f720e64b45e26eb9015315500b";
+        "linux-arm64".checksum = "65445bd4dd042079cc3fa43791b561370a05c8599e8ec47580e25a81050abbdd";
+        "linux-x64".checksum = "fd5f10ff0eb58daec04900466b143ea98aab50abf208a422bc008eaec13f61f7";
+      };
     };
-    cargoDeps = pkgs-unstable.rustPlatform.fetchCargoVendor {
-      inherit src;
-      name = "tokscale-${version}-vendor";
-      hash = "sha256-kuq1qT4OywO3miSoyMsTUo+o/3jcLjpzQ70lGHpvt+w=";
+  };
+
+  # Upstream ships no x86_64-darwin binary.
+  tokentop =
+    let
+      version = "0.7.0";
+      sources = {
+        "x86_64-linux" = { suffix = "linux-x64"; hash = "sha256-v+umcyPDzoxv6KGxqAm7NhsU9IGAR27SssZWsSikPRU="; };
+        "aarch64-linux" = { suffix = "linux-arm64"; hash = "sha256-OUTcprU6DoiU9PWOx0BzQzpaa2Y8w4jYIYZNNlqm1X8="; };
+        "aarch64-darwin" = { suffix = "darwin-arm64"; hash = "sha256-nOWbQPYfrFiGT6cMbdyLDhH10dYEjztxU0ZPNVvhGGQ="; };
+      };
+      target = sources.${pkgs.stdenv.hostPlatform.system};
+    in
+    pkgs.stdenvNoCC.mkDerivation {
+      pname = "tokentop";
+      inherit version;
+      src = pkgs.fetchurl {
+        url = "https://github.com/tokentopapp/tokentop/releases/download/v${version}/ttop-${target.suffix}";
+        inherit (target) hash;
+      };
+      nativeBuildInputs = pkgs.lib.optional pkgs.stdenv.hostPlatform.isLinux pkgs.autoPatchelfHook;
+      dontUnpack = true;
+      installPhase = "install -Dm755 $src $out/bin/ttop";
+      # bun --compile binary: JS payload appended to the ELF, stripping corrupts it.
+      dontStrip = true;
+      meta = {
+        description = "Terminal dashboard for AI coding agent usage and costs";
+        homepage = "https://github.com/tokentopapp/tokentop";
+        license = pkgs.lib.licenses.mit;
+        platforms = builtins.attrNames sources;
+        mainProgram = "ttop";
+      };
     };
-    doCheck = false;
-  });
 
   # nixpkgs-master lags upstream pi releases, so version/src/hashes are pinned
   # here too. Drop the version, src, npmDepsHash and modelData overrides (keep
   # postFixup) once nixpkgs-master ships this version or newer.
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (final: _: {
-    version = "0.84.3";
+    version = "0.84.4";
     src = pkgs-master.fetchFromGitHub {
       owner = "earendil-works";
       repo = "pi";
       tag = "v${final.version}";
-      hash = "sha256-fC9pKgP2qD61ae5d7iOqP8anl88J1N1Bq8X8+aAjA2A=";
+      hash = "sha256-7z8OXao1PzmBEepDkIqVqyfQBPHulBlKcGymDYsnMvc=";
     };
     # npmDeps must be overridden directly, not via npmDepsHash: buildNpmPackage
     # bakes the resolved npmDeps into the derivation attrs, so on overrideAttrs
@@ -50,13 +71,13 @@ let
     npmDeps = pkgs-master.fetchNpmDeps {
       inherit (final) src;
       name = "pi-coding-agent-${final.version}-npm-deps";
-      hash = "sha256-cDx28+c4bwtQpiy5+BCvZhZezoZb4WRqfZj2eoEeMbw=";
+      hash = "sha256-35GC3Q4Jf4URvqoEYHeM63x49tTmrth62//PvKm4I7Q=";
       fetcherVersion = 1;
     };
     # Hydrated model catalog; gitignored upstream, see nixpkgs' package.nix.
     modelData = pkgs-master.fetchurl {
       url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${final.version}.tgz";
-      hash = "sha256-nECvL0OVD46U57vNDBs1SPAAly2gDE+5wNBSnU19VDE=";
+      hash = "sha256-39PJKc7lpzhxmaCiTfwb4glvHqj1n/uChRmKDtAev5M=";
     };
 
     # pi spawns `npm install` at runtime for package extensions and compiles
@@ -78,18 +99,18 @@ let
   # --bin jcode.
   jcode =
     let
-      version = "0.80.0";
+      version = "0.81.2";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-AVm2eZkVfQSuDCXDLcwyRzCLpi69/mHB9nW9WUnJMtA=";
+        hash = "sha256-YwrD25O6nmxasy4NNJ+lSaM83wokyKJKcFRJKv9VLzQ=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-XARbKIa6Hd7VXFxNXNS3AKMh7o6oCXLakLpjgG3euOE=";
+      cargoHash = "sha256-0IZjzQZAi12ZQw3hFy3N24P119AyOfLl5Gw403KwRbA=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
@@ -112,12 +133,12 @@ let
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-dev-202608240735";
+      version = "0.0.0-dev-202608290223";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha256-TYXVvRFOP72YqcBo6xln4fRcbB7MMjg5GIwg7ooubDY="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha256-ifaK/IXSAzm2AW16ruMDZ9BMZgsO1gHybdyhM7Zkr4U="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha256-4dni4w4t+7RnrpGgEN7EIfoB4NYLQ0ApaQK3aNlExSA="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha256-90AyqUdxB4kq1mSQpJ/NRaHecfRSnUHq0GfsJoEOuVg="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-PlzxyXOSPEFGC0l+KemYOcgdscSWbM/Jp1imrbKBRVQdtqpX5TPD+Yq4hHFJfd+q92a5FSY8jE/m/dh+u0R09w=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-xkdu2W8DEbz1f0vcKwxAPdA+tMFObRMfyRocXvhUPCxdeacyvOlrRdQeN1QHfHE2s2AeNvR1B0QJV8Nz8wH3yA=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-5PgLvijAOxkx8wlDFjQ6ky9dgXLCB5Hnidbk2lV5ZIkbaGIlUW+9TKAUh1yE4VIO0Tl3E0BLneACxlmogdgAdg=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-3mTj2JyMYIhFabpmvQtQ9lKuFI8cdb8NLLmaYpyK2/Tog5ACN2EOyIdrYS+yMRwhtAeBrXmTrL9oVMhQHqe6UQ=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
@@ -199,8 +220,9 @@ in
     # nur.repos.charmbracelet.crush
   ]) ++ [
     dsh
-    tokscale
-    pkgs-master.claude-code
+    # pkgs-unstable.tokscale
+    tokentop
+    claude-code
     opencode-beta
     pkgs-master.codex
     fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name

@@ -16,6 +16,6 @@ writeShellScriptBin "dsh" ''
   # `npx ... dsh` executes bin.js through its `#!/usr/bin/env node` shebang,
   # which can't carry extra node flags, so resolve the installed entry point
   # first and invoke node on it directly with the flag.
-  bin="$(npx --yes --package=@deepseek-ai/dsh@0.1.0-rc.6 -c 'realpath "$(command -v dsh)"')"
+  bin="$(npx --yes --package=@deepseek-ai/dsh@0.1.1-rc.2 -c 'realpath "$(command -v dsh)"')"
   exec node --expose-internals "$bin" "$@"
 ''
