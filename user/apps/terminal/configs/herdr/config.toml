@@ -10,8 +10,9 @@
 onboarding = false
 
 [theme]
-name = "catppuccin"
+name = "rose-pine"
 
+auto_switch = false
 [keys]
 # zellij has no prefix; herdr requires one. ctrl+space wasn't delivered by
 # ghostty, so use ctrl+a (off tmux's ctrl+b and clear of the direct Alt keys).

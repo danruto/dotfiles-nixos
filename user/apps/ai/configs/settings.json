@@ -1,68 +1,5 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-settings.json",
-  "alwaysThinkingEnabled": true,
-  "attributionEnabled": false,
-  "attributionName": "",
-  "autoMemoryEnabled": false,
-  "autoMode": {
-    "allow": [
-      "$defaults",
-      "Bash(oxlint:*)",
-      "Bash(oxfmt:*)",
-      "Bash(pbtk graph:*)",
-      "Bash(pbtk doc:*)",
-      "Bash(gh pr view:*)"
-    ],
-    "soft_deny": [
-      "$defaults",
-      "Bash(just deploy-local:*)",
-      "Bash(pulumi up:*)",
-      "Bash(pulumi destroy:*)"
-    ]
-  },
-  "disableArtifact": true,
-  "disableBundledSkills": true,
-  "disableWorkflows": true,
-  "effortLevel": "medium",
-  "enabledPlugins": {
-    "bb@bubblebeam": true,
-    "claude-code-setup@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true,
-    "pb@pb-skills": true,
-    "ponytail@ponytail": true,
-    "revdiff@revdiff": true,
-    "runpod@runpod": true,
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "ponytail": {
-      "source": {
-        "repo": "DietrichGebert/ponytail",
-        "source": "github"
-      }
-    },
-    "runpod": {
-      "source": {
-        "repo": "runpod/runpod-plugins-official",
-        "source": "github"
-      }
-    }
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "jq -cr '# pbtk-prehook-v3\n{hookSpecificOutput:{hookEventName:\"PreToolUse\",updatedInput:(.tool_input + {command:\n  (\"pbtk exec --shell -- \" + (.tool_input.command | @sh))})}}'",
-            "type": "command"
-          }
-        ],
-        "matcher": "Bash"
-      }
-    ]
-  },
-  "model": "opus[1m]",
   "permissions": {
     "allow": [
       "Read",
@@ -95,7 +32,6 @@
       "mcp__fff__find_files",
       "mcp__fff__multi_grep"
     ],
-    "defaultMode": "auto",
     "deny": [
       "Bash(rm -rf:*)",
       "Bash(git push:*)",
@@ -114,24 +50,86 @@
       "EnterPlanMode",
       "DesignSync",
       "PushNotification"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "claude-fable-5[1m]",
+  "disableBundledSkills": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -cr '# pbtk-prehook-v3\n{hookSpecificOutput:{hookEventName:\"PreToolUse\",updatedInput:(.tool_input + {command:\n  (\"pbtk exec --shell -- \" + (.tool_input.command | @sh))})}}'"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/home/danruto/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
-  "remoteControlAtStartup": false,
-  "skipWorkflowUsageWarning": true,
+  "disableWorkflows": true,
+  "disableArtifact": true,
   "statusLine": {
+    "type": "command",
     "command": "~/.claude/statusline.sh",
-    "refreshInterval": 30,
-    "type": "command"
+    "refreshInterval": 30
   },
   "subagentStatusLine": {
-    "command": "~/.claude/subagent-statusline.sh",
-    "type": "command"
+    "type": "command",
+    "command": "~/.claude/subagent-statusline.sh"
   },
-  "theme": "auto",
+  "enabledPlugins": {
+    "bb@bubblebeam": true,
+    "claude-code-setup@claude-plugins-official": false,
+    "gopls-lsp@claude-plugins-official": true,
+    "pb@pb-skills": true,
+    "plannotator@plannotator": false,
+    "ponytail@ponytail": true,
+    "revdiff@revdiff": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "bubblebeam": {
+      "source": {
+        "source": "directory",
+        "path": "/home/danruto/dev/nearmap/bubblebeam"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
+  },
+  "feedbackDrafts": "off",
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
   "tui": "fullscreen",
   "voice": {
     "enabled": true,
     "mode": "hold"
   },
-  "voiceEnabled": true
+  "autoMemoryEnabled": false,
+  "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark-ansi",
+  "remoteControlAtStartup": false,
+  "voiceEnabled": true,
+  "attributionEnabled": false,
+  "attributionName": ""
 }
