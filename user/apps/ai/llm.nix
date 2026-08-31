@@ -22,35 +22,36 @@ let
     };
   };
 
-  # Upstream ships no x86_64-darwin binary.
-  tokentop =
+  # nixpkgs builds tokscale from Rust source, which takes far too long. Upstream
+  # publishes the same release as prebuilt per-platform binaries on npm, so pull
+  # those instead. Bumping means a new version + four integrity hashes from
+  # `npm view @tokscale/cli-<plat> dist.integrity`.
+  tokscale =
     let
-      version = "0.7.0";
+      version = "4.15.0";
       sources = {
-        "x86_64-linux" = { suffix = "linux-x64"; hash = "sha256-v+umcyPDzoxv6KGxqAm7NhsU9IGAR27SssZWsSikPRU="; };
-        "aarch64-linux" = { suffix = "linux-arm64"; hash = "sha256-OUTcprU6DoiU9PWOx0BzQzpaa2Y8w4jYIYZNNlqm1X8="; };
-        "aarch64-darwin" = { suffix = "darwin-arm64"; hash = "sha256-nOWbQPYfrFiGT6cMbdyLDhH10dYEjztxU0ZPNVvhGGQ="; };
+        "x86_64-linux" = { plat = "linux-x64-gnu"; hash = "sha512-sqoiUSbfPdbEOQASuj2Ovi1/637YIFxxffrvpVmzR4yvON/HUoAbYPnp8hOGH0EtTSPE3wJJ4aE62UR5hA8c9A=="; };
+        "aarch64-linux" = { plat = "linux-arm64-gnu"; hash = "sha512-V3XTh2eQoJ/bB3XBYHGhmJxTSHyyGwPi9d4Lqszr8M/mKXlHUu2hOqwWmhl6UhbmZciWyIUJTl7C75eKd09YRg=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-EP7m6dT3ZPxmFlXdged56uTrJ19Y4By663nj4WO9X/rEj6CAM+s+YCPh82RW4X4X1UmfiKST2H/G9ULbCobEJA=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-9YlcvprlplFIU6ZmNH+/O6MkcFiGjRHm1b8ztNkNwfy/GlE2OwuagVhj3lpWAO5FNMkDRePJqPZA+MeQ6ucPQw=="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
     pkgs.stdenvNoCC.mkDerivation {
-      pname = "tokentop";
+      pname = "tokscale";
       inherit version;
       src = pkgs.fetchurl {
-        url = "https://github.com/tokentopapp/tokentop/releases/download/v${version}/ttop-${target.suffix}";
+        url = "https://registry.npmjs.org/@tokscale/cli-${target.plat}/-/cli-${target.plat}-${version}.tgz";
         inherit (target) hash;
       };
       nativeBuildInputs = pkgs.lib.optional pkgs.stdenv.hostPlatform.isLinux pkgs.autoPatchelfHook;
-      dontUnpack = true;
-      installPhase = "install -Dm755 $src $out/bin/ttop";
-      # bun --compile binary: JS payload appended to the ELF, stripping corrupts it.
-      dontStrip = true;
+      installPhase = "install -Dm755 bin/tokscale $out/bin/tokscale";
       meta = {
-        description = "Terminal dashboard for AI coding agent usage and costs";
-        homepage = "https://github.com/tokentopapp/tokentop";
+        description = "Track token usage across AI coding agents from your terminal";
+        homepage = "https://github.com/junhoyeo/tokscale";
         license = pkgs.lib.licenses.mit;
         platforms = builtins.attrNames sources;
-        mainProgram = "ttop";
+        mainProgram = "tokscale";
       };
     };
 
@@ -220,8 +221,7 @@ in
     # nur.repos.charmbracelet.crush
   ]) ++ [
     dsh
-    # pkgs-unstable.tokscale
-    tokentop
+    tokscale
     claude-code
     opencode-beta
     pkgs-master.codex
