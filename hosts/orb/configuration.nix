@@ -53,6 +53,8 @@
     dhcpcd.enable = false;
     useDHCP = false;
     useHostResolvConf = false;
+    # orbstack.nix links /etc/resolv.conf to OrbStack's own file
+    resolvconf.enable = false;
   };
 
   systemd.network = {

@@ -1,7 +1,28 @@
-{ pkgs-unstable, username, ... }:
+{ lib, pkgs, pkgs-unstable, username, ... }:
 
 {
   home.packages = [ pkgs-unstable.cloudflared ];
+
+  # Serving this host over ssh needs a persistent outbound connection to the
+  # Cloudflare edge — nothing dials in, so a daemon must hold it open. With no
+  # arguments `tunnel run` reads ~/.cloudflared/config.yml, so the tunnel id,
+  # credentials, and ingress stay per-host outside nix. One-time setup per host:
+  #   cloudflared tunnel login
+  #   cloudflared tunnel create <host>
+  #   cloudflared tunnel route dns <host> ssh-<host>.pixelbru.sh
+  # then point config.yml's ingress at ssh://localhost:22. Hosts that skip this
+  # have no config.yml and the service stays dormant.
+  systemd.user.services.cloudflared-tunnel = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+    Unit = {
+      Description = "cloudflared tunnel";
+      ConditionPathExists = "%h/.cloudflared/config.yml";
+    };
+    Service = {
+      ExecStart = "${pkgs-unstable.cloudflared}/bin/cloudflared tunnel run";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
 
   # Every exe.dev host — the management surface and every VM behind it — answers
   # with one shared certificate, signed by the account CA and issued to the
@@ -21,6 +42,7 @@
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
+    # cloudflared tunnel route dns <name> <ssh-name>.pixelbru.sh
     settings = {
       "*.pixelbru.sh" = {
         ProxyCommand = "${pkgs-unstable.cloudflared}/bin/cloudflared access ssh --hostname %h";
