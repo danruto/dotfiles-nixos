@@ -9,6 +9,7 @@ let
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
   lazypi = pkgs.callPackage ./lazypi.nix { };
   dsh = pkgs-unstable.callPackage ./dsh.nix { };
+  command-code = pkgs-unstable.callPackage ./command-code.nix { };
 
   claude-code = pkgs-master.claude-code.override {
     manifest = {
@@ -222,6 +223,7 @@ in
   ]) ++ [
     dsh
     tokscale
+    command-code
     claude-code
     opencode-beta
     pkgs-master.codex
