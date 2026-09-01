@@ -13,12 +13,12 @@ let
 
   claude-code = pkgs-master.claude-code.override {
     manifest = {
-      version = "2.1.251";
+      version = "2.1.257";
       platforms = {
-        "darwin-arm64".checksum = "625869b01e0050f260b2980fac248fd9cef9e462612bded4ec9d3d49ff8969a5";
-        "darwin-x64".checksum = "44221d72a3f35772faa85ad9a36a678084a516f720e64b45e26eb9015315500b";
-        "linux-arm64".checksum = "65445bd4dd042079cc3fa43791b561370a05c8599e8ec47580e25a81050abbdd";
-        "linux-x64".checksum = "fd5f10ff0eb58daec04900466b143ea98aab50abf208a422bc008eaec13f61f7";
+        "darwin-arm64".checksum = "64590d7d9d9c189d33fb3dfa58c5408eaf2a10fe556bd84155d95efaab46b60e";
+        "darwin-x64".checksum = "8f90c000b1e265dcd92b12c6d9d13bb5d354c495e6ba15c56eb171002923d80b";
+        "linux-arm64".checksum = "22f7d48f17193952c3c2d0b8bf2f31db2cd08fd5fb09a374fa321496b711d017";
+        "linux-x64".checksum = "9a64bda9d8722a1fa05bef9a5961d07e0331b99597eda9e2f6a732f3a0ff7f05";
       };
     };
   };
@@ -101,18 +101,18 @@ let
   # --bin jcode.
   jcode =
     let
-      version = "0.81.2";
+      version = "0.81.4";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-YwrD25O6nmxasy4NNJ+lSaM83wokyKJKcFRJKv9VLzQ=";
+        hash = "sha256-wdTod5iEcpLqQ1mTdYBtyovxEo4NUa/Hv9mIPXvGeWk=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-0IZjzQZAi12ZQw3hFy3N24P119AyOfLl5Gw403KwRbA=";
+      cargoHash = "sha256-BQZG31o0WInz5QC1R8yJNmQRYb6x4ylMHI1i3l+FA8k=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
@@ -135,12 +135,12 @@ let
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-dev-202608290223";
+      version = "0.0.0-dev-202609010712";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-PlzxyXOSPEFGC0l+KemYOcgdscSWbM/Jp1imrbKBRVQdtqpX5TPD+Yq4hHFJfd+q92a5FSY8jE/m/dh+u0R09w=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-xkdu2W8DEbz1f0vcKwxAPdA+tMFObRMfyRocXvhUPCxdeacyvOlrRdQeN1QHfHE2s2AeNvR1B0QJV8Nz8wH3yA=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-5PgLvijAOxkx8wlDFjQ6ky9dgXLCB5Hnidbk2lV5ZIkbaGIlUW+9TKAUh1yE4VIO0Tl3E0BLneACxlmogdgAdg=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-3mTj2JyMYIhFabpmvQtQ9lKuFI8cdb8NLLmaYpyK2/Tog5ACN2EOyIdrYS+yMRwhtAeBrXmTrL9oVMhQHqe6UQ=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-wA/N6noNIYUh6VCQHrYGvhY/vcpKilGCOAzmwqhXDdk4i1J7hF1IKbB17oJ3tdISk9scno8XS4Ah1D0DucIcOA=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-O0bcRnOcjwyJSsnjG6qbVZGlLj9qpWaOXukuqjC8AEQIP3fxGxzU1Y6lXbg8eTOSjB67qsk6cGzP7lYWmyA8KQ=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-hh2hwlN+nD4/qV4dW7SNEP0aRQ1AWC/Gmdo9huITF+rhSjP3vnAka5IoytmafHBGsKVFqxa3sd1ee+luS8Lw3w=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-W+JLFY8wXa2Cl7dcAPrng3qFPfeB5Mc8mpj8tkqK4BiNP+dNqLJbDVtp1cXrdLAt9pKZ9ENZO9h7UPP9Vpkrpg=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
@@ -312,11 +312,28 @@ in
   # then land in this repo, while listed packages install on the next launch.
   home.activation.piConfigLinks = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run mkdir -p "${config.home.homeDirectory}/.pi/agent/extensions"
-    run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-settings.json" \
+    run ln -sfn "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-settings.json" \
       "${config.home.homeDirectory}/.pi/agent/settings.json"
-    run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-models.json" \
+    run ln -sfn "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-models.json" \
       "${config.home.homeDirectory}/.pi/agent/models.json"
-    run ln -sf "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-usage-status.ts" \
+    run ln -sfn "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-usage-status.ts" \
       "${config.home.homeDirectory}/.pi/agent/extensions/pi-usage-status.ts"
   '');
+
+  # Command Code's global taste (~/.commandcode/taste) is a writable tree that
+  # the learning system rewrites in place, so use a direct out-of-store symlink
+  # (same rationale as Claude's settings above) pointing at the tracked copy in
+  # this repo. Project-level .commandcode/ stays gitignored. rm + ln (instead of
+  # ln -sfn alone) so a pre-existing real dir — e.g. one created by an older
+  # command-code version before this link existed — gets replaced rather than
+  # linked into.
+  home.activation.commandcodeTasteLink = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    tasteRepo="${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/taste"
+    tasteTarget="${config.home.homeDirectory}/.commandcode/taste"
+    run mkdir -p "${config.home.homeDirectory}/.commandcode"
+    if [ -e "$tasteTarget" ] && [ ! -L "$tasteTarget" ]; then
+      run rm -rf "$tasteTarget"
+    fi
+    run ln -sfn "$tasteRepo" "$tasteTarget"
+  '';
 }

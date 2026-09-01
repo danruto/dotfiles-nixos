@@ -9,14 +9,14 @@
 # Bumping means a new version, src hash, regenerated lockfile and npmDepsHash.
 buildNpmPackage (finalAttrs: {
   pname = "command-code";
-  version = "1.38.2";
+  version = "1.39.2";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/command-code/-/command-code-${finalAttrs.version}.tgz";
-    hash = "sha512-Ijsy8V4t8/GX+txrUdp36iYiKIVHHqXHA1FXUuuvZKf/NJhP5EpOPHDwEW8fku17ZIGF9WklX2vN52evIkcYog==";
+    hash = "sha512-afRhQ3PMpaDJJ8Yka5QQsSj1GAYvrQAub1UGR9N0u82lb0MuoxrxyBAElj7aa9CJOlCliLtO+5RiLRX9DxM0pg==";
   };
 
-  npmDepsHash = "sha256-tzhYemQ3fZ/IddjIYHmOfk5T8jeT+KCRmwN7QbO7uek=";
+  npmDepsHash = "sha256-G13yelpZdq0mByM85d58hSp/6xJ5geR08AIJj24nr60=";
 
   postPatch = ''
     cp ${./command-code-package-lock.json} package-lock.json

@@ -1,6 +1,10 @@
 result
 .crush
 
+# Per-project Command Code state (taste, permissions, sessions)
+# Global taste lives in user/apps/ai/configs/taste/ and is symlinked to ~/.commandcode/taste
+.commandcode
+
 .DS_Store
 .direnv
 .env

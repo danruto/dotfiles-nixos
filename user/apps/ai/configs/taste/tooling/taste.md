@@ -1,0 +1,10 @@
+# Tooling
+
+- Prefers running latest/beta versions of tools (e.g., opencode v2 beta over the pinned v1) and periodically asks to "version bump" pinned versions in llm.nix. Confidence: 0.8
+- When a Nix package build fails because of its test suite (e.g., neovim), prefers disabling the tests rather than debugging/fixing the suite. Confidence: 0.7
+- In dotfiles, skill configs should reference local folder variants (like pb-skills) rather than remote variants. Confidence: 0.6
+- Considers project-level taste files (e.g., `.commandcode/taste/`) gitignore-worthy — keeps them out of the project repo. Confidence: 0.8
+- Prefers global personal config (e.g., global taste at `~/.commandcode/taste/`) to live in the dotfiles repo so it follows machines, rather than being stored per-project. Confidence: 0.8
+- Manages global AI/CLI tool configs (e.g. Claude, Pi, Command Code) in the NixOS dotfiles repo under `user/apps/ai/configs/`, wiring them via `home.activation` direct out-of-store symlinks (`ln -sfn`) in `user/apps/ai/llm.nix` so tools that rewrite their files in place write through to the tracked repo. New tools should follow the same pattern. Confidence: 0.9
+- Agent model selection: cheap model for code-exploration subagents (file searches, grep tasks, code reading); mid model for insights, explanations, web research, and mid-tier reasoning; frontier model (or omit the override so it inherits the session model) for architectural decisions, writing code, and any other major decisions requiring maximum reasoning. Confidence: 1.0
+- When pbtk-graph MCP is available in the current repo, prefers `graph_*` tools over raw grep/find/file-read for symbol, caller/callee, definition, or concept lookups, and `doc_search`/`doc_outline` over grepping `*.md`. Raw search is the fallback, for unindexed content (string literals, comments, log messages, SQL, struct tags, config keys) or when the graph query returns nothing. Rebuild a stale index after a refactor: `pbtk graph build` / `pbtk doc build` (or `watch`). Confidence: 1.0
