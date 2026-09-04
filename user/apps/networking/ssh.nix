@@ -47,6 +47,7 @@
       "*.pixelbru.sh" = {
         ProxyCommand = "${pkgs-unstable.cloudflared}/bin/cloudflared access ssh --hostname %h";
         User = username;
+        IdentitiesOnly = "yes";
       };
 
       # VMs are reached at <name>.exe.xyz, which the shared certificate does not
