@@ -13,12 +13,12 @@ let
 
   claude-code = pkgs-master.claude-code.override {
       manifest = {
-        version = "2.1.260";
+        version = "2.1.261";
         platforms = {
-          "darwin-arm64".checksum = "3c269f66801028823e24a63ced9fdd3988cb86cf85fccd9f03f87e463b9d3e3c";
-          "darwin-x64".checksum = "2d791b1bff2bc36419de09e1f2226c076b40b0717ee43108928938f622ea9b77";
-          "linux-arm64".checksum = "9811afb5f97224c2c5d3d0ee1e8c316117d298d5ec3e095d5ff0c1dd0e889ca5";
-          "linux-x64".checksum = "7a2fdc74b6836ea3d183f665b869f0ee3baebc9713cbebffe5838da4ea7bd82e";
+          "darwin-arm64".checksum = "5efecaff231b798be3c66def9be54183623b328b80eaef17f93c43987024e82a";
+          "darwin-x64".checksum = "2cbc002b32778bd70aa2e668ada920c54d9aacd91b71dbd5619c01ca148ae533";
+          "linux-arm64".checksum = "7bbed5a9b0fc2e4ec67bad3490d06ca91b86d6b037d47520b7898951757d1b8a";
+          "linux-x64".checksum = "4ae40dd1784e85753e742e09f267d29ecbb82890361ad3817d27560866d364a6";
       };
     };
   };
@@ -33,8 +33,8 @@ let
       sources = {
         "x86_64-linux" = { plat = "linux-x64-gnu"; hash = "sha512-bJLuRMnDWX4mXjgNma8DSJ6g/+xmSIt+eWrVOKgYcjQY4z2DJe6S0E9pH4trmUqmyTLk7KeynISOXEIBHz1jGw=="; };
         "aarch64-linux" = { plat = "linux-arm64-gnu"; hash = "sha512-W4YgugkNkh6TeApIbgjA+YYiogYl3NT0GPsTed/V8Qgh7b5Dv52Gp85ALgUvjUtKzPTC4g2wH0oE74w+9DZylg=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-HA8zg4p3CJYMbsU2S4saxuFT/0hTg5EW7O8+FxH4fL+X4jm12FuwLAmvQ0g3RZWsqgUKhb22+LdMgwvp7dJaqw=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-qAW/FAg6GkMBdqdnRN1knjnPz5yoCnmvaVEQPmJPLVOcKC/V1v4JSbu6zFFfxoYA1rTJlj+D8rqd/uuBMnIrYw=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-S6kdXgDmGSx2K7OjhdkywRa0eAzZMTzLpblMHGQSMTatW0BrE9DrVAY+dFRfySl9gCDAVVGSunwamQuw0DHU9w=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-mKyJH7pVRYMuITft3ffikSVakUeYO323d+pHht66CqhHSAsd7WX3e0YGkccq9LpQSDXiJeVknGM5iOY1D0WT7A=="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
@@ -59,13 +59,13 @@ let
   # nixpkgs-master lags upstream pi releases, so version/src/hashes are pinned
   # here too. Drop the version, src, npmDepsHash and modelData overrides (keep
   # postFixup) once nixpkgs-master ships this version or newer.
-  pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (final: _: {
-    version = "0.84.4";
+  pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (final: prev: {
+    version = "0.85.0";
     src = pkgs-master.fetchFromGitHub {
       owner = "earendil-works";
       repo = "pi";
       tag = "v${final.version}";
-      hash = "sha256-7z8OXao1PzmBEepDkIqVqyfQBPHulBlKcGymDYsnMvc=";
+      hash = "sha256-gznGlneVCx3htxRiJq0/futm4qLR9Bzfv3UwP3ES9v0=";
     };
     # npmDeps must be overridden directly, not via npmDepsHash: buildNpmPackage
     # bakes the resolved npmDeps into the derivation attrs, so on overrideAttrs
@@ -73,14 +73,28 @@ let
     npmDeps = pkgs-master.fetchNpmDeps {
       inherit (final) src;
       name = "pi-coding-agent-${final.version}-npm-deps";
-      hash = "sha256-35GC3Q4Jf4URvqoEYHeM63x49tTmrth62//PvKm4I7Q=";
+      hash = "sha256-K/KiukwTHwu4HE8hUu7ur3bxggwfO0WL+QDI0FtxP3I=";
       fetcherVersion = 1;
     };
     # Hydrated model catalog; gitignored upstream, see nixpkgs' package.nix.
     modelData = pkgs-master.fetchurl {
       url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${final.version}.tgz";
-      hash = "sha256-39PJKc7lpzhxmaCiTfwb4glvHqj1n/uChRmKDtAev5M=";
+      hash = "sha256-RhiL2stVWgdGagER85Y/IJMqFhmeTWz7jUSn/l/G40I=";
     };
+
+    # 0.85.0 added the packages/chord workspace and coding-agent now imports
+    # packages/server; nixpkgs 0.84.3 neither compiles nor copies either into
+    # the output. Drop both with the pins above once nixpkgs-master catches up.
+    buildPhase = builtins.replaceStrings
+      [ "npx tsgo -p packages/tui/tsconfig.build.json" "npm run build --workspace=packages/coding-agent" ]
+      [ "npx tsgo -p packages/chord/tsconfig.build.json\n    npx tsgo -p packages/tui/tsconfig.build.json"
+        "npx tsgo -p packages/server/tsconfig.build.json\n    npm run build --workspace=packages/coding-agent" ]
+      prev.buildPhase;
+    postInstall = prev.postInstall + ''
+      nm="$out/lib/node_modules/pi-monorepo/node_modules/@earendil-works"
+      cp -r packages/chord "$nm/chord"
+      cp -r packages/server "$nm/pi-server"
+    '';
 
     # pi spawns `npm install` at runtime for package extensions and compiles
     # native npm modules (e.g. node-pty) when installing/updating them;
@@ -101,18 +115,18 @@ let
   # --bin jcode.
   jcode =
     let
-      version = "0.81.6";
+      version = "0.81.7";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-C+aKWvYvYOZ8iZqKj9w6lDSiPguouvQ+R/FJJ0cGVoE=";
+        hash = "sha256-4aKuYFbGTdH0qi5uIgw/TOMxXcoHYUbLRzychST8BZU=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-TM1hYqGgIbtvVlYnB1G8z35ceXFRdWsauxpajwOTQq0=";
+      cargoHash = "sha256-mO5W3STCyqst0cTmH4RqBY2bAvWEV9Z/u9qHh4FO7pw=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
@@ -135,12 +149,12 @@ let
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-dev-202609032018";
+      version = "0.0.0-dev-202609041848";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-QUpsF+jVvPuxVaPCRdJifWws37tWfnU6EEsBziC43q1fL6uHx/Ac85UC7V5FCKyqSRMsAEhAzP9Xo6Ejdykg4A=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-K3YJDJa3eGZtsvP7a8bmw+Tq+OnfNETu0eFBbmAg3H7+baMfABiZy+7wh4RBdZn4p9T553lcL9sI7dQUgGr7IA=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-h+2XkXlqD2zPiq+Px4BKlXrRpIfME4Mx8vhsLfP0X1+IDUOYEgEokf4H7JymapbjHcMtHk5obeMXnlPqRdUJjA=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-JWgw0SmN8P8myqcmvkD5ehwvEzYH8WNz/h8g34UIMup5GxzjYuqttup1skEi1kn4gxgJyiELldYgXOSfhEgH0w=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-oprn4npUMGpzRnyn3MGO6PLsaDi4Hcg8c7Uvge5Cb00WpRHwmQ6vIMHX8sAJn/0Gj0fnSw52D1+W6QiXl64G7g=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-CSUoBe3HFtd/0cPzUzBVtpoB6XBOINmjasK29P/3FPBCacrbBKQh63Ogbz4+QYOfWmuKQVJf44vSu8ZZZdubKg=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-S6kdXgDmGSx2K7OjhdkywRa0eAzZMTzLpblMHGQSMTatW0BrE9DrVAY+dFRfySl9gCDAVVGSunwamQuw0DHU9w=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-mKyJH7pVRYMuITft3ffikSVakUeYO323d+pHht66CqhHSAsd7WX3e0YGkccq9LpQSDXiJeVknGM5iOY1D0WT7A=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in

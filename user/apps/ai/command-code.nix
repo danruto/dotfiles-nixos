@@ -2,21 +2,18 @@
 
 # Upstream publishes no lockfile and its devDependencies point at unpublished
 # workspace packages, so npm ci can't use the tarball as-is. The committed
-# lockfile was generated from the tarball's runtime deps only:
-#   npm pack command-code@<ver> && tar xzf command-code-<ver>.tgz && cd package
-#   sed -i '/"devDependencies": {/,/^  }/d' package.json
-#   npm install --package-lock-only --ignore-scripts
-# Bumping means a new version, src hash, regenerated lockfile and npmDepsHash.
+# lockfile is generated from the tarball's runtime deps only.
+# To bump: ./bump-command-code.sh [version]
 buildNpmPackage (finalAttrs: {
   pname = "command-code";
-  version = "1.45.0";
+  version = "1.49.0";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/command-code/-/command-code-${finalAttrs.version}.tgz";
-    hash = "sha512-tsRH0ygyAWKAm4uQ3HqO5HCVmqxytWE+Z1qDffK6bBKCdl6/CQFjF6BmIh2QwTpvgZPYlE2alVFYuxzGKzOBhw==";
+    hash = "sha512-h4AtWnMFjLVJPMCZIOmPODdxqGee9Vyf/oEFtmiZfW+mRVcyYZQ5lPo6tYt2DgrTf+JHZY4LU5p00rwn1GeIrg==";
   };
 
-  npmDepsHash = "sha256-h563/dEB1HWSESIw8Uo+dSwcjrTAG2+yF+OZdsHQmz0=";
+  npmDepsHash = "sha256-yqT2wx6iGA8haxr7mKU0f46rf1ey0FXnQLNFbYwp574=";
 
   postPatch = ''
     cp ${./command-code-package-lock.json} package-lock.json

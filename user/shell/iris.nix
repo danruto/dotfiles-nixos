@@ -2,19 +2,19 @@
 
 buildGoModule rec {
   pname = "iris";
-  version = "0.4.8";
+  version = "0.7.0";
 
   src = fetchFromGitHub {
     owner = "versenilvis";
     repo = "iris";
     tag = "v${version}";
-    hash = "sha256-JD0mjsQXoMdGLzrSTOyd108D4tiAcVfTJAXIwJCDAR0=";
+    hash = "sha256-bfwWkKPdRA3vE04ovn6b2DUyp1nDtDtN/6j0pVk9thA=";
   };
 
   subPackages = [ "cmd/iris" ];
 
   proxyVendor = true;
-  vendorHash = "sha256-kBSMhUsuCKIjAXjGfl1WSjCX+tlGi9BTnkRu9ScW6M0=";
+  vendorHash = "sha256-huyTWK6ef42KY2zmFIQuFoeR8B8XKHE7OVfFnfefeCU=";
 
   doCheck = false;
 

@@ -1,20 +1,20 @@
 { lib, stdenvNoCC, fetchurl, buildFHSEnv }:
 
 let
-  version = "0.8.1";
+  version = "0.12.0";
 
   sources = {
     "x86_64-linux" = {
       asset = "gloomberb-linux-x64";
-      sha256 = "0aqqndj1h2nnkvxfcp3fi18kifhcava4qnrqnnspj32y6krrnqwb";
+      sha256 = "0pifal57qysbs81zwp082axb3fda6j2agfcv02a1vv6bp55ck9d1";
     };
     "aarch64-linux" = {
       asset = "gloomberb-linux-arm64";
-      sha256 = "0jc3cr9v98r6v4bwf7608a4dqrrb3ll7imary4nsm3ldgk0ipa2g";
+      sha256 = "0b7v9sq309ixyp1w4r0ixfc9b4vz78zvfjjpmj3qzv4rbc1v2rpn";
     };
     "aarch64-darwin" = {
       asset = "gloomberb-darwin-arm64";
-      sha256 = "0wl88zc9hxdfknzblliy60qrhw6bhba1m9zcd3y81zz0rclxang1";
+      sha256 = "0lk1hbq5yylvnm5lly32716rc0vm8mwfy6z76fvg4cd6mhd2avzw";
     };
   };
 

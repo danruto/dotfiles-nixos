@@ -4,12 +4,12 @@ let
   # legostin/cull ships prebuilt, statically-linked release binaries, so fetch
   # one instead of compiling from source (buildGoModule). This drops the Go
   # build from every rebuild. Bump version + all four hashes together.
-  version = "0.6.1";
+  version = "0.9.0";
   sources = {
-    "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-123umQDoVmflaWxlYFSlAzauo9xRYLrtSRbHoxQe+0c="; };
-    "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-r4gPEtyS7qbX7SmiZAlpoZ9SsdCYuVV89g4js5/vp0w="; };
-    "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-U1Usvvm27laLrc2Hsrr4/BGM0ircUz6/75gLQiL+KcQ="; };
-    "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-Ut+HEikCmiSyfOFPSjV3xzQQulGLtOHClc6zvUKqmCM="; };
+    "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-DC5VW03nX8xUdVmxL7+ysE3vFgsbH5+u/B6Mt/Qcd2k="; };
+    "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-00zGv5whpM8AWwDK/3/Cdag7Tgk5CifIR98wnI2Bbgg="; };
+    "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-z0vYfXLb2/LCWQNZN0XZ9Eh7mhXTizOqA75Cg14JJK8="; };
+    "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-mbz55XxmJx7tH+mxJEzrQKMgzGzO22wbNLy61I+4lyc="; };
   };
   target = sources.${pkgs.stdenv.hostPlatform.system};
 

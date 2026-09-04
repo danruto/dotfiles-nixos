@@ -9,13 +9,13 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "elio";
-  version = "1.3.0";
+  version = "1.12.0";
 
   src = fetchFromGitHub {
     owner = "elio-fm";
     repo = "elio";
     rev = "v${version}";
-    hash = "sha256-CKHpix0rhpvCIjR3sQmOz9klDyC5usDH/egju/D3k9A=";
+    hash = "sha256-FT5F3L8IgbX6vPjEd+TSudoyIZe4TX7no0FF9C75aaU=";
   };
 
   cargoLock = {

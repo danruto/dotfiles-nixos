@@ -2,16 +2,16 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "kimun";
-  version = "0.21.0";
+  version = "0.23.3";
 
   src = fetchFromGitHub {
     owner = "nico2sh";
     repo = "kimun";
     tag = "kimun-notes-v${version}";
-    hash = "sha256-P0O8NXlpOX4IcDbLDbVs1v0RBPXY5IEN8ItdCweLy04=";
+    hash = "sha256-PpG5bsLDuEFpJrxXtjoNPqg7hT5TAlzT9pDLzbCBg8g=";
   };
 
-  cargoHash = "sha256-YfiBQe0fYNAq3M3bjpRuuFYH8RjA0+tkFu/8HL6d0zM=";
+  cargoHash = "sha256-D29TnuD9fUw9J5sPnzQI104Unw6PAZ1OXFJT7kWIsTs=";
 
   # The repo is a workspace (core/tui/client/server); only build the TUI.
   cargoBuildFlags = [ "-p" "kimun-notes" ];
