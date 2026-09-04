@@ -13,12 +13,12 @@ let
 
   claude-code = pkgs-master.claude-code.override {
       manifest = {
-        version = "2.1.259";
+        version = "2.1.260";
         platforms = {
-          "darwin-arm64".checksum = "884baa38fe1a624be25c4a91568bf5a08b5cf4e7d7acf29b7760e3525d964898";
-          "darwin-x64".checksum = "af8741cff0d3fb5c4b893c7cb3613bd21b28fa61cca45469d60b8e5e161eb9d8";
-          "linux-arm64".checksum = "c6ff03c389ccdeae0f19e9dc32488eeba61fbef4796f531dbfba6c00f45040d0";
-          "linux-x64".checksum = "f7dd62ae415378018cd21dd950eb3bac174ab085830304d3b8b098146bfd47b6";
+          "darwin-arm64".checksum = "3c269f66801028823e24a63ced9fdd3988cb86cf85fccd9f03f87e463b9d3e3c";
+          "darwin-x64".checksum = "2d791b1bff2bc36419de09e1f2226c076b40b0717ee43108928938f622ea9b77";
+          "linux-arm64".checksum = "9811afb5f97224c2c5d3d0ee1e8c316117d298d5ec3e095d5ff0c1dd0e889ca5";
+          "linux-x64".checksum = "7a2fdc74b6836ea3d183f665b869f0ee3baebc9713cbebffe5838da4ea7bd82e";
       };
     };
   };
@@ -101,18 +101,18 @@ let
   # --bin jcode.
   jcode =
     let
-      version = "0.81.5";
+      version = "0.81.6";
       src = pkgs-unstable.fetchFromGitHub {
         owner = "1jehuang";
         repo = "jcode";
         tag = "v${version}";
-        hash = "sha256-uYOoPGdQ4dXQAYkuqciBl0x0jj7KmddO1ltK7CEPvRE=";
+        hash = "sha256-C+aKWvYvYOZ8iZqKj9w6lDSiPguouvQ+R/FJJ0cGVoE=";
       };
     in
     pkgs-unstable.rustPlatform.buildRustPackage {
       pname = "jcode";
       inherit version src;
-      cargoHash = "sha256-Migcv6u2nUp9mXUearHxrvBMp7qP8JpUVicZnJKnAnU=";
+      cargoHash = "sha256-TM1hYqGgIbtvVlYnB1G8z35ceXFRdWsauxpajwOTQq0=";
       cargoBuildFlags = [ "--bin" "jcode" ];
       nativeBuildInputs = [ pkgs-unstable.pkg-config ];
       buildInputs = [ pkgs-unstable.openssl ];
@@ -135,12 +135,12 @@ let
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-dev-202609031353";
+      version = "0.0.0-dev-202609032018";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-xTcbVuQisJzAbgsJQ3lhIzPhdISkWrttICiwBGclYoz3XJgb7zUENSoRGmDiNsICk4Tfbs4AiWEA6PWX7QPZaA=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-HpJ/6f+kTXe2nXIppEN77dJADYavIdqvMSudYIZc9jvFRukCk4uNUC9R+bqLGfSBDdi4IuAyywfu7ZQP5X0JTw=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-GsSxW7PriO19MMzf55khTirxft6Fwg/iFDODmr9gNOpNiOnZqCYiLx0P1snYw/zN9gmq5RS46ziKEdZH7Emrkw=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-sI5rnGF0WWPdQ7lgDz6DYJQZRlgYYbtsixXoyeSxid4Vcp1JhPR25F37AtTr1z7XZyT2lm2ZJZ8otAvD55UiuA=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-QUpsF+jVvPuxVaPCRdJifWws37tWfnU6EEsBziC43q1fL6uHx/Ac85UC7V5FCKyqSRMsAEhAzP9Xo6Ejdykg4A=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-K3YJDJa3eGZtsvP7a8bmw+Tq+OnfNETu0eFBbmAg3H7+baMfABiZy+7wh4RBdZn4p9T553lcL9sI7dQUgGr7IA=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-h+2XkXlqD2zPiq+Px4BKlXrRpIfME4Mx8vhsLfP0X1+IDUOYEgEokf4H7JymapbjHcMtHk5obeMXnlPqRdUJjA=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-JWgw0SmN8P8myqcmvkD5ehwvEzYH8WNz/h8g34UIMup5GxzjYuqttup1skEi1kn4gxgJyiELldYgXOSfhEgH0w=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
