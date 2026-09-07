@@ -6,6 +6,7 @@
   imports = [
     ../shared.nix
     ../../user/apps/ai/llm.nix
+    ../../user/apps/ai/paseo.nix
     ../../user/shell/sh.nix
     ../../user/shell/tui.nix
     ../../user/apps/git/git.nix
