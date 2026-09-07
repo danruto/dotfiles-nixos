@@ -1,20 +1,20 @@
 { lib, stdenvNoCC, fetchurl, buildFHSEnv }:
 
 let
-  version = "0.8.4";
+  version = "0.8.5";
 
   sources = {
     "x86_64-linux" = {
       asset = "noodle-linux-x86_64";
-      hash = "sha256-DsKF5vX/zpF+fmx8wAXi80priYDBz51InS9F/3inDho=";
+      hash = "sha256-Hg4/ONv8MEA/RMTRn7QbQGThrANeTqPH7f2ve3EDezk=";
     };
     "aarch64-linux" = {
       asset = "noodle-linux-arm64";
-      hash = "sha256-w+twLfqlb+YmyWekafLiZbifSo86F2dbxxZvFKDd2co=";
+      hash = "sha256-nL9rYLHUAXJDvtZW/yejWIrpP8q65xVYfdfkAIW+1VY=";
     };
     "aarch64-darwin" = {
       asset = "noodle-macos-arm64";
-      hash = "sha256-bA8MCdAf7lcWeV7O3Rn7H6TDAAmwi6pQzGX/iodDgYw=";
+      hash = "sha256-ucINDOdEJJxfQ/1phtcB01+CYvrB9wxXPyVF55HqWvs=";
     };
   };
 
