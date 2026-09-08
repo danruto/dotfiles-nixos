@@ -180,7 +180,7 @@
 
     # zellij alternative focused on AI agent work
     herdr = {
-      url = "github:ogulcancelik/herdr";
+      url = "github:ogulcancelik/herdr/v0.9.0";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 

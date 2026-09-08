@@ -1,4 +1,4 @@
-{ dms, dms-plugin-diskusage, pkgs-unstable, ... }:
+{ dms, dms-plugin-diskusage, ... }:
 {
   imports = [
     dms.homeModules.dank-material-shell
@@ -6,8 +6,6 @@
 
   programs.dank-material-shell = {
     enable = true;
-
-    dgop.package = pkgs-unstable.dgop;
 
     settings = {
       theme = "dark";
