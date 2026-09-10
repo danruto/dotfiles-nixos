@@ -111,36 +111,6 @@ let
     '';
   });
 
-  # Rust TUI coding agent (https://github.com/1jehuang/jcode). Not in nixpkgs
-  # and upstream ships no nix expr, so build the `jcode` bin from the release
-  # tag. The workspace also declares dev/bench bins, hence the explicit
-  # --bin jcode.
-  jcode =
-    let
-      version = "0.84.0";
-      src = pkgs-unstable.fetchFromGitHub {
-        owner = "1jehuang";
-        repo = "jcode";
-        tag = "v${version}";
-        hash = "sha256-Mz2z13RjNsfcpSePiVUyaW8fOS7lb68z7a99j8FmsA0=";
-      };
-    in
-    pkgs-unstable.rustPlatform.buildRustPackage {
-      pname = "jcode";
-      inherit version src;
-      cargoHash = "sha256-iQqeaa5YGQ/9RNzlDTXwPX5ZLeJp7mUwS8KF2iaM0Ho=";
-      cargoBuildFlags = [ "--bin" "jcode" ];
-      nativeBuildInputs = [ pkgs-unstable.pkg-config ];
-      buildInputs = [ pkgs-unstable.openssl ];
-      doCheck = false;
-      meta = {
-        description = "RAM-efficient multi-model TUI coding agent";
-        homepage = "https://github.com/1jehuang/jcode";
-        license = pkgs.lib.licenses.mit;
-        mainProgram = "jcode";
-      };
-    };
-
   # opencode v2 (the `beta`/`dev` channel). v2 lives on an untagged dev branch
   # with a rewritten layout (packages/cli, not packages/opencode), so the
   # nixpkgs 1.x source build (a *different*, v1 package) doesn't apply —
@@ -231,7 +201,6 @@ in
     # opencode
     sox # voice for cc
     revdiff
-    jcode
     # amp-cli
     # gemini-cli
     # codex

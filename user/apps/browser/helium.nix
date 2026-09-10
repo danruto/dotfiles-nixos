@@ -10,7 +10,10 @@ let
     paths = [ heliumBase ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
+      # Qt launchers (vicinae) export their own QT_PLUGIN_PATH to children;
+      # Chromium's libqt6_shim.so then aborts on the mismatched qtwayland plugin.
       wrapProgram $out/bin/helium \
+        --unset QT_PLUGIN_PATH \
         --add-flags "--enable-features=WaylandWindowDecorations,VaapiVideoDecodeLinuxGL,PlatformHEVCDecoderSupport"
     '';
   };
