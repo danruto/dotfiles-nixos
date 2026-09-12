@@ -4,8 +4,6 @@
   programs.home-manager.enable = true;
 
   imports = [
-    # stylix.homeManagerModules.stylix
-    # ../../user/style/stylix.nix # Styling and themes for my apps
     ../shared.nix # Shared home configurations
     ../../user/shell/sh.nix # Fish config
     ../../user/shell/tui.nix # Useful cli/tui apps

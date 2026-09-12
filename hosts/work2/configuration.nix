@@ -1,11 +1,4 @@
 { pkgs, ... }: {
-  imports = [
-    # ../../user/wm/yabai/yabai.nix # yabai and co
-    # ../../user/wm/yabai/skhd.nix # yabai and co
-    # ../../user/wm/yabai/sketchybar.nix # yabai and co
-    # ../../system/wm/aerospace.nix
-  ];
-
 
   environment = {
     systemPackages = with pkgs; [

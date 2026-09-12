@@ -5,14 +5,8 @@ NIXPORT ?= 22
 
 # Same as inside `flake.nix`
 NIXUSER ?= danruto
-
-# Auto-detect profile from config.local.nix (if exists) or flake.nix
-PROFILE := $(shell \
-	if [ -f config.local.nix ]; then \
-		grep 'profile = ' config.local.nix | sed -E 's/.*profile = "([^"]+)".*/\1/'; \
-	else \
-		grep 'profile = ' flake.nix | head -1 | sed -E 's/.*profile = "([^"]+)".*/\1/'; \
-	fi)
+# Profile comes from config.local.nix (see config.local.nix.sample)
+PROFILE := $(shell grep 'profile = ' config.local.nix | sed -E 's/.*profile = "([^"]+)".*/\1/')
 
 SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 UNAME := $(shell uname)

@@ -23,7 +23,6 @@
     ../../user/apps/terminal/curl.nix # network request cli/tuis
     # ../../user/apps/terminal/helix.nix
     ../../user/apps/terminal/helix-fork.nix
-    # ../../user/apps/terminal/alacritty.nix
     ../../user/apps/terminal/kitty.nix
     ../../user/apps/terminal/foot.nix
     ../../user/wm/hyprland/hyprland.nix
@@ -32,11 +31,8 @@
     # ../../user/apps/ai/lmstudio.nix
     # ../../user/apps/browser/brave.nix
     ../../user/apps/browser/ff.nix
-    # ../../user/apps/browser/librewolf.nix
-    # ../../user/apps/fileman/dolphin.nix
     # ../../user/apps/fileman/thunar.nix
     ../../user/apps/fileman/cosmic.nix
-    # ../../user/apps/fileman/nemo.nix
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/fileman/elio.nix
     ../../user/apps/gui/gui.nix
@@ -50,7 +46,6 @@
     ../../system/hardware/monitor.nix
     ../../user/hardware/keyboard.nix
     # ../../user/apps/virt/virt.nix
-    # ../../user/style/catppuccin.nix
   ];
 
   home.packages = with pkgs; [

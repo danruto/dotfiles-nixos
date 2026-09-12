@@ -11,7 +11,7 @@
       lib = nixpkgs.lib;
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
 
-      overlays = import ./lib/overlays.nix { inherit inputs; };
+      overlays = import ./lib/overlays.nix;
 
       # Instantiate nixpkgs ONCE per system (avoid per-call fragmentation).
       pkgsBySystem = lib.genAttrs systems (system:
@@ -35,8 +35,8 @@
       baseSpecialArgs = {
         inherit (inputs)
           blocklist-hosts neovim-nightly-overlay wanderer fff
-          nixos-wsl hyprland-plugins niri mango nixos-hardware catppuccin
-          helium dms dms-plugin-diskusage helix helix-fork herdr
+          nixos-wsl niri mango nixos-hardware
+          helium dms dms-plugin-diskusage helix helix-fork herdr ghostty
           nix-doom-emacs-unstraightened;
       };
 
@@ -69,8 +69,6 @@
       };
 
       darwinConfigurations = {
-        work = mkSystem { hostname = "work"; system = "aarch64-darwin"; platform = "darwin"; };
-        work-x86 = mkSystem { hostname = "work"; system = "x86_64-darwin"; platform = "darwin"; };
         work2 = mkSystem { hostname = "work2"; system = "aarch64-darwin"; platform = "darwin"; };
         work2-x86 = mkSystem { hostname = "work2"; system = "x86_64-darwin"; platform = "darwin"; };
         nearmap = mkSystem { hostname = "nearmap"; system = "aarch64-darwin"; platform = "darwin"; username = "danny.sok"; };
@@ -93,13 +91,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nur.url = "github:nix-community/NUR";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
-
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      # inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
 
     blocklist-hosts = {
       url = "github:StevenBlack/hosts";
@@ -139,23 +131,10 @@
     };
 
     # Framework inputs
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
-      flake = false;
-    };
     # niri.url = "github:sodiboo/niri-flake";
     niri.url = "github:sodiboo/niri-flake/very-refactor";
     mango.url = "github:DreamMaoMao/mango";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
-    fw-ectool = {
-      url = "github:tlvince/ectool.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # lanzaboote = {
-    #   url = "github:nix-community/lanzaboote/v0.3.0";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-    catppuccin.url = "github:catppuccin/nix";
     helium.url = "github:vikingnope/helium-browser-nix-flake";
 
     dms = {
@@ -177,6 +156,9 @@
       url = "github:dmtrKovalenko/fff";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
+    # ghostty tip (upstream pins its own nixpkgs for the zig toolchain)
+    ghostty.url = "github:ghostty-org/ghostty";
 
     # zellij alternative focused on AI agent work
     herdr = {

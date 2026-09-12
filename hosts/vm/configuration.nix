@@ -11,8 +11,6 @@ with lib;
       ./hardware-configuration.nix
       ../../system/security/gpg.nix
       ../../system/security/blocklist.nix
-      # stylix.nix needs a `stylix` flake input that this flake does not declare.
-      # ../../system/style/stylix.nix
     ];
 
   # Setup bootloader

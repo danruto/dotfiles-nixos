@@ -37,10 +37,6 @@ in
     ++ unstable-packages
     ++ [
     (pkgs.callPackage ./gloomberb.nix { })
-    # (pkgs.callPackage ./iris.nix { })
-    # (pkgs.callPackage ./obsidian-tui.nix { })
-    (pkgs.callPackage ./kimun.nix { })
-    (pkgs.callPackage ./noodle.nix { })
     (pkgs.writeShellScriptBin "airplane-mode" ''
       #!/bin/sh
       connectivity="$(nmcli n connectivity)"

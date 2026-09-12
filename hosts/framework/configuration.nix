@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, pkgs, username, hostname, timezone, locale, nixos-hardware, ... }:
+{ lib, pkgs, username, hostname, timezone, locale, nixos-hardware, ghostty, ... }:
 
 with lib;
 {
@@ -140,7 +140,7 @@ with lib;
     git
     home-manager
     starship
-    ghostty
+    ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
     framework-tool
     fw-ectool
   ];

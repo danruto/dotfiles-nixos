@@ -9,8 +9,6 @@
   programs.home-manager.enable = true;
 
   imports = [
-    # stylix.homeManagerModules.stylix
-    # ../../user/style/stylix.nix # Styling and themes for my apps
     ../shared.nix # Shared home configurations
     ../../user/shell/sh.nix # Fish config
     ../../user/shell/tui.nix # Useful cli/tui apps
@@ -22,7 +20,6 @@
     ../../user/lang/lua/lua.nix # lua tools
     ../../user/lang/nix/nix.nix # nix tools
     ../../user/lang/shell/shell.nix # shell tools
-    # ../../user/wm/sway/sway.nix # wm
     ../../user/apps/terminal/helix-fork.nix
     ../../user/apps/terminal/curl.nix # network request cli/tuis
     ../../user/apps/terminal/myvim.nix

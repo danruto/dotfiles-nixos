@@ -10,26 +10,14 @@ let
     allowBroken = true;
   };
 
-  nixpkgs-patched = (import nixpkgs { inherit system; }).applyPatches {
-    name = "nixpkgs-patched";
-    src = nixpkgs;
-    patches = [ ];
-  };
-
-  nixpkgs-unstable-patched = (import nixpkgs { inherit system; }).applyPatches {
-    name = "nixpkgs-unstable-patched";
-    src = nixpkgs-unstable;
-    patches = [ ];
-  };
-
-  pkgs = import nixpkgs-patched {
+  pkgs = import nixpkgs {
     inherit system config;
     overlays = overlays.common;
   };
 
-  pkgs-unstable = import nixpkgs-unstable-patched {
+  pkgs-unstable = import nixpkgs-unstable {
     inherit system config;
-    overlays = overlays.unstable;
+    overlays = overlays.common;
   };
 
   pkgs-master = import nixpkgs-master {

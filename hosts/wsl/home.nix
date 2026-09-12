@@ -10,8 +10,6 @@
   programs.home-manager.enable = true;
 
   imports = [
-    # stylix.homeManagerModules.stylix
-    # ../../user/style/stylix.nix # Styling and themes for my apps
     ../shared.nix
     ../../user/apps/ai/llm.nix # Fish config
     ../../user/shell/sh.nix # Fish config

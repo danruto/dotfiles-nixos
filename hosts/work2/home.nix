@@ -18,7 +18,6 @@
     ../../user/apps/fileman/yazi.nix
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/helix.nix
-    # ../../user/apps/terminal/alacritty.nix
     # ../../user/apps/terminal/kitty.nix
     ../../user/wm/aerospace
     ../../user/wm/miri
@@ -53,11 +52,6 @@
     memory_usage.disabled = false;
     memory_usage.threshold = -1;
   };
-
-  # home.file.".config/sketchybar" = {
-  #   source = ../../user/config/sketchybar;
-  #   recursive = true;
-  # };
 
   # programs.fish.enable = true;
   # programs.zsh.enable = true;

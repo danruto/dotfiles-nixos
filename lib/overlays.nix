@@ -1,6 +1,5 @@
 # Overlay lists, shared between the threaded pkgs instances (lib/mkPkgs.nix)
 # and the system-level nixpkgs.overlays module (lib/mkSystem.nix).
-{ inputs }:
 let
   # Workaround for bug #437058 — skip i3ipc's pytest in the Nix build.
   i3ipcOverlay = (final: prev: {
@@ -38,15 +37,10 @@ let
     });
   });
 
-  common = [
-    inputs.rust-overlay.overlays.default
-    inputs.nur.overlays.default
-    i3ipcOverlay
-  ];
+  common = [ i3ipcOverlay ];
 in
 {
   inherit common;
-  unstable = common;
   # Darwin system nixpkgs needs the direnv/fish fixups.
   darwin = common ++ [ darwinOverlay ];
 }
