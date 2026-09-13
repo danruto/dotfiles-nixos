@@ -66,10 +66,50 @@ in
         description = "Run claude with the Healix org subscription config dir";
         body = "CLAUDE_CONFIG_DIR=$HOME/.claude-healix claude $argv";
       };
+      # Generic agent sandbox: cwd (+ $sbx_binds) writable, rest of $HOME read-only,
+      # ssh/gnupg/aws hidden, network ON. Works for any CLI: sbx opencode / sbx codex / ...
+      # ponytail: net stays on so agents can reach their API; for egress control use gVisor.
+      sbx = {
+        description = "Sandbox a command with bubblewrap (cwd writable, HOME read-only, net on)";
+        body = ''
+          if test (count $argv) -eq 0
+              echo "usage: sbx <command> [args...]" >&2
+              echo "  extra writable dirs: set -x sbx_binds ~/.codex ~/.config/opencode" >&2
+              return 2
+          end
+          if not type -q bwrap
+              echo "sbx: bubblewrap (bwrap) not available on this host" >&2
+              return 1
+          end
+          set -l binds --bind $PWD $PWD
+          for d in $sbx_binds
+              set -a binds --bind $d $d
+          end
+          bwrap \
+              --die-with-parent --unshare-pid --unshare-uts --unshare-ipc \
+              --proc /proc --dev /dev --tmpfs /tmp \
+              --ro-bind /nix /nix \
+              --ro-bind-try /usr /usr \
+              --ro-bind-try /bin /bin \
+              --ro-bind-try /lib /lib \
+              --ro-bind-try /lib64 /lib64 \
+              --ro-bind-try /opt /opt \
+              --ro-bind-try /etc /etc \
+              --ro-bind-try /run /run \
+              --ro-bind $HOME $HOME \
+              --tmpfs $HOME/.ssh --tmpfs $HOME/.gnupg --tmpfs $HOME/.aws \
+              $binds \
+              --chdir $PWD \
+              -- $argv
+        '';
+      };
     };
     interactiveShellInit = ''
       set fish_greeting
       set -gx GPG_TTY (tty)
+
+      # Writable dirs for the sbx agent sandbox (each agent persists its own state)
+      set -gx sbx_binds $HOME/.codex $HOME/.claude
       if type -q gpg-connect-agent
           gpg-connect-agent updatestartuptty /bye > /dev/null 2>&1
       end
@@ -98,7 +138,7 @@ in
     yq-go
     zk
     tabiew
-  ];
+  ] ++ pkgs.lib.optional pkgs.stdenv.isLinux pkgs.bubblewrap;
 
   programs.btop = {
     enable = true;
