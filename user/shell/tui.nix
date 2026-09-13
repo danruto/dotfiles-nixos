@@ -37,6 +37,7 @@ in
     ++ unstable-packages
     ++ [
     (pkgs.callPackage ./gloomberb.nix { })
+    (pkgs-unstable.callPackage ./readpanda.nix { })
     (pkgs.writeShellScriptBin "airplane-mode" ''
       #!/bin/sh
       connectivity="$(nmcli n connectivity)"
@@ -51,6 +52,7 @@ in
 
   imports = [
     ./cull.nix
+    ./oz.nix
   ];
 
   programs.bat.enable = true;
