@@ -141,7 +141,7 @@ norb:
 	sudo nixos-rebuild switch --flake .#$(PROFILE)
 
 hm/switch:
-	nix run home-manager/release-26.05 -- switch --flake '.#danruto@orb-arch'
+	ulimit -n 8192; nix run home-manager/release-26.05 -- switch --flake '.#danruto@orb-arch'
 
 # Normalize claude settings.json (Claude Code rewrites it with its own key order)
 fmt/settings:
