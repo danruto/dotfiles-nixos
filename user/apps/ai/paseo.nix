@@ -17,9 +17,9 @@ in
   systemd.user.services.paseo = {
     Unit.Description = "paseo daemon";
     Service = {
-      ExecStart = "${paseo}/bin/paseo daemon start --foreground --no-relay";
-      # systemd --user on Arch doesn't see the nix profiles where claude & co live.
-      Environment = "PATH=%h/.nix-profile/bin:%h/.local/state/nix/profiles/home-manager/home-path/bin:/usr/local/bin:/usr/bin:/bin";
+      # Agents inherit the daemon's environment, so start it from a login fish
+      # shell to get the same PATH (cargo, go, nix profiles) as the terminal.
+      ExecStart = "${pkgs.fish}/bin/fish -lc 'exec ${paseo}/bin/paseo daemon start --foreground --no-relay'";
       Restart = "on-failure";
       RestartSec = 5;
     };
