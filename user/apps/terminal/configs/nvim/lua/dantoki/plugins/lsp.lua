@@ -96,6 +96,29 @@ Each time you are going to create a file, use a single concise sentence inform t
 - Each time you read a file, use a single concise sentence to inform the user of what you are reading and why.
 ]]
 
+local typescript_filetypes = {
+	"javascript",
+	"javascriptreact",
+	"javascript.jsx",
+	"typescript",
+	"typescriptreact",
+	"typescript.tsx",
+}
+
+local function local_typescript(bufnr)
+	for dir in vim.fs.parents(vim.api.nvim_buf_get_name(bufnr)) do
+		local tsc = vim.fs.joinpath(dir, "node_modules", ".bin", "tsc")
+		local tsserver = vim.fs.joinpath(dir, "node_modules", "typescript", "lib", "tsserver.js")
+		if vim.fn.executable(tsc) == 1 or vim.fn.filereadable(tsserver) == 1 then
+			return dir, tsc, tsserver
+		end
+	end
+end
+
+local function typescript_root(bufnr, fallback)
+	return vim.fs.root(bufnr, { "tsconfig.json", "jsconfig.json", "package.json", ".git" }) or fallback
+end
+
 return {
 	{
 		"Exafunction/codeium.nvim",
@@ -141,6 +164,21 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
+			vim.api.nvim_create_autocmd("FileType", {
+				group = vim.api.nvim_create_augroup("NativeTypeScriptLsp", { clear = true }),
+				pattern = typescript_filetypes,
+				callback = function(event)
+					local install_root, tsc, tsserver = local_typescript(event.buf)
+					if install_root and vim.fn.executable(tsc) == 1 and vim.fn.filereadable(tsserver) == 0 then
+						vim.lsp.start({
+							name = "typescript-native",
+							cmd = { tsc, "--lsp", "--stdio" },
+							root_dir = typescript_root(event.buf, install_root),
+						}, { bufnr = event.buf })
+					end
+				end,
+			})
+
 			vim.diagnostic.config({
 				virtual_text = {
 					enabled = true,
@@ -202,6 +240,22 @@ return {
 				"ty",
 				-- "zls",
 			}
+
+			local tailwind_root_dir = vim.lsp.config.tailwindcss.root_dir
+			vim.lsp.config.tailwindcss = {
+				root_dir = function(bufnr, on_dir)
+					if vim.fn.executable("tailwindcss-language-server") == 1 then
+						return tailwind_root_dir(bufnr, on_dir)
+					end
+					for dir in vim.fs.parents(vim.api.nvim_buf_get_name(bufnr)) do
+						local server = vim.fs.joinpath(dir, "node_modules", ".bin", "tailwindcss-language-server")
+						if vim.fn.executable(server) == 1 then
+							return tailwind_root_dir(bufnr, on_dir)
+						end
+					end
+				end,
+			}
+
 			vim.lsp.enable(servers)
 
 			vim.lsp.config.lua_ls = {
@@ -319,6 +373,12 @@ return {
 		ft = { "typescript", "typescriptreact", "typescript.tsx" },
 		dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
 		opts = {
+			root_dir = function(bufnr, on_dir)
+				local install_root, _, tsserver = local_typescript(bufnr)
+				if install_root and vim.fn.filereadable(tsserver) == 1 then
+					on_dir(typescript_root(bufnr, install_root))
+				end
+			end,
 			-- CodeLens
 			-- WARNING: Experimental feature also in VSCode, because it might hit performance of server.
 			-- possible values: ("off"|"all"|"implementations_only"|"references_only")

@@ -56,6 +56,12 @@ let
   # where nix may be managed by Determinate (nix.enable = false) and setting
   # nix.settings would conflict.
   ++ lib.optional (!isDarwin) ../system/nix/binary-caches.nix
+  # Stylix is wired for NixOS only; it propagates into home-manager on its own.
+  ++ lib.optionals (!isDarwin) [
+    inputs.stylix.nixosModules.stylix
+    ../system/theme.nix
+    { home-manager.sharedModules = [ ../user/theme.nix ]; }
+  ]
   ++ extraModules;
 
   builder = if isDarwin then darwin.lib.darwinSystem else lib.nixosSystem;

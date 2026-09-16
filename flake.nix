@@ -93,6 +93,11 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 
+    stylix = {
+      url = "github:nix-community/stylix/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     blocklist-hosts = {
       url = "github:StevenBlack/hosts";
       flake = false;

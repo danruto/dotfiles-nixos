@@ -15,7 +15,12 @@ let
 in
 home-manager.lib.homeManagerConfiguration {
   pkgs = p.pkgs;
-  modules = [ (../hosts + "/${hostname}/home.nix") ];
+  modules = [
+    inputs.stylix.homeModules.stylix
+    ../system/theme.nix
+    ../user/theme.nix
+    (../hosts + "/${hostname}/home.nix")
+  ];
   extraSpecialArgs = baseSpecialArgs // id // {
     inherit hostname system;
     platform = "standalone";
