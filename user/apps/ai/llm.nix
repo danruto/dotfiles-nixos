@@ -15,12 +15,12 @@ let
   # https://downloads.claude.ai/claude-code-releases/<version>/manifest.zst.json
   claude-code = pkgs-master.claude-code.override {
       manifest = {
-        version = "2.1.270";
+        version = "2.1.273";
         platforms = {
-          "darwin-arm64" = { binary = "claude.zst"; checksum = "1b67468576dfe09f1975c5ddf2e10898e7632124995d68fb8b94545422cd8588"; };
-          "darwin-x64" = { binary = "claude.zst"; checksum = "9e40f35e95a1abc6e4e42405bfd98cfceaab644488c69240b59b6955144115f5"; };
-          "linux-arm64" = { binary = "claude.zst"; checksum = "606c2f83c39682f6b4a6ff474b496de5911065951e5a72bcd951469e25dd811d"; };
-          "linux-x64" = { binary = "claude.zst"; checksum = "59c056cd321c131eb211f6e90f4b9812dd24820357169f2ec9ca6a4b51d89d9c"; };
+          "darwin-arm64" = { binary = "claude.zst"; checksum = "128317be44690b575b3447f5dd9112a6e41e7f711053fa7267b95544032997aa"; };
+          "darwin-x64" = { binary = "claude.zst"; checksum = "e4dacf712b8bc3645ef7a7125e8ddcb0be054df720c7c30b6e644601216ee2a8"; };
+          "linux-arm64" = { binary = "claude.zst"; checksum = "5e17b6500f0343ed4415cfc2084156936de88c7597338fa6ecb59c906ff1cba9"; };
+          "linux-x64" = { binary = "claude.zst"; checksum = "27dd8ce401c3946776f4b7800b242ab05f6a28785e963fb7449dd4ff1872343c"; };
       };
     };
   };
@@ -31,12 +31,12 @@ let
   # `npm view @tokscale/cli-<plat> dist.integrity`.
   tokscale =
     let
-      version = "4.16.0";
+      version = "4.17.0";
       sources = {
-        "x86_64-linux" = { plat = "linux-x64-gnu"; hash = "sha512-mDa3Y/GPMw/5SpRcMq/C8xOcL01q4QyUs620aBWlGsmATw9za//4lIaghboOg5zP1PmWw9TyVMGJ+ZAsvlsRcA=="; };
-        "aarch64-linux" = { plat = "linux-arm64-gnu"; hash = "sha512-95Lb8NgDZUJEvCepm3t8nUwBLMDmhv+gkhte+tct0kZwMu4fOKn7bhQ52NNihySAbPCsixhAhRDsDr4uIUifBg=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-b0FrA4nQC46BoTFe8vB0qmMuKhi1bV3a3EFpN9KREFwFrUsQyCYX/Lh7qn98NTfshxT44uLHKz6+REvDG39emA=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-p1WhVrLMCzXstm5PgSG3gsn+Dql32y1A4pw51fQcMOf9wjWhU7DVHuLODsO0KVbH9+HrpkZNrrLzTEhdNdIFcQ=="; };
+        "x86_64-linux" = { plat = "linux-x64-gnu"; hash = "sha512-wJfvqoU0dXOHVmgEdPtappcu05py0vc7jCVeWTWYS4UoJi0LuIGhTxRhLjfSb5oOUV9RE+7X+wZ3Xx7lIZ+6XA=="; };
+        "aarch64-linux" = { plat = "linux-arm64-gnu"; hash = "sha512-wobrV3PJGeapz6ViLe5Ad6TU7+2QHQzZjf3XeVv5w25VOPZ+8XZN/pPpsdmawfguymPA2cAc34rxTj5G5M0wrg=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-AsAlm80CenvCv9pC/ys46Vmq7GJbgkufO2LxMAWRE5cubU4EBe0SqMew6+HpRY/BcAKJ5+4RFPQpEZS3Tx12lw=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-/Hmgh1VxxLdCo6ou+I7r12E0G4T4c0zzZwZ5iwdynlZKm1IEhoqPB0SagTmVEiLZSMV8zLxptO1GFuOKxMqwiQ=="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
@@ -121,12 +121,12 @@ let
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-dev-202609132139";
+      version = "0.0.0-dev-202609161816";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-v9qnYKXCw/tdC6IjGDgc9xL7O3HP7ZxjqE04hI0rDOmHY8soGie3efNIhESWlCef6nxPONRg08iyG4BYJF8aJg=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-9L2sNEBvL1pABALf3+JYYOgOmzXghAGP3jG/5PyJGg6322Om78nvEzBdlEJX6eQXENj/BVv4aLtp+vrouFj/Kg=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-Yn4YTzZ8jwgxta6MlfHrsRzpxfWZtr+z+e+rpeXuwOGc/QR/RlUH05tYDak9FOYqfuz2NHAfFRBF2/JNw80FeA=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-/9aDbLTj2l5qM9dSbD278PD31o03AGsskPerOtiF0IqPEqr8NYwOZr6AoIRlfRQX9ga2Nzbf24BqZlOt8bHB4w=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-Gocs8ANl5LFXOpB+3u1a8yzk+fGrKZFFc7SBe7aS28EGtDw53GdTxR4oiM6DjrQga51jOHVHCO5Raf+t2PQhlg=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-Y0UQ0HpU9TeeXLVu5yWraUiMBV3/LrhDaaRBNW0CiOCwNqzV4Ji8HqpMMM8zp3K0hfKWS70dg+ZFG9SG+8aOjw=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-Zxn8b29hJxGFOdGy8zRLfZ8v4m/vuexnyXe1wNlBLMBs8nd1uC+wCyiPdazMCMBqwalAZ6obB98twRpgGjIL7A=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-Cwj0Kx6/vKh1I1mUQc3p0HPGn8XNfDhwg5HyBcMUAjiKkdbEhtSxdNOQxzcyUyzt5rogLoy4OM+xEt4muHQq6w=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
