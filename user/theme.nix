@@ -1,13 +1,8 @@
 # Stylix targets. autoEnable is off in system/theme.nix, so each app is opted
 # in here once its hand-written theming has been checked for conflicts.
 #
-# Blocked on removing existing config first (each would be a duplicate
-# definition of an option already set by hand):
-#   gtk     -> hosts/framework/home.nix sets gtk.theme / gtk.iconTheme
-#   helix   -> user/apps/terminal/helix-fork.nix sets theme = "flexoki_dark"
-#   kitty   -> user/apps/terminal/kitty.nix ships a verbatim kitty.conf
-#   zellij  -> user/apps/terminal/zellij.nix ships a verbatim config.kdl
-#   foot    -> user/apps/terminal/foot.nix pins main.font
+# Targets enabled here follow the theme switch (scripts/theme-set + live
+# apply). Apps with no Stylix target keep their own hand-written config.
 {
   stylix.targets = {
     bat.enable = true;
@@ -17,5 +12,26 @@
     gitui.enable = true;
     starship.enable = true;
     yazi.enable = true;
+
+    # Terminals. kitty and foot no longer ship hand-written colors, so the
+    # generated palette is the only source.
+    foot.enable = true;
+    kitty.enable = true;
+    ghostty.enable = true;
+
+    # Desktop shell + launcher. DMS also takes the Stylix wallpaper here.
+    dank-material-shell.enable = true;
+    vicinae.enable = true;
+
+    # Editors / GUI toolkits.
+    helix.enable = true;
+    gtk.enable = true;
+    qt.enable = true;
+    vscode.enable = true;
+    opencode.enable = true;
+
+    # hyprland border colors now read config.lib.stylix.colors directly in
+    # user/wm/hyprland/hyprland.nix; leave the target off to avoid fighting it.
+    hyprland.enable = false;
   };
 }

@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+# Diagnose the Framework 12th Gen "400 MHz bug" (a latched BD PROCHOT signal).
+#
+# The EC can hold EC_PROCHOT_L asserted for non-thermal reasons (a loose or
+# faulty expansion card, a dodgy adapter), pinning every core to its minimum
+# P-state (400 MHz) even though the package is cool. It resembles thermal
+# throttling but is not: thermal shows high temps and moving frequencies,
+# whereas this shows a flat 400 MHz at ~57 C with the fan loafing.
+#
+# Recovery, cheapest first:
+#   sudo framework_tool --reboot-ec reboot   reboots the EC; note this also
+#                                            power-cycles the laptop, so save
+#                                            your work first
+#   power down, unplug charger, hold power ~30s, boot
+#   power down, remove all expansion cards, unplug, hold power >2 min
+#
+# Usage:
+#   framework-throttle-check              # one-shot check
+#   framework-throttle-check --watch      # re-check until Ctrl-C
+#   framework-throttle-check --load       # apply CPU load while checking
+#
+# Exit status: 0 healthy, 1 clamped (BD PROCHOT asserted).
+
+set -euo pipefail
+
+WATCH=0
+LOAD=0
+INTERVAL=2
+# Cores jitter a few kHz either side of scaling_min_freq, so "at min" needs
+# a tolerance rather than an exact comparison.
+TOLERANCE_KHZ=1000
+
+for arg in "$@"; do
+    case "$arg" in
+        --watch) WATCH=1 ;;
+        --load) LOAD=1 ;;
+        -h|--help)
+            sed -n '2,21p' "$0" | sed 's/^# \?//'
+            exit 0
+            ;;
+        *)
+            echo "error: unknown argument '$arg'" >&2
+            exit 2
+            ;;
+    esac
+done
+
+if ! command -v framework_tool >/dev/null 2>&1; then
+    echo "error: framework_tool not found" >&2
+    exit 1
+fi
+
+as_root() {
+    if [ "$(id -u)" -eq 0 ]; then "$@"; else sudo "$@"; fi
+}
+
+load_pids=""
+start_load() {
+    [ "$LOAD" -eq 1 ] || return 0
+    for _ in $(seq 1 "$(nproc)"); do
+        timeout 120 sh -c 'while :; do :; done' &
+        load_pids="$load_pids $!"
+    done
+    sleep 2
+}
+
+stop_load() {
+    [ -n "$load_pids" ] || return 0
+    # shellcheck disable=SC2086
+    kill $load_pids 2>/dev/null || true
+    wait 2>/dev/null || true
+    load_pids=""
+}
+trap stop_load EXIT
+
+check() {
+    local prochot cores at_min min_khz max_khz cur min thermal cpu_temp fan
+
+    prochot=$(as_root framework_tool --get-gpio EC_PROCHOT_L 2>/dev/null | awk '{print $NF}')
+
+    cores=0
+    at_min=0
+    low_khz=""
+    high_khz=0
+    for d in /sys/devices/system/cpu/cpu*/cpufreq; do
+        cur=$(cat "$d/scaling_cur_freq" 2>/dev/null) || continue
+        min=$(cat "$d/scaling_min_freq" 2>/dev/null) || continue
+        cores=$((cores + 1))
+        [ "$cur" -le $((min + TOLERANCE_KHZ)) ] && at_min=$((at_min + 1))
+        if [ -z "$low_khz" ] || [ "$cur" -lt "$low_khz" ]; then low_khz=$cur; fi
+        [ "$cur" -gt "$high_khz" ] && high_khz=$cur
+    done
+
+    thermal=$(as_root framework_tool --thermal 2>/dev/null || true)
+    cpu_temp=$(echo "$thermal" | awk -F': *' '/F75303_CPU/ {print $2; exit}')
+    fan=$(echo "$thermal" | awk -F': *' '/Fan Speed/ {print $2; exit}')
+
+    if [ "$prochot" = "true" ]; then
+        echo "  EC_PROCHOT_L: released (high)"
+    else
+        echo "  EC_PROCHOT_L: ASSERTED (low)"
+    fi
+    echo "  cores at min: $at_min/$cores"
+    echo "  core freq:    $((low_khz / 1000)) - $((high_khz / 1000)) MHz"
+    [ -n "$cpu_temp" ] && echo "  EC CPU temp:  $cpu_temp"
+    [ -n "$fan" ] && echo "  fan:          $fan"
+
+    if [ "$prochot" != "true" ]; then
+        echo
+        echo "VERDICT: BD PROCHOT is asserted by the EC - CPU clamped to min P-state."
+        echo "         This is NOT thermal throttling. Recover with:"
+        echo "           sudo framework_tool --reboot-ec reboot"
+        return 1
+    fi
+
+    if [ "$cores" -gt 0 ] && [ "$at_min" -eq "$cores" ]; then
+        echo
+        echo "VERDICT: no BD PROCHOT clamp; every core is just idle."
+        echo "         Re-run with --load to confirm it boosts under work."
+        return 0
+    fi
+
+    echo
+    echo "VERDICT: healthy - no BD PROCHOT clamp, cores are boosting."
+    return 0
+}
+
+if [ "$WATCH" -eq 0 ]; then
+    start_load
+    echo "Framework throttle check"
+    status=0
+    check || status=$?
+    exit "$status"
+fi
+
+start_load
+
+while :; do
+    echo "Framework throttle check  ($(date +%H:%M:%S))"
+    status=0
+    check || status=$?
+    if [ "$status" -eq 0 ]; then echo "  -> ok"; else echo "  -> CLAMPED"; fi
+    echo
+    sleep "$INTERVAL"
+done

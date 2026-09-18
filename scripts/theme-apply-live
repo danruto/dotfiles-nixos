@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Live-apply the current theme to the running session. No logout needed.
+# Called automatically by scripts/theme-set; safe to run on its own.
+#
+# What it covers:
+#   niri      - live-reloads config.kdl on save by itself, nothing to do
+#   hyprland  - `hyprctl reload` when running
+#   dms       - restarted (bar flickers ~1s, windows untouched)
+#   foot/kitty- SIGUSR1 reloads config in running windows
+#   ghostty   - watches its config file, reloads itself
+#   fish/starship/btop/yazi - picked up by new processes/prompts
+#
+# Still needs a manual restart: browser, vscode, helix, other GUI apps.
+set -u
+
+RUNTIME="/run/user/$(id -u)"
+if [ -d "$RUNTIME" ]; then
+  export XDG_RUNTIME_DIR="$RUNTIME"
+fi
+export PATH="/etc/profiles/per-user/$(id -un)/bin:$HOME/.local/bin:$PATH"
+
+say() { echo "  $1"; }
+
+# Compositor configs. Niri live-reloads on file write; Hyprland needs a nudge.
+if pgrep -x Hyprland >/dev/null 2>&1; then
+  sig_dir="$(ls -td "$RUNTIME"/hypr/* 2>/dev/null | head -1 || true)"
+  if [ -n "$sig_dir" ]; then
+    export HYPRLAND_INSTANCE_SIGNATURE="$(basename "$sig_dir")"
+    if hyprctl reload >/dev/null 2>&1; then
+      say "hyprland reloaded"
+    else
+      say "hyprland running but reload failed (re-login for borders)"
+    fi
+  fi
+elif pgrep -x niri >/dev/null 2>&1; then
+  say "niri live-reloaded config on switch"
+else
+  say "no compositor running, nothing to reload"
+fi
+
+# DMS owns bar/launcher/notifications/polkit: restart to pick up new settings.
+if pgrep -f "[d]ms run" >/dev/null 2>&1; then
+  pkill -f "[d]ms run" 2>/dev/null || true
+  sleep 1
+  if pgrep -f "[d]ms run" >/dev/null 2>&1; then
+    pkill -9 -f "[d]ms run" 2>/dev/null || true
+    sleep 1
+  fi
+  setsid dms run >/dev/null 2>&1 < /dev/null &
+  sleep 2
+  if pgrep -f "[d]ms run" >/dev/null 2>&1; then
+    say "dms restarted"
+  else
+    echo "  DMS FAILED to restart. Run 'dms run' from a terminal, or re-login."
+  fi
+fi
+
+# Terminals that reload config without restarting.
+for term in foot kitty; do
+  if pgrep -x "$term" >/dev/null 2>&1; then
+    pkill -SIGUSR1 -x "$term" 2>/dev/null || true
+    say "$term reloaded"
+  fi
+done
+
+echo "Live apply done. Restart running GUI apps (browser, editor) for full effect."

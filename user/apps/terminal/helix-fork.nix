@@ -8,7 +8,8 @@
     ];
     defaultEditor = true;
     settings = {
-      theme = "flexoki_dark";
+      # theme is supplied by stylix.targets.helix (user/theme.nix), which sets
+      # program.settings.theme = "stylix".
       editor = {
         line-number = "relative";
         mouse = true;

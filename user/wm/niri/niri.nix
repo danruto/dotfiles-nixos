@@ -23,7 +23,7 @@ in
 {
   imports = [
     ../waybar/waybar.nix
-    ./dms.nix
+    ../dms.nix
   ];
 
   home.packages = stable-packages ++ unstable-packages;
@@ -55,7 +55,7 @@ in
       After = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${pkgs.swayidle}/bin/swayidle -w timeout 3600 'niri msg action power-off-monitors'";
+      ExecStart = "${pkgs.swayidle}/bin/swayidle -w timeout 3600 'niri msg action power-off-monitors' idlehint 60";
       Restart = "on-failure";
     };
     Install.WantedBy = [ "graphical-session.target" ];
@@ -181,8 +181,9 @@ in
         width = 4;
         # active.color = "#7fc8ff";
         inactive.color = "#505050";
+        # Follows the Stylix palette so a theme switch recolors borders.
         # angle 45 => btmLeft to topRight
-        active.gradient = { from = "#7fc8ff"; to = "#E6B673"; angle = 45; };
+        active.gradient = with config.lib.stylix.colors; { from = "#${base0D}"; to = "#${base0A}"; angle = 45; };
         # // active-gradient from="#80c8ff" to="#bbddff" angle=45
         # // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
         # // urgent-gradient from="#800" to="#a33" angle=45

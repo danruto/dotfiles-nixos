@@ -1,4 +1,4 @@
-{ lib, pkgs, pkgs-unstable, ... }:
+{ lib, pkgs, pkgs-unstable, config, ... }:
 let
   statusbar = pkgs.writeShellScriptBin "statusbar" (builtins.readFile ./statusbar.sh);
   switch = pkgs.writeShellScriptBin "switch" (builtins.readFile ./switch.sh);
@@ -8,7 +8,12 @@ in
 
   imports = [
     ../waybar/waybar.nix
+    # Shared DankMaterialShell bar (same config as Niri). Disables waybar
+    # while enabled; Hyprland keeps waybar+dunst as a DMS-less fallback.
+    ../dms.nix
   ];
+
+  programs.waybar.enable = lib.mkIf config.programs.dank-material-shell.enable (lib.mkForce false);
 
   wayland.windowManager.hyprland = {
     enable = true;
@@ -24,11 +29,16 @@ in
       ];
 
       exec-once = [
-        "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
         "${lib.getExe xdg}"
-        "${lib.getExe pkgs.dunst}"
         # "${lib.getExe statusbar}" # waybar is handled by systemd service
         # "${lib.getExe pkgs.waybar}"
+      ]
+      # DMS owns notifications + polkit when enabled; otherwise fall back to
+      # the old dunst + polkit-gnome stack so Hyprland works DMS-less.
+      ++ lib.optional config.programs.dank-material-shell.enable "dms run"
+      ++ lib.optionals (!config.programs.dank-material-shell.enable) [
+        "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+        "${lib.getExe pkgs.dunst}"
       ];
 
       env = [
@@ -53,7 +63,8 @@ in
         gaps_in = 5;
         gaps_out = 20;
         border_size = 2;
-        "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
+        # Follows the Stylix palette so a theme switch recolors borders.
+        "col.active_border" = with config.lib.stylix.colors; "rgba(${base0D}ee) rgba(${base0A}ee) 45deg";
         "col.inactive_border" = "rgba(595959aa)";
 
         layout = "dwindle";

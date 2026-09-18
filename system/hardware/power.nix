@@ -33,15 +33,27 @@
   ];
 
   services.upower.enable = true;
-  services.upower.criticalPowerAction = "Hibernate";
-  services.thermald.enable = false;
+  services.upower.criticalPowerAction = "PowerOff";
+  services.thermald.enable = true;
+  # No persistent swap (ext4 root, 62GB RAM) so hibernate can't work.
+  # Plain suspend + zram for memory pressure instead of suspend-then-hibernate.
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 25;
+  };
   services.logind = {
-    settings.Login.HandleLidSwitch = "suspend-then-hibernate";
+    settings.Login.HandleLidSwitch = "suspend";
+    # Idle = swayidle's idlehint (niri.nix) with no idle inhibitor held;
+    # agent-awake (hosts/framework/home.nix) holds one while an agent works.
+    settings.Login.IdleAction = "suspend";
+    settings.Login.IdleActionSec = "2h";
     # lidSwitch = "suspend";
     # lidSwitchExternalPower = "suspend";
   };
 
-  systemd.sleep.settings.Sleep.HibernateDelaySec = "1h";
+  systemd.sleep.settings.Sleep.HibernateDelaySec = "0";
+  # NOTE: no persistent swap on this host, so hibernate targets are inert.
 
   # Additional power management optimizations
   services.udev.extraRules = ''

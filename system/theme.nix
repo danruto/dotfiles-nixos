@@ -11,6 +11,22 @@ in
     enable = true;
     autoEnable = false;
 
+    # Pin the font family back to what this repo already used; otherwise Stylix
+    # defaults to a different sans/mono pair and recolors every target away
+    # from D2Coding.
+    fonts.monospace = {
+      name = "D2Koding Nerd Font";
+      package = pkgs.d2coding;
+    };
+    fonts.sansSerif = {
+      name = "D2Koding Nerd Font";
+      package = pkgs.d2coding;
+    };
+    fonts.sizes = {
+      terminal = 14;
+      applications = 12;
+    };
+
     base16Scheme = dir + "/${theme}.yaml";
     polarity = read "polarity.txt";
     image = pkgs.fetchurl {

@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Switch the Stylix theme: scripts/theme-set <name>
+# Rebuilds via `make switch`. Log out/in after for bar, borders, greeter.
+set -euo pipefail
+
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$REPO"
+
+list_themes() {
+  for d in themes/*/; do
+    name="$(basename "$d")"
+    [ -f "themes/$name/$name.yaml" ] && echo "$name"
+  done
+}
+
+if [ "${1:-}" = "--list" ] || [ $# -ne 1 ]; then
+  echo "Available themes:"
+  list_themes
+  echo ""
+  echo "Usage: scripts/theme-set <name>"
+  exit 0
+fi
+
+name="$1"
+if [ ! -f "themes/$name/$name.yaml" ]; then
+  echo "Unknown theme: $name"
+  echo "Available: $(list_themes | tr '\n' ' ')"
+  exit 1
+fi
+
+sed -i -E "s/^[[:space:]]*theme = \".*\";/        theme = \"$name\";/" flake.nix
+if ! grep -q "theme = \"$name\";" flake.nix; then
+  echo "Failed to update theme in flake.nix"
+  exit 1
+fi
+
+echo "Theme set to $name, rebuilding..."
+make switch
+echo ""
+"$(dirname "$0")/theme-apply-live"

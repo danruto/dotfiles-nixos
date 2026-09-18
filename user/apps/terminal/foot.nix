@@ -1,14 +1,10 @@
-{ pkgs, font, ... }:
+{ pkgs, ... }:
 {
+  # Colors, alpha and font come from stylix.targets.foot (user/theme.nix).
+  # Only non-themed behaviour stays here.
   programs.foot = {
     enable = true;
     settings = {
-      main = {
-        # font = "IosevkaComfy:size=14";
-        # font = "DepartureMono:size=12";
-        # font = "AdwaitaMono Nerd Font:size=14";
-        font = "D2KodingLigature Nerd Font Mono:size=14";
-      };
       mouse = {
         hide-when-typing = "yes";
       };
@@ -17,5 +13,4 @@
       };
     };
   };
-
 }

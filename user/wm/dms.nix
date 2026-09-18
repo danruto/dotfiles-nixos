@@ -8,7 +8,8 @@
     enable = true;
 
     settings = {
-      theme = "dark";
+      # surface area for the palette. The rest (all colors + wallpaper) is
+      # supplied by stylix.targets.dank-material-shell in user/theme.nix.
       dynamicTheming = true;
       use24HourClock = false;
 

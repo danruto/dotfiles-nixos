@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   imports = [
@@ -27,7 +27,16 @@
       options = "caps:escape";
     };
   };
-  services.displayManager.gdm.enable = true;
+  # GDM pulled in half of GNOME for a login screen; greetd+tuigreet lists
+  # the installed wayland sessions (niri, hyprland) with no desktop env.
+  services.displayManager.gdm.enable = false;
+  services.greetd = {
+    enable = true;
+    settings.default_session = {
+      command = "${lib.getExe pkgs.greetd.tuigreet} --time --remember --remember-session --sessions /run/current-system/sw/share/wayland-sessions";
+      user = "greeter";
+    };
+  };
 
   # Security
   security = {
@@ -37,6 +46,7 @@
       '';
     };
     pam.services.login.enableGnomeKeyring = true;
+    pam.services.greetd.enableGnomeKeyring = true;
   };
 
 }

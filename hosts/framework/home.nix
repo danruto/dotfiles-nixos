@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-unstable, ... }: {
+{ config, pkgs, pkgs-unstable, herdr, ... }: {
 
   home.username = "danruto";
   home.homeDirectory = "/home/danruto";
@@ -78,23 +78,40 @@
   # Enable automatic start/restart of systemd user services
   systemd.user.startServices = "sd-switch";
 
+  # Blocks logind's IdleAction (system/hardware/power.nix) while any herdr agent
+  # pane reports "working". herdr's own claude/pi/opencode hooks set that state.
+  # The inhibitor is held continuously, not re-taken per poll: logind only
+  # checks at IdleActionSec intervals, so a gap at that instant would suspend.
+  systemd.user.services.agent-awake = {
+    Unit.Description = "Keep the PC awake while an AI agent is working";
+    Service = {
+      ExecStart = "${pkgs.writeShellApplication {
+        name = "agent-awake";
+        runtimeInputs = [ herdr.packages.${pkgs.stdenv.hostPlatform.system}.default pkgs.jq pkgs.systemd ];
+        text = ''
+          pid=""
+          while :; do
+            if herdr agent list 2>/dev/null | jq -e '.result.agents | any(.agent_status == "working")' >/dev/null; then
+              if [ -z "$pid" ]; then
+                systemd-inhibit --what=idle --who=agent-awake --why="AI agent working" sleep infinity &
+                pid=$!
+              fi
+            elif [ -n "$pid" ]; then
+              kill "$pid"
+              pid=""
+            fi
+            sleep 60
+          done
+        '';
+      }}/bin/agent-awake";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
+
+  # gtk theme now comes from stylix.targets.gtk (user/theme.nix); the old
+  # hand-written block was removed so the palette is the single source.
   programs.home-manager.enable = true;
-
-  xdg = {
-    enable = true;
-  };
-
-  gtk = {
-    enable = true;
-    theme = {
-      name = "Adwaita-dark";
-    };
-    gtk4.theme = config.gtk.theme;
-    iconTheme = {
-      name = "Adwaita";
-      package = pkgs.adwaita-icon-theme;
-    };
-  };
 
   programs.starship.enable = true;
   programs.starship.settings = {

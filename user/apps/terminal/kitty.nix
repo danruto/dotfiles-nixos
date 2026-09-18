@@ -1,10 +1,13 @@
 { pkgs-unstable, ... }:
 
-# Config is the verbatim file from ./configs/kitty/, not `programs.kitty.settings`.
-# Both write ~/.config/kitty/kitty.conf, so enabling the program module here
-# would collide with the raw file.
+# Colors, alpha and font come from stylix.targets.kitty (user/theme.nix), which
+# includes a generated base16 theme. The raw kitty.conf is still owned here for
+# everything non-color: this file is loaded after the include, so deleting the
+# color_* / background / foreground keys stops it overriding Stylix.
 {
-  home.packages = [ pkgs-unstable.kitty ];
-
-  home.file.".config/kitty/kitty.conf".source = ./configs/kitty/kitty.conf;
+  programs.kitty = {
+    enable = true;
+    package = pkgs-unstable.kitty;
+    extraConfig = builtins.readFile ./configs/kitty/kitty.conf;
+  };
 }
