@@ -364,6 +364,20 @@
             },
           },
         })
+
+        -- Runtime theme palette written by scripts/theme-render. Applied after
+        -- LazyVim finishes so it overrides the default colorscheme.
+        local function _stylix_theme()
+          local f = vim.fn.expand("~/.local/state/theme/live/nvim.lua")
+          if vim.fn.filereadable(f) == 1 then
+            dofile(f)
+          end
+        end
+        vim.api.nvim_create_autocmd("User", {
+          pattern = { "VeryLazy", "LazyVimStarted" },
+          callback = _stylix_theme,
+        })
+        vim.api.nvim_create_user_command("ThemeReload", _stylix_theme, {})
       '';
   };
 

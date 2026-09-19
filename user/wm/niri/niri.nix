@@ -19,6 +19,20 @@ let
     vicinae
   ];
 
+  # The systemd user manager doesn't inherit WAYLAND_DISPLAY, so a bare
+  # `vicinae server` aborts with "no Qt platform plugin". Resolve the socket
+  # ourselves and pin the Qt platform so Super+R (vicinae toggle) keeps working.
+  vicinae-server = pkgs.writeShellScript "vicinae-server" ''
+    export QT_QPA_PLATFORM="''${QT_QPA_PLATFORM:-wayland}"
+    if [ -z "''${WAYLAND_DISPLAY:-}" ]; then
+      for sock in "''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"/wayland-*; do
+        case "$sock" in *.lock) continue ;; esac
+        [ -S "$sock" ] && export WAYLAND_DISPLAY="$(basename "$sock")" && break
+      done
+    fi
+    exec ${pkgs-unstable.vicinae}/bin/vicinae server
+  '';
+
 in
 {
   imports = [
@@ -68,13 +82,19 @@ in
       After = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${pkgs-unstable.vicinae}/bin/vicinae server";
-      Restart = "on-failure";
+      ExecStart = "${vicinae-server}";
+      Restart = "always";
     };
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
   programs.niri.settings = {
+    # Runtime focus-ring palette, rewritten by scripts/theme-render. mkAfter
+    # so the included file is parsed last and wins over the Nix fallback below.
+    includes = lib.mkAfter [
+      "${config.home.homeDirectory}/.local/state/theme/live/niri.kdl"
+    ];
+
     environment = {
       XDG_CURRENT_DESKTOP = "niri";
       QT_QPA_PLATFORM = "wayland";

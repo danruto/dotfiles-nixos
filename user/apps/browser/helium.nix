@@ -10,10 +10,13 @@ let
     paths = [ heliumBase ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
-      # Qt launchers (vicinae) export their own QT_PLUGIN_PATH to children;
-      # Chromium's libqt6_shim.so then aborts on the mismatched qtwayland plugin.
+      # Chromium's libqt6_shim.so segfaults when the session's Qt6CT platform
+      # theme/plugin vars leak in (QT_QPA_PLATFORMTHEME=qt5ct -> libqt6ct).
+      # Clear all three so helium starts under the DMS/niri session.
       wrapProgram $out/bin/helium \
         --unset QT_PLUGIN_PATH \
+        --unset QT_QPA_PLATFORMTHEME \
+        --unset QT_STYLE_OVERRIDE \
         --add-flags "--enable-features=WaylandWindowDecorations,VaapiVideoDecodeLinuxGL,PlatformHEVCDecoderSupport"
     '';
   };

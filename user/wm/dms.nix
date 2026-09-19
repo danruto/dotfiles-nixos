@@ -1,4 +1,4 @@
-{ dms, dms-plugin-diskusage, ... }:
+{ dms, dms-plugin-diskusage, config, lib, ... }:
 {
   imports = [
     dms.homeModules.dank-material-shell
@@ -8,6 +8,13 @@
     enable = true;
 
     settings = {
+      # Runtime palette + wallpaper written by scripts/theme-render.
+      currentThemeName = lib.mkForce "custom";
+      customThemeFile = lib.mkForce
+        "${config.xdg.stateHome}/theme/current/dms.json";
+      fontFamily = "D2Koding Nerd Font";
+      monoFontFamily = "D2Koding Nerd Font";
+
       # surface area for the palette. The rest (all colors + wallpaper) is
       # supplied by stylix.targets.dank-material-shell in user/theme.nix.
       dynamicTheming = true;
@@ -87,6 +94,13 @@
     session = {
       weatherLocation = "Sydney, NSW";
       weatherCoordinates = "-33.8688,151.2093";
+
+      wallpaperPath = lib.mkForce
+        "${config.xdg.stateHome}/theme/current/wallpaper";
+      wallpaperPathLight = lib.mkForce
+        "${config.xdg.stateHome}/theme/current/wallpaper";
+      wallpaperPathDark = lib.mkForce
+        "${config.xdg.stateHome}/theme/current/wallpaper";
     };
 
     enableSystemMonitoring = true;

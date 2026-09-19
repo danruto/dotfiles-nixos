@@ -9,7 +9,7 @@
     ];
     defaultEditor = true;
     settings = {
-      theme = "ayu_evolve";
+      theme = "stylix";
       editor = {
         line-number = "relative";
         mouse = true;

@@ -7,10 +7,10 @@
 #   hyprland  - `hyprctl reload` when running
 #   dms       - restarted (bar flickers ~1s, windows untouched)
 #   foot/kitty- SIGUSR1 reloads config in running windows
-#   ghostty   - watches its config file, reloads itself
-#   fish/starship/btop/yazi - picked up by new processes/prompts
+#   ghostty   - SIGUSR2 reloads config in running windows
+#   fish/starship - picked up by new processes/prompts
 #
-# Still needs a manual restart: browser, vscode, helix, other GUI apps.
+# Still needs a manual restart: browser, btop, gitui, vscode, helix, GTK apps.
 set -u
 
 RUNTIME="/run/user/$(id -u)"
@@ -61,6 +61,73 @@ for term in foot kitty; do
     pkill -SIGUSR1 -x "$term" 2>/dev/null || true
     say "$term reloaded"
   fi
+done
+
+# Ghostty reloads its config on SIGUSR2.
+if pgrep -x ghostty >/dev/null 2>&1; then
+  pkill -SIGUSR2 -x ghostty 2>/dev/null || true
+  say "ghostty reloaded"
+fi
+
+# bat compiles its themes into a cache; rebuild it after the theme file changes.
+if command -v bat >/dev/null 2>&1; then
+  bat cache --build >/dev/null 2>&1 && say "bat cache rebuilt" || true
+fi
+
+# libadwaita/GNOME apps (Nautilus, ...) only accept a named accent + scheme.
+if command -v gsettings >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  state="${XDG_STATE_HOME:-$HOME/.local/state}/theme"
+  if [ -r "$state/current/palette.json" ]; then
+    if gsettings set org.gnome.desktop.interface accent-color \
+      "$(jq -r .accentName "$state/current/palette.json")" 2>/dev/null; then
+      say "libadwaita accent set ($(jq -r .accentName "$state/current/palette.json"))"
+    fi
+    if [ "$(jq -r .polarity "$state/current/palette.json")" = "light" ]; then
+      gsettings set org.gnome.desktop.interface color-scheme "prefer-light" 2>/dev/null || true
+    else
+      gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" 2>/dev/null || true
+    fi
+  fi
+fi
+
+# Helium / Chromium-family: write the theme colour as a managed policy (the
+# same mechanism Omarchy uses) and refresh running browsers without a restart.
+if command -v helium >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  state="${XDG_STATE_HOME:-$HOME/.local/state}/theme"
+  if [ -r "$state/current/palette.json" ]; then
+    hex="$(jq -r .base00 "$state/current/palette.json")"
+    if [ "$(jq -r .polarity "$state/current/palette.json")" = "light" ]; then
+      scheme=light
+    else
+      scheme=dark
+    fi
+    if sudo -n true 2>/dev/null; then
+      sudo -n mkdir -p /etc/chromium/policies/managed
+      printf '{"BrowserThemeColor":"#%s","BrowserColorScheme":"%s"}\n' "$hex" "$scheme" \
+        | sudo -n tee /etc/chromium/policies/managed/color.json >/dev/null
+      say "helium policy written"
+      if pgrep -x helium >/dev/null 2>&1; then
+        helium --refresh-platform-policy --no-startup-window >/dev/null 2>&1 || true
+        say "helium refreshed"
+      fi
+    else
+      say "helium: needs passwordless sudo for /etc/chromium/policies (skipped)"
+    fi
+  fi
+fi
+
+# Floorp/Firefox profiles are user-writable, so drop the generated userChrome
+# in and make sure the stylesheet pref is on. Needs a browser restart.
+for prof in "$HOME"/.floorp/*/ "$HOME"/.mozilla/firefox/*/; do
+  [ -d "$prof" ] || continue
+  [ -f "$prof/prefs.js" ] || [ -f "$prof/times.json" ] || continue
+  mkdir -p "$prof/chrome"
+  cp "${XDG_STATE_HOME:-$HOME/.local/state}/theme/live/firefox-userChrome.css" \
+    "$prof/chrome/userChrome.css"
+  if ! grep -q 'legacyUserProfileCustomizations.stylesheets' "$prof/user.js" 2>/dev/null; then
+    echo 'user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);' >> "$prof/user.js"
+  fi
+  say "floorp/firefox profile $(basename "$prof") themed (restart browser)"
 done
 
 echo "Live apply done. Restart running GUI apps (browser, editor) for full effect."

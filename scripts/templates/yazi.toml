@@ -1,0 +1,376 @@
+[completion.active]
+bg = "#@@h02@@"
+fg = "#@@h0E@@"
+
+[completion.border]
+fg = "#@@h0D@@"
+
+[completion.inactive]
+fg = "#@@h05@@"
+
+[[filetype.rules]]
+fg = "#@@h0C@@"
+mime = "image/*"
+
+[[filetype.rules]]
+fg = "#@@h0A@@"
+mime = "video/*"
+
+[[filetype.rules]]
+fg = "#@@h0A@@"
+mime = "audio/*"
+
+[[filetype.rules]]
+fg = "#@@h0E@@"
+mime = "application/zip"
+
+[[filetype.rules]]
+fg = "#@@h0E@@"
+mime = "application/gzip"
+
+[[filetype.rules]]
+fg = "#@@h0E@@"
+mime = "application/tar"
+
+[[filetype.rules]]
+fg = "#@@h0E@@"
+mime = "application/bzip"
+
+[[filetype.rules]]
+fg = "#@@h0E@@"
+mime = "application/bzip2"
+
+[[filetype.rules]]
+fg = "#@@h0E@@"
+mime = "application/7z-compressed"
+
+[[filetype.rules]]
+fg = "#@@h0E@@"
+mime = "application/rar"
+
+[[filetype.rules]]
+fg = "#@@h0E@@"
+mime = "application/xz"
+
+[[filetype.rules]]
+fg = "#@@h0B@@"
+mime = "application/doc"
+
+[[filetype.rules]]
+fg = "#@@h0B@@"
+mime = "application/pdf"
+
+[[filetype.rules]]
+fg = "#@@h0B@@"
+mime = "application/rtf"
+
+[[filetype.rules]]
+fg = "#@@h0B@@"
+mime = "application/vnd.*"
+
+[[filetype.rules]]
+bold = true
+fg = "#@@h0D@@"
+url = "*/"
+
+[[filetype.rules]]
+fg = "#@@h05@@"
+mime = "*"
+
+[help.desc]
+fg = "#@@h05@@"
+
+[help.footer]
+fg = "#@@h05@@"
+
+[help.hovered]
+bg = "#@@h02@@"
+fg = "#@@h05@@"
+
+[help.on]
+fg = "#@@h0E@@"
+
+[help.run]
+fg = "#@@h0C@@"
+
+[[icon.conds]]
+fg = "#@@h05@@"
+if = "orphan"
+text = ""
+
+[[icon.conds]]
+fg = "#@@h04@@"
+if = "link"
+text = ""
+
+[[icon.conds]]
+fg = "#@@h0A@@"
+if = "block"
+text = ""
+
+[[icon.conds]]
+fg = "#@@h0A@@"
+if = "char"
+text = ""
+
+[[icon.conds]]
+fg = "#@@h0A@@"
+if = "fifo"
+text = ""
+
+[[icon.conds]]
+fg = "#@@h0A@@"
+if = "sock"
+text = ""
+
+[[icon.conds]]
+fg = "#@@h0A@@"
+if = "sticky"
+text = ""
+
+[[icon.conds]]
+fg = "#@@h08@@"
+if = "dummy"
+text = ""
+
+[[icon.conds]]
+fg = "#@@h0D@@"
+if = "dir"
+text = ""
+
+[[icon.conds]]
+fg = "#@@h0B@@"
+if = "exec"
+text = ""
+
+[[icon.conds]]
+fg = "#@@h05@@"
+if = "!dir"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h08@@"
+name = ".config"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = ".git"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0D@@"
+name = ".github"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0D@@"
+name = ".npm"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = "Desktop"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = "Development"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = "Documents"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = "Downloads"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = "Library"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = "Movies"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = "Music"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = "Pictures"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = "Public"
+text = ""
+
+[[icon.dirs]]
+fg = "#@@h0C@@"
+name = "Videos"
+text = ""
+
+[indicator.current]
+bg = "#@@h02@@"
+bold = true
+
+[indicator.preview]
+bg = "#@@h02@@"
+bold = true
+
+[input.border]
+fg = "#@@h0D@@"
+
+[input.selected]
+bg = "#@@h02@@"
+
+[input.title]
+fg = "#@@h05@@"
+
+[input.value]
+fg = "#@@h05@@"
+
+[mgr]
+syntect_theme = "@@battheme@@"
+
+[mgr.border_style]
+fg = "#@@h04@@"
+
+[mgr.count_copied]
+bg = "#@@h0B@@"
+fg = "#@@h00@@"
+
+[mgr.count_cut]
+bg = "#@@h08@@"
+fg = "#@@h00@@"
+
+[mgr.count_selected]
+bg = "#@@h0A@@"
+fg = "#@@h00@@"
+
+[mgr.cwd]
+fg = "#@@h0C@@"
+
+[mgr.find_keyword]
+bold = true
+fg = "#@@h0B@@"
+
+[mgr.find_position]
+fg = "#@@h0E@@"
+
+[mgr.marker_copied]
+bg = "#@@h0B@@"
+fg = "#@@h0B@@"
+
+[mgr.marker_cut]
+bg = "#@@h08@@"
+fg = "#@@h08@@"
+
+[mgr.marker_selected]
+bg = "#@@h0A@@"
+fg = "#@@h0A@@"
+
+[mode.normal_alt]
+bg = "#@@h00@@"
+fg = "#@@h0D@@"
+
+[mode.normal_main]
+bg = "#@@h0D@@"
+bold = true
+fg = "#@@h00@@"
+
+[mode.select_alt]
+bg = "#@@h00@@"
+fg = "#@@h0B@@"
+
+[mode.select_main]
+bg = "#@@h0B@@"
+bold = true
+fg = "#@@h00@@"
+
+[mode.unset_alt]
+bg = "#@@h00@@"
+fg = "#@@h01@@"
+
+[mode.unset_main]
+bg = "#@@h01@@"
+bold = true
+fg = "#@@h00@@"
+
+[pick.active]
+fg = "#@@h0E@@"
+
+[pick.border]
+fg = "#@@h0D@@"
+
+[pick.inactive]
+fg = "#@@h05@@"
+
+[status.perm_exec]
+fg = "#@@h0B@@"
+
+[status.perm_read]
+fg = "#@@h0A@@"
+
+[status.perm_sep]
+fg = "#@@h0C@@"
+
+[status.perm_type]
+fg = "#@@h0D@@"
+
+[status.perm_write]
+fg = "#@@h08@@"
+
+[status.progress_error]
+bg = "#@@h00@@"
+fg = "#@@h08@@"
+
+[status.progress_label]
+bg = "#@@h00@@"
+fg = "#@@h05@@"
+
+[status.progress_normal]
+bg = "#@@h00@@"
+fg = "#@@h05@@"
+
+[tabs.active]
+bg = "#@@h0D@@"
+bold = true
+fg = "#@@h00@@"
+
+[tabs.inactive]
+bg = "#@@h01@@"
+fg = "#@@h0D@@"
+
+[tasks.border]
+fg = "#@@h0D@@"
+
+[tasks.hovered]
+bg = "#@@h02@@"
+fg = "#@@h05@@"
+
+[tasks.title]
+fg = "#@@h05@@"
+
+[which.cand]
+fg = "#@@h0C@@"
+
+[which.desc]
+fg = "#@@h05@@"
+
+[which.mask]
+bg = "#@@h02@@"
+
+[which.rest]
+fg = "#@@h01@@"
+
+[which.separator_style]
+fg = "#@@h04@@"

@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, ... }:
+{ pkgs, pkgs-unstable, lib, config, ... }:
 let
 
   # My shell aliases
@@ -144,8 +144,14 @@ in
     enable = true;
     settings = {
       vim_keys = true;
+      # scripts/theme-render rewrites this theme on every switch.
+      color_theme = lib.mkForce "runtime";
     };
   };
+
+  xdg.configFile."btop/themes/runtime.theme".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.xdg.stateHome}/theme/current/btop.theme";
 
   programs.direnv = {
     enable = true;

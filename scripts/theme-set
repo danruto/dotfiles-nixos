@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
-# Switch the Stylix theme: scripts/theme-set <name>
-# Rebuilds via `make switch`. Log out/in after for bar, borders, greeter.
+# Switch the Stylix theme.
+#
+#   scripts/theme-set <name>            fast: render runtime files + reload (no Nix)
+#   scripts/theme-set <name> --rebuild  full: update flake.nix and make switch
+#   scripts/theme-set --list            show themes
+#
+# The fast path renders every themed file under ~/.local/state/theme/current,
+# which the app configs read as out-of-store symlinks. Everything switches
+# without Nix except vscode (its theme is a VS Code extension and only updates
+# on --rebuild).
+#
+# The chosen name is still written to flake.nix so a later `make switch`
+# reconciles vscode and the system-level theme (greeter/boot).
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
@@ -13,15 +24,20 @@ list_themes() {
   done
 }
 
-if [ "${1:-}" = "--list" ] || [ $# -ne 1 ]; then
+mode=fast
+if [ "${1:-}" = "--list" ] || [ $# -eq 0 ]; then
   echo "Available themes:"
   list_themes
   echo ""
-  echo "Usage: scripts/theme-set <name>"
+  echo "Usage: scripts/theme-set <name> [--rebuild]"
   exit 0
 fi
 
 name="$1"
+if [ "${2:-}" = "--rebuild" ]; then
+  mode=rebuild
+fi
+
 if [ ! -f "themes/$name/$name.yaml" ]; then
   echo "Unknown theme: $name"
   echo "Available: $(list_themes | tr '\n' ' ')"
@@ -34,7 +50,18 @@ if ! grep -q "theme = \"$name\";" flake.nix; then
   exit 1
 fi
 
-echo "Theme set to $name, rebuilding..."
-make switch
+if [ "$mode" = rebuild ]; then
+  "$(dirname "$0")/theme-render" "$name"
+  echo "Theme set to $name, rebuilding..."
+  make switch
+  echo ""
+  "$(dirname "$0")/theme-apply-live"
+  exit 0
+fi
+
+"$(dirname "$0")/theme-render" "$name"
 echo ""
 "$(dirname "$0")/theme-apply-live"
+echo ""
+echo "Running helix/yazi/editors pick the new theme up on restart."
+echo "vscode still holds the previous palette until 'scripts/theme-set $name --rebuild'."

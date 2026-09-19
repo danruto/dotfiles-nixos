@@ -1,4 +1,8 @@
-# Stylix provides colors, font and cursor. Keep only presentation behaviour.
+# Colors come from the runtime theme file below (scripts/theme-render).
+config-file = ?~/.local/state/theme/current/ghostty
+font-family = D2Koding Nerd Font
+font-size = 14
+background-opacity = 1.0
 window-decoration = "none"
 background-blur = true
 

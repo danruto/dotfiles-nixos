@@ -160,7 +160,10 @@ in
       );
     };
 
-    # extraConfig = '';
+    # Runtime border colors, rewritten by scripts/theme-render per switch.
+    extraConfig = ''
+      source = ${config.home.homeDirectory}/.local/state/theme/live/hyprland.conf
+    '';
     xwayland = { enable = true; };
     systemd.enable = true;
   };
