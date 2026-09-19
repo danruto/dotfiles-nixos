@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports = [
@@ -33,7 +33,7 @@
   services.greetd = {
     enable = true;
     settings.default_session = {
-      command = "${lib.getExe pkgs.greetd.tuigreet} --time --remember --remember-session --sessions /run/current-system/sw/share/wayland-sessions";
+      command = "${lib.getExe pkgs.greetd.tuigreet} --time --remember --remember-session --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions";
       user = "greeter";
     };
   };

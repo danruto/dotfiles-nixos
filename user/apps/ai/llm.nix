@@ -15,12 +15,12 @@ let
   # https://downloads.claude.ai/claude-code-releases/<version>/manifest.zst.json
   claude-code = pkgs-master.claude-code.override {
       manifest = {
-        version = "2.1.273";
+        version = "2.1.278";
         platforms = {
-          "darwin-arm64" = { binary = "claude.zst"; checksum = "128317be44690b575b3447f5dd9112a6e41e7f711053fa7267b95544032997aa"; };
-          "darwin-x64" = { binary = "claude.zst"; checksum = "e4dacf712b8bc3645ef7a7125e8ddcb0be054df720c7c30b6e644601216ee2a8"; };
-          "linux-arm64" = { binary = "claude.zst"; checksum = "5e17b6500f0343ed4415cfc2084156936de88c7597338fa6ecb59c906ff1cba9"; };
-          "linux-x64" = { binary = "claude.zst"; checksum = "27dd8ce401c3946776f4b7800b242ab05f6a28785e963fb7449dd4ff1872343c"; };
+          "darwin-arm64" = { binary = "claude.zst"; checksum = "dba9162d25e74c59ad72c9df72f80cbc42ecc984137effc095d3efc6cdba5688"; };
+          "darwin-x64" = { binary = "claude.zst"; checksum = "b4b9893caa7e2a03603f957fcfeb796e44adfdb205e65e58600c096aedb92bc9"; };
+          "linux-arm64" = { binary = "claude.zst"; checksum = "4b758a132d4e52d5580ff13d127f3b21aac02c780cbf8803485ab2b5a14dff1b"; };
+          "linux-x64" = { binary = "claude.zst"; checksum = "5f5db204251b8457ac68b2004ed140a50c8feea62e5246cc28cde8d04ad760cb"; };
       };
     };
   };
@@ -121,12 +121,12 @@ let
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-dev-202609161816";
+      version = "0.0.0-dev-202609190440";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-Gocs8ANl5LFXOpB+3u1a8yzk+fGrKZFFc7SBe7aS28EGtDw53GdTxR4oiM6DjrQga51jOHVHCO5Raf+t2PQhlg=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-Y0UQ0HpU9TeeXLVu5yWraUiMBV3/LrhDaaRBNW0CiOCwNqzV4Ji8HqpMMM8zp3K0hfKWS70dg+ZFG9SG+8aOjw=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-Zxn8b29hJxGFOdGy8zRLfZ8v4m/vuexnyXe1wNlBLMBs8nd1uC+wCyiPdazMCMBqwalAZ6obB98twRpgGjIL7A=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-Cwj0Kx6/vKh1I1mUQc3p0HPGn8XNfDhwg5HyBcMUAjiKkdbEhtSxdNOQxzcyUyzt5rogLoy4OM+xEt4muHQq6w=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-+YBq0abEOTT26huYk/6b4aG3ahMkcD9Ta36UANe9iNtlS4oMpKDCb8Kdbmal6LUQRDuE55GusD+R5VwDC4FuTA=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-pBAA176j0SbchduxT06NGk0X5VZw/2n/7rj0lYSJt16yPcvTjk+4/bKlZ+ocBzWALGtBytJ0jc0qPAIbTA0Fiw=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-UxHY/DxcUi0cM/+sR0z0Khql3zbDkVPUcn7/G0Bhd5pPx1tOl1twop6snB+Dp2Xshec5ntd2qOpqGVoyftOavQ=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-ISaGEyHFr7BskO1HUw9k+zKuO/2PX4Vul2Ml2JI8L7CHSBJxHJ2Z2izaz6DDG6Yb6PVixzAq5OjLXbaKFhX9gw=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
@@ -295,6 +295,9 @@ in
   # Pi rewrites settings.json atomically, so use direct out-of-store symlinks
   # for the same reason as Claude's settings above. Pi's own settings changes
   # then land in this repo, while listed packages install on the next launch.
+  # The theme at ".pi/agent/themes/base16.json" is not linked here on purpose:
+  # scripts/theme-render writes it in place, and pi only hot-reloads the active
+  # theme by watching that directory for events on the file itself.
   home.activation.piConfigLinks = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run mkdir -p "${config.home.homeDirectory}/.pi/agent/extensions"
     run ln -sfn "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-settings.json" \

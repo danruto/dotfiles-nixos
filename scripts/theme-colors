@@ -10,6 +10,9 @@
 #   theme-colors <base00>..<base0F>    print {"dark":{...},"light":{...}}
 #   theme-colors --check <base00>..<>  print failing contrast pairs (empty = pass)
 #   theme-colors --contrast <fg> <bg>  print the WCAG contrast ratio
+#   theme-colors --mix <base> <to> <t> print <base> blended t of the way to <to>
+#   theme-colors --ensure <fg> <bg> <t> print <fg> nudged toward black/white until it clears <t>
+#   theme-colors --text-on <fg> <bg> <t> print <fg>, or pure black/white when <fg> cannot clear <t>
 set -euo pipefail
 
 mode=json
@@ -18,9 +21,21 @@ for a in "$@"; do
   case "$a" in
     --check)    mode=check ;;
     --contrast) mode=contrast ;;
+    --mix)      mode=mix ;;
+    --ensure)   mode=ensure ;;
+    --text-on)  mode=texton ;;
     *)          args+=("$a") ;;
   esac
 done
+
+case "$mode" in
+  mix|ensure|texton)
+    if [ "${#args[@]}" -ne 3 ]; then
+      echo "usage: theme-colors --$mode <color> <color> <value>" >&2
+      exit 2
+    fi
+    ;;
+esac
 
 vars=()
 i=0
@@ -63,7 +78,10 @@ function ensure(h, bg, target, i, cur, dest) {
     return dest
 }
 function textOn(bg, target) {
-    if (contrast(FG, bg) >= target) return FG
+    return pickText(FG, bg, target)
+}
+function pickText(fg, bg, target) {
+    if (contrast(fg, bg) >= target) return fg
     return (contrast("ffffff", bg) >= contrast("000000", bg)) ? "ffffff" : "000000"
 }
 function obj() {
@@ -94,6 +112,9 @@ BEGIN {
     WARNING = ensure(c10, BG, 4.5)
 
     if (mode == "contrast") { printf "%.2f\n", contrast(c0, c1); exit }
+    if (mode == "mix") { printf "%s\n", mix(c0, c1, c2); exit }
+    if (mode == "ensure") { printf "%s\n", ensure(c0, c1, c2); exit }
+    if (mode == "texton") { printf "%s\n", pickText(c0, c1, c2); exit }
     if (mode == "check") {
         check("backgroundText", BGTXT, BG, 4.5)
         check("surfaceText", TXT, SHIGHEST, 4.5)

@@ -29,6 +29,9 @@ in
 
     base16Scheme = dir + "/${theme}.yaml";
     polarity = read "polarity.txt";
+  } // lib.optionalAttrs (builtins.pathExists (dir + "/backgroundurl.txt")) {
+    # Only some themes ship a curated background; theme-render already treats
+    # it as optional, so a theme without one must still evaluate.
     image = pkgs.fetchurl {
       url = read "backgroundurl.txt";
       hash = read "backgroundsha256.txt";
