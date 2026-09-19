@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# Derive an accessible DMS colour theme from a base16 palette.
+#
+# base16 defines background (base00), foreground (base05) and accents, but DMS
+# wants Material surface/on-surface pairs. This builds those by blending the
+# background toward the foreground and nudging any low-contrast colour until it
+# clears its WCAG target, so every palette yields a usable bar regardless of how
+# the upstream scheme assigned base01..base04.
+#
+#   theme-colors <base00>..<base0F>    print {"dark":{...},"light":{...}}
+#   theme-colors --check <base00>..<>  print failing contrast pairs (empty = pass)
+#   theme-colors --contrast <fg> <bg>  print the WCAG contrast ratio
+set -euo pipefail
+
+mode=json
+args=()
+for a in "$@"; do
+  case "$a" in
+    --check)    mode=check ;;
+    --contrast) mode=contrast ;;
+    *)          args+=("$a") ;;
+  esac
+done
+
+vars=()
+i=0
+for c in "${args[@]}"; do
+  vars+=(-v "c$i=${c#\#}")
+  i=$((i + 1))
+done
+
+awk "${vars[@]}" -v mode="$mode" '
+function hx(ch, p) { p = index("0123456789abcdef", tolower(ch)); return p - 1 }
+function rd(h) { return hx(substr(h, 1, 1)) * 16 + hx(substr(h, 2, 1)) }
+function gr(h) { return hx(substr(h, 3, 1)) * 16 + hx(substr(h, 4, 1)) }
+function bl(h) { return hx(substr(h, 5, 1)) * 16 + hx(substr(h, 6, 1)) }
+function clamp(v) { v = int(v + 0.5); if (v < 0) v = 0; if (v > 255) v = 255; return v }
+function col(r, g, b) { return sprintf("%02x%02x%02x", clamp(r), clamp(g), clamp(b)) }
+function lum(h, R, G, B) {
+    R = rd(h) / 255; G = gr(h) / 255; B = bl(h) / 255
+    R = (R <= 0.03928) ? R / 12.92 : ((R + 0.055) / 1.055) ^ 2.4
+    G = (G <= 0.03928) ? G / 12.92 : ((G + 0.055) / 1.055) ^ 2.4
+    B = (B <= 0.03928) ? B / 12.92 : ((B + 0.055) / 1.055) ^ 2.4
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B
+}
+function contrast(a, b, la, lb, t) {
+    la = lum(a); lb = lum(b)
+    if (la < lb) { t = la; la = lb; lb = t }
+    return (la + 0.05) / (lb + 0.05)
+}
+function mix(a, b, t, ar, ag, ab, br, bg, bb) {
+    ar = rd(a); ag = gr(a); ab = bl(a)
+    br = rd(b); bg = gr(b); bb = bl(b)
+    return col(ar + (br - ar) * t, ag + (bg - ag) * t, ab + (bb - ab) * t)
+}
+function ensure(h, bg, target, i, cur, dest) {
+    if (contrast(h, bg) >= target) return h
+    dest = (lum(bg) > 0.5) ? "000000" : "ffffff"
+    for (i = 5; i <= 100; i += 5) {
+        cur = mix(h, dest, i / 100)
+        if (contrast(cur, bg) >= target) return cur
+    }
+    return dest
+}
+function textOn(bg, target) {
+    if (contrast(FG, bg) >= target) return FG
+    return (contrast("ffffff", bg) >= contrast("000000", bg)) ? "ffffff" : "000000"
+}
+function obj() {
+    return "{\"background\":\"#" BG "\",\"backgroundText\":\"#" BGTXT "\",\"error\":\"#" ERROR "\",\"info\":\"#" INFO "\",\"name\":\"Stylix\",\"outline\":\"#" OUTLINE "\",\"primary\":\"#" PRIMARY "\",\"primaryContainer\":\"#" PRIMARYC "\",\"primaryContainerText\":\"#" PRIMARYCTX "\",\"primaryText\":\"#" PRIMARYTX "\",\"secondary\":\"#" SECONDARY "\",\"surface\":\"#" BG "\",\"surfaceContainer\":\"#" SLOW "\",\"surfaceContainerHigh\":\"#" SHIGH "\",\"surfaceContainerHighest\":\"#" SHIGHEST "\",\"surfaceContainerLow\":\"#" SLOW2 "\",\"surfaceContainerLowest\":\"#" BG "\",\"surfaceText\":\"#" TXT "\",\"surfaceTint\":\"#" PRIMARY "\",\"surfaceVariant\":\"#" SVARIANT "\",\"surfaceVariantText\":\"#" VARIANTC "\",\"warning\":\"#" WARNING "\"}"
+}
+function check(label, fg, bg, target, r) {
+    r = contrast(fg, bg)
+    if (r < target) printf "%s %.2f<%.1f\n", label, r, target
+}
+BEGIN {
+    BG = c0; FG = c5
+    BGTXT = textOn(BG, 4.5)
+    SLOW2 = mix(BG, FG, 0.03)
+    SLOW = mix(BG, FG, 0.06)
+    SHIGH = mix(BG, FG, 0.10)
+    SHIGHEST = mix(BG, FG, 0.14)
+    SVARIANT = mix(BG, FG, 0.10)
+    TXT = textOn(SHIGHEST, 4.5)
+    OUTLINE = ensure(mix(BG, FG, 0.35), BG, 3.0)
+    VARIANTC = ensure(c4, SVARIANT, 3.0)
+    PRIMARY = ensure(c13, BG, 3.0)
+    PRIMARYC = ensure(c12, BG, 3.0)
+    PRIMARYTX = textOn(PRIMARY, 4.5)
+    PRIMARYCTX = textOn(PRIMARYC, 4.5)
+    SECONDARY = ensure(c14, BG, 3.0)
+    ERROR = ensure(c8, BG, 4.5)
+    INFO = ensure(c12, BG, 3.0)
+    WARNING = ensure(c10, BG, 4.5)
+
+    if (mode == "contrast") { printf "%.2f\n", contrast(c0, c1); exit }
+    if (mode == "check") {
+        check("backgroundText", BGTXT, BG, 4.5)
+        check("surfaceText", TXT, SHIGHEST, 4.5)
+        check("surfaceVariantText", VARIANTC, SVARIANT, 3.0)
+        check("outline", OUTLINE, BG, 3.0)
+        check("primaryText", PRIMARYTX, PRIMARY, 4.5)
+        check("primary", PRIMARY, BG, 3.0)
+        check("secondary", SECONDARY, BG, 3.0)
+        check("error", ERROR, BG, 4.5)
+        check("warning", WARNING, BG, 4.5)
+        check("info", INFO, BG, 3.0)
+        exit
+    }
+    printf "{\"dark\":%s,\"light\":%s}\n", obj(), obj()
+}
+'

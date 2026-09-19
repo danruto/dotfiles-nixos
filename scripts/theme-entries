@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Generate one XDG desktop entry per theme so launchers (DMS, vicinae) can
+# switch themes. Written under $XDG_DATA_HOME/applications, which is read
+# ahead of the system profile, so new themes show up without a Nix rebuild.
+#
+# Called by scripts/theme-set on every switch and by home-manager activation.
+set -euo pipefail
+
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+APPS="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+mkdir -p "$APPS"
+
+# setsid so switching survives theme-apply-live restarting DMS.
+setsid_bin="$(command -v setsid || echo setsid)"
+
+rm -f "$APPS"/theme-*.desktop
+count=0
+for yaml in "$REPO"/themes/*/*.yaml; do
+  name="$(basename "$yaml" .yaml)"
+  [ "$(dirname "$yaml")" = "$REPO/themes/$name" ] || continue
+  cat > "$APPS/theme-$name.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=Theme: $name
+Comment=Switch the theme to $name
+Exec=$setsid_bin -f $REPO/scripts/theme-set $name
+Terminal=false
+Categories=Settings
+Icon=preferences-desktop-theme
+StartupNotify=false
+EOF
+  count=$((count + 1))
+done
+
+# DMS caches the launcher's app list; drop it so the next open rescans.
+rm -f "${XDG_CACHE_HOME:-$HOME/.cache}/DankMaterialShell/launcher_cache.json"
+
+echo "Wrote $count theme entries to $APPS"

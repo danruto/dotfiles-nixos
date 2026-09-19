@@ -12,12 +12,15 @@
       currentThemeName = lib.mkForce "custom";
       customThemeFile = lib.mkForce
         "${config.xdg.stateHome}/theme/current/dms.json";
-      fontFamily = "D2Koding Nerd Font";
-      monoFontFamily = "D2Koding Nerd Font";
+      fontFamily = "D2KodingLigature Nerd Font";
+      monoFontFamily = "D2KodingLigature Nerd Font";
 
       # surface area for the palette. The rest (all colors + wallpaper) is
       # supplied by stylix.targets.dank-material-shell in user/theme.nix.
       dynamicTheming = true;
+      # scripts/theme-render owns the terminal/GTK/Qt theme files; stop DMS's
+      # matugen worker from writing a competing set of them.
+      runDmsMatugenTemplates = false;
       use24HourClock = false;
 
       # settings.json is a read-only Nix store symlink, so the bar layout must be

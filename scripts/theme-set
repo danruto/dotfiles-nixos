@@ -44,6 +44,9 @@ if [ ! -f "themes/$name/$name.yaml" ]; then
   exit 1
 fi
 
+# Keep launcher entries in sync with the themes on disk.
+"$(dirname "$0")/theme-entries" >/dev/null
+
 sed -i -E "s/^[[:space:]]*theme = \".*\";/        theme = \"$name\";/" flake.nix
 if ! grep -q "theme = \"$name\";" flake.nix; then
   echo "Failed to update theme in flake.nix"

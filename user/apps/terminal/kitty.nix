@@ -8,7 +8,7 @@
     package = pkgs-unstable.kitty;
     font = {
       package = pkgs.d2coding;
-      name = "D2Koding Nerd Font";
+      name = "D2KodingLigature Nerd Font";
       size = 14;
     };
     extraConfig = builtins.readFile ./configs/kitty/kitty.conf + ''

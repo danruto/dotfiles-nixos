@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Vendor the canonical base16 schemes from tinted-theming/schemes into themes/.
+#
+# Each scheme becomes themes/<slug>/<slug>.yaml (flat base00..base0F lines) plus
+# themes/<slug>/polarity.txt (light|dark, from the scheme's variant). Existing
+# per-theme wallpaper metadata is left untouched. Re-run to refresh.
+#
+#   scripts/vendor-themes            # uses the pinned ref below
+#   scripts/vendor-themes <git-ref>  # override
+set -euo pipefail
+
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+REF="${1:-spec-0.11}"
+SRC="https://github.com/tinted-theming/schemes"
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+
+echo "Cloning $SRC ($REF)..."
+git clone --depth 1 --branch "$REF" "$SRC" "$tmp/schemes" >/dev/null 2>&1
+
+count=0
+for f in "$tmp"/schemes/base16/*.yaml; do
+  slug="$(basename "$f" .yaml)"
+  name="$(sed -n 's/^name:[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$f" | head -1)"
+  author="$(sed -n 's/^author:[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$f" | head -1)"
+  variant="$(sed -n 's/^variant:[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$f" | head -1)"
+  [ -n "$name" ] || name="$slug"
+  [ -n "$variant" ] || variant="dark"
+
+  # Emit valid YAML (`base00: "#rrggbb"`): stylix's parser needs the space.
+  line="$(grep -oE '^[[:space:]]*base[0-9A-Fa-f]{2}:[[:space:]]*"#[0-9A-Fa-f]{6}"' "$f" \
+    | tr 'A-F' 'a-f' \
+    | sed -E 's/^[[:space:]]*//; s/^(base)([0-9a-f]{2}):[[:space:]]*"(#[0-9a-f]{6})"/\1\U\2\E: "\3"/')"
+  n="$(printf '%s\n' "$line" | grep -c 'base' || true)"
+  if [ "$n" -ne 16 ]; then
+    echo "  skip $slug ($n/16 colors)" >&2
+    continue
+  fi
+
+  mkdir -p "$REPO/themes/$slug"
+  {
+    printf 'scheme: "%s"\n' "$name"
+    printf 'author: "%s"\n' "$author"
+    printf '%s\n' "$line"
+  } > "$REPO/themes/$slug/$slug.yaml"
+  printf '%s\n' "$variant" > "$REPO/themes/$slug/polarity.txt"
+  count=$((count + 1))
+done
+
+echo "Vendored $count schemes into themes/"

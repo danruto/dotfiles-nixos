@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Validate every theme: all 16 base16 colours present and the DMS palette
+# derived by scripts/theme-colors meets its WCAG contrast targets.
+#
+#   scripts/theme-check          # summary + failing rows
+#   scripts/theme-check -v       # print a row per theme
+set -uo pipefail
+
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+verbose=0
+[ "${1:-}" = "-v" ] && verbose=1
+
+total=0 passes=0 broken=0 failed=0
+while IFS= read -r yaml; do
+  slug="$(basename "$yaml" .yaml)"
+  total=$((total + 1))
+
+  unset C
+  declare -A C
+  while IFS=: read -r k v; do
+    k="$(echo "$k" | tr -d '[:space:]')"
+    v="$(echo "$v" | tr -d '[:space:]"#' | tr 'A-F' 'a-f')"
+    C["$k"]="$v"
+  done < <(grep -E '^base[0-9A-Fa-f]{2}:' "$yaml")
+
+  missing=()
+  colors=()
+  for i in 0 1 2 3 4 5 6 7 8 9 A B C D E F; do
+    val="${C[base0$i]:-}"
+    [ -z "$val" ] && missing+=("base0$i")
+    colors+=("$val")
+  done
+
+  if [ "${#missing[@]}" -gt 0 ]; then
+    printf '%-30s BROKEN missing: %s\n' "$slug" "${missing[*]}"
+    broken=$((broken + 1))
+    continue
+  fi
+
+  out="$("$REPO/scripts/theme-colors" --check "${colors[@]}")"
+  if [ -n "$out" ]; then
+    printf '%-30s FAIL  %s\n' "$slug" "$(printf '%s' "$out" | paste -sd'; ' -)"
+    failed=$((failed + 1))
+  else
+    [ "$verbose" -eq 1 ] && printf '%-30s ok\n' "$slug"
+    passes=$((passes + 1))
+  fi
+done < <(find "$REPO/themes" -mindepth 2 -maxdepth 2 -name '*.yaml' | sort)
+
+echo
+echo "$passes/$total pass, $broken broken, $failed fail contrast"
+[ "$broken" -eq 0 ] && [ "$failed" -eq 0 ]

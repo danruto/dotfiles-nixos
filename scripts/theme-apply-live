@@ -63,11 +63,16 @@ for term in foot kitty; do
   fi
 done
 
-# Ghostty reloads its config on SIGUSR2.
-if pgrep -x ghostty >/dev/null 2>&1; then
-  pkill -SIGUSR2 -x ghostty 2>/dev/null || true
-  say "ghostty reloaded"
-fi
+# Ghostty reloads its config on SIGUSR2. The Nix wrapper execs .ghostty-wrapped,
+# so the process comm is ".ghostty-wrappe", not "ghostty" -- match on the exe.
+for pid in $(pgrep -f 'bin/ghostty' 2>/dev/null || true); do
+  exe="$(readlink "/proc/$pid/exe" 2>/dev/null || true)"
+  case "$exe" in
+    *ghostty*)
+      kill -USR2 "$pid" 2>/dev/null && say "ghostty reloaded"
+      ;;
+  esac
+done
 
 # bat compiles its themes into a cache; rebuild it after the theme file changes.
 if command -v bat >/dev/null 2>&1; then

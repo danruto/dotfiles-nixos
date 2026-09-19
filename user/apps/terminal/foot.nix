@@ -7,7 +7,7 @@
     enable = true;
     settings = {
       main.include = "${config.home.homeDirectory}/.local/state/theme/current/foot.ini";
-      main.font = "D2Koding Nerd Font:size=14";
+      main.font = "D2KodingLigature Nerd Font:size=14";
       main.dpi-aware = "no";
       mouse = {
         hide-when-typing = "yes";

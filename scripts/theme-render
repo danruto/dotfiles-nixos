@@ -36,7 +36,7 @@ fi
 declare -A C
 while IFS=: read -r k v; do
   k="$(echo "$k" | tr -d '[:space:]')"
-  v="$(echo "$v" | tr -d '[:space:]"' | tr 'A-F' 'a-f')"
+  v="$(echo "$v" | tr -d '[:space:]"#' | tr 'A-F' 'a-f')"
   C["$k"]="$v"
 done < <(grep -E '^base[0-9A-Fa-f]{2}:' "$yaml")
 
@@ -242,6 +242,7 @@ EOF
 
 # ghostty -------------------------------------------------------------------
 render ghostty <<'EOF'
+window-theme = ghostty
 background = @@h00@@
 foreground = @@h05@@
 cursor-color = @@h05@@
@@ -359,12 +360,15 @@ EOF
 cp "$out/gtk-3.0/gtk.css" "$out/gtk-4.0/gtk.css"
 
 # DMS colour theme ----------------------------------------------------------
-dms_theme() {
-  cat <<EOF
-{"background":"#${C[base00]}","backgroundText":"#${C[base05]}","error":"#${C[base08]}","info":"#${C[base0C]}","name":"Stylix","outline":"#${C[base03]}","primary":"#${C[base0D]}","primaryContainer":"#${C[base0C]}","primaryText":"#${C[base00]}","secondary":"#${C[base0E]}","surface":"#${C[base01]}","surfaceContainer":"#${C[base01]}","surfaceContainerHigh":"#${C[base02]}","surfaceContainerHighest":"#${C[base03]}","surfaceText":"#${C[base05]}","surfaceTint":"#${C[base0D]}","surfaceVariant":"#${C[base02]}","surfaceVariantText":"#${C[base04]}","warning":"#${C[base0A]}"}
-EOF
-}
-printf '{"dark":%s,"light":%s}\n' "$(dms_theme)" "$(dms_theme)" > "$out/dms.json"
+# DMS wants Material surface/on-surface pairs that base16 does not define, so
+# scripts/theme-colors derives accessible ones from the 16 base colours.
+{
+  colors_in=()
+  for i in 0 1 2 3 4 5 6 7 8 9 A B C D E F; do
+    colors_in+=("${C[base0$i]}")
+  done
+  "$REPO/scripts/theme-colors" "${colors_in[@]}"
+} > "$out/dms.json"
 
 # Nearest GNOME/libadwaita accent name for base0D (named colours only).
 gnome_accent() {
@@ -546,8 +550,14 @@ render Kvantum/Base16Kvantum/Base16Kvantum.kvconfig < "$REPO/scripts/templates/k
 render Kvantum/Base16Kvantum/Base16Kvantum.svg < "$REPO/scripts/templates/kvantum.svg"
 
 # --- wallpaper -------------------------------------------------------------
-url="$(tr -d '[:space:]' < "$REPO/themes/$name/backgroundurl.txt" 2>/dev/null || true)"
-hash="$(tr -d '[:space:]' < "$REPO/themes/$name/backgroundsha256.txt" 2>/dev/null || true)"
+# Themes with a pinned wallpaper (the original Omarchy ports) fetch it; pure
+# base16 schemes have none, so DMS keeps whatever it already has.
+url=""
+hash=""
+[ -f "$REPO/themes/$name/backgroundurl.txt" ] &&
+  url="$(tr -d '[:space:]' < "$REPO/themes/$name/backgroundurl.txt")"
+[ -f "$REPO/themes/$name/backgroundsha256.txt" ] &&
+  hash="$(tr -d '[:space:]' < "$REPO/themes/$name/backgroundsha256.txt")"
 if [ -n "$url" ] && [ -n "$hash" ]; then
   if [ ! -s "$out/wallpaper" ]; then
     src="$(nix store prefetch-file --expected-hash "$hash" --json "$url" 2>/dev/null | jq -r .storePath || true)"

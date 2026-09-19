@@ -14,32 +14,16 @@ let
   link = config.lib.file.mkOutOfStoreSymlink;
 in
 {
-  # One Spotlight/command-palette entry per theme. DMS indexes XDG desktop
-  # entries, so Super+Space -> type "theme" -> Enter switches instantly via the
-  # fast path. Adding a theme needs a rebuild to regenerate these entries.
-  xdg.desktopEntries =
-    let
-      themeDir = ../themes;
-      themeNames = builtins.attrNames (
-        lib.filterAttrs
-          (n: _: builtins.pathExists (themeDir + "/${n}/${n}.yaml"))
-          (builtins.readDir themeDir)
-      );
-    in
-    lib.genAttrs (map (n: "theme-${n}") themeNames) (slug:
-      let name = lib.removePrefix "theme-" slug; in
-      {
-        name = "Theme: ${name}";
-        comment = "Switch the theme to ${name}";
-        # setsid so the switch survives theme-apply-live restarting DMS.
-        exec = "${pkgs.util-linux}/bin/setsid -f ${config.home.homeDirectory}/dotfiles-nixos/scripts/theme-set ${name}";
-        terminal = false;
-        type = "Application";
-        categories = [ "Settings" ];
-        icon = "preferences-desktop-theme";
-        settings.StartupNotify = "false";
-      }
-    );
+  # One command-palette entry per theme is generated at runtime by
+  # scripts/theme-entries (into $XDG_DATA_HOME/applications) so launchers see
+  # themes as soon as they are added, with no rebuild. Regenerate on activation
+  # so a fresh install that has never run theme-set still has entries.
+  home.activation.themeEntries = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    entry_script="${config.home.homeDirectory}/dotfiles-nixos/scripts/theme-entries"
+    if [ -x "$entry_script" ]; then
+      $DRY_RUN_CMD "$entry_script" >/dev/null
+    fi
+  '';
 
   # Runtime theme files, out-of-store so a symlink swap is enough.
   xdg.configFile = {
@@ -85,7 +69,7 @@ in
     };
     font = {
       package = pkgs.d2coding;
-      name = "D2Koding Nerd Font";
+      name = "D2KodingLigature Nerd Font";
       size = 12;
     };
     iconTheme = {
@@ -109,8 +93,8 @@ in
         style = "kvantum";
       };
       Fonts = {
-        fixed = ''"D2Koding Nerd Font,12"'';
-        general = ''"D2Koding Nerd Font,12"'';
+        fixed = ''"D2KodingLigature Nerd Font,12"'';
+        general = ''"D2KodingLigature Nerd Font,12"'';
       };
     };
     qt6ctSettings = {
@@ -120,8 +104,8 @@ in
         style = "kvantum";
       };
       Fonts = {
-        fixed = ''"D2Koding Nerd Font,12"'';
-        general = ''"D2Koding Nerd Font,12"'';
+        fixed = ''"D2KodingLigature Nerd Font,12"'';
+        general = ''"D2KodingLigature Nerd Font,12"'';
       };
     };
   };

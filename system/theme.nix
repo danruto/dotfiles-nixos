@@ -15,11 +15,11 @@ in
     # defaults to a different sans/mono pair and recolors every target away
     # from D2Coding.
     fonts.monospace = {
-      name = "D2Koding Nerd Font";
+      name = "D2KodingLigature Nerd Font";
       package = pkgs.d2coding;
     };
     fonts.sansSerif = {
-      name = "D2Koding Nerd Font";
+      name = "D2KodingLigature Nerd Font";
       package = pkgs.d2coding;
     };
     fonts.sizes = {
