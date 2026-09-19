@@ -75,18 +75,17 @@ done
 token "piToolOkBg"  "$("$REPO/scripts/theme-colors" --mix "${C[base01]}" "${C[base0B]}" 0.14)"
 token "piToolErrBg" "$("$REPO/scripts/theme-colors" --mix "${C[base01]}" "${C[base08]}" 0.14)"
 
-# vicinae's on-accent text, muted text, selected-row text and borders. base16
-# gives base00 the "background" role and base03 the "comment" role, so the raw
-# slots land far below WCAG here: white on ayu-light's base0D is 2.8:1, base03 on
-# base00 is 2.3:1, base02 borders are 1.2:1. The muted colour is checked against
-# the selection pill (base02) rather than the window background, because the pill
-# is always a step away from the background and so is the harder of the two; a
-# colour that clears the pill clears the background as well.
+# Text colours the browser CSS (floorp, helium) has to derive because base16
+# leaves base00 with the "background" role and base03 with the "comment" role,
+# which land far below WCAG on the surfaces those stylesheets use: white on
+# ayu-light's base0D is 2.8:1, base03 on base00 is 2.3:1. The muted colour is
+# checked against the field surface (base02) rather than the window background,
+# because the field is always a step away from the background and so is the
+# harder of the two; a colour that clears the field clears the background too.
 token "onAccent"    "$("$REPO/scripts/theme-colors" --text-on "${C[base05]}" "${C[base0D]}" 4.5)"
 token "accentText"  "$("$REPO/scripts/theme-colors" --ensure "${C[base0D]}" "${C[base00]}" 4.5)"
 token "vicMuted"    "$("$REPO/scripts/theme-colors" --ensure "${C[base03]}" "${C[base02]}" 4.5)"
 token "vicSelFg"    "$("$REPO/scripts/theme-colors" --ensure "${C[base05]}" "${C[base02]}" 4.5)"
-token "vicBorder"   "$("$REPO/scripts/theme-colors" --ensure "${C[base02]}" "${C[base00]}" 3.0)"
 
 # --- output dir ------------------------------------------------------------
 out="$STATE/$name"
@@ -527,83 +526,6 @@ cp "$out/gtk-3.0/gtk.css" "$out/gtk-4.0/gtk.css"
   done
   "$REPO/scripts/theme-colors" "${colors_in[@]}"
 } > "$out/dms.json"
-
-# vicinae launcher theme ------------------------------------------------------
-# Vicinae hot-reloads theme files, so scripts/theme-apply-live only has to drop
-# this in place. It selects it for both appearances, so the launcher matches the
-# active palette regardless of how (or whether) it detects light/dark.
-vic_variant=dark
-[ "$polarity" = "light" ] && vic_variant=light
-render vicinae.toml <<EOF
-[meta]
-name = "Base16 $name"
-description = "Generated from the $name base16 palette"
-variant = "$vic_variant"
-inherits = "vicinae-$vic_variant"
-
-[colors.core]
-accent = "#@@h0D@@"
-accent_foreground = "#@@onAccent@@"
-background = "#@@h00@@"
-foreground = "#@@h05@@"
-secondary_background = "#@@h01@@"
-border = "#@@vicBorder@@"
-
-[colors.accents]
-blue = "#@@h0D@@"
-green = "#@@h0B@@"
-magenta = "#@@h0E@@"
-orange = "#@@h09@@"
-red = "#@@h08@@"
-yellow = "#@@h0A@@"
-cyan = "#@@h0C@@"
-purple = "#@@h0E@@"
-
-[colors.text]
-default = "#@@h05@@"
-muted = "#@@vicMuted@@"
-danger = "#@@h08@@"
-success = "#@@h0B@@"
-placeholder = { name = "#@@vicMuted@@", opacity = 1.0 }
-selection = { background = "#@@h02@@", foreground = "#@@vicSelFg@@" }
-
-[colors.text.links]
-default = "#@@h0D@@"
-visited = "#@@h0E@@"
-
-[colors.input]
-border = "#@@vicBorder@@"
-border_focus = "#@@h0D@@"
-border_error = "#@@h08@@"
-
-[colors.button.primary]
-background = "#@@h01@@"
-foreground = "#@@h05@@"
-
-[colors.button.primary.hover]
-background = "#@@h02@@"
-
-[colors.button.primary.focus]
-outline = "#@@h0D@@"
-
-[colors.list.item.hover]
-background = { name = "#@@h02@@", opacity = 0.4 }
-foreground = "#@@h05@@"
-
-# The selection pill is a neutral surface, not the accent. Vicinae draws the
-# right-hand accessory label ("Application", "Command") with textMuted and has no
-# per-state token for it, so an accent-filled pill cannot be made accessible: no
-# single muted colour clears 4.5:1 against both the accent and the window
-# background. Upstream's light and dark themes use a surface pill for the same
-# reason. Text on it is contrast-checked against base02.
-[colors.list.item.selection]
-background = "#@@h02@@"
-foreground = "#@@vicSelFg@@"
-secondary_foreground = "#@@vicSelFg@@"
-
-[colors.scrollbars]
-background = { name = "#@@h0D@@", opacity = 0.2 }
-EOF
 
 # Nearest GNOME/libadwaita accent name for base0D (named colours only).
 gnome_accent() {

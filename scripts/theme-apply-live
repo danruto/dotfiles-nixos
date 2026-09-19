@@ -109,42 +109,6 @@ if command -v gsettings >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
   fi
 fi
 
-# Vicinae: drop the generated palette theme in place and point both the light
-# and dark slots at it. Vicinae hot-reloads theme files, so overwriting the file
-# restyles a running launcher; settings.json only needs editing the first time.
-# It is JSONC, so strip whole-line comments before handing it to jq -- vicinae's
-# own GUI writes drop comments anyway.
-state="${XDG_STATE_HOME:-$HOME/.local/state}/theme"
-if [ -r "$state/current/vicinae.toml" ]; then
-  vic_data="${XDG_DATA_HOME:-$HOME/.local/share}/vicinae"
-  vic_conf="${XDG_CONFIG_HOME:-$HOME/.config}/vicinae"
-  mkdir -p "$vic_data/themes"
-  cp "$state/current/vicinae.toml" "$vic_data/themes/base16.toml"
-  if command -v jq >/dev/null 2>&1; then
-    cfg="$vic_conf/settings.json"
-    work="$(mktemp)"
-    if [ -f "$cfg" ]; then
-      sed -E 's,^[[:space:]]*//.*$,,' "$cfg" > "$work"
-    else
-      echo '{}' > "$work"
-    fi
-    if [ "$(jq -r '[.theme.light.name // "", .theme.dark.name // ""] | join(",")' "$work" 2>/dev/null)" != "base16,base16" ]; then
-      if out="$(jq '.theme.light.name = "base16" | .theme.light.icon_theme = "auto"
-                      | .theme.dark.name  = "base16" | .theme.dark.icon_theme  = "auto"' \
-                 "$work" 2>/dev/null)"; then
-        mkdir -p "$vic_conf"
-        printf '%s\n' "$out" > "$cfg.tmp.$$" && mv "$cfg.tmp.$$" "$cfg"
-        say "vicinae theme set (base16)"
-        command -v vicinae >/dev/null 2>&1 &&
-          vicinae theme set base16 >/dev/null 2>&1 || true
-      else
-        say "vicinae: settings.json is not valid JSON, left unchanged"
-      fi
-    fi
-    rm -f "$work" "$cfg.tmp.$$"
-  fi
-fi
-
 # Helium / Chromium-family: write the theme colour as a managed policy (the
 # same mechanism Omarchy uses) and refresh running browsers without a restart.
 if command -v helium >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then

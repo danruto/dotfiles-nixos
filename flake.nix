@@ -22,7 +22,7 @@
         username = "danruto";
         # email = "danny@pixelbru.sh";
         email = "1270619+danruto@users.noreply.github.com";
-        theme = "catppuccin-latte";
+        theme = "flexoki-light";
         timezone = "Australia/Sydney";
         locale = "en_US.UTF-8";
         wm = "hyprland";

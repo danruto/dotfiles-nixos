@@ -155,7 +155,6 @@
       bind=SUPER,r,reload_config
 
       # menu and terminal
-      bind=Alt,space,spawn,vicinae toggle
       bind=Alt,Return,spawn,foot
 
       # exit
@@ -262,8 +261,6 @@
 
 
       # layer rule
-      layerrule=animation_type_open:zoom,layer_name:vicinae
-      layerrule=animation_type_close:zoom,layer_name:vicinae
     '';
     autostart_sh = ''
       # see autostart.sh

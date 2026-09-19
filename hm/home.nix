@@ -41,7 +41,6 @@
     fakeroot
     starship
     wget
-    pkgs-unstable.vicinae
 
     floorp
     vscode-langservers-extracted

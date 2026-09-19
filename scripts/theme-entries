@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Generate one XDG desktop entry per theme so launchers (DMS, vicinae) can
+# Generate one XDG desktop entry per theme so the DMS launcher can
 # switch themes. Written under $XDG_DATA_HOME/applications, which is read
 # ahead of the system profile, so new themes show up without a Nix rebuild.
 #

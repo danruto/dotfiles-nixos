@@ -121,7 +121,7 @@ in
         "$mainMod, Q, killactive,"
         "$mainMod, E, exec, nemo"
         "$mainMod, V, togglefloating,"
-        "$mainMod, R, exec, vicinae toggle"
+        "$mainMod, R, exec, dms ipc call spotlight toggle"
         "$mainMod, P, pseudo, # dwindle"
         "$mainMod, N, togglesplit, # dwindle"
 

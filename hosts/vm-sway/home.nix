@@ -30,19 +30,6 @@
     ../../user/apps/networking/ssh.nix
   ];
 
-  systemd.user.services.vicinae = {
-    Unit = {
-      Description = "Vicinae launcher daemon";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${pkgs-unstable.vicinae}/bin/vicinae server";
-      Restart = "on-failure";
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
-  };
-
   # Enable automatic start/restart of systemd user services
   systemd.user.startServices = "sd-switch";
 
@@ -51,7 +38,6 @@
   home.packages = with pkgs; [
     # Core
     git
-    pkgs-unstable.vicinae
 
     # Various dev packages
     texinfo

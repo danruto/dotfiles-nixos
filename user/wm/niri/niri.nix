@@ -16,22 +16,7 @@ let
   ];
   unstable-packages = with pkgs-unstable; [
     wiremix
-    vicinae
   ];
-
-  # The systemd user manager doesn't inherit WAYLAND_DISPLAY, so a bare
-  # `vicinae server` aborts with "no Qt platform plugin". Resolve the socket
-  # ourselves and pin the Qt platform so Super+R (vicinae toggle) keeps working.
-  vicinae-server = pkgs.writeShellScript "vicinae-server" ''
-    export QT_QPA_PLATFORM="''${QT_QPA_PLATFORM:-wayland}"
-    if [ -z "''${WAYLAND_DISPLAY:-}" ]; then
-      for sock in "''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"/wayland-*; do
-        case "$sock" in *.lock) continue ;; esac
-        [ -S "$sock" ] && export WAYLAND_DISPLAY="$(basename "$sock")" && break
-      done
-    fi
-    exec ${pkgs-unstable.vicinae}/bin/vicinae server
-  '';
 
 in
 {
@@ -71,19 +56,6 @@ in
     Service = {
       ExecStart = "${pkgs.swayidle}/bin/swayidle -w timeout 3600 'niri msg action power-off-monitors' idlehint 60";
       Restart = "on-failure";
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
-  };
-
-  systemd.user.services.vicinae = {
-    Unit = {
-      Description = "Vicinae launcher daemon";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${vicinae-server}";
-      Restart = "always";
     };
     Install.WantedBy = [ "graphical-session.target" ];
   };
@@ -284,7 +256,7 @@ in
       "Mod+T".action.spawn = "foot";
       # "Mod+R".action.spawn = [ "bash" "-c" "rofi -show drun" ];
       # "Mod+R".action.spawn = [ "noctalia-shell" "ipc" "call" "launcher" "toggle" ];
-      "Mod+R".action.spawn = [ "vicinae" "toggle" ];
+      "Mod+R".action.spawn = [ "dms" "ipc" "call" "spotlight" "toggle" ];
       # "Super+Alt+L".action.spawn = "swaylock";
       # "Super+Alt+L".action.spawn = [ "noctalia-shell" "ipc" "call" "lockScreen" "toggle" ];
 
@@ -381,7 +353,6 @@ in
       "Mod+BracketLeft".action.consume-window-into-column = [ ];
       "Mod+BracketRight".action.expel-window-from-column = [ ];
 
-      "Mod+Space".action.spawn = [ "dms" "ipc" "call" "spotlight" "toggle" ];
       "Mod+V".action.spawn = [ "dms" "ipc" "call" "clipboard" "toggle" ];
       "Mod+M".action.spawn = [ "dms" "ipc" "call" "processlist" "focusOrToggle" ];
       "Mod+Comma".action.spawn = [ "dms" "ipc" "call" "settings" "focusOrToggle" ];

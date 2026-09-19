@@ -23,7 +23,6 @@
   },
   "packages": [
     "../../dev/nearmap/bubblebeam",
-    "../../dev/pixelbrush/pb-skills",
     "git:github.com/DietrichGebert/ponytail",
     "git:github.com/davebcn87/pi-autoresearch",
     "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359",
@@ -49,16 +48,17 @@
     "npm:pi-zentui",
     "git:github.com/algal/pi-openai-server-compaction",
     "npm:@narumitw/pi-usage",
-    "npm:pi-hermes-memory"
+    "npm:pi-hermes-memory",
+    "../../dev/pixelbrush/pb-skills"
   ],
-  "lastChangelogVersion": "0.84.3",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-sol",
+  "lastChangelogVersion": "0.85.1",
+  "defaultProvider": "opencode-go",
+  "defaultModel": "deepseek-v4.1-flash",
   "hideThinkingBlock": false,
-  "defaultThinkingLevel": "max",
+  "defaultThinkingLevel": "high",
   "quietStartup": true,
   "enableInstallTelemetry": false,
-  "theme": "ayu-mirage",
+  "theme": "base16",
   "autocompleteMaxVisible": 5,
   "tuiMode": "fullscreen"
 }

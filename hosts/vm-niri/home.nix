@@ -54,7 +54,6 @@
   home.packages = with pkgs; [
     # Core
     git
-    pkgs-unstable.vicinae
 
     # Various dev packages
     texinfo

@@ -54,7 +54,6 @@
     git
     # waydroid-helper
     fakeroot
-    pkgs-unstable.vicinae
     # libreoffice-fresh - switched to flatpak
     # gitbutler - switched to flatpak
     (pkgs.symlinkJoin {

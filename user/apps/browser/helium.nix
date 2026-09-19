@@ -14,7 +14,7 @@ let
       # theme/plugin vars leak in (QT_QPA_PLATFORMTHEME=qt5ct -> libqt6ct).
       # Clear all three so helium starts under the DMS/niri session.
       #
-      # Launchers spawned from systemd services (vicinae, DMS) have no DISPLAY
+      # Launchers spawned from the DMS session have no DISPLAY
       # and the upstream --ozone-platform-hint=auto cannot detect Wayland there
       # because XDG_SESSION_TYPE is unset, so helium falls back to X11 and dies
       # with "Missing X server or $DISPLAY". Pin the ozone platform at runtime
