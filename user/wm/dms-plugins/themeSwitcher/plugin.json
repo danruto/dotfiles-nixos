@@ -1,0 +1,12 @@
+{
+    "id": "themeSwitcher",
+    "name": "Theme Switcher",
+    "description": "Browse every base16 theme with its palette swatch and apply it",
+    "version": "1.0.0",
+    "author": "danruto",
+    "icon": "palette",
+    "type": "launcher",
+    "capabilities": ["command-execution"],
+    "component": "./ThemeSwitcherLauncher.qml",
+    "trigger": "th"
+}

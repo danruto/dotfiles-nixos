@@ -113,9 +113,23 @@
     enableCalendarEvents = true;
     enableClipboardPaste = true;
 
+    # Declaring any `settings` makes home-manager own plugin_settings.json, so
+    # every plugin's runtime values have to be declared here too — the DMS
+    # Settings GUI can no longer persist plugin toggles.
     plugins.dankDiskUsage = {
       enable = true;
       src = dms-plugin-diskusage;
+      settings = {
+        showZfs = false;
+        criticalThreshold = 95;
+      };
+    };
+
+    # Theme picker: the launcher's app search caps at 10 results, so 350+ theme
+    # desktop entries can't be browsed there. A plugin list is uncapped.
+    plugins.themeSwitcher = {
+      enable = true;
+      src = ./dms-plugins/themeSwitcher;
     };
   };
 }

@@ -4,6 +4,8 @@
 #   scripts/theme-set <name>            fast: render runtime files + reload (no Nix)
 #   scripts/theme-set <name> --rebuild  full: update flake.nix and make switch
 #   scripts/theme-set --list            show themes
+#   scripts/theme-set --pick            fzf picker with a live colour preview
+#   scripts/theme-set --swatch <name>   print one theme's palette preview
 #
 # The fast path renders every themed file under ~/.local/state/theme/current,
 # which the app configs read as out-of-store symlinks. Everything switches
@@ -24,12 +26,66 @@ list_themes() {
   done
 }
 
+# Preview pane for --pick: palette swatches plus a mock prompt/code line so a
+# theme can be judged without applying it.
+swatch() {
+  local n="$1" y="themes/$1/$1.yaml"
+  [ -f "$y" ] || { echo "no palette"; return; }
+  local -A C
+  local k v
+  while IFS=: read -r k v; do
+    k="${k//[[:space:]]/}"
+    v="$(echo "$v" | tr -d '[:space:]"#' | tr 'A-F' 'a-f')"
+    C["$k"]="$v"
+  done < <(grep -E '^base[0-9A-Fa-f]{2}:' "$y")
+  [ -n "${C[base00]:-}" ] || { echo "no palette"; return; }
+
+  bg() { printf '\033[48;2;%d;%d;%dm' "0x${1:0:2}" "0x${1:2:2}" "0x${1:4:2}"; }
+  fg() { printf '\033[38;2;%d;%d;%dm' "0x${1:0:2}" "0x${1:2:2}" "0x${1:4:2}"; }
+  local R=$'\033[0m'
+
+  printf '%s (%s)\n\n' "$n" "$(tr -d '[:space:]' < "themes/$n/polarity.txt" 2>/dev/null || echo dark)"
+
+  local i=0 h col
+  for h in 0 1 2 3 4 5 6 7 8 9 A B C D E F; do
+    col="${C[base0$h]:-000000}"
+    printf '  %s    %s base0%s #%s' "$(bg "$col")" "$R" "$h" "$col"
+    i=$((i + 1))
+    if [ $((i % 2)) -eq 0 ]; then printf '\n'; else printf '  '; fi
+  done
+
+  local b="${C[base00]}"
+  printf '\n'
+  printf '%s%s ~/dotfiles-nixos %son %smain %s$ %smake switch%s\n' \
+    "$(bg "$b")" "$(fg "${C[base0D]}")" "$(fg "${C[base03]}")" "$(fg "${C[base0B]}")" \
+    "$(fg "${C[base05]}")" "$(fg "${C[base0A]}")" "$R"
+  printf '%s%s # comment %skeyword %s"string" %s42 %serror%s\n' \
+    "$(bg "$b")" "$(fg "${C[base03]}")" "$(fg "${C[base0E]}")" "$(fg "${C[base0B]}")" \
+    "$(fg "${C[base09]}")" "$(fg "${C[base08]}")" "$R"
+  printf '%s%s normal text on base00%s\n' "$(bg "$b")" "$(fg "${C[base05]}")" "$R"
+}
+
+if [ "${1:-}" = "--swatch" ]; then
+  swatch "${2:-}"
+  exit 0
+fi
+
+if [ "${1:-}" = "--pick" ]; then
+  picked="$(list_themes | fzf \
+    --height=100% --border \
+    --preview "'$REPO/scripts/theme-set' --swatch {}" \
+    --preview-window=right:55%:wrap \
+    --prompt='theme> ' --header='enter: apply (fast path)')" || exit 0
+  [ -n "$picked" ] || exit 0
+  set -- "$picked" "${2:-}"
+fi
+
 mode=fast
 if [ "${1:-}" = "--list" ] || [ $# -eq 0 ]; then
   echo "Available themes:"
   list_themes
   echo ""
-  echo "Usage: scripts/theme-set <name> [--rebuild]"
+  echo "Usage: scripts/theme-set <name> [--rebuild]   |   scripts/theme-set --pick"
   exit 0
 fi
 

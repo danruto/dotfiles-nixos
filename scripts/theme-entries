@@ -8,16 +8,51 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 APPS="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
-mkdir -p "$APPS"
+ICONS="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor/scalable/apps"
+MANIFEST="${XDG_DATA_HOME:-$HOME/.local/share}/theme-swatches/themes.json"
+mkdir -p "$APPS" "$ICONS"
 
 # setsid so switching survives theme-apply-live restarting DMS.
 setsid_bin="$(command -v setsid || echo setsid)"
 
+# One SVG swatch per theme, installed as a hicolor icon so the launcher shows
+# the palette next to the name instead of 356 identical cog icons.
+swatch_icon() {
+  local yaml="$1" out="$2"
+  awk -v out="$out" '
+    /^base[0-9A-Fa-f][0-9A-Fa-f]:/ {
+      k = substr($0, 1, index($0, ":") - 1)
+      v = $2
+      gsub(/[" #]/, "", v)
+      c[tolower(k)] = tolower(v)
+    }
+    END {
+      if (c["base00"] == "" || c["base0d"] == "") exit 1
+      printf "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\">" > out
+      printf "<rect width=\"64\" height=\"64\" rx=\"12\" fill=\"#%s\"/>", c["base00"] > out
+      printf "<rect x=\"10\" y=\"12\" width=\"44\" height=\"8\" rx=\"4\" fill=\"#%s\"/>", c["base08"] > out
+      printf "<rect x=\"10\" y=\"24\" width=\"44\" height=\"8\" rx=\"4\" fill=\"#%s\"/>", c["base0b"] > out
+      printf "<rect x=\"10\" y=\"36\" width=\"44\" height=\"8\" rx=\"4\" fill=\"#%s\"/>", c["base0d"] > out
+      printf "<rect x=\"10\" y=\"48\" width=\"44\" height=\"6\" rx=\"3\" fill=\"#%s\"/>", c["base05"] > out
+      printf "</svg>" > out
+    }
+  ' "$yaml"
+}
+
 rm -f "$APPS"/theme-*.desktop
+mkdir -p "$(dirname "$MANIFEST")"
+: > "$MANIFEST.tmp"
 count=0
 for yaml in "$REPO"/themes/*/*.yaml; do
   name="$(basename "$yaml" .yaml)"
   [ "$(dirname "$yaml")" = "$REPO/themes/$name" ] || continue
+  icon=preferences-desktop-theme
+  if [ "$ICONS/theme-swatch-$name.svg" -nt "$yaml" ] || swatch_icon "$yaml" "$ICONS/theme-swatch-$name.svg"; then
+    icon="theme-swatch-$name"
+  fi
+  polarity="$(tr -d '[:space:]' < "$REPO/themes/$name/polarity.txt" 2>/dev/null || echo dark)"
+  printf '%s{"name":"%s","icon":"%s","polarity":"%s"}' \
+    "$([ "$count" -eq 0 ] || echo ,)" "$name" "$ICONS/theme-swatch-$name.svg" "${polarity:-dark}" >> "$MANIFEST.tmp"
   cat > "$APPS/theme-$name.desktop" <<EOF
 [Desktop Entry]
 Type=Application
@@ -27,11 +62,20 @@ Comment=Switch the theme to $name
 Exec=$setsid_bin -f $REPO/scripts/theme-set $name
 Terminal=false
 Categories=Settings
-Icon=preferences-desktop-theme
+Icon=$icon
 StartupNotify=false
 EOF
   count=$((count + 1))
 done
+
+# Manifest for the DMS launcher plugin: its list is uncapped, unlike the
+# launcher's desktop-entry search, which stops at 10 hits.
+{
+  printf '{"script":"%s/scripts/theme-set","themes":[' "$REPO"
+  cat "$MANIFEST.tmp"
+  printf ']}\n'
+} > "$MANIFEST"
+rm -f "$MANIFEST.tmp"
 
 # DMS caches the launcher's app list; drop it so the next open rescans.
 rm -f "${XDG_CACHE_HOME:-$HOME/.cache}/DankMaterialShell/launcher_cache.json"

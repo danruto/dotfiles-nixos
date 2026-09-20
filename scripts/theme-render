@@ -52,9 +52,6 @@ polarity="$(tr -d '[:space:]' < "$REPO/themes/$name/polarity.txt" 2>/dev/null ||
 # Consumers below want one of two things out of that: the palette itself, or a
 # literal "light"/"dark" token for an app that keeps its own polarity state.
 case "$polarity" in light|either) scheme=light ;; *) scheme=dark ;; esac
-# Stylix maps "either" to the light palette for foot.
-foot_section="colors-dark"
-[ "$polarity" = "light" ] && foot_section="colors-light"
 
 # --- build the substitution table -----------------------------------------
 subst_args=()
@@ -149,9 +146,12 @@ color21 #@@h06@@
 EOF
 
 # foot ----------------------------------------------------------------------
-render foot.ini <<EOF
-[$foot_section]
-alpha=1.000000
+# foot has no config reload at all: SIGUSR1/SIGUSR2 only flip a running window
+# between the two colour sections it loaded at startup. So render BOTH sections
+# from the same palette -- whichever half a window is on, it shows the current
+# theme -- and emit foot.osc, the same palette as escape sequences, which
+# scripts/theme-apply-live writes into already-open windows to repaint them.
+foot_colors='alpha=1.000000
 foreground=@@h05@@
 background=@@h00@@
 regular0=@@h00@@
@@ -175,10 +175,25 @@ bright7=@@h07@@
 18=@@h01@@
 19=@@h02@@
 20=@@h04@@
-21=@@h06@@
+21=@@h06@@'
+
+render foot.ini <<EOF
+[colors-dark]
+$foot_colors
+
+[colors-light]
+$foot_colors
 
 [main]
 initial-color-theme=$scheme
+EOF
+
+# Must stay a single line: apply-live strips the trailing newline and writes the
+# rest straight into whatever is on screen, so anything extra becomes garbage.
+esc=$'\033'
+bel=$'\007'
+render foot.osc <<EOF
+${esc}]4;0;#@@h00@@;1;#@@h08@@;2;#@@h0B@@;3;#@@h0A@@;4;#@@h0D@@;5;#@@h0E@@;6;#@@h0C@@;7;#@@h05@@;8;#@@h03@@;9;#@@h08@@;10;#@@h0B@@;11;#@@h0A@@;12;#@@h0D@@;13;#@@h0E@@;14;#@@h0C@@;15;#@@h07@@;16;#@@h09@@;17;#@@h0F@@;18;#@@h01@@;19;#@@h02@@;20;#@@h04@@;21;#@@h06@@${bel}${esc}]10;#@@h05@@${bel}${esc}]11;#@@h00@@${bel}${esc}]12;#@@h05@@${bel}${esc}]17;#@@h03@@${bel}${esc}]19;#@@h05@@${bel}
 EOF
 
 # btop ----------------------------------------------------------------------

@@ -6,7 +6,8 @@
 #   niri      - live-reloads config.kdl on save by itself, nothing to do
 #   hyprland  - `hyprctl reload` when running
 #   dms       - restarted (bar flickers ~1s, windows untouched)
-#   foot/kitty- SIGUSR1 reloads config in running windows
+#   kitty     - SIGUSR1 reloads config in running windows
+#   foot      - cannot reload config; running windows repainted via OSC escapes
 #   ghostty   - SIGUSR2 reloads config in running windows
 #   herdr     - `herdr server reload-config` when a server is running
 #   pi        - watches ~/.pi/agent/themes/, reloads the active theme in place
@@ -58,13 +59,31 @@ if pgrep -f "[d]ms run" >/dev/null 2>&1; then
   fi
 fi
 
-# Terminals that reload config without restarting.
-for term in foot kitty; do
-  if pgrep -x "$term" >/dev/null 2>&1; then
-    pkill -SIGUSR1 -x "$term" 2>/dev/null || true
-    say "$term reloaded"
-  fi
-done
+# Kitty reloads its config on SIGUSR1.
+if pgrep -x kitty >/dev/null 2>&1; then
+  pkill -SIGUSR1 -x kitty 2>/dev/null || true
+  say "kitty reloaded"
+fi
+
+# Foot cannot reload its config at all, and its SIGUSR1/SIGUSR2 don't reload
+# either -- they force the [colors-dark] / [colors-light] section loaded at
+# startup, so the old SIGUSR1 here was actively forcing every window dark.
+# Repaint running windows with OSC escapes instead, written to each foot child's
+# pty (the child is a multiplexer or shell; the escapes travel up to foot, which
+# owns the master, and the child never sees them).
+osc_file="${XDG_STATE_HOME:-$HOME/.local/state}/theme/current/foot.osc"
+if [ -r "$osc_file" ]; then
+  osc="$(cat "$osc_file")"
+  painted=0
+  for pid in $(pgrep -x foot 2>/dev/null || true); do
+    for tty in $(ps -o tty= --ppid "$pid" 2>/dev/null); do
+      case "$tty" in pts/*) ;; *) continue ;; esac
+      [ -w "/dev/$tty" ] || continue
+      printf '%s' "$osc" > "/dev/$tty" 2>/dev/null && painted=$((painted + 1))
+    done
+  done
+  [ "$painted" -gt 0 ] && say "foot repainted ($painted window(s))"
+fi
 
 # Ghostty reloads its config on SIGUSR2. The Nix wrapper execs .ghostty-wrapped,
 # so the process comm is ".ghostty-wrappe", not "ghostty" -- match on the exe.
