@@ -267,6 +267,11 @@ in
   # detached regular file behind (this happened to ~/.claude/settings.json). The
   # loop below heals that: a non-symlink target newer than the repo file is copied
   # back into the repo first — never discarded — then re-linked.
+  #
+  # The theme at "<config dir>/themes/base16.json" is deliberately not linked
+  # here: scripts/theme-render writes it in place, and Claude Code only
+  # hot-reloads the active theme by watching that directory for events on the
+  # file itself.
   home.activation.claudeSettingsLink = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     settings="${aiConfigs}/settings.json"
     for dir in ${lib.concatMapStringsSep " " (d: ''"${config.home.homeDirectory}/${d}"'') claudeDirs}; do

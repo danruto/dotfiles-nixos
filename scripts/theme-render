@@ -49,6 +49,9 @@ done
 
 polarity="$(tr -d '[:space:]' < "$REPO/themes/$name/polarity.txt" 2>/dev/null || echo dark)"
 [ -z "$polarity" ] && polarity="dark"
+# Consumers below want one of two things out of that: the palette itself, or a
+# literal "light"/"dark" token for an app that keeps its own polarity state.
+case "$polarity" in light|either) scheme=light ;; *) scheme=dark ;; esac
 # Stylix maps "either" to the light palette for foot.
 foot_section="colors-dark"
 [ "$polarity" = "light" ] && foot_section="colors-light"
@@ -146,10 +149,6 @@ color21 #@@h06@@
 EOF
 
 # foot ----------------------------------------------------------------------
-case "$polarity" in
-  light|either) foot_theme=light ;;
-  *)            foot_theme=dark ;;
-esac
 render foot.ini <<EOF
 [$foot_section]
 alpha=1.000000
@@ -179,7 +178,7 @@ bright7=@@h07@@
 21=@@h06@@
 
 [main]
-initial-color-theme=$foot_theme
+initial-color-theme=$scheme
 EOF
 
 # btop ----------------------------------------------------------------------
@@ -423,6 +422,139 @@ EOF
 mkdir -p "$HOME/.pi/agent/themes"
 cp "$out/pi-theme.json" "$HOME/.pi/agent/themes/base16.json"
 
+# claude code ---------------------------------------------------------------
+# Claude Code loads custom themes from <config dir>/themes/*.json, watches that
+# directory, and picks one with `"theme": "custom:base16"` in settings.json, so
+# like pi the rendered file is copied in rather than symlinked. `base` must be
+# one of its two built-in palettes: overrides are layered on top of it, and any
+# token it does not define is dropped, so the keys below are names from Claude's
+# own 72-token palette. `text` and `inverseText` are the text drawn on top of a
+# coloured accent (black on the light palette, white on the dark one) and are
+# left to the base, because a base16 accent is not necessarily bright enough to
+# carry a fixed foreground. Token names are Claude's; the assignments follow the
+# canonical base16 mapping the other templates use, with the two colour roles
+# base16 has no slot for derived rather than guessed: diff line tints blend the
+# background toward base0B/base08, and the "shimmer" variants (the animated
+# form of an accent) are blended toward the light foreground — base16 promises
+# no brighter variant of its accents, so that is a hue shift, not a guaranteed
+# brightening.
+# base0F carries pink and violet, but it is the one accent base16 does not
+# promise is a foreground colour ("deprecated/embedded") and plenty of the
+# vendored schemes set it darker than 3:1 on the background, so it is nudged to
+# 4.5:1 against base00 first, the same way accentText handles base0D.
+c_mix() { "$REPO/scripts/theme-colors" --mix "$1" "$2" "$3"; }
+token "cBrandShimmer"  "$(c_mix "${C[base09]}" "${C[base06]}" 0.45)"
+token "cFastShimmer"   "$(c_mix "${C[base09]}" "${C[base06]}" 0.45)"
+token "cAutoShimmer"   "$(c_mix "${C[base0E]}" "${C[base06]}" 0.45)"
+token "cPermShimmer"   "$(c_mix "${C[base0D]}" "${C[base06]}" 0.45)"
+token "cSpinShimmer"   "$(c_mix "${C[base0D]}" "${C[base06]}" 0.45)"
+token "cWarnShimmer"   "$(c_mix "${C[base0A]}" "${C[base06]}" 0.45)"
+token "cDiffAddBg"     "$(c_mix "${C[base00]}" "${C[base0B]}" 0.18)"
+token "cDiffAddDim"    "$(c_mix "${C[base00]}" "${C[base0B]}" 0.09)"
+token "cDiffDelBg"     "$(c_mix "${C[base00]}" "${C[base08]}" 0.18)"
+token "cDiffDelDim"    "$(c_mix "${C[base00]}" "${C[base08]}" 0.09)"
+token "cRbRedSh"       "$(c_mix "${C[base08]}" "${C[base06]}" 0.45)"
+token "cRbOrangeSh"    "$(c_mix "${C[base09]}" "${C[base06]}" 0.45)"
+token "cRbYellowSh"    "$(c_mix "${C[base0A]}" "${C[base06]}" 0.45)"
+token "cRbGreenSh"     "$(c_mix "${C[base0B]}" "${C[base06]}" 0.45)"
+token "cRbBlueSh"      "$(c_mix "${C[base0D]}" "${C[base06]}" 0.45)"
+token "cRbIndigoSh"    "$(c_mix "${C[base0E]}" "${C[base06]}" 0.45)"
+c_fore0F="$("$REPO/scripts/theme-colors" --ensure "${C[base0F]}" "${C[base00]}" 4.5)"
+token "cFore0F"        "$c_fore0F"
+token "cRbVioletSh"    "$(c_mix "$c_fore0F" "${C[base06]}" 0.45)"
+render claude-theme.json <<EOF
+{
+  "name": "base16",
+  "base": "$scheme",
+  "overrides": {
+    "autoAccept": "#@@h0E@@",
+    "autoAcceptShimmer": "#@@cAutoShimmer@@",
+    "skill": "#@@h0E@@",
+    "bashBorder": "#@@h0E@@",
+    "claude": "#@@h09@@",
+    "claudeShimmer": "#@@cBrandShimmer@@",
+    "claudeBlue_FOR_SYSTEM_SPINNER": "#@@h0D@@",
+    "claudeBlueShimmer_FOR_SYSTEM_SPINNER": "#@@cSpinShimmer@@",
+    "permission": "#@@h0D@@",
+    "permissionShimmer": "#@@cPermShimmer@@",
+    "planMode": "#@@h0C@@",
+    "ide": "#@@h0D@@",
+    "promptBorder": "#@@h03@@",
+    "promptBorderShimmer": "#@@h04@@",
+    "inactive": "#@@h04@@",
+    "inactiveShimmer": "#@@h06@@",
+    "subtle": "#@@h03@@",
+    "suggestion": "#@@h0D@@",
+    "remember": "#@@h0D@@",
+    "background": "#@@h0C@@",
+    "success": "#@@h0B@@",
+    "error": "#@@h08@@",
+    "warning": "#@@h0A@@",
+    "warningShimmer": "#@@cWarnShimmer@@",
+    "merged": "#@@h0E@@",
+    "diffAdded": "#@@cDiffAddBg@@",
+    "diffRemoved": "#@@cDiffDelBg@@",
+    "diffAddedDimmed": "#@@cDiffAddDim@@",
+    "diffRemovedDimmed": "#@@cDiffDelDim@@",
+    "diffAddedWord": "#@@h0B@@",
+    "diffRemovedWord": "#@@h08@@",
+    "red_FOR_SUBAGENTS_ONLY": "#@@h08@@",
+    "blue_FOR_SUBAGENTS_ONLY": "#@@h0D@@",
+    "green_FOR_SUBAGENTS_ONLY": "#@@h0B@@",
+    "yellow_FOR_SUBAGENTS_ONLY": "#@@h0A@@",
+    "purple_FOR_SUBAGENTS_ONLY": "#@@h0E@@",
+    "orange_FOR_SUBAGENTS_ONLY": "#@@h09@@",
+    "pink_FOR_SUBAGENTS_ONLY": "#@@cFore0F@@",
+    "cyan_FOR_SUBAGENTS_ONLY": "#@@h0C@@",
+    "professionalBlue": "#@@h0D@@",
+    "chromeYellow": "#@@h0A@@",
+    "clawd_body": "#@@h09@@",
+    "clawd_background": "#@@h00@@",
+    "userMessageBackground": "#@@h01@@",
+    "userMessageBackgroundHover": "#@@h02@@",
+    "composerSidebarBackground": "#@@h01@@",
+    "selectionBg": "#@@h02@@",
+    "bashMessageBackgroundColor": "#@@h02@@",
+    "memoryBackgroundColor": "#@@h02@@",
+    "rate_limit_fill": "#@@h0D@@",
+    "rate_limit_empty": "#@@h02@@",
+    "fastMode": "#@@h09@@",
+    "fastModeShimmer": "#@@cFastShimmer@@",
+    "effortUltra": "#@@h0E@@",
+    "briefLabelYou": "#@@h0D@@",
+    "briefLabelClaude": "#@@h09@@",
+    "rainbow_red": "#@@h08@@",
+    "rainbow_orange": "#@@h09@@",
+    "rainbow_yellow": "#@@h0A@@",
+    "rainbow_green": "#@@h0B@@",
+    "rainbow_blue": "#@@h0D@@",
+    "rainbow_indigo": "#@@h0E@@",
+    "rainbow_violet": "#@@cFore0F@@",
+    "rainbow_red_shimmer": "#@@cRbRedSh@@",
+    "rainbow_orange_shimmer": "#@@cRbOrangeSh@@",
+    "rainbow_yellow_shimmer": "#@@cRbYellowSh@@",
+    "rainbow_green_shimmer": "#@@cRbGreenSh@@",
+    "rainbow_blue_shimmer": "#@@cRbBlueSh@@",
+    "rainbow_indigo_shimmer": "#@@cRbIndigoSh@@",
+    "rainbow_violet_shimmer": "#@@cRbVioletSh@@"
+  }
+}
+EOF
+# An unsubstituted @@token@@ would land in the file as an invalid colour and be
+# dropped silently by Claude Code, so reject the render instead of installing it.
+if ! jq -e '
+      (.base == "dark" or .base == "light")
+      and (.overrides | length > 0)
+      and ([.overrides[] | test("^#([0-9a-f]{3}|[0-9a-f]{6})$")] | all)
+    ' "$out/claude-theme.json" >/dev/null; then
+  echo "  error: claude-theme.json failed validation (unsubstituted token?)" >&2
+  exit 1
+fi
+for dir in "$HOME/.claude" "$HOME/.claude-healix"; do
+  mkdir -p "$dir/themes"
+  cp "$out/claude-theme.json" "$dir/themes/base16.json"
+done
+
 # gtk css (same file for gtk3 and gtk4) -------------------------------------
 render gtk-3.0/gtk.css <<'EOF'
 @define-color accent_color #@@h0D@@;
@@ -653,16 +785,34 @@ sed -i "s|@@battheme@@|$STATE/live/bat.tmTheme|" "$out/yazi-theme.toml"
 
 # Firefox / Floorp userChrome ------------------------------------------------
 # firefox/floorp ---------------------------------------------------------------
-# The chrome's own light/dark tokens come from the browser's appearance pref, not
-# from CSS (see scripts/theme-apply-live), so this sheet only supplies the
-# palette. Two of Firefox 155's selectors differ from the ones this file used to
-# carry: the URL bar field is painted by `.urlbar-background` (class) rather than
+# Firefox resolves its own light/dark tokens through light-dark(), which follows
+# the `color-scheme` the active theme puts on :root -- on Linux that is the
+# built-in System theme, so the chrome's polarity comes from the desktop
+# appearance and not from CSS. scripts/theme-apply-live pins the browser's theme
+# to match, and the `color-scheme` below is the belt to that pair of braces: it
+# keeps the light-dark() surfaces (the vertical tab sidebar's box, the toolbox,
+# scrollbars) on the palette's side of the pair even when the desktop or a
+# running session still reports the previous polarity.
+#
+# Two of Firefox 155's selectors differ from the ones this file used to carry:
+# the URL bar field is painted by `.urlbar-background` (class) rather than
 # `#urlbar-background` (id), and `.tab-label` has no colour of its own -- it
 # inherits `--lwt-text-color`, which is set below. Overriding `.tab-label` with a
 # dimmer colour is what made inactive tab titles unreadable.
+#
+# The vertical tab bar is Firefox's sidebar (chrome://browser/content/sidebar),
+# a separate chrome document whose surfaces come from --sidebar-* on its own
+# :root, so they have to be set here rather than reached through the legacy
+# #sidebar-box/#sidebar ids -- which are kept only for the bookmarks/history
+# sidebar still rendered the old way.
+token "ffScheme" "$scheme"
 render firefox-userChrome.css <<'EOF'
 /* Runtime Firefox/Floorp theme (scripts/theme-render). */
 :root {
+  color-scheme: @@ffScheme@@ !important;
+  --sidebar-background-color: #@@h00@@ !important;
+  --sidebar-box-background: #@@h01@@ !important;
+  --sidebar-text-color: #@@h05@@ !important;
   --lwt-accent-color: #@@h00@@ !important;
   --lwt-text-color: #@@h05@@ !important;
   --toolbar-bgcolor: #@@h01@@ !important;
