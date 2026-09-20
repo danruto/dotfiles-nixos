@@ -8,13 +8,14 @@
 , platform ? "nixos"
 , extraModules ? [ ]
 , hostDir ? hostname
+, stylix ? false
 , ...
 }@hostArgs:
 let
   p = pkgsBySystem.${system};
 
   # Per-host identity overrides are any args beyond the structural keys.
-  identity = removeAttrs hostArgs [ "hostname" "system" "platform" "extraModules" "hostDir" ];
+  identity = removeAttrs hostArgs [ "hostname" "system" "platform" "extraModules" "hostDir" "stylix" ];
   id = defaults // identity;
 
   isDarwin = platform == "darwin";
@@ -56,8 +57,9 @@ let
   # where nix may be managed by Determinate (nix.enable = false) and setting
   # nix.settings would conflict.
   ++ lib.optional (!isDarwin) ../system/nix/binary-caches.nix
-  # Stylix is wired for NixOS only; it propagates into home-manager on its own.
-  ++ lib.optionals (!isDarwin) [
+  # Stylix is opt-in per NixOS host (stylix = true). Headless hosts (WSL) leave
+  # it off: their user D-Bus has no dconf service, so the GTK activation fails.
+  ++ lib.optionals (!isDarwin && stylix) [
     inputs.stylix.nixosModules.stylix
     ../system/theme.nix
     { home-manager.sharedModules = [ ../user/theme.nix ]; }

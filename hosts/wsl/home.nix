@@ -1,4 +1,4 @@
-{ lib, pkgs, username, ... }:
+{ pkgs, username, ... }:
 
 
 {
@@ -8,10 +8,6 @@
   home.homeDirectory = "/home/" + username;
 
   programs.home-manager.enable = true;
-
-  # WSL's user D-Bus has no dconf service, so `dconf load` in the GTK target
-  # fails home-manager activation. There is no GTK desktop on this host.
-  stylix.targets.gtk.enable = lib.mkForce false;
 
   imports = [
     ../shared.nix

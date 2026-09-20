@@ -54,17 +54,19 @@
         framework = mkSystem {
           hostname = "framework";
           system = "x86_64-linux";
+          stylix = true;
           extraModules = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
         };
         # Two WSL machines sharing hosts/wsl/, named for their GPU so each can
-        # own a distinct cloudflared tunnel hostname.
+        # own a distinct cloudflared tunnel hostname. Headless: no Stylix.
         wsl-3070 = mkSystem { hostname = "wsl-3070"; hostDir = "wsl"; system = "x86_64-linux"; };
         wsl-5070 = mkSystem { hostname = "wsl-5070"; hostDir = "wsl"; system = "x86_64-linux"; };
         orb = mkSystem { hostname = "orb"; system = "aarch64-linux"; };
         vm = mkSystem { hostname = "vm"; system = "x86_64-linux"; };
-        vm-hypr = mkSystem { hostname = "vm-hypr"; system = "x86_64-linux"; };
+        # vm-hypr and vm-niri read config.lib.stylix.colors in their wm configs.
+        vm-hypr = mkSystem { hostname = "vm-hypr"; system = "x86_64-linux"; stylix = true; };
         vm-i3 = mkSystem { hostname = "vm-i3"; system = "x86_64-linux"; };
-        vm-niri = mkSystem { hostname = "vm-niri"; system = "x86_64-linux"; };
+        vm-niri = mkSystem { hostname = "vm-niri"; system = "x86_64-linux"; stylix = true; };
         vm-sway = mkSystem { hostname = "vm-sway"; system = "x86_64-linux"; };
       };
 
