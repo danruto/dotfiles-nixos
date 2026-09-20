@@ -5,13 +5,16 @@
 # `vscode` is the one exception — its theme is a VS Code extension, which can't
 # be swapped at runtime, so it still comes from the Stylix target and only
 # updates on `theme-set --rebuild`.
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, platform ? "nixos", ... }:
 
 let
   state = config.xdg.stateHome;
   current = "${state}/theme/current";
   live = "${state}/theme/live";
   link = config.lib.file.mkOutOfStoreSymlink;
+  # Standalone hosts (orb-arch) are headless: no session bus for the gtk
+  # module's dconf writes, and no GUI to theme.
+  desktop = platform != "standalone";
 in
 {
   # One command-palette entry per theme is generated at runtime by
@@ -57,7 +60,7 @@ in
   # theme-apply-live rebuilds it again on every runtime switch.
   programs.bat.config.theme = "base16-stylix";
 
-  gtk = {
+  gtk = lib.mkIf desktop {
     enable = true;
     theme = {
       package = pkgs.adw-gtk3;
@@ -78,7 +81,7 @@ in
     };
   };
 
-  qt = {
+  qt = lib.mkIf desktop {
     enable = true;
     platformTheme.name = "qtct";
     style.name = "kvantum";
