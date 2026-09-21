@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# Bump the hand-pinned upstream packages (version + hashes) in place.
+# Usage: scripts/bump [pkg ...]   (no args = all)
+# Packages: claude-code tokscale pi opencode revdiff hunk command-code
+set -euo pipefail
+root=$(cd "$(dirname "$0")/.." && pwd)
+llm=$root/user/apps/ai/llm.nix
+hunknix=$root/user/apps/git/hunk.nix
+
+# Both helpers scope to the `  <block> =` attribute of a nix file, which ends at
+# the next column-2 binding. Block "-" means the whole file.
+awkblock='
+  BEGIN { b = "  " block " ="; whole = (block == "-"); ins = whole }
+  !whole && substr($0, 1, length(b)) == b { ins = 1 }
+  !whole && ins && /^  [a-zA-Z_][a-zA-Z0-9_-]* =/ && substr($0, 1, length(b)) != b { ins = 0 }
+  ins && $0 ~ (attr " = \"") { n++ }
+'
+nixget() { # file block attr n
+  awk -v block="$2" -v attr="$3" -v want="$4" "$awkblock"'
+    n == want { match($0, attr " = \"[^\"]*\""); print substr($0, RSTART + length(attr) + 4, RLENGTH - length(attr) - 5); exit }
+  ' "$1"
+}
+nixset() { # file block attr n value
+  awk -v block="$2" -v attr="$3" -v want="$4" -v v="$5" "$awkblock"'
+    n == want && !done { sub(attr " = \"[^\"]*\"", attr " = \"" v "\""); done = 1 }
+    { print }
+  ' "$1" > "$1.bump" && mv "$1.bump" "$1"
+}
+sri() { nix hash convert --hash-algo sha256 --to sri "$1"; }
+ghtag() { local v; v=$(gh release view --repo "$1" --json tagName -q .tagName); echo "${v#v}"; }
+
+bump_claude-code() {
+  local v m i=0 p
+  v=$(npm view @anthropic-ai/claude-code version)
+  [ "$v" = "$(nixget "$llm" claude-code version 1)" ] && { echo "claude-code: already $v"; return; }
+  m=$(curl -sf "https://downloads.claude.ai/claude-code-releases/$v/manifest.zst.json")
+  nixset "$llm" claude-code version 1 "$v"
+  for p in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
+    nixset "$llm" claude-code checksum $((++i)) "$(jq -er ".platforms[\"$p\"].checksum" <<<"$m")"
+  done
+  echo "claude-code -> $v"
+}
+
+# npm-tarball packages: one sub-package per platform, hash is its dist.integrity.
+npmbump() { # block npm-name-fmt version plat...
+  local block=$1 fmt=$2 v=$3 i=0 p; shift 3
+  [ "$v" = "$(nixget "$llm" "$block" version 1)" ] && { echo "$block: already $v"; return; }
+  nixset "$llm" "$block" version 1 "$v"
+  for p in "$@"; do
+    nixset "$llm" "$block" hash $((++i)) "$(npm view "$(printf "$fmt" "$p")@$v" dist.integrity)"
+  done
+  echo "$block -> $v"
+}
+bump_tokscale() {
+  npmbump tokscale '@tokscale/cli-%s' "$(npm view @tokscale/cli-linux-x64-gnu version)" \
+    linux-x64-gnu linux-arm64-gnu darwin-x64 darwin-arm64
+}
+bump_opencode() {
+  npmbump opencode-beta 'opencode-%s' "$(npm view opencode-linux-x64 dist-tags.dev)" \
+    linux-x64 linux-arm64 darwin-x64 darwin-arm64
+}
+
+# GitHub-release packages: one prebuilt tarball per platform, hash is its sha256.
+mkurl() { local u=${1//\{v\}/$2}; echo "${u//\{a\}/$3}"; }
+ghbump() { # file block repo attr url-template asset...
+  local f=$1 block=$2 repo=$3 attr=$4 tpl=$5 i=0 a v h; shift 5
+  v=$(ghtag "$repo")
+  [ "$v" = "$(nixget "$f" "$block" version 1)" ] && { echo "$repo: already $v"; return; }
+  nixset "$f" "$block" version 1 "$v"
+  for a in "$@"; do
+    h=$(nix-prefetch-url "$(mkurl "$tpl" "$v" "$a")" 2>/dev/null)
+    [ -n "$h" ] || { echo "$repo: no hash for $a" >&2; return 1; }
+    nixset "$f" "$block" "$attr" $((++i)) "$(sri "$h")"
+  done
+  echo "$repo -> $v"
+}
+bump_revdiff() {
+  ghbump "$llm" revdiff umputun/revdiff hash \
+    'https://github.com/umputun/revdiff/releases/download/v{v}/revdiff_{v}_{a}.tar.gz' \
+    linux_amd64 linux_arm64 darwin_amd64 darwin_arm64
+}
+bump_hunk() {
+  ghbump "$hunknix" - modem-dev/hunk sha256 \
+    'https://github.com/modem-dev/hunk/releases/download/v{v}/{a}.tar.gz' \
+    hunkdiff-linux-x64 hunkdiff-linux-arm64 hunkdiff-darwin-x64 hunkdiff-darwin-arm64
+}
+
+# pi pins src, npmDeps and modelData: hashes 1, 2 and 3 of the block, in order.
+bump_pi() {
+  local v tmp url
+  v=$(ghtag earendil-works/pi)
+  [ "$v" = "$(nixget "$llm" pi-coding-agent version 1)" ] && { echo "pi: already $v"; return; }
+  url=https://github.com/earendil-works/pi/archive/refs/tags/v$v.tar.gz
+  tmp=$(mktemp -d)
+  curl -sL "$url" | tar xz -C "$tmp"
+  nixset "$llm" pi-coding-agent version 1 "$v"
+  nixset "$llm" pi-coding-agent hash 1 "$(sri "$(nix-prefetch-url --unpack "$url" 2>/dev/null)")"
+  nixset "$llm" pi-coding-agent hash 2 "$(nix run nixpkgs#prefetch-npm-deps -- "$tmp/pi-$v/package-lock.json" 2>/dev/null)"
+  nixset "$llm" pi-coding-agent hash 3 "$(npm view "@earendil-works/pi-ai@$v" dist.integrity)"
+  rm -rf "$tmp"
+  echo "pi -> $v  (re-check the buildPhase/postInstall patches still apply)"
+}
+
+bump_command-code() { "$root/user/apps/ai/bump-command-code.sh"; }
+
+pkgs=("$@")
+[ ${#pkgs[@]} -eq 0 ] && pkgs=(claude-code tokscale pi opencode revdiff hunk command-code)
+for p in "${pkgs[@]}"; do "bump_$p"; done

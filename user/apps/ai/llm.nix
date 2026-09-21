@@ -62,12 +62,12 @@ let
   # here too. Drop the version, src, npmDepsHash and modelData overrides (keep
   # postFixup) once nixpkgs-master ships this version or newer.
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (final: prev: {
-    version = "0.86.0";
+    version = "0.87.0";
     src = pkgs-master.fetchFromGitHub {
       owner = "earendil-works";
       repo = "pi";
       tag = "v${final.version}";
-      hash = "sha256-HmLJPuhCoeK+aidnRoc5huCMPVAMpTbXcrETPuNCSxE=";
+      hash = "sha256-7YkIA5IEs4U0qnoaO3IzlY+p/M7j30fSVelLeyoV+F8=";
     };
     # npmDeps must be overridden directly, not via npmDepsHash: buildNpmPackage
     # bakes the resolved npmDeps into the derivation attrs, so on overrideAttrs
@@ -75,13 +75,13 @@ let
     npmDeps = pkgs-master.fetchNpmDeps {
       inherit (final) src;
       name = "pi-coding-agent-${final.version}-npm-deps";
-      hash = "sha256-CYVYDdDzfl1VD3EA3FDKf4iDR1Y6wwmrqwGiXJVm40w=";
+      hash = "sha256-fbxwpQHnrUihO9MU72m331Uwt9dv0fQtEjdJ9hU8UxA=";
       fetcherVersion = 1;
     };
     # Hydrated model catalog; gitignored upstream, see nixpkgs' package.nix.
     modelData = pkgs-master.fetchurl {
       url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${final.version}.tgz";
-      hash = "sha512-7jc4tNTBiJrfg+2/nra6JPz2d3OGiGHDKrSVHpnfvsMgMy0uy4noGb7WidDNcqSEAK1S0kcRRTmpYAK66ZlTSw==";
+      hash = "sha512-lbRm+EMY6Jx3l+HLpbqbm9Yrhkc5u7EffLk2id+zJQEoBuR5I+tijGiZU8zlnuuCclmQOgH0PVjL9PLbeqJ9MQ==";
     };
 
     # 0.85.0 added the packages/chord workspace and coding-agent now imports
@@ -121,12 +121,12 @@ let
   # whole thing once v2 ships tagged releases and lands in nixpkgs.
   opencode-beta =
     let
-      version = "0.0.0-dev-202609192147";
+      version = "0.0.0-dev-202609211956";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-B43cYwzel4EffCrVFF9A8DhLke7R+zg2pIevpU9ufZvCa9/QLtIWEQvKbPddQl2ckLoviF44k2LvwBW5Al2nRQ=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-mpxN6jBIImAz9tHtEpSAHUVEIycNzPQRK6Yk8rLjZmWwA6Ib+x0klusld5qcEfWq1su4VBU13ydx4buISPE5+A=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-lxPN/fOO2E1e4NtWFK8Q3Hj7mzrQ7yOaIOJBLL606/tU6+N1m5IVuTpsMUpyk7ZRomsh3rn9EcT3dX8L08oKVg=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-I4UOGrsO8a/b5ye+YSaQrc7WuQ3wGlv2s5TZWjJ86yrWH0eAavkJdcJ2O7dLX0xe9EkzpbyHOn0OL98NRyneMQ=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-yrS/NNv4wNOSmU3trLmTqB7J8gbHC+fqxrrY5BBelkVhB264bnE9g2eZzeV7PiLI6llnm8gDVyWx60tTUt8Deg=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-PJ9JDTgwUXAOaPD7OOcrqedmtIvuYyFsYdVU4A40PBcLpNsc4KR+cXXWJQuaIU54WYDnaGHVceF/ULhsb8UNTw=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-jQHiUD/Lc05/gFCxYK7Zg3G/amUtwLxjNfHZzaKIhtHbw8PkXgnaCqK2LVF9iBnOv5KXy1U5bWT7sMu02pQjmA=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-QPJXmMBiBTj96fWBEs1OZFxIw2TIpX/8InkUIb376+uJEJ6OIDb92us4FiduFyVp0GwlbxZ/bdkTj/b5tT6pUw=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
@@ -143,7 +143,7 @@ let
         runHook preInstall
         install -Dm755 bin/opencode $out/bin/opencode
         wrapProgram $out/bin/opencode \
-          --prefix PATH : ${lib.makeBinPath [ pkgs.ripgrep ]} \
+          --prefix PATH : ${lib.makeBinPath [ pkgs.ripgrep pkgs.sqlite ]} \
           --set OPENCODE_DISABLE_AUTOUPDATE true
         runHook postInstall
       '';

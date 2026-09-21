@@ -143,9 +143,13 @@ norb:
 hm/switch:
 	ulimit -n 8192; nix run home-manager/release-26.05 -- switch --flake '.#danruto@orb-arch'
 
+# Bump the hand-pinned upstream packages. `make bump PKG="pi opencode"` for a subset.
+bump:
+	./scripts/bump $(PKG)
+
 # Normalize claude settings.json (Claude Code rewrites it with its own key order)
 fmt/settings:
 	jq -S . user/apps/ai/configs/settings.json > user/apps/ai/configs/settings.json.tmp && \
 		mv user/apps/ai/configs/settings.json.tmp user/apps/ai/configs/settings.json
 
-.PHONY: help switch norb hm/switch fmt/settings vm/help vm/bootstrap/0 vm/bootstrap/1 vm/bootstrap/2 vm/bootstrap/u vm/secrets vm/copy vm/git_update vm/switch vm/ssh
+.PHONY: bump help switch norb hm/switch fmt/settings vm/help vm/bootstrap/0 vm/bootstrap/1 vm/bootstrap/2 vm/bootstrap/u vm/secrets vm/copy vm/git_update vm/switch vm/ssh
