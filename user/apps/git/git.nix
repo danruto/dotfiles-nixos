@@ -30,6 +30,12 @@ in
       user.email = email;
       core.pager = "${hunk}/bin/hunk pager";
       alias.hd = "diff";
+      # Agent-rewritten files (see .gitattributes): keep the local copy on merge
+      # instead of conflicting on every pull.
+      merge."keep-local" = {
+        name = "keep the local version";
+        driver = "true";
+      };
     };
     includes = [
       {
