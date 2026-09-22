@@ -38,8 +38,7 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 
 `/pb:work --stack` freezes phases onto local stacked branches. The finish cycle is:
 `gh stack submit --auto` (create the PRs) → merge on GitHub → `gh stack sync` (fast-forwards
-trunk, retires merged branches) → `gh stack trunk` (checkout main) → rebuild the repo's
-pbtk graph index if one exists.
+trunk, retires merged branches) → `gh stack trunk` (checkout main).
 `submit` creates the PRs as drafts with empty bodies — after it, finish each PR: write a
 useful description of its contents (`gh pr edit --body-file`), fix any stub title, and mark
 it ready for review (`gh pr ready`).
@@ -51,33 +50,3 @@ don't run it as a "finish" command before `submit`.
 - **Cheap model** — code exploration subagents: file searches, grep tasks, code reading
 - **Mid model** — insights, explanations, web research, and mid-tier reasoning
 - **Frontier model** (or omit the override so it inherits the session model) — architectural decisions, writing code, and any other major decisions requiring maximum reasoning
-
-## Graph MCP
-
-`pbtk-graph` is a per-repo MCP exposing two tool families: `graph_*` indexes
-code symbols and `doc_*` indexes markdown docs. When it is available in the
-current repo:
-
-**Before any grep/find/file-read scan for code, stop and check: is this a symbol,
-caller/callee, definition, or concept lookup? If yes, use a
-`graph_*` tool first. Raw search is the fallback, not the default — use it only
-for unindexed content (string literals, comments, log messages, SQL, struct
-tags, config keys) or when the graph query returns nothing.**
-
-Routing:
-
-- Definition by qualified name → `graph_definition`; by substring → `graph_search`.
-- Callers / callees → `graph_callers` / `graph_callees`.
-- File symbols → `graph_outline`; imports → `graph_imports`.
-- Diff blast radius → `graph_diff_affected`.
-- Docs → `doc_search` / `doc_outline` before any grep over `*.md`.
-- Intent/concept when you don't know names → `graph_semantic_search`.
-- "Find code like this" from a `file:line` → `graph_find_related`.
-- One symbol + 1-hop neighbors in a single call → `graph_context`.
-- Latest session-continuity snapshot → `session_resume` (same as `/pbtk-resume`).
-
-The two indexes are built separately — `graph_*` tools need the graph index,
-`doc_*` tools need the doc index. When either goes stale after a refactor or
-large file batch, rebuild it: one-shot `pbtk graph build` / `pbtk doc build`,
-or `watch` to auto-refresh on changes.
-

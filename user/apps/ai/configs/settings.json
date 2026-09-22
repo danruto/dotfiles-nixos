@@ -1,16 +1,16 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-settings.json",
   "alwaysThinkingEnabled": true,
-  "attributionEnabled": false,
-  "attributionName": "",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "autoMemoryEnabled": false,
   "autoMode": {
     "allow": [
       "$defaults",
       "Bash(oxlint:*)",
       "Bash(oxfmt:*)",
-      "Bash(pbtk graph:*)",
-      "Bash(pbtk doc:*)",
       "Bash(gh pr view:*)"
     ],
     "soft_deny": [
@@ -20,10 +20,10 @@
       "Bash(pulumi destroy:*)"
     ]
   },
-  "disableArtifact": true,
   "disableBundledSkills": true,
   "disableWorkflows": true,
   "effortLevel": "high",
+  "enableArtifact": false,
   "enabledPlugins": {
     "bb@bubblebeam": true,
     "claude-code-setup@claude-plugins-official": true,
@@ -56,17 +56,6 @@
     }
   },
   "hooks": {
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "jq -cr '# pbtk-prehook-v3\n{hookSpecificOutput:{hookEventName:\"PreToolUse\",updatedInput:(.tool_input + {command:\n  (\"pbtk exec --shell -- \" + (.tool_input.command | @sh))})}}'",
-            "type": "command"
-          }
-        ],
-        "matcher": "Bash"
-      }
-    ],
     "SessionStart": [
       {
         "hooks": [
@@ -76,11 +65,19 @@
             "type": "command"
           }
         ],
-        "matcher": "*"
+        "matcher": "^(startup|resume|clear|compact|fork)$"
       }
     ]
   },
   "model": "opus[1m]",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "medium"
+    },
+    "claude-opus-5": {
+      "effortLevel": "medium"
+    }
+  },
   "permissions": {
     "allow": [
       "Read",
@@ -132,6 +129,7 @@
     ]
   },
   "remoteControlAtStartup": false,
+  "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "statusLine": {
     "command": "~/.claude/statusline.sh",
@@ -144,6 +142,7 @@
   },
   "theme": "auto",
   "tui": "fullscreen",
+  "verbose": true,
   "voice": {
     "enabled": true,
     "mode": "hold"
