@@ -21,12 +21,13 @@ in
   # scripts/theme-entries (into $XDG_DATA_HOME/applications) so launchers see
   # themes as soon as they are added, with no rebuild. Regenerate on activation
   # so a fresh install that has never run theme-set still has entries.
-  home.activation.themeEntries = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  # Headless standalone hosts have no launcher, so skip it there.
+  home.activation.themeEntries = lib.mkIf desktop (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     entry_script="${config.home.homeDirectory}/dotfiles-nixos/scripts/theme-entries"
     if [ -x "$entry_script" ]; then
       $DRY_RUN_CMD "$entry_script" >/dev/null
     fi
-  '';
+  '');
 
   # Runtime theme files, out-of-store so a symlink swap is enough.
   xdg.configFile = {
