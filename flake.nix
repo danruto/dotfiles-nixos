@@ -57,6 +57,12 @@
           stylix = true;
           extraModules = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
         };
+        mf285 = mkSystem {
+          hostname = "mf285";
+          system = "x86_64-linux";
+          stylix = true;
+          extraModules = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
+        };
         # Two WSL machines sharing hosts/wsl/, named for their GPU so each can
         # own a distinct cloudflared tunnel hostname. Headless: no Stylix.
         wsl-3070 = mkSystem { hostname = "wsl-3070"; hostDir = "wsl"; system = "x86_64-linux"; };
