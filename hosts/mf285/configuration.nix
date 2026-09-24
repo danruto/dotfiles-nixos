@@ -3,6 +3,7 @@
 with lib;
 {
   imports = [
+    nixos-hardware.nixosModules.common-cpu-intel
     nixos-hardware.nixosModules.common-pc-ssd
     ../../system/hardware/bluetooth.nix
     ../../system/hardware/opengl.nix
@@ -21,6 +22,7 @@ with lib;
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernel.sysctl."vm.swappiness" = 10;
 
   security.polkit.enable = true;
