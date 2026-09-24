@@ -10,6 +10,7 @@ with lib;
     ../../system/security/gpg.nix
     ../../system/security/blocklist.nix
     ../../system/security/sshd.nix
+    ../../system/security/remote-access.nix
     ../../system/wm/fonts.nix
     ../../system/apps/starship.nix
     ../../system/wm/wayland.nix

@@ -11,3 +11,5 @@ result
 
 # Local machine-specific configuration
 # config.local.nix
+.pb
+docs/

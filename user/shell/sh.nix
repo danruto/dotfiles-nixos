@@ -66,6 +66,24 @@ in
         description = "Run claude with the Healix org subscription config dir";
         body = "CLAUDE_CONFIG_DIR=$HOME/.claude-healix claude $argv";
       };
+      # mosh can't forward ports, so tunnels ride a separate ssh. Keeping the browser
+      # on localhost keeps secure-context, OAuth loopback and passkey rules happy.
+      tun = {
+        description = "Forward remote ports to localhost: tun <host> <port|local:remote>...";
+        body = ''
+          if test (count $argv) -lt 2
+              echo "usage: tun <host> <port|local:remote>..." >&2
+              return 2
+          end
+          set -l fwd
+          for p in $argv[2..]
+              set -l parts (string split : $p)
+              set -a fwd -L $parts[1]:localhost:$parts[-1]
+          end
+          echo "tun: $argv[1] -> localhost:"(string join ' ' $argv[2..])" (Ctrl-C to stop)"
+          ssh -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=3 $fwd $argv[1]
+        '';
+      };
       # Generic agent sandbox: cwd (+ $sbx_binds) writable, rest of $HOME read-only,
       # ssh/gnupg/aws hidden, network ON. Works for any CLI: sbx opencode / sbx codex / ...
       # ponytail: net stays on so agents can reach their API; for egress control use gVisor.
