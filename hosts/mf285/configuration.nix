@@ -18,6 +18,7 @@ with lib;
     ../../system/apps/docker.nix
     ../../user/apps/fileman/nautilus.nix
     ../../user/apps/browser/helium.nix
+    ./hardware-configuration.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
