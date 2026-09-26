@@ -42,6 +42,12 @@
         "source": "directory"
       }
     },
+    "pb-skills": {
+      "source": {
+        "path": "/home/danruto/dev/pixelbrush/pb-skills",
+        "source": "directory"
+      }
+    },
     "ponytail": {
       "source": {
         "repo": "DietrichGebert/ponytail",
