@@ -53,6 +53,7 @@ with lib;
 
   networking.hostName = hostname;
   networking.networkmanager.enable = true;
+  networking.networkmanager.wifi.powersave = false;
   time.timeZone = timezone;
   i18n.defaultLocale = locale;
 
