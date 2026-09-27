@@ -54,6 +54,11 @@ with lib;
   networking.hostName = hostname;
   networking.networkmanager.enable = true;
   networking.networkmanager.wifi.powersave = false;
+
+  services.greetd.settings.initial_session = {
+    command = "niri-session";
+    user = username;
+  };
   time.timeZone = timezone;
   i18n.defaultLocale = locale;
 
@@ -97,6 +102,15 @@ with lib;
   };
 
   environment.sessionVariables.XKB_CONFIG_ROOT = "/run/current-system/sw/share/X11/xkb";
+
+  services.pipewire.wireplumber.extraConfig."51-hdmi-default" = {
+    "device.profile.priority.rules" = [
+      {
+        matches = [ { "device.name" = "alsa_card.pci-0000_00_1f.3"; } ];
+        actions.update-props.priorities = [ "output:hdmi-stereo+input:analog-stereo" ];
+      }
+    ];
+  };
 
   services.auto-cpufreq.enable = false;
   services.power-profiles-daemon.enable = true;

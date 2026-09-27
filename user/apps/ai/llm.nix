@@ -111,22 +111,18 @@ let
     '';
   });
 
-  # opencode v2 (the `beta`/`dev` channel). v2 lives on an untagged dev branch
-  # with a rewritten layout (packages/cli, not packages/opencode), so the
-  # nixpkgs 1.x source build (a *different*, v1 package) doesn't apply —
-  # install upstream's own prebuilt bun binary from npm instead. This pins one
-  # dated snapshot: it does NOT track the channel, bumping means a new
-  # timestamp version + four hashes. The npm dist-tag prefix switched from
-  # `beta-` to `dev-` around 2026-08-12; check both when bumping. Drop this
-  # whole thing once v2 ships tagged releases and lands in nixpkgs.
-  opencode-beta =
+  # opencode v2 ships as prebuilt bun binaries under the @opencode/cli npm
+  # scope; nixpkgs' `opencode` is still the v1 source build. Bumping means a
+  # new version + four hashes from
+  # `npm view @opencode/cli-<plat>@<version> dist.integrity`.
+  opencode =
     let
-      version = "0.0.0-dev-202609252333";
+      version = "2.0.18";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-1p9HjA/GkczJlPMnB3RYwQAtksiatikXroRP2ed45XpVKDE3Yzd6QzIYEbYKnZTTKid5Gp+/BNqBu895BemDsQ=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-HeZhDVVsMSwEd2gdbpYY6+LBoRzgk4phfvpeLfDHaHT7a/BdW28YAbWNlCF6ZhRhuaOkav7ww1Mx4VfD3uprag=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-rL60MHXoSmSen/XRY8yy+geetGJt13NcUMF5ihjpM/CXqwCd8H6cbr3zLzHY2lJjxmUm5Nw0Zg1MovibTfbC6g=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-7wW2tnGqMt2PaEPnjNak3p5LrZE/gX7tsdEoXlqfEcBpVz6LitsdYfU6dq2d5jf1+MiaDq7OQptGFjZNc3D3cw=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-94dH7lwB+tpmzI1/NIfzFxLBIeshZSNtyx2sskL0C0kgYjMaiVMIHvQLYIECUOWSuVz5/dH/KPUIOGn7ML311g=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-OjKG0staG+KRG9sNORb2vIPcfthMVk9RtCamU1vMWPquV70bQEYUM0JUT+t0A49eAc2H4lZWhqkpH2gpg87D+Q=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-w6TKuEob/XM+KzSZmmNL69P1DMvHN4LEfE9NfMwdUj5wPLXDqzz1yLOhAYEnFYW1LBAsV5Xo1giyvtpWz5vyzg=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-GRJMkkyQKDPIJbYr2WtFTgK1Vb1p/4xrqxgXA/TLyJ1Tn5tK5hNOtbslUZgsktrEQD6TeT5bVZcjRLC41n+d/A=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
@@ -134,7 +130,7 @@ let
       pname = "opencode";
       inherit version;
       src = pkgs.fetchurl {
-        url = "https://registry.npmjs.org/opencode-${target.plat}/-/opencode-${target.plat}-${version}.tgz";
+        url = "https://registry.npmjs.org/@opencode/cli-${target.plat}/-/cli-${target.plat}-${version}.tgz";
         inherit (target) hash;
       };
       nativeBuildInputs = [ pkgs.makeBinaryWrapper ]
@@ -151,7 +147,7 @@ let
       # it corrupts the executable (nixpkgs' own opencode does the same).
       dontStrip = true;
       meta = {
-        description = "AI coding agent built for the terminal (v2 beta/dev channel)";
+        description = "AI coding agent built for the terminal";
         homepage = "https://github.com/anomalyco/opencode";
         platforms = builtins.attrNames hashes;
         mainProgram = "opencode";
@@ -210,7 +206,7 @@ in
     tokscale
     command-code
     claude-code
-    opencode-beta
+    opencode
     pkgs-master.codex
     fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name
   ] ++ lib.optionals piEnabled [
