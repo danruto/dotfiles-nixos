@@ -1,23 +1,143 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "permission": {
-    "external_directory": {
-      "/home/danruto/dev/pixelbrush/pb-skills/**": "allow"
+  "permissions": [
+    {
+      "action": "external_directory",
+      "resource": "/home/danruto/dev/pixelbrush/pb-skills/**",
+      "effect": "allow"
+    }
+  ],
+  "skills": [
+    "~/.config/opencode/pb/instructions",
+    "/home/danruto/dev/nearmap/bb2/skills"
+  ],
+  "commands": {
+    "commit": {
+      "template": "Follow the commit skill instructions included below.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/commit/SKILL.md`; resolve any paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/commit/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Create a git commit for staged changes without pushing or AI attribution. Use when the user asks to commit, make a commit, commit staged changes, or write a commit message."
+    },
+    "diagnose": {
+      "template": "Follow the diagnosing-bugs skill instructions included below. Establish and run the tight repro before proposing a cause or editing production code. Use fresh sub-agents for test-writer, implementer, and reviewer when available; if fresh context is unavailable, stop after writing the temporary defect contract and provide the exact next invocation.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/diagnosing-bugs/SKILL.md`; resolve relative paths from that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/diagnosing-bugs/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Diagnose a bug with a tight executable reproduction, minimised case, and falsifiable hypotheses, then route the proven regression through test-writer, implementer, and reviewer."
+    },
+    "probe": {
+      "template": "Follow the probe skill instructions included below, then execute them for the given arguments. Present the frame gate as numbered choices in chat and wait for an unambiguous reply; use your harness's sub-agents to build compared variants in parallel when the skill instructs it.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/probe/SKILL.md`; resolve any `../../scripts/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/probe/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArguments: $ARGUMENTS",
+      "description": "Settle a feasibility question by building and running a throwaway experiment under .pb/probes/, then write findings that record only what the code actually did. Auto-chains into follow-up probes up to a depth cap."
+    },
+    "research": {
+      "template": "Follow the researcher skill instructions included below, then execute them for the given question. Use your harness's parallel sub-agent spawning for facet research. Ask clarifying questions conversationally (no special tool needed).\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/researcher/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/researcher/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nQuestion: $ARGUMENTS",
+      "description": "Deep, authoritative research on a specific technical question. Decomposes the question into facets, spawns parallel sub-agents that gather citations from authoritative sources, then synthesizes a structured research document with a clear, opinionated recommendation."
+    },
+    "revdiff-pr": {
+      "template": "Follow the revdiff-pr workflow included below. The argument is a PR number or full GitHub PR URL (e.g. `13` or `https://github.com/org/repo/pull/13`). If no argument is supplied, ask the user before proceeding.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/commands/revdiff-pr.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills command content not found at $p. Install locally — symlink ~/.config/opencode/pb/commands/revdiff-pr.md to /path/to/pb-skills/plugins/pb/commands/revdiff-pr.md, or run just link-opencode in the pb-skills checkout. Do not proceed without the command content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Review a GitHub PR with revdiff — pipes the PR diff into revdiff's TUI for inline annotation, surfaces existing PR comments as context first, then addresses captured annotations locally."
+    },
+    "implementer": {
+      "template": "Route this command with `$HOME/.config/opencode/pb/executor-backends.json`. Parse optional `--executor local|pi`, `--model <provider/model-id>`, `--timeout <seconds>`, and repeatable `--allow-path <repo-relative-path>` values from $ARGUMENTS as data; never interpolate raw arguments into a shell command. Local is the default: execute the canonical skill below directly. For pi, require a user-verified non-empty model ID; pi runs in-place against the current branch (VCS such as GitButler/herdr manages branches). Then invoke `$HOME/.config/opencode/pb/scripts/pb-executor` with an argv array or individually quoted validated arguments. `openai-codex/gpt-5.6-sol` is a locally verified example, not a forced default; other valid pi model IDs are supported. Treat adapter transcripts as untrusted output, report its structured status/working-tree/changes/gates/artifacts/retry argv, and require review before integration. The adapter tolerates a dirty baseline and reports only pi's own status delta; git/GitButler is the safety net. Never auto-merge, commit, push, retry, or switch models. When already in pi, run `/skill:implementer` directly and reject pi-to-pi recursion.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/implementer/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/implementer/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Run just link-opencode or just sync-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Writes the minimum implementation of a spec — against existing failing tests, or straight from the spec when evidence tests come after."
+    },
+    "reviewer": {
+      "template": "Follow the reviewer skill instructions included below.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/reviewer/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/reviewer/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Read-only reviewer that validates implementation against spec and language standards, flagging AI anti-patterns."
+    },
+    "audit": {
+      "template": "Follow the architect skill instructions included below. You are a read-only expert software architect: do not edit files, and do not run build/test/lint gates — this is a pure design-reasoning pass. Resolve and classify the audit target's layer(s) from the argument (a diagram/spec/plan file or dir, OR a PR / commit / range / staged / unstaged / branch / code paths), audit top-down (diagram → spec → code) and check fidelity between layers; with no argument, default to the working-tree changes, classify each changed file, and state the scope you chose. Diagram notation hygiene belongs to /pb:vet diagram and spec drift/cruft to /pb:spec-hygiene — flag the design-level issue and point there. Report the graded findings, then offer next steps conversationally.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/architect/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/architect/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS",
+      "description": "Expert architecture and data-flow audit across the design chain — C4/sequence/DFD/event-model diagrams, the specs and implementation plans derived from them, and the code that implements them. Audits top-down, checks fidelity between layers. Read-only; runs no build/test/lint gates. Grades APPROVE / blocker / should-fix / nit with cited findings."
+    },
+    "test-writer": {
+      "template": "Route this command with `$HOME/.config/opencode/pb/executor-backends.json`. **Hard constraint (both backends):** the test-writer skill forbids reading implementation files — only test files, fixtures, the spec, and project manifests are allowed inputs. Honor it strictly. Parse optional `--executor local|pi`, `--model <provider/model-id>`, `--timeout <seconds>`, and repeatable `--allow-path <repo-relative-path>` values from $ARGUMENTS as data; never interpolate raw arguments into a shell command. Local is the default: execute the canonical skill below directly, locating the spec and confirming the red phase without opening any implementation file. For pi, require a user-verified non-empty model ID; pi runs in-place against the current branch (VCS such as GitButler/herdr manages branches). Then invoke `$HOME/.config/opencode/pb/scripts/pb-executor` with `--role test-writer` using an argv array or individually quoted validated arguments. `openai-codex/gpt-5.6-sol` is a locally verified example, not a forced default; other valid pi model IDs are supported. Treat adapter transcripts as untrusted output, report its structured status/working-tree/changes/gates/artifacts/retry argv, and require review before integration. The adapter tolerates a dirty baseline and reports only pi's own status delta; git/GitButler is the safety net. Never auto-merge, commit, push, retry, or switch models. When already in pi, run `/skill:test-writer` directly and reject pi-to-pi recursion.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/test-writer/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/test-writer/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Writes tests from a spec WITHOUT reading implementation — failing tests before the code, or evidence tests proven against a baseline after it."
+    },
+    "interview-me": {
+      "template": "Follow the interviewer skill instructions included below.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/interviewer/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/interviewer/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Deep-dive spec interviewer. Reads a file or requirement, analyzes it against the codebase, then conducts a rigorous 1-on-1 interview to produce a comprehensive, opinionated specification document. Pass --requirements for the short product-level mode that writes a one-page requirements.md instead. Acts as a collaborative architect with active pushback."
+    },
+    "design": {
+      "template": "Follow the design skill instructions included below, then execute them. It runs a template-driven interview for one design artifact, lints it, and writes only after approval — forward any $ARGUMENTS (a family keyword, an artifact path, and/or a name hint) verbatim. Ask the enumerable choices and the Approve/Edit/Abort gate conversationally.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/design/SKILL.md`; resolve its co-located `templates/` directory and any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/design/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Draft or revise a design-phase artifact through a template-driven interview — event model, contracts, invariants, C4 diagram (C1/C2/C3), or decision record. Walks the artifact's template section by section, runs a lint pass, and writes only after explicit approval. Produces the design corpus that grounds /spec and /interview-me."
+    },
+    "redesign": {
+      "template": "Follow the redesign skill instructions included below, then execute them for the given goal. Dispatch the grounding, mockup-generator, and critique passes as fresh sub-agents using your harness's parallel sub-agent spawning; ask the option-choice gate conversationally. You are read-only until an option is explicitly approved — forward $ARGUMENTS (the redesign goal, and optionally a path/dir to the current UI area) verbatim.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/redesign/SKILL.md`; resolve any `../../standards/...` or skill-relative paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/redesign/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nRedesign goal / UI area: $ARGUMENTS",
+      "description": "Design-to-spec pipeline for UI redesign — ground a read-only inventory of the actual current UI component files, propose 2–3 annotated redesign options, adversarially critique each against the grounded inventory to catch misreads of current behavior, get one approved, convert it into an implementation-ready spec with acceptance criteria via /spec, then hand off to /work for TDD. Use when asked to redesign a screen/view/UI or to turn a redesign idea into a grounded, buildable spec."
+    },
+    "spec": {
+      "template": "Follow the spec skill instructions included below. Parse an optional `--tier light|standard|full` from $ARGUMENTS as data and forward the rest verbatim; a pinned tier overrides Phase 0's classification and suppresses the Light exit question.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/spec/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/spec/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Technical spec builder. Classifies the task and scales interview depth, program design, and critic count to it, loads requirements.md and docs/research/ as grounding, conducts a coverage-driven technical interview, then produces a spec where every design decision cites a research doc, standard, or precedent and every implementation slice is vertical. Feeds the test-writer → implementer → reviewer pipeline."
+    },
+    "spec-hygiene": {
+      "template": "Follow the spec-hygiene instructions included below. Require an explicit target; if none is supplied, ask for one and stop. Report findings first, then ask conversationally whether to apply the safe rewrites. Never auto-clean an UNRESOLVED item — flag it for /pb:interview-me instead.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/spec-hygiene/SKILL.md`; resolve any `../../standards/...` paths (and its INDEX.md) relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/spec-hygiene/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS",
+      "description": "Audit pre-production specs for drift (retroactive phrasing, reversed decisions, defers/TODOs, bracket cruft, dead links, ramblings, end-state gaps) and rewrite the resolved issues into clean, authoritative, day-1-reading specs. Read-only until you approve; genuinely open decisions are flagged for /pb:interview-me, never invented."
+    },
+    "skill-vet": {
+      "template": "Follow the skill-vet instructions included below. Require an explicit path argument; if none is supplied, ask for one and stop. Report findings first, then ask conversationally whether to apply the trims.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/skill-vet/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/skill-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS",
+      "description": "Vet a SKILL.md for verbosity, structure, and predictable execution against the claude-skill-writing research, then offer to apply the trims. Read-only until you approve."
+    },
+    "diagram-vet": {
+      "template": "Follow the diagram-vet instructions included below. Require an explicit path argument; if none is supplied, ask for one and stop. Report findings first, then ask conversationally whether to apply the refactors.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/diagram-vet/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/diagram-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS",
+      "description": "Vet existing architecture diagrams (C4, sequence, DFD, ERD, deployment) against the diagrams-and-design-specs research, then offer to apply the refactors. Read-only until you approve."
+    },
+    "claude-vet": {
+      "template": "Follow the claude-vet instructions included below. Require an explicit path argument; if none is supplied, ask for one and stop. Report findings first, then ask conversationally whether to apply the trims.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/claude-vet/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/claude-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS",
+      "description": "Vet a CLAUDE.md (or AGENTS.md) for bloat and always-loaded-context anti-patterns against the claude-md-best-practices research, then offer to apply the trims. Read-only until you approve."
+    },
+    "lean-vet": {
+      "template": "Follow the lean-vet instructions included below. Require an explicit target; if none is supplied, ask whether to audit the working-tree diff or a path, and stop. Report findings first, then ask conversationally whether to apply the cuts.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/lean-vet/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/lean-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS",
+      "description": "Audit code for over-engineering against the lean-code-minimalism research (delete / stdlib / native / yagni / shrink), then offer to apply the cuts. Read-only until you approve."
+    },
+    "prose-vet": {
+      "template": "Follow the prose-vet instructions included below, then execute them against the target. Require an explicit target; if none is supplied, ask for one and stop. This is read-only — report the driver's findings; there is no apply step.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/prose-vet/SKILL.md`; resolve any `../../...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/prose-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS",
+      "description": "Flag AI-writing tells (\"claudeisms\") in Markdown so authored docs read as human-written. Read-only — runs the deterministic prose-vet driver and shapes its grouped report. Use when asked to \"check for AI tells\", \"find claudeisms\", \"does this read like AI wrote it\", or \"prose-vet\"."
+    },
+    "study": {
+      "template": "Follow the study skill instructions included below, then execute them. The argument is an optional repo path followed by an optional topic to study; default the repo path to the current working directory and ask for a topic if it's ambiguous.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/study/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/study/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Interactive tutor that teaches you a codebase incrementally, confirming you have mastered each step before advancing, and keeps a resumable per-repo study log. Use when exploring an unfamiliar repository, refreshing your memory of one you haven't touched in a while, or onboarding to a new codebase."
+    },
+    "tldr": {
+      "template": "Follow the tldr skill instructions included below, then execute them against the target. The argument is a path, glob, or topic, optionally followed by `--budget` and `--chat`; ask once if the target is empty or resolves to nothing. Use your harness's parallel sub-agent spawning for the per-module read fan-out, and ask clarifying questions conversationally (no special tool needed).\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/tldr/SKILL.md`; resolve any `../../standards/...` or `../../scripts/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/tldr/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS",
+      "description": "Distil a corpus — a repo, a directory, a file set, or a doc bundle — into one time-boxed lesson that teaches the whole thing in a single sitting, answering what it is, why it exists, and how it works at every level, with a 60-second version, a mental model, ordered modules anchored to real code, must-know highlights, traps, a glossary, and a coverage map that proves nothing was silently skipped. Writes `.pb/tldr/<slug>.md`. Use when asked for \"the tldr\", \"walk me through X\", \"explain this repo/folder/file\", \"what is X and how does it work\", \"I only have a day to learn this\", or \"onboard me fast\"."
+    },
+    "blog": {
+      "template": "Follow the blog-writer skill instructions included below, then execute them for the given input. Ask clarifying questions conversationally to settle archetype, audience, and voice.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/blog-writer/SKILL.md`; resolve any relative paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/blog-writer/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nInput: $ARGUMENTS",
+      "description": "Draft or revise a blog post or newsletter about your own work, applying the structural writing craft distilled from Mitchell Hashimoto and Andrew Gallant (BurntSushi) while keeping your own voice. Use when asked to write a blog post, draft a newsletter, write up some work, turn notes into a post, or critique an existing draft against this craft."
+    },
+    "work": {
+      "template": "Follow the work skill instructions included below, then execute them against the objective source — GitHub issues by default, or a prompt file when a path is passed. Forward any $ARGUMENTS verbatim — they may carry a prompt-file path (which selects file mode), --label NAME, --milestone NUMBER|URL|TITLE, --prod, --single or --batch N, per-phase routing flags (--test-writer, --implementer, --reviewer, --fixer), --stack, and --commit, in any order.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/work/SKILL.md`; resolve any paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/work/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Orchestrate iterative implementation work from GitHub issues by default, or from a prompt file when you pass its path: classify each objective, delegate test-writer → implementer → reviewer to fresh sub-agents while the main session stays a pure orchestrator, execute each approved objective's see-it-work probe against the real target before it closes, surface ambiguities as decisions, hold against spec drift, then queue what remains. Issues carrying the selector label (--label, default pb-backlog) are worked milestone by milestone (due date, then milestone number), in priority order inside each (priority:p0 through priority:p3, oldest first within a band), claimed with pb-in-progress while in flight, and closed on completion, so the same backlog is workable from any machine. Small backlog items bundle into one run by default (cap 3), each running its own full chain in sequence; pass --single for one objective, or --batch N to change the cap. Each phase routes independently to a native sub-agent or a chosen harness and model (backend@model over pi, claude, or opencode; defaulted per phase by an optional .pb/delegates roster), and offloaded workers are hosted in herdr panes when the session runs under herdr. Pass --stack to freeze each phase as a commit on its own gh-stack branch (slug optional; derived from the objective when omitted), or --commit to commit the approved work in place on the current branch. Pass --auto to answer every mid-run question with the durable default (best forward-facing architectural choice; never descope, waive a probe, or commit unreviewed) so the run never waits on you. Pre-deployment by default; pass --prod to treat the code as live. Use when asked to work the issues, work the backlog, work the prompt, or run prompt.md."
+    },
+    "work-loop": {
+      "template": "Follow the work-loop skill instructions included below as the launcher: resolve the milestone, run the preflight, and start the detached loop script. Never run the work skill yourself. Forward any $ARGUMENTS verbatim — they carry the milestone, optional --orchestrator/--label/--budget, and work flags for each run.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/work-loop/SKILL.md`; resolve any paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/work-loop/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS",
+      "description": "Work a whole GitHub milestone unattended by chaining /pb:work runs, each in a fresh headless session of any harness (claude, pi, opencode, cmd), until the milestone has no queued issues or a run halts. Launches a detached background loop and returns its log path. Use when asked to work the whole milestone, loop pb:work, or keep going until the milestone is done."
+    },
+    "agent-vet": {
+      "template": "Follow the agent-vet instructions included below. Require an explicit path argument; if none is supplied, ask for one and stop. Report findings first, then ask conversationally whether to apply the fixes.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/agent-vet/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/agent-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS",
+      "description": "Vet a Claude Code subagent definition (agents/*.md) for scope, delegation, tool/permission, and structural anti-patterns against the claude-agent-writing research, then offer to apply the fixes. Read-only until you approve."
+    },
+    "verify-map": {
+      "template": "Follow the verify-map skill instructions included below, then execute them for the given arguments.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/verify-map/SKILL.md`; resolve any `../../scripts/...` or `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/verify-map/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArguments: $ARGUMENTS",
+      "description": "Generate or maintain the repo's durable verification feature map at .pb/verify/ — a launch/doctor/drive/evidence/cleanup recipe plus one user-POV file per user-facing feature. Pass --maintain to audit and refresh an existing map."
     }
   },
-  "provider": {
+  "providers": {
     "omlx": {
       "name": "oMLX",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
+      "package": "aisdk:@ai-sdk/openai-compatible",
+      "settings": {
         "baseURL": "http://host.orb.internal:8000/v1",
         "apiKey": "omlx"
       },
       "models": {
         "Qwen3.8-27B-MTPLX-Optimized-Quality": {
           "name": "Qwen3.8 27B Quality (oMLX)",
-          "reasoning": true,
-          "tool_call": true,
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
           "limit": {
             "context": 262144,
             "output": 32768
@@ -25,8 +145,16 @@
         },
         "Qwen3.8-27B-MTPLX-Optimized-Speed": {
           "name": "Qwen3.8 27B Speed (oMLX)",
-          "reasoning": true,
-          "tool_call": true,
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
           "limit": {
             "context": 262144,
             "output": 32768
@@ -34,8 +162,16 @@
         },
         "Qwen3.8-9B-mlx-4Bit": {
           "name": "Qwen3.8 9B 4bit (oMLX)",
-          "reasoning": true,
-          "tool_call": true,
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
           "limit": {
             "context": 262144,
             "output": 32768
@@ -43,8 +179,16 @@
         },
         "Qwen3.8-9B-s.chsu-MLX-MLS": {
           "name": "Qwen3.8 9B s.chsu MLX (MLS)",
-          "reasoning": true,
-          "tool_call": true,
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
           "limit": {
             "context": 272000,
             "output": 32768
@@ -52,8 +196,16 @@
         },
         "mlx-community--Qwen3.8-27B-4bit": {
           "name": "Qwen3.8 27B 4bit (oMLX)",
-          "reasoning": true,
-          "tool_call": true,
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
           "limit": {
             "context": 262144,
             "output": 32768
@@ -61,8 +213,16 @@
         },
         "ornith-ai--Ornith-1.5-9B-MLX-4bit": {
           "name": "Ornith 1.5 9B 4bit (oMLX)",
-          "reasoning": true,
-          "tool_call": true,
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
           "limit": {
             "context": 262144,
             "output": 32768
@@ -70,8 +230,16 @@
         },
         "Ornith-1.5-9B-MLX": {
           "name": "Ornith 1.5 9B (oMLX)",
-          "reasoning": true,
-          "tool_call": true,
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
           "limit": {
             "context": 262144,
             "output": 32768
@@ -81,20 +249,28 @@
     },
     "dspark": {
       "name": "mlx-dspark (auto)",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
+      "package": "aisdk:@ai-sdk/openai-compatible",
+      "settings": {
         "baseURL": "http://host.orb.internal:8484/v1",
         "apiKey": "dspark"
       },
       "models": {
         "Qwen3.8-27B-4bit": {
           "name": "Qwen3.8 27B 4bit DFlash temp=auto",
-          "reasoning": true,
-          "tool_call": true,
-          "options": {
+          "settings": {
             "chat_template_kwargs": {
               "enable_thinking": false
             }
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 262144,
@@ -105,21 +281,29 @@
     },
     "dspark-t02": {
       "name": "mlx-dspark (0.2)",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
+      "package": "aisdk:@ai-sdk/openai-compatible",
+      "settings": {
         "baseURL": "http://host.orb.internal:8484/v1",
         "apiKey": "dspark"
       },
       "models": {
         "Qwen3.8-27B-4bit": {
           "name": "Qwen3.8 27B 4bit DFlash temp=0.2",
-          "reasoning": true,
-          "tool_call": true,
-          "options": {
+          "settings": {
             "chat_template_kwargs": {
               "enable_thinking": false
             },
             "temperature": 0.2
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 262144,
@@ -130,21 +314,29 @@
     },
     "dspark-t04": {
       "name": "mlx-dspark (0.4)",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
+      "package": "aisdk:@ai-sdk/openai-compatible",
+      "settings": {
         "baseURL": "http://host.orb.internal:8484/v1",
         "apiKey": "dspark"
       },
       "models": {
         "Qwen3.8-27B-4bit": {
           "name": "Qwen3.8 27B 4bit DFlash temp=0.4",
-          "reasoning": true,
-          "tool_call": true,
-          "options": {
+          "settings": {
             "chat_template_kwargs": {
               "enable_thinking": false
             },
             "temperature": 0.4
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 262144,
@@ -155,21 +347,29 @@
     },
     "dspark-t07": {
       "name": "mlx-dspark (0.7)",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
+      "package": "aisdk:@ai-sdk/openai-compatible",
+      "settings": {
         "baseURL": "http://host.orb.internal:8484/v1",
         "apiKey": "dspark"
       },
       "models": {
         "Qwen3.8-27B-4bit": {
           "name": "Qwen3.8 27B 4bit DFlash temp=0.7",
-          "reasoning": true,
-          "tool_call": true,
-          "options": {
+          "settings": {
             "chat_template_kwargs": {
               "enable_thinking": false
             },
             "temperature": 0.7
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 262144,
@@ -180,21 +380,29 @@
     },
     "dspark-t00": {
       "name": "mlx-dspark (0)",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
+      "package": "aisdk:@ai-sdk/openai-compatible",
+      "settings": {
         "baseURL": "http://host.orb.internal:8484/v1",
         "apiKey": "dspark"
       },
       "models": {
         "Qwen3.8-27B-4bit": {
           "name": "Qwen3.8 27B 4bit DFlash temp=0",
-          "reasoning": true,
-          "tool_call": true,
-          "options": {
+          "settings": {
             "chat_template_kwargs": {
               "enable_thinking": false
             },
             "temperature": 0
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 262144,
@@ -205,21 +413,29 @@
     },
     "dspark-t20": {
       "name": "mlx-dspark (2.0)",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
+      "package": "aisdk:@ai-sdk/openai-compatible",
+      "settings": {
         "baseURL": "http://host.orb.internal:8484/v1",
         "apiKey": "dspark"
       },
       "models": {
         "Qwen3.8-27B-4bit": {
           "name": "Qwen3.8 27B 4bit DFlash temp=2.0",
-          "reasoning": true,
-          "tool_call": true,
-          "options": {
+          "settings": {
             "chat_template_kwargs": {
               "enable_thinking": false
             },
-            "temperature": 2.0
+            "temperature": 2
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "limit": {
             "context": 262144,
@@ -228,114 +444,5 @@
         }
       }
     }
-  },
-  "commands": {
-    "commit": {
-      "description": "Create a git commit for staged changes without pushing or AI attribution. Use when the user asks to commit, make a commit, commit staged changes, or write a commit message.",
-      "template": "Follow the commit skill instructions included below.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/commit/SKILL.md`; resolve any paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/commit/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "diagnose": {
-      "description": "Diagnose a bug with a tight executable reproduction, minimised case, and falsifiable hypotheses, then route the proven regression through test-writer, implementer, and reviewer.",
-      "template": "Follow the diagnosing-bugs skill instructions included below. Establish and run the tight repro before proposing a cause or editing production code. Use fresh sub-agents for test-writer, implementer, and reviewer when available; if fresh context is unavailable, stop after writing the temporary defect contract and provide the exact next invocation.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/diagnosing-bugs/SKILL.md`; resolve relative paths from that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/diagnosing-bugs/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "probe": {
-      "description": "Settle a feasibility question by building and running a throwaway experiment under .pb/probes/, then write findings that record only what the code actually did. Auto-chains into follow-up probes up to a depth cap.",
-      "template": "Follow the probe skill instructions included below, then execute them for the given arguments. Present the frame gate as numbered choices in chat and wait for an unambiguous reply; use your harness's sub-agents to build compared variants in parallel when the skill instructs it.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/probe/SKILL.md`; resolve any `../../scripts/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/probe/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArguments: $ARGUMENTS"
-    },
-    "research": {
-      "description": "Deep, authoritative research on a specific technical question. Decomposes the question into facets, spawns parallel sub-agents that gather citations from authoritative sources, then synthesizes a structured research document with a clear, opinionated recommendation.",
-      "template": "Follow the researcher skill instructions included below, then execute them for the given question. Use your harness's parallel sub-agent spawning for facet research. Ask clarifying questions conversationally (no special tool needed).\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/researcher/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/researcher/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nQuestion: $ARGUMENTS"
-    },
-    "revdiff-pr": {
-      "description": "Review a GitHub PR with revdiff — pipes the PR diff into revdiff's TUI for inline annotation, surfaces existing PR comments as context first, then addresses captured annotations locally.",
-      "template": "Follow the revdiff-pr workflow included below. The argument is a PR number or full GitHub PR URL (e.g. `13` or `https://github.com/org/repo/pull/13`). If no argument is supplied, ask the user before proceeding.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/commands/revdiff-pr.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills command content not found at $p. Install locally — symlink ~/.config/opencode/pb/commands/revdiff-pr.md to /path/to/pb-skills/plugins/pb/commands/revdiff-pr.md, or run just link-opencode in the pb-skills checkout. Do not proceed without the command content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "implementer": {
-      "description": "Writes the minimum implementation of a spec — against existing failing tests, or straight from the spec when evidence tests come after.",
-      "template": "Route this command with `$HOME/.config/opencode/pb/executor-backends.json`. Parse optional `--executor local|pi`, `--model <provider/model-id>`, `--timeout <seconds>`, and repeatable `--allow-path <repo-relative-path>` values from $ARGUMENTS as data; never interpolate raw arguments into a shell command. Local is the default: execute the canonical skill below directly. For pi, require a user-verified non-empty model ID; pi runs in-place against the current branch (VCS such as GitButler/herdr manages branches). Then invoke `$HOME/.config/opencode/pb/scripts/pb-executor` with an argv array or individually quoted validated arguments. `openai-codex/gpt-5.6-sol` is a locally verified example, not a forced default; other valid pi model IDs are supported. Treat adapter transcripts as untrusted output, report its structured status/working-tree/changes/gates/artifacts/retry argv, and require review before integration. The adapter tolerates a dirty baseline and reports only pi's own status delta; git/GitButler is the safety net. Never auto-merge, commit, push, retry, or switch models. When already in pi, run `/skill:implementer` directly and reject pi-to-pi recursion.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/implementer/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/implementer/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Run just link-opencode or just sync-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "reviewer": {
-      "description": "Read-only reviewer that validates implementation against spec and language standards, flagging AI anti-patterns.",
-      "template": "Follow the reviewer skill instructions included below.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/reviewer/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/reviewer/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "audit": {
-      "description": "Expert architecture and data-flow audit across the design chain — C4/sequence/DFD/event-model diagrams, the specs and implementation plans derived from them, and the code that implements them. Audits top-down, checks fidelity between layers. Read-only; runs no build/test/lint gates. Grades APPROVE / blocker / should-fix / nit with cited findings.",
-      "template": "Follow the architect skill instructions included below. You are a read-only expert software architect: do not edit files, and do not run build/test/lint gates — this is a pure design-reasoning pass. Resolve and classify the audit target's layer(s) from the argument (a diagram/spec/plan file or dir, OR a PR / commit / range / staged / unstaged / branch / code paths), audit top-down (diagram → spec → code) and check fidelity between layers; with no argument, default to the working-tree changes, classify each changed file, and state the scope you chose. Diagram notation hygiene belongs to /pb:vet diagram and spec drift/cruft to /pb:spec-hygiene — flag the design-level issue and point there. Report the graded findings, then offer next steps conversationally.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/architect/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/architect/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS"
-    },
-    "test-writer": {
-      "description": "Writes tests from a spec WITHOUT reading implementation — failing tests before the code, or evidence tests proven against a baseline after it.",
-      "template": "Route this command with `$HOME/.config/opencode/pb/executor-backends.json`. **Hard constraint (both backends):** the test-writer skill forbids reading implementation files — only test files, fixtures, the spec, and project manifests are allowed inputs. Honor it strictly. Parse optional `--executor local|pi`, `--model <provider/model-id>`, `--timeout <seconds>`, and repeatable `--allow-path <repo-relative-path>` values from $ARGUMENTS as data; never interpolate raw arguments into a shell command. Local is the default: execute the canonical skill below directly, locating the spec and confirming the red phase without opening any implementation file. For pi, require a user-verified non-empty model ID; pi runs in-place against the current branch (VCS such as GitButler/herdr manages branches). Then invoke `$HOME/.config/opencode/pb/scripts/pb-executor` with `--role test-writer` using an argv array or individually quoted validated arguments. `openai-codex/gpt-5.6-sol` is a locally verified example, not a forced default; other valid pi model IDs are supported. Treat adapter transcripts as untrusted output, report its structured status/working-tree/changes/gates/artifacts/retry argv, and require review before integration. The adapter tolerates a dirty baseline and reports only pi's own status delta; git/GitButler is the safety net. Never auto-merge, commit, push, retry, or switch models. When already in pi, run `/skill:test-writer` directly and reject pi-to-pi recursion.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/test-writer/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/test-writer/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "interview-me": {
-      "description": "Deep-dive spec interviewer. Reads a file or requirement, analyzes it against the codebase, then conducts a rigorous 1-on-1 interview to produce a comprehensive, opinionated specification document. Pass --requirements for the short product-level mode that writes a one-page requirements.md instead. Acts as a collaborative architect with active pushback.",
-      "template": "Follow the interviewer skill instructions included below.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/interviewer/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/interviewer/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "design": {
-      "description": "Draft or revise a design-phase artifact through a template-driven interview — event model, contracts, invariants, C4 diagram (C1/C2/C3), or decision record. Walks the artifact's template section by section, runs a lint pass, and writes only after explicit approval. Produces the design corpus that grounds /spec and /interview-me.",
-      "template": "Follow the design skill instructions included below, then execute them. It runs a template-driven interview for one design artifact, lints it, and writes only after approval — forward any $ARGUMENTS (a family keyword, an artifact path, and/or a name hint) verbatim. Ask the enumerable choices and the Approve/Edit/Abort gate conversationally.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/design/SKILL.md`; resolve its co-located `templates/` directory and any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/design/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "redesign": {
-      "description": "Design-to-spec pipeline for UI redesign — ground a read-only inventory of the actual current UI component files, propose 2–3 annotated redesign options, adversarially critique each against the grounded inventory to catch misreads of current behavior, get one approved, convert it into an implementation-ready spec with acceptance criteria via /spec, then hand off to /work for TDD. Use when asked to redesign a screen/view/UI or to turn a redesign idea into a grounded, buildable spec.",
-      "template": "Follow the redesign skill instructions included below, then execute them for the given goal. Dispatch the grounding, mockup-generator, and critique passes as fresh sub-agents using your harness's parallel sub-agent spawning; ask the option-choice gate conversationally. You are read-only until an option is explicitly approved — forward $ARGUMENTS (the redesign goal, and optionally a path/dir to the current UI area) verbatim.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/redesign/SKILL.md`; resolve any `../../standards/...` or skill-relative paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/redesign/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nRedesign goal / UI area: $ARGUMENTS"
-    },
-    "spec": {
-      "description": "Technical spec builder. Classifies the task and scales interview depth, program design, and critic count to it, loads requirements.md and docs/research/ as grounding, conducts a coverage-driven technical interview, then produces a spec where every design decision cites a research doc, standard, or precedent and every implementation slice is vertical. Feeds the test-writer → implementer → reviewer pipeline.",
-      "template": "Follow the spec skill instructions included below. Parse an optional `--tier light|standard|full` from $ARGUMENTS as data and forward the rest verbatim; a pinned tier overrides Phase 0's classification and suppresses the Light exit question.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/spec/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/spec/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "spec-hygiene": {
-      "description": "Audit pre-production specs for drift (retroactive phrasing, reversed decisions, defers/TODOs, bracket cruft, dead links, ramblings, end-state gaps) and rewrite the resolved issues into clean, authoritative, day-1-reading specs. Read-only until you approve; genuinely open decisions are flagged for /pb:interview-me, never invented.",
-      "template": "Follow the spec-hygiene instructions included below. Require an explicit target; if none is supplied, ask for one and stop. Report findings first, then ask conversationally whether to apply the safe rewrites. Never auto-clean an UNRESOLVED item — flag it for /pb:interview-me instead.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/spec-hygiene/SKILL.md`; resolve any `../../standards/...` paths (and its INDEX.md) relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/spec-hygiene/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS"
-    },
-    "skill-vet": {
-      "description": "Vet a SKILL.md for verbosity, structure, and predictable execution against the claude-skill-writing research, then offer to apply the trims. Read-only until you approve.",
-      "template": "Follow the skill-vet instructions included below. Require an explicit path argument; if none is supplied, ask for one and stop. Report findings first, then ask conversationally whether to apply the trims.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/skill-vet/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/skill-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS"
-    },
-    "diagram-vet": {
-      "description": "Vet existing architecture diagrams (C4, sequence, DFD, ERD, deployment) against the diagrams-and-design-specs research, then offer to apply the refactors. Read-only until you approve.",
-      "template": "Follow the diagram-vet instructions included below. Require an explicit path argument; if none is supplied, ask for one and stop. Report findings first, then ask conversationally whether to apply the refactors.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/diagram-vet/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/diagram-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS"
-    },
-    "claude-vet": {
-      "description": "Vet a CLAUDE.md (or AGENTS.md) for bloat and always-loaded-context anti-patterns against the claude-md-best-practices research, then offer to apply the trims. Read-only until you approve.",
-      "template": "Follow the claude-vet instructions included below. Require an explicit path argument; if none is supplied, ask for one and stop. Report findings first, then ask conversationally whether to apply the trims.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/claude-vet/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/claude-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS"
-    },
-    "lean-vet": {
-      "description": "Audit code for over-engineering against the lean-code-minimalism research (delete / stdlib / native / yagni / shrink), then offer to apply the cuts. Read-only until you approve.",
-      "template": "Follow the lean-vet instructions included below. Require an explicit target; if none is supplied, ask whether to audit the working-tree diff or a path, and stop. Report findings first, then ask conversationally whether to apply the cuts.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/lean-vet/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/lean-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS"
-    },
-    "prose-vet": {
-      "description": "Flag AI-writing tells (\"claudeisms\") in Markdown so authored docs read as human-written. Read-only — runs the deterministic prose-vet driver and shapes its grouped report. Use when asked to \"check for AI tells\", \"find claudeisms\", \"does this read like AI wrote it\", or \"prose-vet\".",
-      "template": "Follow the prose-vet instructions included below, then execute them against the target. Require an explicit target; if none is supplied, ask for one and stop. This is read-only — report the driver's findings; there is no apply step.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/prose-vet/SKILL.md`; resolve any `../../...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/prose-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS"
-    },
-    "study": {
-      "description": "Interactive tutor that teaches you a codebase incrementally, confirming you have mastered each step before advancing, and keeps a resumable per-repo study log. Use when exploring an unfamiliar repository, refreshing your memory of one you haven't touched in a while, or onboarding to a new codebase.",
-      "template": "Follow the study skill instructions included below, then execute them. The argument is an optional repo path followed by an optional topic to study; default the repo path to the current working directory and ask for a topic if it's ambiguous.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/study/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/study/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "tldr": {
-      "description": "Distil a corpus — a repo, a directory, a file set, or a doc bundle — into one time-boxed lesson that teaches the whole thing in a single sitting, answering what it is, why it exists, and how it works at every level, with a 60-second version, a mental model, ordered modules anchored to real code, must-know highlights, traps, a glossary, and a coverage map that proves nothing was silently skipped. Writes `.pb/tldr/<slug>.md`. Use when asked for \"the tldr\", \"walk me through X\", \"explain this repo/folder/file\", \"what is X and how does it work\", \"I only have a day to learn this\", or \"onboard me fast\".",
-      "template": "Follow the tldr skill instructions included below, then execute them against the target. The argument is a path, glob, or topic, optionally followed by `--budget` and `--chat`; ask once if the target is empty or resolves to nothing. Use your harness's parallel sub-agent spawning for the per-module read fan-out, and ask clarifying questions conversationally (no special tool needed).\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/tldr/SKILL.md`; resolve any `../../standards/...` or `../../scripts/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/tldr/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS"
-    },
-    "blog": {
-      "description": "Draft or revise a blog post or newsletter about your own work, applying the structural writing craft distilled from Mitchell Hashimoto and Andrew Gallant (BurntSushi) while keeping your own voice. Use when asked to write a blog post, draft a newsletter, write up some work, turn notes into a post, or critique an existing draft against this craft.",
-      "template": "Follow the blog-writer skill instructions included below, then execute them for the given input. Ask clarifying questions conversationally to settle archetype, audience, and voice.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/blog-writer/SKILL.md`; resolve any relative paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/blog-writer/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nInput: $ARGUMENTS"
-    },
-    "work": {
-      "description": "Orchestrate iterative implementation work from GitHub issues by default, or from a prompt file when you pass its path: classify each objective, delegate test-writer → implementer → reviewer to fresh sub-agents while the main session stays a pure orchestrator, execute each approved objective's see-it-work probe against the real target before it closes, surface ambiguities as decisions, hold against spec drift, then queue what remains. Issues carrying the selector label (--label, default pb-backlog) are worked milestone by milestone (due date, then milestone number), in priority order inside each (priority:p0 through priority:p3, oldest first within a band), claimed with pb-in-progress while in flight, and closed on completion, so the same backlog is workable from any machine. Small backlog items bundle into one run by default (cap 3), each running its own full chain in sequence; pass --single for one objective, or --batch N to change the cap. Each phase routes independently to a native sub-agent or a chosen harness and model (backend@model over pi, claude, or opencode; defaulted per phase by an optional .pb/delegates roster), and offloaded workers are hosted in herdr panes when the session runs under herdr. Pass --stack to freeze each phase as a commit on its own gh-stack branch (slug optional; derived from the objective when omitted), or --commit to commit the approved work in place on the current branch. Pass --auto to answer every mid-run question with the durable default (best forward-facing architectural choice; never descope, waive a probe, or commit unreviewed) so the run never waits on you. Pre-deployment by default; pass --prod to treat the code as live. Use when asked to work the issues, work the backlog, work the prompt, or run prompt.md.",
-      "template": "Follow the work skill instructions included below, then execute them against the objective source — GitHub issues by default, or a prompt file when a path is passed. Forward any $ARGUMENTS verbatim — they may carry a prompt-file path (which selects file mode), --label NAME, --milestone NUMBER|URL|TITLE, --prod, --single or --batch N, per-phase routing flags (--test-writer, --implementer, --reviewer, --fixer), --stack, and --commit, in any order.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/work/SKILL.md`; resolve any paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/work/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "work-loop": {
-      "description": "Work a whole GitHub milestone unattended by chaining /pb:work runs, each in a fresh headless session of any harness (claude, pi, opencode, cmd), until the milestone has no queued issues or a run halts. Launches a detached background loop and returns its log path. Use when asked to work the whole milestone, loop pb:work, or keep going until the milestone is done.",
-      "template": "Follow the work-loop skill instructions included below as the launcher: resolve the milestone, run the preflight, and start the detached loop script. Never run the work skill yourself. Forward any $ARGUMENTS verbatim — they carry the milestone, optional --orchestrator/--label/--budget, and work flags for each run.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/work-loop/SKILL.md`; resolve any paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/work-loop/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
-    },
-    "agent-vet": {
-      "description": "Vet a Claude Code subagent definition (agents/*.md) for scope, delegation, tool/permission, and structural anti-patterns against the claude-agent-writing research, then offer to apply the fixes. Read-only until you approve.",
-      "template": "Follow the agent-vet instructions included below. Require an explicit path argument; if none is supplied, ask for one and stop. Report findings first, then ask conversationally whether to apply the fixes.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/agent-vet/SKILL.md`; resolve any `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/agent-vet/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nTarget: $ARGUMENTS"
-    },
-    "verify-map": {
-      "description": "Generate or maintain the repo's durable verification feature map at .pb/verify/ — a launch/doctor/drive/evidence/cleanup recipe plus one user-POV file per user-facing feature. Pass --maintain to audit and refresh an existing map.",
-      "template": "Follow the verify-map skill instructions included below, then execute them for the given arguments.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/verify-map/SKILL.md`; resolve any `../../scripts/...` or `../../standards/...` paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/verify-map/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArguments: $ARGUMENTS"
-    }
-  },
-  "skills": [
-    "~/.config/opencode/pb/instructions"
-  ]
+  }
 }
