@@ -68,7 +68,6 @@
   home.packages = with pkgs; [
     noto-fonts
     acli
-    nodejs # claude plugin hooks (ponytail) shell out to node
   ];
 
   programs.nix-index = {

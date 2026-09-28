@@ -21,6 +21,9 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 - Don't add docstrings, type annotations, or logging to code you didn't change
 - Don't over-engineer or add features beyond what was asked
 - Don't refactor surrounding code when fixing a bug — keep changes minimal
+- Before writing new code, reuse what exists, in this order: this codebase, the standard library, native platform features, already-installed dependencies. Don't add a dependency for what a few lines can do
+- Before changing a shared function, grep every caller. Fix it once where all callers route through, not in each caller
+- Non-trivial logic (a branch, parser, money or security path) leaves one small runnable check behind. Trivial one-liners need none
 
 ## Fixes & Decisions
 

@@ -23,7 +23,6 @@
   },
   "packages": [
     "../../dev/nearmap/bubblebeam",
-    "git:github.com/DietrichGebert/ponytail",
     "git:github.com/davebcn87/pi-autoresearch",
     "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359",
     "npm:@ff-labs/pi-fff",

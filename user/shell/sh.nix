@@ -86,7 +86,6 @@ in
       };
       # Generic agent sandbox: cwd (+ $sbx_binds) writable, rest of $HOME read-only,
       # ssh/gnupg/aws hidden, network ON. Works for any CLI: sbx opencode / sbx codex / ...
-      # ponytail: net stays on so agents can reach their API; for egress control use gVisor.
       sbx = {
         description = "Sandbox a command with bubblewrap (cwd writable, HOME read-only, net on)";
         body = ''
