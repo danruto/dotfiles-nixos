@@ -37,17 +37,6 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 - No AI attribution or Co-Authored-By footers; never push unless asked
 - Don't commit unless asked. Edit in place first.
 
-## gh-stack (stacked PRs)
-
-`/pb:work --stack` freezes phases onto local stacked branches. The finish cycle is:
-`gh stack submit --auto` (create the PRs) → merge on GitHub → `gh stack sync` (fast-forwards
-trunk, retires merged branches) → `gh stack trunk` (checkout main).
-`submit` creates the PRs as drafts with empty bodies — after it, finish each PR: write a
-useful description of its contents (`gh pr edit --body-file`), fix any stub title, and mark
-it ready for review (`gh pr ready`).
-`sync` never switches branches, and it pushes every stack branch even when no PRs exist yet —
-don't run it as a "finish" command before `submit`.
-
 ## Agent Model Selection
 
 - **Cheap model** — code exploration subagents: file searches, grep tasks, code reading
