@@ -15,12 +15,12 @@ let
   # https://downloads.claude.ai/claude-code-releases/<version>/manifest.zst.json
   claude-code = pkgs-master.claude-code.override {
       manifest = {
-        version = "2.1.284";
+        version = "2.1.285";
         platforms = {
-          "darwin-arm64" = { binary = "claude.zst"; checksum = "ed26ee9ccbf05b2dfa3c8abf52348b78b00274304824ad1eeaf9d88366fa70ae"; };
-          "darwin-x64" = { binary = "claude.zst"; checksum = "28f05c4cbd49a8192e2ea6535a3bc55c11f6bb8f15d1b5932785291d0eb52d81"; };
-          "linux-arm64" = { binary = "claude.zst"; checksum = "6e31b86de3952594441b4ef91c1f5079c1385b0169a9df351dd2762bb2336d23"; };
-          "linux-x64" = { binary = "claude.zst"; checksum = "5021d631dacbd516603a779b3cf2463085470417a838b6a0835f77fa44d23f0a"; };
+          "darwin-arm64" = { binary = "claude.zst"; checksum = "37ef7ca4ef6486c44b8f88b41af4f269ba8322c7dd8a62261e54e3271f56a6a0"; };
+          "darwin-x64" = { binary = "claude.zst"; checksum = "cd31b4ba8368bac728fdf75de6654df8f47d2023cd3cd16da49b429ae4d24648"; };
+          "linux-arm64" = { binary = "claude.zst"; checksum = "df8bb286ad870d8db316fc6c8b34932598c1127d14f739d1fc995610204eb4d2"; };
+          "linux-x64" = { binary = "claude.zst"; checksum = "e88a8b40ed5a7e9213bf5047f5b12c360c33387b1bc36cf79ddbff0a3a40121c"; };
       };
     };
   };
@@ -62,12 +62,12 @@ let
   # here too. Drop the version, src, npmDepsHash and modelData overrides (keep
   # postFixup) once nixpkgs-master ships this version or newer.
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (final: prev: {
-    version = "0.87.1";
+    version = "0.99.1";
     src = pkgs-master.fetchFromGitHub {
       owner = "earendil-works";
       repo = "pi";
       tag = "v${final.version}";
-      hash = "sha256-GUhlq6t+l6iiViOZ0bkV28v3ZDqcLvEwpZpYZ5JAyDk=";
+      hash = "sha256-bLDEt1sKiS6ReQ6Uch0tOSLU8aykKl3UwN7WVkRE9Og=";
     };
     # npmDeps must be overridden directly, not via npmDepsHash: buildNpmPackage
     # bakes the resolved npmDeps into the derivation attrs, so on overrideAttrs
@@ -75,13 +75,13 @@ let
     npmDeps = pkgs-master.fetchNpmDeps {
       inherit (final) src;
       name = "pi-coding-agent-${final.version}-npm-deps";
-      hash = "sha256-JBIYoP2vvRNz1HONNvDJ1U3c+nmCJ7/VgNthRTkrkIA=";
+      hash = "sha256-eKtv1fN7X4ukuYbsj7hduGZ3W2FdmO/fAnoaWJp7MQQ=";
       fetcherVersion = 1;
     };
     # Hydrated model catalog; gitignored upstream, see nixpkgs' package.nix.
     modelData = pkgs-master.fetchurl {
       url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${final.version}.tgz";
-      hash = "sha512-X/3PfQBnnoeVdO9Cv8zHghUMglzlgNZYGNzoPnbRoGnHl3Rw3TlA2UKSUB7BRHUOxMryHXYa8dnjWZlbRheDZA==";
+      hash = "sha512-4nV9JKc94iPX8bwdGPc2nTuVPKIPsffhnp3WoN9NYCNqbtoOF8LhYcIs/+Sn/alroqJK/5QRu6/Z6Ck+n0hyBA==";
     };
 
     # 0.85.0 added the packages/chord workspace and coding-agent now imports
@@ -117,12 +117,12 @@ let
   # `npm view @opencode/cli-<plat>@<version> dist.integrity`.
   opencode =
     let
-      version = "2.0.18";
+      version = "2.0.20";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-94dH7lwB+tpmzI1/NIfzFxLBIeshZSNtyx2sskL0C0kgYjMaiVMIHvQLYIECUOWSuVz5/dH/KPUIOGn7ML311g=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-OjKG0staG+KRG9sNORb2vIPcfthMVk9RtCamU1vMWPquV70bQEYUM0JUT+t0A49eAc2H4lZWhqkpH2gpg87D+Q=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-w6TKuEob/XM+KzSZmmNL69P1DMvHN4LEfE9NfMwdUj5wPLXDqzz1yLOhAYEnFYW1LBAsV5Xo1giyvtpWz5vyzg=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-GRJMkkyQKDPIJbYr2WtFTgK1Vb1p/4xrqxgXA/TLyJ1Tn5tK5hNOtbslUZgsktrEQD6TeT5bVZcjRLC41n+d/A=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-C47hADWv2MD6OzwMhn2iBXcQVjvwDTkzpB7kKlL8J+vJQxLzws580vfgpTRYB7JItFG1VUt6IHqqi00VCmrPRg=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-JLHDgEPmThZjbQEIwZNBdwLddvxYFIssDaDbDb/nF7aw4D5xt9xGUa1o6nF1IW1Ck+px8kV465W2AuThKRU3sg=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-KfJx11eKM2A9Ed8oDyIim3IsBBhHW+kQP7h7s2Y4sPrVpkObhciTJg87LiEKnIyFBh1QgunGuNddjdz8FuhwqQ=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-haK35da6HYSnDu8pMdh47SvSWRQKXi5OBU5qostb4QlRe3xZgqr7P47irrvdRzBCHD/m5luh3AkjRWx+9P9BIg=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
