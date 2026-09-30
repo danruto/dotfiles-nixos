@@ -117,7 +117,8 @@
     };
 
     helix-fork = {
-      url = "github:gj1118/helix";
+      # Pinned: 7170ccd merged upstream's once_cell removal but the fork's helix-stdx/src/time.rs still uses it. Unpin once fixed.
+      url = "github:gj1118/helix/e3f9c543919bba88d978ad2250ad3391b636a06f";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
