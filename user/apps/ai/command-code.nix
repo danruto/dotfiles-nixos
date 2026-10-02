@@ -6,14 +6,14 @@
 # To bump: ./bump-command-code.sh [version]
 buildNpmPackage (finalAttrs: {
   pname = "command-code";
-  version = "1.72.2";
+  version = "1.73.4";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/command-code/-/command-code-${finalAttrs.version}.tgz";
-    hash = "sha512-ogrIW6fiafvN1geRJr4U9sNWrJS4CTKeeoTvgjSQoh89q8DpiID4+t6VAnz1eKXQDkxSWIYtKLDsxmUsYRdwWQ==";
+    hash = "sha512-OLLtN2S/p6NMIPiFjfgRbwAfHqXYFClXhvueomQ481ErOEofqfUK2bloC6TyQ8e9zGVdfiXefqKBR8WQKhrkaA==";
   };
 
-  npmDepsHash = "sha256-RuTQH/Bw0PWLgI4+tINx0QFgxjvEnOoYMrLIs4ykif8=";
+  npmDepsHash = "sha256-58BeFgFPehFFTSPXnoslDFSHAEDeh8NYXCHE/NwK/N4=";
 
   postPatch = ''
     cp ${./command-code-package-lock.json} package-lock.json

@@ -2,7 +2,14 @@
 {
   programs.helix = {
     enable = true;
-    package = helix-fork.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    package = helix-fork.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
+      # glibc 2.44 makes bsearch a C23 _Generic macro, which breaks tree-sitter-perl's own bsearch.c under gcc 16's C23 default.
+      grammarOverlays = [
+        (final: prev: {
+          perl = prev.perl.overrideAttrs (old: { FLAGS = old.FLAGS ++ [ "-std=gnu17" ]; });
+        })
+      ];
+    };
     extraPackages = with pkgs; [
       nixpkgs-fmt
     ];

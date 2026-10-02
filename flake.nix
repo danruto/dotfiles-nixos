@@ -36,8 +36,24 @@
         inherit (inputs)
           blocklist-hosts neovim-nightly-overlay wanderer fff
           nixos-wsl niri mango nixos-hardware
-          helium dms dms-plugin-diskusage helix helix-fork herdr ghostty
+          helium dms dms-plugin-diskusage helix helix-fork ghostty
           nix-doom-emacs-unstraightened;
+
+        # Since gcc 16, ld.bfd rejects the debug relocations in libghostty-vt's
+        # zig-built compiler_rt.o ("undefined reference to `no symbol'"); lld accepts them.
+        herdr = inputs.herdr // {
+          packages = lib.mapAttrs
+            (system: ps: ps // {
+              default =
+                if lib.hasSuffix "linux" system
+                then ps.default.overrideAttrs (old: {
+                  nativeBuildInputs = old.nativeBuildInputs ++ [ pkgsBySystem.${system}.pkgs-unstable.lld ];
+                  env = old.env // { RUSTFLAGS = "-Clink-arg=-fuse-ld=lld"; };
+                })
+                else ps.default;
+            })
+            inputs.herdr.packages;
+        };
       };
 
       mkSystem = import ./lib/mkSystem.nix {

@@ -15,12 +15,12 @@ let
   # https://downloads.claude.ai/claude-code-releases/<version>/manifest.zst.json
   claude-code = pkgs-master.claude-code.override {
       manifest = {
-        version = "2.1.285";
+        version = "2.1.287";
         platforms = {
-          "darwin-arm64" = { binary = "claude.zst"; checksum = "37ef7ca4ef6486c44b8f88b41af4f269ba8322c7dd8a62261e54e3271f56a6a0"; };
-          "darwin-x64" = { binary = "claude.zst"; checksum = "cd31b4ba8368bac728fdf75de6654df8f47d2023cd3cd16da49b429ae4d24648"; };
-          "linux-arm64" = { binary = "claude.zst"; checksum = "df8bb286ad870d8db316fc6c8b34932598c1127d14f739d1fc995610204eb4d2"; };
-          "linux-x64" = { binary = "claude.zst"; checksum = "e88a8b40ed5a7e9213bf5047f5b12c360c33387b1bc36cf79ddbff0a3a40121c"; };
+          "darwin-arm64" = { binary = "claude.zst"; checksum = "2701dac04e02acbea7d7584fc35e04adddf6f24021d321e3ba7eb95994edcf96"; };
+          "darwin-x64" = { binary = "claude.zst"; checksum = "e4c6177a49a726d1a65dadf2fb08cdde0232a37a60017668246ab9246fcf11ad"; };
+          "linux-arm64" = { binary = "claude.zst"; checksum = "f95d466d03381abe9effcbcfe8408704262eb8861af3a1fc20b8e0563c1f770b"; };
+          "linux-x64" = { binary = "claude.zst"; checksum = "add364007462fe694a95aa68c78bdf7a71b1ddf687f80dda603f58cc80cde574"; };
       };
     };
   };
@@ -62,12 +62,12 @@ let
   # here too. Drop the version, src, npmDepsHash and modelData overrides (keep
   # postFixup) once nixpkgs-master ships this version or newer.
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (final: prev: {
-    version = "0.99.1";
+    version = "1.0.0";
     src = pkgs-master.fetchFromGitHub {
       owner = "earendil-works";
       repo = "pi";
       tag = "v${final.version}";
-      hash = "sha256-bLDEt1sKiS6ReQ6Uch0tOSLU8aykKl3UwN7WVkRE9Og=";
+      hash = "sha256-CGznIVHXG6gr2F8vzHcR/v4P9xJgZHeMTt/CJ/kB78o=";
     };
     # npmDeps must be overridden directly, not via npmDepsHash: buildNpmPackage
     # bakes the resolved npmDeps into the derivation attrs, so on overrideAttrs
@@ -75,13 +75,13 @@ let
     npmDeps = pkgs-master.fetchNpmDeps {
       inherit (final) src;
       name = "pi-coding-agent-${final.version}-npm-deps";
-      hash = "sha256-eKtv1fN7X4ukuYbsj7hduGZ3W2FdmO/fAnoaWJp7MQQ=";
+      hash = "sha256-ndEvWdB6sa5nNNtabk2OMZKUFG9x3op185deZHxFnXk=";
       fetcherVersion = 1;
     };
     # Hydrated model catalog; gitignored upstream, see nixpkgs' package.nix.
     modelData = pkgs-master.fetchurl {
       url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${final.version}.tgz";
-      hash = "sha512-4nV9JKc94iPX8bwdGPc2nTuVPKIPsffhnp3WoN9NYCNqbtoOF8LhYcIs/+Sn/alroqJK/5QRu6/Z6Ck+n0hyBA==";
+      hash = "sha512-3/W1vdDaVtpeMd23ElvJC12HLA5yS/BGqqcXF+0SK082dN7cbgNcCwguTBRBC258Ke8SzSvUW1B75iAf8w8IxA==";
     };
 
     # 0.85.0 added the packages/chord workspace and coding-agent now imports
@@ -117,12 +117,12 @@ let
   # `npm view @opencode/cli-<plat>@<version> dist.integrity`.
   opencode =
     let
-      version = "2.0.20";
+      version = "2.0.21";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-C47hADWv2MD6OzwMhn2iBXcQVjvwDTkzpB7kKlL8J+vJQxLzws580vfgpTRYB7JItFG1VUt6IHqqi00VCmrPRg=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-JLHDgEPmThZjbQEIwZNBdwLddvxYFIssDaDbDb/nF7aw4D5xt9xGUa1o6nF1IW1Ck+px8kV465W2AuThKRU3sg=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-KfJx11eKM2A9Ed8oDyIim3IsBBhHW+kQP7h7s2Y4sPrVpkObhciTJg87LiEKnIyFBh1QgunGuNddjdz8FuhwqQ=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-haK35da6HYSnDu8pMdh47SvSWRQKXi5OBU5qostb4QlRe3xZgqr7P47irrvdRzBCHD/m5luh3AkjRWx+9P9BIg=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-intPGPRrEoZk+5Qq2dzYcq3Wv07vWvQrv56WieurupI9jGJSEAfT4a9Pi6YMW4tEW6SapAds/95K0egVS2YwiA=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-2P8Ah4Ae9TylSrNy6Bo9x9MpsafvmylM0HJ4jHsY0m4BsdXpZOw1r8J6q8OTpuus6CUOuTYAgWZnPxEQO9GaIw=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-F1LkTx0gFcLDHAudmM0bHVkoWbi7hMEVGwF0PoH1G/GAUvRaERhr16YY9jIh2cSleY/SEm+Mg2N5E5cwugqlqg=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-dspUnJ767TClh6LqJ0y4/V1EbGVDjfmWsp+AJjLxhGR47q/ySvzZz2tNIDbX/q8lHC1Cpj3sUBdZ/6Vk8rOBSw=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
@@ -207,7 +207,7 @@ in
     command-code
     claude-code
     opencode
-    pkgs-master.codex
+    pkgs-unstable.codex
     fff-mcp # on PATH so Claude/Pi MCP configs can reference `fff-mcp` by name
   ] ++ lib.optionals piEnabled [
     pi-coding-agent
