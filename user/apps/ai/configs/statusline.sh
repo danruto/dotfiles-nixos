@@ -7,6 +7,7 @@ input=$(cat)
 eval "$(jq -r '
   @sh "model=\(.model.display_name // "?")",
   @sh "dur_ms=\(.cost.total_duration_ms // 0)",
+  @sh "api_ms=\(.cost.total_api_duration_ms // 0)",
   @sh "cost=\(.cost.total_cost_usd // 0)",
   @sh "ctx=\(.context_window.used_percentage // "")",
   @sh "effort=\(.effort.level // "")",
@@ -42,12 +43,11 @@ until_reset() {
   else printf '%dm' $(( s / 60 )); fi
 }
 
-mins=$(( dur_ms / 60000 ))
-if (( mins >= 60 )); then
-  dur="$(( mins / 60 ))h$(( mins % 60 ))m"
-else
-  dur="${mins}m"
-fi
+fmt_dur() {
+  local m=$(( ${1%%.*} / 60000 ))
+  if (( m >= 60 )); then printf '%dh%dm' $(( m / 60 )) $(( m % 60 ))
+  else printf '%dm' "$m"; fi
+}
 
 segments=()
 if [[ -n "$effort" ]]; then
@@ -55,8 +55,14 @@ if [[ -n "$effort" ]]; then
 else
   segments+=("${CYAN}${model}${RESET}")
 fi
-segments+=("${dur}")
-segments+=("$(printf '$%.2f' "$cost")")
+segments+=("$(fmt_dur "$dur_ms") ${DIM}api${RESET} $(fmt_dur "$api_ms")")
+
+# burn rate skipped for the first 5 min, when it swings wildly
+seg=$(printf '$%.2f' "$cost")
+if (( ${dur_ms%%.*} >= 300000 )); then
+  seg+=" ${DIM}$(awk -v c="$cost" -v ms="$dur_ms" 'BEGIN { printf "$%.2f/h", c * 3600000 / ms }')${RESET}"
+fi
+segments+=("$seg")
 
 if [[ -n "$ctx" ]]; then
   segments+=("${DIM}ctx${RESET} $(pct_color "$ctx")${ctx%%.*}%${RESET}")

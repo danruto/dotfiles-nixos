@@ -68,12 +68,15 @@
       }
     ]
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "modelSettings": {
     "claude-fable-5-1": {
       "effortLevel": "medium"
     },
     "claude-opus-5": {
+      "effortLevel": "medium"
+    },
+    "claude-opus-5-5": {
       "effortLevel": "medium"
     }
   },
@@ -139,6 +142,7 @@
     "command": "~/.claude/subagent-statusline.sh",
     "type": "command"
   },
+  "switchModelsOnFlag": false,
   "theme": "auto",
   "tui": "fullscreen",
   "verbose": true,
