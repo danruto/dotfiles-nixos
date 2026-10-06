@@ -28,10 +28,11 @@ nixset() { # file block attr n value
 }
 sri() { nix hash convert --hash-algo sha256 --to sri "$1"; }
 ghtag() { local v; v=$(gh release view --repo "$1" --json tagName -q .tagName); echo "${v#v}"; }
+npmget() { curl -sf "https://registry.npmjs.org/$1/$2" | jq -er ".$3"; } # name version|latest field
 
 bump_claude-code() {
   local v m i=0 p
-  v=$(npm view @anthropic-ai/claude-code version)
+  v=$(npmget @anthropic-ai/claude-code latest version)
   [ "$v" = "$(nixget "$llm" claude-code version 1)" ] && { echo "claude-code: already $v"; return; }
   m=$(curl -sf "https://downloads.claude.ai/claude-code-releases/$v/manifest.zst.json")
   nixset "$llm" claude-code version 1 "$v"
@@ -47,16 +48,16 @@ npmbump() { # block npm-name-fmt version plat...
   [ "$v" = "$(nixget "$llm" "$block" version 1)" ] && { echo "$block: already $v"; return; }
   nixset "$llm" "$block" version 1 "$v"
   for p in "$@"; do
-    nixset "$llm" "$block" hash $((++i)) "$(npm view "$(printf "$fmt" "$p")@$v" dist.integrity)"
+    nixset "$llm" "$block" hash $((++i)) "$(npmget "$(printf "$fmt" "$p")" "$v" dist.integrity)"
   done
   echo "$block -> $v"
 }
 bump_tokscale() {
-  npmbump tokscale '@tokscale/cli-%s' "$(npm view @tokscale/cli-linux-x64-gnu version)" \
+  npmbump tokscale '@tokscale/cli-%s' "$(npmget @tokscale/cli-linux-x64-gnu latest version)" \
     linux-x64-gnu linux-arm64-gnu darwin-x64 darwin-arm64
 }
 bump_opencode() {
-  npmbump opencode '@opencode/cli-%s' "$(npm view @opencode/cli version)" \
+  npmbump opencode '@opencode/cli-%s' "$(npmget @opencode/cli latest version)" \
     linux-x64 linux-arm64 darwin-x64 darwin-arm64
 }
 
@@ -96,7 +97,7 @@ bump_pi() {
   nixset "$llm" pi-coding-agent version 1 "$v"
   nixset "$llm" pi-coding-agent hash 1 "$(sri "$(nix-prefetch-url --unpack "$url" 2>/dev/null)")"
   nixset "$llm" pi-coding-agent hash 2 "$(nix run nixpkgs#prefetch-npm-deps -- "$tmp/pi-$v/package-lock.json" 2>/dev/null)"
-  nixset "$llm" pi-coding-agent hash 3 "$(npm view "@earendil-works/pi-ai@$v" dist.integrity)"
+  nixset "$llm" pi-coding-agent hash 3 "$(npmget @earendil-works/pi-ai "$v" dist.integrity)"
   rm -rf "$tmp"
   echo "pi -> $v  (re-check the buildPhase/postInstall patches still apply)"
 }
