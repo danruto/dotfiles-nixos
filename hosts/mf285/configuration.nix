@@ -55,6 +55,18 @@ with lib;
   networking.networkmanager.enable = true;
   networking.networkmanager.wifi.powersave = false;
 
+  # -I, not -A: extraCommands runs after the chain's final refuse rule.
+  networking.firewall.extraCommands = ''
+    for net in 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16; do
+      iptables -I nixos-fw -s $net -p tcp --dport 8000:9999 -j nixos-fw-accept
+      iptables -I nixos-fw -s $net -p udp --dport 8000:9999 -j nixos-fw-accept
+    done
+    for net in fe80::/10 fc00::/7; do
+      ip6tables -I nixos-fw -s $net -p tcp --dport 8000:9999 -j nixos-fw-accept
+      ip6tables -I nixos-fw -s $net -p udp --dport 8000:9999 -j nixos-fw-accept
+    done
+  '';
+
   services.greetd.settings.initial_session = {
     command = "niri-session";
     user = username;
