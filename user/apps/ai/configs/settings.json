@@ -14,16 +14,13 @@
       "Bash(gh pr view:*)"
     ],
     "soft_deny": [
-      "$defaults",
-      "Bash(just deploy-local:*)",
-      "Bash(pulumi up:*)",
-      "Bash(pulumi destroy:*)"
+      "$defaults"
     ]
   },
   "disableBundledSkills": true,
   "disableWorkflows": true,
   "effortLevel": "high",
-  "enableArtifact": false,
+  "enableArtifact": true,
   "enabledPlugins": {
     "bb@bubblebeam": true,
     "claude-code-setup@claude-plugins-official": true,
@@ -54,6 +51,7 @@
       }
     }
   },
+  "feedbackDrafts": "off",
   "hooks": {
     "SessionStart": [
       {
@@ -124,10 +122,7 @@
       "Read(.env.production)",
       "Read(.env.staging)",
       "Read(.env.test)",
-      "ExitPlanMode",
-      "EnterPlanMode",
-      "DesignSync",
-      "PushNotification"
+      "ExitPlanMode"
     ]
   },
   "remoteControlAtStartup": false,
