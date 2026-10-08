@@ -14,13 +14,13 @@ let
   # nixpkgs-master fetches zstd-compressed binaries; take checksums from
   # https://downloads.claude.ai/claude-code-releases/<version>/manifest.zst.json
   claude-code = pkgs-master.claude-code.override {
-      manifest = {
-        version = "2.1.293";
-        platforms = {
-          "darwin-arm64" = { binary = "claude.zst"; checksum = "28388647d76919972795439c4ac43654985a36b9bd18a8a541a9e7c78286ffec"; };
-          "darwin-x64" = { binary = "claude.zst"; checksum = "969a39b6b64c8e2d91ca4751e5f96439c3960e6029c5af4c0bac5e546b0a180d"; };
-          "linux-arm64" = { binary = "claude.zst"; checksum = "031f4c6c3489065ffc4942e06b920b6fa52fb03830bb375fae6919c11537d725"; };
-          "linux-x64" = { binary = "claude.zst"; checksum = "25786da347c30641dc6c50733d090d77cb540f105a61af7e9895b56e39fe16a5"; };
+    manifest = {
+      version = "2.1.295";
+      platforms = {
+        "darwin-arm64" = { binary = "claude.zst"; checksum = "37934434b3ccd48c4fcccfb6a30a0145fffccaba8c8e935e8e3bdff0a35024a9"; };
+        "darwin-x64" = { binary = "claude.zst"; checksum = "2568ab3f0572d1753f521d65412501ac71dcba253b2171da4b75ecf5df4cfcf8"; };
+        "linux-arm64" = { binary = "claude.zst"; checksum = "9b32b47ec4b3fa5b884e12b7e130e94338e7787d5db031adf48e1b20e3a893ee"; };
+        "linux-x64" = { binary = "claude.zst"; checksum = "71164c85f9d226928dec7acda1baf000f1991eb14fcec106536d84bd914032f8"; };
       };
     };
   };
@@ -62,12 +62,12 @@ let
   # here too. Drop the version, src, npmDepsHash and modelData overrides (keep
   # postFixup) once nixpkgs-master ships this version or newer.
   pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (final: prev: {
-    version = "1.0.4";
+    version = "1.1.0";
     src = pkgs-master.fetchFromGitHub {
       owner = "earendil-works";
       repo = "pi";
       tag = "v${final.version}";
-      hash = "sha256-twDmQRr7vsrYzhS8o3TrlqdBzRFCbOOn/4hbCXD/u3Q=";
+      hash = "sha256-lwjspkMGrW+8Fl/yBEDEFsHZJA57OKOhmVQmi6zfej4=";
     };
     # npmDeps must be overridden directly, not via npmDepsHash: buildNpmPackage
     # bakes the resolved npmDeps into the derivation attrs, so on overrideAttrs
@@ -75,13 +75,13 @@ let
     npmDeps = pkgs-master.fetchNpmDeps {
       inherit (final) src;
       name = "pi-coding-agent-${final.version}-npm-deps";
-      hash = "sha256-1H7z6y8czHF3Dewqqy5DA/RNeo2//J1eBYZqryX0MbU=";
+      hash = "sha256-GOh5WG+rRgzoy/yVHY5PoEKJZGQcEGhISrDDJxkP8W4=";
       fetcherVersion = 1;
     };
     # Hydrated model catalog; gitignored upstream, see nixpkgs' package.nix.
     modelData = pkgs-master.fetchurl {
       url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${final.version}.tgz";
-      hash = "sha512-/Eu5R0gfor6wcmRcVyOmulUiZmsHJ0bKu5wXXnpCoSHF3y4FnW4fgnjRlLjNza8NJWXdvW5Uew90Zukx7Sh2rw==";
+      hash = "sha512-1T7LAkc/5Bvc0v6w4vAGVdCrli0o/E0pEmYKTnixu95vSFArBjvbhS/G4ZwI0RUePgf0Imcu0VyqlM4EcXxqfw==";
     };
 
     # 0.85.0 added the packages/chord workspace and coding-agent now imports
@@ -89,8 +89,10 @@ let
     # the output. Drop both with the pins above once nixpkgs-master catches up.
     buildPhase = builtins.replaceStrings
       [ "npx tsgo -p packages/tui/tsconfig.build.json" "npm run build --workspace=packages/coding-agent" ]
-      [ "npx tsgo -p packages/chord/tsconfig.build.json\n    npx tsgo -p packages/tui/tsconfig.build.json"
-        "npx tsgo -p packages/server/tsconfig.build.json\n    npm run build --workspace=packages/coding-agent" ]
+      [
+        "npx tsgo -p packages/chord/tsconfig.build.json\n    npx tsgo -p packages/tui/tsconfig.build.json"
+        "npx tsgo -p packages/server/tsconfig.build.json\n    npm run build --workspace=packages/coding-agent"
+      ]
       prev.buildPhase;
     postInstall = prev.postInstall + ''
       nm="$out/lib/node_modules/pi-monorepo/node_modules/@earendil-works"
@@ -117,12 +119,12 @@ let
   # `npm view @opencode/cli-<plat>@<version> dist.integrity`.
   opencode =
     let
-      version = "2.0.24";
+      version = "2.0.26";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-WDBunGoImJOYjwUvDDfl0GJiKR/WbATnSXW1QTrK+VDp+oOUNLXo84QTUCBVUqvb8VsseWhs3uyWCD9o9c5JDA=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-n+C1XkoIB0NaHK9CQo4gGIc9FRGDhrMdCXO8heEOvUgKsH/0ROxCr3CxUuJaKolL/5+c5u3CoiXsckL+fa52ag=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-fS1994qO6N2+KSxuye3YxbQ+6zY92lUvHn6bTo12/EkTsxaoNplbZFisYXSVsmXHQEiVT4UpxItU6KygLZ9H4g=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-KGZeXsTu7YQuijMuihwTsKM6ezLoksyqkL+RUdKBUv87XBdwDf9bv692tFaTQqcyuL++BMGEZdffy0ImLBtm3w=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-UIA2/1Ik8HaN54C4xp7H+OHgRfq995XUixrX+kLmFs8EPn1fAcmn3OoiN+3c3Vc3jEV/LHmj0Cy1SL6nW4wdGw=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-IG316I8wVqndohzFAoWNeH83eMA8sKQFRtMeuk2Wfg4DU1haCSgzAJz3/gbytjwh6bXdWR7V3FCSrfjoraKDgw=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-051fIryTH4FK4Ml63TH+IP3s7Mi+jYfVyEXSBh9aGDJUS2VZfD+AwNJ9Ew9nBPTBKYvhMGhqHcudHagRL8SBbQ=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-XklldeO6eWgG8vkPNLcdlBPEm1Y+/tyhEXGZvXbk8uytpPP7SEVV2R9oZ98NMSSPH9kBAO/+Xo4sKfvD6CHAsw=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
@@ -190,7 +192,7 @@ let
 
   # Both Claude Code subscriptions share one config set: ~/.claude (default) and
   # ~/.claude-healix (selected with CLAUDE_CONFIG_DIR).
-  claudeDirs = [ ".claude" ".claude-healix" ];
+  claudeDirs = [ ".claude" ".claude-healix" ".claude-nm" ];
 in
 {
   home.packages = (with pkgs-unstable; [

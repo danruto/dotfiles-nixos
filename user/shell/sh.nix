@@ -66,6 +66,10 @@ in
         description = "Run claude with the Healix org subscription config dir";
         body = "CLAUDE_CONFIG_DIR=$HOME/.claude-healix claude $argv";
       };
+      claude-nm = {
+        description = "Run claude with the nm org subscription config dir";
+        body = "CLAUDE_CONFIG_DIR=$HOME/.claude-nm claude $argv --plugin-dir ~/dev/nearmap/bb2";
+      };
       # mosh can't forward ports, so tunnels ride a separate ssh. Keeping the browser
       # on localhost keeps secure-context, OAuth loopback and passkey rules happy.
       tun = {
