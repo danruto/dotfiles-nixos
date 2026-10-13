@@ -15,12 +15,12 @@ let
   # https://downloads.claude.ai/claude-code-releases/<version>/manifest.zst.json
   claude-code = pkgs-master.claude-code.override {
     manifest = {
-      version = "2.1.295";
+      version = "2.1.296";
       platforms = {
-        "darwin-arm64" = { binary = "claude.zst"; checksum = "37934434b3ccd48c4fcccfb6a30a0145fffccaba8c8e935e8e3bdff0a35024a9"; };
-        "darwin-x64" = { binary = "claude.zst"; checksum = "2568ab3f0572d1753f521d65412501ac71dcba253b2171da4b75ecf5df4cfcf8"; };
-        "linux-arm64" = { binary = "claude.zst"; checksum = "9b32b47ec4b3fa5b884e12b7e130e94338e7787d5db031adf48e1b20e3a893ee"; };
-        "linux-x64" = { binary = "claude.zst"; checksum = "71164c85f9d226928dec7acda1baf000f1991eb14fcec106536d84bd914032f8"; };
+        "darwin-arm64" = { binary = "claude.zst"; checksum = "26426aa3dcf41b0f554951766c3c583cf243345ca3d32fa590caf84685be5f97"; };
+        "darwin-x64" = { binary = "claude.zst"; checksum = "6f1d6f926a303c423eb4815a01764165ed4375054bfa8ef6203e55fc806f50ac"; };
+        "linux-arm64" = { binary = "claude.zst"; checksum = "23aa91437a06eff80a65bfc32b0e4b5a6dda3e821019c543696c154274e56913"; };
+        "linux-x64" = { binary = "claude.zst"; checksum = "fac1d78be9446052ac084878c04c2648abb6b22d53279a685fa19ee517d74410"; };
       };
     };
   };
@@ -58,60 +58,7 @@ let
       };
     };
 
-  # nixpkgs-master lags upstream pi releases, so version/src/hashes are pinned
-  # here too. Drop the version, src, npmDepsHash and modelData overrides (keep
-  # postFixup) once nixpkgs-master ships this version or newer.
-  pi-coding-agent = pkgs-master.pi-coding-agent.overrideAttrs (final: prev: {
-    version = "1.1.0";
-    src = pkgs-master.fetchFromGitHub {
-      owner = "earendil-works";
-      repo = "pi";
-      tag = "v${final.version}";
-      hash = "sha256-lwjspkMGrW+8Fl/yBEDEFsHZJA57OKOhmVQmi6zfej4=";
-    };
-    # npmDeps must be overridden directly, not via npmDepsHash: buildNpmPackage
-    # bakes the resolved npmDeps into the derivation attrs, so on overrideAttrs
-    # the hash argument is ignored and the old lockfile cache would be reused.
-    npmDeps = pkgs-master.fetchNpmDeps {
-      inherit (final) src;
-      name = "pi-coding-agent-${final.version}-npm-deps";
-      hash = "sha256-GOh5WG+rRgzoy/yVHY5PoEKJZGQcEGhISrDDJxkP8W4=";
-      fetcherVersion = 1;
-    };
-    # Hydrated model catalog; gitignored upstream, see nixpkgs' package.nix.
-    modelData = pkgs-master.fetchurl {
-      url = "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-${final.version}.tgz";
-      hash = "sha512-1T7LAkc/5Bvc0v6w4vAGVdCrli0o/E0pEmYKTnixu95vSFArBjvbhS/G4ZwI0RUePgf0Imcu0VyqlM4EcXxqfw==";
-    };
-
-    # 0.85.0 added the packages/chord workspace and coding-agent now imports
-    # packages/server; nixpkgs 0.84.3 neither compiles nor copies either into
-    # the output. Drop both with the pins above once nixpkgs-master catches up.
-    buildPhase = builtins.replaceStrings
-      [ "npx tsgo -p packages/tui/tsconfig.build.json" "npm run build --workspace=packages/coding-agent" ]
-      [
-        "npx tsgo -p packages/chord/tsconfig.build.json\n    npx tsgo -p packages/tui/tsconfig.build.json"
-        "npx tsgo -p packages/server/tsconfig.build.json\n    npm run build --workspace=packages/coding-agent"
-      ]
-      prev.buildPhase;
-    postInstall = prev.postInstall + ''
-      nm="$out/lib/node_modules/pi-monorepo/node_modules/@earendil-works"
-      cp -r packages/chord "$nm/chord"
-      cp -r packages/server "$nm/pi-server"
-    '';
-
-    # pi spawns `npm install` at runtime for package extensions and compiles
-    # native npm modules (e.g. node-pty) when installing/updating them;
-    # node-gyp needs python on PATH. Scope these to pi's own wrapper instead
-    # of the global profile (gcc/gnumake come from user/lang/cc). This
-    # replaces the upstream wrapper, so re-add its ripgrep/fd and env defaults.
-    postFixup = ''
-      wrapProgram $out/bin/pi \
-        --prefix PATH : ${lib.makeBinPath (with pkgs-master; [ nodejs ripgrep fd python3 ])} \
-        --set-default PI_SKIP_VERSION_CHECK 1 \
-        --set-default PI_TELEMETRY 0
-    '';
-  });
+  pi-coding-agent = pkgs-master.callPackage ./pi.nix { };
 
   # opencode v2 ships as prebuilt bun binaries under the @opencode/cli npm
   # scope; nixpkgs' `opencode` is still the v1 source build. Bumping means a
@@ -119,12 +66,12 @@ let
   # `npm view @opencode/cli-<plat>@<version> dist.integrity`.
   opencode =
     let
-      version = "2.0.26";
+      version = "2.0.27";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-UIA2/1Ik8HaN54C4xp7H+OHgRfq995XUixrX+kLmFs8EPn1fAcmn3OoiN+3c3Vc3jEV/LHmj0Cy1SL6nW4wdGw=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-IG316I8wVqndohzFAoWNeH83eMA8sKQFRtMeuk2Wfg4DU1haCSgzAJz3/gbytjwh6bXdWR7V3FCSrfjoraKDgw=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-051fIryTH4FK4Ml63TH+IP3s7Mi+jYfVyEXSBh9aGDJUS2VZfD+AwNJ9Ew9nBPTBKYvhMGhqHcudHagRL8SBbQ=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-XklldeO6eWgG8vkPNLcdlBPEm1Y+/tyhEXGZvXbk8uytpPP7SEVV2R9oZ98NMSSPH9kBAO/+Xo4sKfvD6CHAsw=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-QPGrzBSSs5ATG3nM4XjS4tmWXUB22Di36H0vfMuhKwk6i3PR3Nb4sm+l00gvTdcyCRohYsKwqjvD67T0DPcQLQ=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-qK2E8iy7ZyOC1RcbJZuVuzUHHDwg4BxgE405+bPLZjep0cU2yqvifsVB0UptyiVs2GxXfZDbmn2w7y5PW49ssg=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-gtxo81/RIqPHzVfo76lS5f5Ayk8LBKNt/XVF3zHz2axsSFmD5L/HchK3u/RMkguUoy4XkSp1Dgi68cu9DJa3Tw=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-0BAaNYZE5QKve/7EFw9gyTQpkyOdff7Lj8Eul6FwK1vDnkj+yiVt/gdmJZl0PVoexl+6ZhjB7vuUPgSXrRATtA=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in

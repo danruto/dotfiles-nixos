@@ -6,6 +6,7 @@ set -euo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
 llm=$root/user/apps/ai/llm.nix
 hunknix=$root/user/apps/git/hunk.nix
+pinix=$root/user/apps/ai/pi.nix
 
 # Both helpers scope to the `  <block> =` attribute of a nix file, which ends at
 # the next column-2 binding. Block "-" means the whole file.
@@ -86,20 +87,20 @@ bump_hunk() {
     hunkdiff-linux-x64 hunkdiff-linux-arm64 hunkdiff-darwin-x64 hunkdiff-darwin-arm64
 }
 
-# pi pins src, npmDeps and modelData: hashes 1, 2 and 3 of the block, in order.
+# pi.nix pins src and modelData (hashes 1 and 2 of the file) plus npmDepsHash.
 bump_pi() {
   local v tmp url
   v=$(ghtag earendil-works/pi)
-  [ "$v" = "$(nixget "$llm" pi-coding-agent version 1)" ] && { echo "pi: already $v"; return; }
+  [ "$v" = "$(nixget "$pinix" - version 1)" ] && { echo "pi: already $v"; return; }
   url=https://github.com/earendil-works/pi/archive/refs/tags/v$v.tar.gz
   tmp=$(mktemp -d)
   curl -sL "$url" | tar xz -C "$tmp"
-  nixset "$llm" pi-coding-agent version 1 "$v"
-  nixset "$llm" pi-coding-agent hash 1 "$(sri "$(nix-prefetch-url --unpack "$url" 2>/dev/null)")"
-  nixset "$llm" pi-coding-agent hash 2 "$(nix run nixpkgs#prefetch-npm-deps -- "$tmp/pi-$v/package-lock.json" 2>/dev/null)"
-  nixset "$llm" pi-coding-agent hash 3 "$(npmget @earendil-works/pi-ai "$v" dist.integrity)"
+  nixset "$pinix" - version 1 "$v"
+  nixset "$pinix" - hash 1 "$(sri "$(nix-prefetch-url --unpack "$url" 2>/dev/null)")"
+  nixset "$pinix" - npmDepsHash 1 "$(nix run nixpkgs#prefetch-npm-deps -- "$tmp/pi-$v/package-lock.json" 2>/dev/null)"
+  nixset "$pinix" - hash 2 "$(npmget @earendil-works/pi-ai "$v" dist.integrity)"
   rm -rf "$tmp"
-  echo "pi -> $v  (re-check the buildPhase/postInstall patches still apply)"
+  echo "pi -> $v  (re-check npm run build:offline still exists upstream)"
 }
 
 bump_command-code() { "$root/user/apps/ai/bump-command-code.sh"; }
