@@ -15,7 +15,6 @@
     "git:github.com/davebcn87/pi-autoresearch",
     "git:github.com/tintinweb/pi-manage-todo-list",
     "npm:@ff-labs/pi-fff",
-    "npm:@plannotator/pi-extension",
     "npm:@tmustier/pi-raw-paste",
     "npm:pi-add-dir",
     "npm:pi-ask-user",
