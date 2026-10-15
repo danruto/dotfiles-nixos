@@ -148,9 +148,12 @@ hm/switch:
 bump:
 	./scripts/bump $(PKG)
 
-# Normalize claude settings.json (Claude Code rewrites it with its own key order)
+# Normalize all AI JSON configs with sorted keys.
 fmt/settings:
-	jq -S . user/apps/ai/configs/settings.json > user/apps/ai/configs/settings.json.tmp && \
-		mv user/apps/ai/configs/settings.json.tmp user/apps/ai/configs/settings.json
+	find user/apps/ai/configs -type f -name '*.json' -exec sh -c '\
+		for file do \
+			jq -S . "$$file" > "$$file.tmp" && \
+				mv "$$file.tmp" "$$file" || exit 1; \
+		done' sh {} +
 
 .PHONY: bump help switch norb hm/switch fmt/settings vm/help vm/bootstrap/0 vm/bootstrap/1 vm/bootstrap/2 vm/bootstrap/u vm/secrets vm/copy vm/git_update vm/switch vm/ssh
