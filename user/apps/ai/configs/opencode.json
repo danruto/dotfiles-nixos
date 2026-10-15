@@ -122,6 +122,15 @@
       "template": "Follow the work-loop skill instructions included below as the launcher: resolve the milestone, run the preflight, and start the detached loop script. Never run the work skill yourself. Forward any $ARGUMENTS verbatim — they carry the milestone, optional --orchestrator/--label/--budget/--wait-max, and work flags for each run.\n\nThe skill below is loaded from `$HOME/.config/opencode/pb/instructions/work-loop/SKILL.md`; resolve any paths relative to that directory, not the project cwd.\n\n!`sh -c 'p=\"$HOME/.config/opencode/pb/instructions/work-loop/SKILL.md\"; [ -f \"$p\" ] && cat \"$p\" || echo \"ERROR: pb-skills skill content not found at $p. Install locally — symlink ~/.config/opencode/pb/instructions to /path/to/pb-skills/plugins/pb/instructions, or run just link-opencode in the pb-skills checkout. Do not proceed without the skill content.\"'`\n\nArgument: $ARGUMENTS"
     }
   },
+  "experimental": {
+    "policies": [
+      {
+        "action": "integration.use",
+        "effect": "deny",
+        "resource": "skill:plannotator*"
+      }
+    ]
+  },
   "permissions": [
     {
       "action": "external_directory",
