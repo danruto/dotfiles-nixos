@@ -13,7 +13,7 @@ let
 
   # nixpkgs-master fetches zstd-compressed binaries; take checksums from
   # https://downloads.claude.ai/claude-code-releases/<version>/manifest.zst.json
-  claude-code = pkgs-master.claude-code.override {
+  claude-code-unwrapped = pkgs-master.claude-code.override {
     manifest = {
       version = "2.1.300";
       platforms = {
@@ -25,18 +25,34 @@ let
     };
   };
 
+  # Load pb straight from the live checkout instead of the pb-skills marketplace,
+  # whose installed copy is a stale snapshot under <config dir>/plugins/cache.
+  # Wrapping the binary (not a fish function) covers every launcher: claude,
+  # claude-healix, claude-nm and herdr. The flag is accepted before subcommands,
+  # and a missing dir on hosts without the checkout is ignored.
+  claude-code = pkgs.symlinkJoin {
+    name = "claude-code-${claude-code-unwrapped.version}";
+    paths = [ claude-code-unwrapped ];
+    nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/claude \
+        --add-flags "--plugin-dir ${config.home.homeDirectory}/dev/pixelbrush/pb-skills/plugins/pb"
+    '';
+    inherit (claude-code-unwrapped) meta;
+  };
+
   # nixpkgs builds tokscale from Rust source, which takes far too long. Upstream
   # publishes the same release as prebuilt per-platform binaries on npm, so pull
   # those instead. Bumping means a new version + four integrity hashes from
   # `npm view @tokscale/cli-<plat> dist.integrity`.
   tokscale =
     let
-      version = "4.19.0";
+      version = "4.20.0";
       sources = {
-        "x86_64-linux" = { plat = "linux-x64-gnu"; hash = "sha512-3pzI2kZS7Nuemxyl3KrF8p3sbo4jVpVwXNrMhhyLccusnp7rZaTD4rSwKv+30RH1rZqUJ5nOSrkP1AEHjscqKg=="; };
-        "aarch64-linux" = { plat = "linux-arm64-gnu"; hash = "sha512-43Re90Vo7hpOOQWtsKMqJoi7WnIpvxNwd8n0q7LT/6rKMi4wdp369wth/Gd7Cmb2QfGR3UqOgECdcYTMWM+qWQ=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-Qdd73KfIi8B1qjC9M02ZmU5IfRg7kg3spBjPwTi/r7Rg41EbJOsZ7bw0kPawh5KdlSI4QL9sFnvZzEijkzh7cQ=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-jkmAN85v/svmcpfIZdu3+tabTl73HoSqMSxSUZjw96TIpegauNMxzR8HKWJ/MO803j8SEB2MeqAWlXB/LUcc8w=="; };
+        "x86_64-linux" = { plat = "linux-x64-gnu"; hash = "sha512-YhqI91zM4UeRqa0tm6fj7qjAf9TVaO8WjLf+eWQoTSrEPCJ80/9iIS/tdc8gNHe5dVnSc6Yr1kAMVgdnEpJsQQ=="; };
+        "aarch64-linux" = { plat = "linux-arm64-gnu"; hash = "sha512-6YZSZsHq+gmNmGxQzxthjT03MAQYAezPgQXbfhcdIv1x/1euTFU1CKJ13qot8+N8Jl5uJnL7Zmv7m4aiWG9gWQ=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-UGa+GakljqaeyMgz+0P9UBSi5Z5SWzuFrUs21DT2TBWabN1e6ETDNXKKn2bu15X+2f/HkPT81HK9K4/GbQ1hHg=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-9FQjSubJRDF9eKA/+bMg5pgEseo2dZFcbBVZWKEuTRQDJg+rUD4nrtvQZ1pR8XAhes3gS7BNb0gxdvuodTEKBg=="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
@@ -66,12 +82,12 @@ let
   # `npm view @opencode/cli-<plat>@<version> dist.integrity`.
   opencode =
     let
-      version = "2.0.29";
+      version = "2.0.32";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-pdG/T4uBxSC3hjUTOrTlx2pXlZl2VqABlb0AgDlZ8VO/q1pUUOYvooWmN5VeSi+EP8cKGVUsj0GUmMDeB2ympA=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-EsCnvp5lMJNem0YoQJM9PkXY0KrkiugL55M9J2JlImQzKdQnZ4CKutrPAXOnsa889qHhY5tjRpAnD/ZYFzhkRA=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-3jPLK7Tv/qw+DOLSZTbJ97EOJDkM1VEioABnxPKaLS5K+iYJ+Y25sfZO/aKPtpeMWqfqxCtMql2R7wEpQRZ1HQ=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-2tJOM20RpOjNeWsYcV3VfRFPDTeu1yMMbEqAQm1sEKmHX9087Sx/TxhwBlvtiudOGq6Kr3zyKmW1t7aFF6qCsQ=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-Q50ofBQ3gdwjD6ZQhrVR8fVlm8D2xPMshy4dynY6l6b+qLdKgBSJ9WpoaDyrQX1YWmf2s7IN4RbXmoXXdJitDA=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-YR5O03irvmot/G0f8W49ehvhn5uqCFN3vf9JTsChvf47W6ldjKCNvsaCSXS2SP26dPOUMQBn7WqbKnyHzrNR5w=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-sDtaUjCuG9Bcu2SEIRM0RMVheyZC0IWIyz+esmTAf6b7FZ4+ARI/Ze09VWHDuwns5Pi5eW47Njkw3xlHOimE5Q=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-wASwXBsWaOAYcZrh4ZLl4oaVxPCUAGVb7zZvXBBF8TjWE4uWgY0D2tj6gn80JfcO3b/s9woM6dP/gKqYKK2EdQ=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
