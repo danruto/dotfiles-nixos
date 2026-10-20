@@ -25,7 +25,9 @@ nixset() { # file block attr n value
   awk -v block="$2" -v attr="$3" -v want="$4" -v v="$5" "$awkblock"'
     n == want && !done { sub(attr " = \"[^\"]*\"", attr " = \"" v "\""); done = 1 }
     { print }
-  ' "$1" > "$1.bump" && mv "$1.bump" "$1"
+    END { exit !done }
+  ' "$1" > "$1.bump" && mv "$1.bump" "$1" ||
+    { rm -f "$1.bump"; echo "bump: no $3 #$4 in block $2 of $1" >&2; return 1; }
 }
 sri() { nix hash convert --hash-algo sha256 --to sri "$1"; }
 ghtag() { local v; v=$(gh release view --repo "$1" --json tagName -q .tagName); echo "${v#v}"; }
@@ -34,11 +36,11 @@ npmget() { curl -sf "https://registry.npmjs.org/$1/$2" | jq -er ".$3"; } # name 
 bump_claude-code() {
   local v m i=0 p
   v=$(npmget @anthropic-ai/claude-code latest version)
-  [ "$v" = "$(nixget "$llm" claude-code version 1)" ] && { echo "claude-code: already $v"; return; }
+  [ "$v" = "$(nixget "$llm" claude-code-unwrapped version 1)" ] && { echo "claude-code: already $v"; return; }
   m=$(curl -sf "https://downloads.claude.ai/claude-code-releases/$v/manifest.zst.json")
-  nixset "$llm" claude-code version 1 "$v"
+  nixset "$llm" claude-code-unwrapped version 1 "$v"
   for p in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
-    nixset "$llm" claude-code checksum $((++i)) "$(jq -er ".platforms[\"$p\"].checksum" <<<"$m")"
+    nixset "$llm" claude-code-unwrapped checksum $((++i)) "$(jq -er ".platforms[\"$p\"].checksum" <<<"$m")"
   done
   echo "claude-code -> $v"
 }
