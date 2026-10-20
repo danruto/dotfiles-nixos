@@ -1,0 +1,12 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -i bash -p android-tools
+# Revert Fire TV speed tweaks (animation scales, disabled Amazon telemetry/ad services).
+# Usage: scripts/firetv-undo [ip ...]   (default: Stick 192.168.0.243, Cube 192.168.0.147)
+# Requires ADB debugging enabled on the device (Settings → My Fire TV → Developer Options).
+
+for ip in ${@:-192.168.0.243 192.168.0.147}; do
+  D="-s $ip:5555"
+  adb connect $ip:5555
+  for s in window_animation_scale transition_animation_scale animator_duration_scale; do adb $D shell settings put global $s 1.0; done
+  for p in com.amazon.dp.logger com.amazon.device.telemetry.emitter com.amazon.wirelessmetrics.service com.amazon.kso.blackbird; do adb $D shell pm enable $p 2>/dev/null; done
+done

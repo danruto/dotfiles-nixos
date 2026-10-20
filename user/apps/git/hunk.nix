@@ -1,24 +1,24 @@
 { lib, stdenv, fetchurl, autoPatchelfHook }:
 
 let
-  version = "0.23.0";
+  version = "0.24.0";
 
   sources = {
     "x86_64-linux" = {
       asset = "hunkdiff-linux-x64";
-      sha256 = "sha256-eatkBsuyuADnPG+8JUavuX7U+8O1Cq0HLrmtEhUVgeY=";
+      sha256 = "sha256-dlZAKo671RF60k4SvaGvBF/JyFw7QOctv95N6nm2DGk=";
     };
     "aarch64-linux" = {
       asset = "hunkdiff-linux-arm64";
-      sha256 = "sha256-W4korh6YeysXddH+Yu66vMCLn8mUAVTgzvJ9JJQct+Q=";
+      sha256 = "sha256-6qup9cDBhNtKhJOsOGsRLujLtVOITEoOXgQTje9eLSk=";
     };
     "x86_64-darwin" = {
       asset = "hunkdiff-darwin-x64";
-      sha256 = "sha256-FMUwJct7s6/WJztlgXq3oQArH46Usk46BU6VJk4WgOA=";
+      sha256 = "sha256-fmTbYyJ2rPNUWXppZswOKHmgMZDh2/wMOnE1Nfr14JA=";
     };
     "aarch64-darwin" = {
       asset = "hunkdiff-darwin-arm64";
-      sha256 = "sha256-rkLP5SeYpPUdJfY864aFyipsswOaEk1qb8FyoRL41rg=";
+      sha256 = "sha256-+Hbx6G1rqI4SCTfrefY4iXYqKf7ZUSNtbeac4/+WeBk=";
     };
   };
 
