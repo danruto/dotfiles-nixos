@@ -195,8 +195,9 @@ with lib;
     # Trigger USB rescan service when Thunderbolt device connects
     ACTION=="add", SUBSYSTEM=="thunderbolt", TAG+="systemd", ENV{SYSTEMD_WANTS}="thunderbolt-usb-rescan.service"
 
-    # Disable autosuspend for USB hubs (common in Thunderbolt docks)
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", ATTR{power/control}="on", ATTR{power/autosuspend}="-1"
+    # Disable autosuspend for the dock's VIA Labs hubs only. Matching every
+    # class-09 hub also caught the xHCI root hubs and blocked deep C-states.
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", ATTR{idVendor}=="2bd5", ATTR{power/control}="on", ATTR{power/autosuspend}="-1"
   '';
 
   # It is ok to leave this unchanged for compatibility purposes

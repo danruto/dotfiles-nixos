@@ -35,25 +35,32 @@
   services.upower.enable = true;
   services.upower.criticalPowerAction = "PowerOff";
   services.thermald.enable = true;
-  # No persistent swap (ext4 root, 62GB RAM) so hibernate can't work.
-  # Plain suspend + zram for memory pressure instead of suspend-then-hibernate.
+  # zram (higher priority) handles memory pressure; the swapfile exists only
+  # as a hibernation target, sized to hold all 62GB of RAM.
   zramSwap = {
     enable = true;
     algorithm = "zstd";
     memoryPercent = 25;
   };
+  swapDevices = [
+    { device = "/var/lib/swapfile"; size = 64 * 1024; }
+  ];
+  # systemd stage 1 resumes from the HibernateLocation EFI variable that
+  # systemd-hibernate writes, so no hardcoded resume_offset is needed.
+  boot.initrd.systemd.enable = true;
+
   services.logind = {
-    settings.Login.HandleLidSwitch = "suspend";
+    settings.Login.HandleLidSwitch = "suspend-then-hibernate";
     # Idle = swayidle's idlehint (niri.nix) with no idle inhibitor held;
     # agent-awake (hosts/framework/home.nix) holds one while an agent works.
-    settings.Login.IdleAction = "suspend";
+    settings.Login.IdleAction = "suspend-then-hibernate";
     settings.Login.IdleActionSec = "2h";
     # lidSwitch = "suspend";
     # lidSwitchExternalPower = "suspend";
   };
 
-  systemd.sleep.settings.Sleep.HibernateDelaySec = "0";
-  # NOTE: no persistent swap on this host, so hibernate targets are inert.
+  # S3 sleep drains ~2.5%/h, so hibernate after 2h instead of running flat.
+  systemd.sleep.settings.Sleep.HibernateDelaySec = "2h";
 
   # Additional power management optimizations
   services.udev.extraRules = ''
