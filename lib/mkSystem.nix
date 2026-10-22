@@ -52,6 +52,7 @@ let
     nixpkgsModule
     hmSystemModule
     hmModule
+    ../system/security/ca-distrust.nix
   ]
   # Shared community binary caches for all NixOS hosts. Excluded on darwin,
   # where nix may be managed by Determinate (nix.enable = false) and setting
