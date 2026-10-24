@@ -9,7 +9,7 @@
     "-builtin:mcp"
   ],
   "hideThinkingBlock": true,
-  "lastChangelogVersion": "1.2.0",
+  "lastChangelogVersion": "1.4.0",
   "packages": [
     "../../dev/nearmap/bubblebeam",
     "git:github.com/davebcn87/pi-autoresearch",
@@ -34,7 +34,8 @@
     "npm:@narumitw/pi-usage",
     "npm:pi-hermes-memory",
     "../../dev/pixelbrush/pb-skills",
-    "../../dev/nearmap/bb2"
+    "../../dev/nearmap/bb2",
+    "npm:pi-claude-bridge"
   ],
   "quietStartup": true,
   "subagents": {
