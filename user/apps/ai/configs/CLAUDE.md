@@ -24,11 +24,17 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 - Before writing new code, reuse what exists, in this order: this codebase, the standard library, native platform features, already-installed dependencies. Don't add a dependency for what a few lines can do
 - Before changing a shared function, grep every caller. Fix it once where all callers route through, not in each caller
 - Non-trivial logic (a branch, parser, money or security path) leaves one small runnable check behind. Trivial one-liners need none
+- Comments never reference other docs, file paths, hostnames, or issue numbers. A comment describes only the code it sits on
+- Before adding state or storage, check whether the database or an existing cache already holds it. Prefer one shared component over per-page copies
+- Semver: breaking → major, feature → minor, fix → patch. Pin versions, never `latest`
 
 ## Fixes & Decisions
 
 - Recommend the fix that keeps clean architecture; mention a quick fix as a non-recommended option only when a meaningful one exists
-- Ask before assuming — when requirements are vague or scope is unclear, ask rather than expand beyond what was requested
+- Ask only about requirements, product choices, or anything touching staging, billing, or tenant data
+- Routine reversible execution (run a check, commit when asked, merge when checks are green, close a verified issue, run an approved script) is done and reported, never confirmed first
+- Open decisions go at the top of the message as one numbered list, each with a recommendation. Answers arrive as `N: option` or "recommended"
+- Never state that something runs, is deployed, or is set until you ran a check in this session and can quote its output
 - When multiple valid approaches exist, present the options with your recommendation — I decide
 - Prefer fixes that stay correct as the surrounding code changes. Never narrow an assertion, weaken a spec, special-case the current input, or patch only the named symptom. If such a fix is out of scope, say so rather than shipping an expedient one silently.
 
@@ -36,6 +42,12 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 
 - No AI attribution or Co-Authored-By footers; never push unless asked
 - Don't commit unless asked. Edit in place first.
+
+## Machine & privacy
+
+- Never write private identifiers (private repo names, private issue numbers) into tracked or public files. Never commit a gitignored file
+- Disk is scarce: no worktrees for repos with large build dirs (Rust `target/`); pull only the samples needed; tear down every container, server, or process you start before finishing
+- If the harness blocks a file edit, write the change as a script under `scripts/` and run it. Do not stop and ask
 
 ## Agent Model Selection
 
