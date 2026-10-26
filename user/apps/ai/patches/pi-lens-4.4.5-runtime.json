@@ -1,0 +1,508 @@
+{
+  "version": "4.4.5",
+  "sourceRevision": "3778663223c70ccabb11c352840817bb8fb9fb4e",
+  "originalSha256": "25e799830fc1f2a1ea8e23472ea5784af3f62ab3f01eea056b5e13e67e8cff6d",
+  "patchedSha256": "879fbca9a509fc8b6a9afe35f587dea462fb225fc4790627870a739024cd688f",
+  "edits": [
+    {
+      "start": 1727255,
+      "oldText": "",
+      "newText": "    _snapshotBodyReadCountForTests++;\n"
+    },
+    {
+      "start": 4580670,
+      "oldText": "    snapshot: loadProjectSnapshot(args.root),\n",
+      "newText": "    snapshot: args.loadBody(args.root),\n"
+    },
+    {
+      "start": 4623116,
+      "oldText": "  if (startupMode === \"quick\" && !isPrintMode() && process.env.PI_LENS_COLD_START_QUICK !== \"0\" && !processGlobals.__piLensWarmupScheduled) {\n",
+      "newText": "  if (startupMode === \"quick\" && !isPrintMode() && process.env.PI_LENS_COLD_START_QUICK !== \"0\" && process.env.PI_LENS_WARMUP_DELAY_MS !== void 0 && !processGlobals.__piLensWarmupScheduled) {\n"
+    },
+    {
+      "start": 4635722,
+      "oldText": "",
+      "newText": "      loadBody: loadProjectSnapshotExportsAndRules,\n"
+    },
+    {
+      "start": 4636593,
+      "oldText": "",
+      "newText": "        content: \"exports-and-rules\",\n"
+    },
+    {
+      "start": 4637064,
+      "oldText": "      hydrateRuntimeFromProjectSnapshot(runtime2, snapshot2);\n",
+      "newText": "      hydrateRuntimeFromProjectSnapshotIfIdle(runtime2, snapshot2);\n"
+    },
+    {
+      "start": 4641384,
+      "oldText": "",
+      "newText": "    loadBody: loadProjectSnapshot,\n"
+    },
+    {
+      "start": 4706698,
+      "oldText": "",
+      "newText": "// dist/clients/mcp/host-shim.js\nfunction createMcpHost(overrides, projectRoot = process.cwd()) {\n  const config = loadPiLensGlobalConfig();\n  const projectConfig = loadPiLensProjectConfig(projectRoot);\n  return {\n    getFlag(name2, filePath) {\n      if (overrides && Object.hasOwn(overrides, name2)) {\n        return overrides[name2];\n      }\n      return resolvePiLensFlag(name2, void 0, config, projectConfig, filePath, projectRoot);\n    }\n  };\n}\nvar init_host_shim = __esm({\n  \"dist/clients/mcp/host-shim.js\"() {\n    \"use strict\";\n    init_lens_config();\n    init_project_lens_config();\n  }\n});\n\n// dist/clients/mcp/analyze.js\nimport * as fs135 from \"node:fs\";\nimport * as path198 from \"node:path\";\nfunction positiveEnv(name2, fallback) {\n  const parsed = Number.parseInt(process.env[name2] ?? \"\", 10);\n  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;\n}\nfunction idleEvictMs() {\n  return positiveEnv(\"PI_LENS_WORD_INDEX_IDLE_EVICT_MS\", DEFAULT_WORD_INDEX_IDLE_EVICT_MS);\n}\nfunction maxWarmRoots() {\n  return positiveEnv(\"PI_LENS_WORD_INDEX_MAX_WARM_ROOTS\", DEFAULT_WORD_INDEX_MAX_WARM_ROOTS);\n}\nfunction clearWarmWordIndexTimer(entry) {\n  if (entry.timer)\n    clearTimeout(entry.timer);\n  entry.timer = void 0;\n}\nfunction evictWarmWordIndex(key4, entry, reason) {\n  if (entry.leases > 0 || warmWordIndexes.get(key4) !== entry)\n    return false;\n  clearWarmWordIndexTimer(entry);\n  warmWordIndexes.delete(key4);\n  logWordIndex({\n    phase: \"warm_cache_evicted\",\n    cwd: key4,\n    trigger: \"mcp\",\n    reason\n  });\n  return true;\n}\nfunction scheduleWarmWordIndexIdleEviction(key4, entry) {\n  clearWarmWordIndexTimer(entry);\n  const generation = ++entry.generation;\n  const timer = setTimeout(() => {\n    entry.timer = void 0;\n    if (warmWordIndexes.get(key4) !== entry || entry.generation !== generation)\n      return;\n    if (!evictWarmWordIndex(key4, entry, \"idle\"))\n      scheduleWarmWordIndexIdleEviction(key4, entry);\n  }, idleEvictMs());\n  timer.unref?.();\n  entry.timer = timer;\n}\nfunction enforceWarmWordIndexLruCap() {\n  while (warmWordIndexes.size > maxWarmRoots()) {\n    const victim = [...warmWordIndexes.entries()].filter(([, entry]) => entry.leases === 0).sort(([, a], [, b]) => a.lastUsedAt - b.lastUsedAt)[0];\n    if (!victim || !evictWarmWordIndex(victim[0], victim[1], \"lru\"))\n      return;\n  }\n}\nfunction usableWarmWordIndex(index) {\n  return index?.forward ? index : void 0;\n}\nfunction acquireWarmWordIndex(cwd) {\n  const key4 = path198.resolve(cwd);\n  let entry = warmWordIndexes.get(key4);\n  if (!entry) {\n    const snapshot = loadProjectSnapshot(key4);\n    const index = usableWarmWordIndex(deserializeWordIndex(snapshot?.wordIndex) ?? void 0);\n    entry = {\n      index,\n      timer: void 0,\n      leases: 0,\n      lastUsedAt: Date.now(),\n      generation: 0\n    };\n    warmWordIndexes.set(key4, entry);\n  }\n  entry.leases++;\n  entry.lastUsedAt = Date.now();\n  scheduleWarmWordIndexIdleEviction(key4, entry);\n  enforceWarmWordIndexLruCap();\n  let released = false;\n  return {\n    index: entry.index,\n    release() {\n      if (released)\n        return;\n      released = true;\n      entry.leases = Math.max(0, entry.leases - 1);\n      entry.lastUsedAt = Date.now();\n      if (warmWordIndexes.get(key4) === entry) {\n        scheduleWarmWordIndexIdleEviction(key4, entry);\n        enforceWarmWordIndexLruCap();\n      }\n    }\n  };\n}\nfunction adoptPublishedWarmWordIndex(cwd, published, trigger) {\n  const index = usableWarmWordIndex(published);\n  if (!index)\n    return;\n  const key4 = path198.resolve(cwd);\n  const entry = warmWordIndexes.get(key4);\n  if (!entry || entry.index)\n    return;\n  entry.index = index;\n  entry.lastUsedAt = Date.now();\n  scheduleWarmWordIndexIdleEviction(key4, entry);\n  logWordIndex({\n    phase: \"warm_cache_adopted\",\n    cwd: key4,\n    trigger,\n    indexedFileCount: index.docCount,\n    tokens: index.postings.size\n  });\n}\nfunction summarizeWarningTiers(warnings) {\n  let advisories = 0;\n  for (const w of warnings) {\n    if (classifyDiagnosticTier(w) === \"advisory\")\n      advisories++;\n  }\n  return { warnings: warnings.length - advisories, advisories };\n}\nfunction listDiagnosticsForCounts(result) {\n  const listedIds = new Set(result.diagnostics.map((d) => d.id));\n  return [\n    ...result.diagnostics,\n    ...result.warnings.filter((w) => !listedIds.has(w.id))\n  ];\n}\nfunction toMcpDiagnostic(diagnostic) {\n  return {\n    line: diagnostic.line,\n    column: diagnostic.column,\n    severity: diagnostic.severity,\n    semantic: diagnostic.semantic,\n    tool: diagnostic.tool,\n    rule: diagnostic.rule,\n    code: diagnostic.code,\n    message: diagnostic.message,\n    fixable: diagnostic.fixable,\n    fixSuggestion: diagnostic.fixSuggestion\n  };\n}\nasync function warmLspForFile(absPath, host) {\n  if (host.getFlag(\"no-lsp\"))\n    return;\n  const lspService = getLSPService();\n  if (!lspService.supportsLSP(absPath))\n    return;\n  let content;\n  try {\n    content = fs135.readFileSync(absPath, \"utf8\");\n  } catch {\n    return;\n  }\n  try {\n    await lspService.touchFile(absPath, content, {\n      diagnostics: \"document\",\n      collectDiagnostics: true,\n      clientScope: \"primary\",\n      maxClientWaitMs: WARMUP_CLIENT_WAIT_MS,\n      maxDiagnosticsWaitMs: WARMUP_DIAGNOSTICS_WAIT_MS,\n      source: \"mcp-warmup\",\n      // #3405: every caller of `analyzeFile` (the MCP hosts' post-write hooks,\n      // warm and cold, and `pilens_analyze`) asks about the bytes on disk now,\n      // and this is the analysis's first push of them, so it is the save. A\n      // save-triggered server (Expert compiles on didSave and on nothing else)\n      // answers an MCP host's edit only because of it.\n      saved: true\n    });\n  } catch {\n  }\n}\nasync function analyzeFile(filePath, cwd, options = {}) {\n  const absPath = path198.isAbsolute(filePath) ? filePath : path198.resolve(cwd, filePath);\n  const host = createMcpHost({ \"no-delta\": true, ...options.flags }, cwd);\n  const observedAt = Date.now();\n  const analysisRootMode = resolveAnalysisRoot(absPath, cwd);\n  if (options.warmLsp !== false) {\n    await warmLspForFile(absPath, host);\n  }\n  const start = Date.now();\n  const result = await dispatchLintWithResult(absPath, cwd, host, void 0, void 0, {\n    blockingOnly: options.blockingOnly ?? false,\n    analysisRootMode,\n    // #3791: this is a pull surface. Each call is an independent question,\n    // so the synthetic coverage notice must come back on every call rather\n    // than being latched once per session by the dispatcher \u2014 otherwise a\n    // second pull of an unanalysable file reads as a false clean. The pi\n    // push surface keeps its once-per-session latch (the default).\n    dedupeCoverageNotice: false\n  });\n  const durationMs = Date.now() - start;\n  if (options.record !== false) {\n    recordDiagnostics(normalizeMapKey(absPath), result.diagnostics, void 0, observedAt);\n    if (result.diagnostics.length > 0) {\n      getDiagnosticTracker().trackShown(result.diagnostics);\n    }\n  }\n  if (options.registerTurnState) {\n    try {\n      const lineCount3 = fs135.readFileSync(absPath, \"utf8\").split(\"\\n\").length;\n      new CacheManager().addModifiedRange(absPath, { start: 1, end: lineCount3 }, true, cwd, options.ownerId ?? MCP_TURN_STATE_OWNER_ID, \"mcp\");\n    } catch {\n    }\n  }\n  if (options.updateGraph && !result.hasBlockers) {\n    const fileKind = detectFileKind(absPath);\n    if (fileKind && CASCADE_GRAPH_KINDS.has(fileKind)) {\n      try {\n        await buildOrUpdateGraph2(cwd, [absPath], warmGraphFacts);\n      } catch {\n      }\n    }\n    const warmLease = acquireWarmWordIndex(cwd);\n    const warmIndex = warmLease.index;\n    try {\n      if (warmIndex) {\n        try {\n          const content = fs135.readFileSync(absPath, \"utf8\");\n          if (!canWriteAnalysisRoot(analysisRootMode)) {\n            emitBounded(\"adopted_root_writer_skipped\", `${absPath}:word-index`, {\n              filePath: absPath,\n              durationMs: 0,\n              metadata: { writer: \"word-index\" }\n            }, {\n              ledgerKind: \"adopted-root-writer-skipped\",\n              risingEdgePer: \"identity\"\n            });\n          } else {\n            const byteLength = Buffer.byteLength(content, \"utf-8\");\n            if (byteLength > WORD_INDEX_MAX_BYTES) {\n              await removeWordIndexDocumentAsync(warmIndex, absPath);\n            } else {\n              await updateWordIndexDocumentForEdit(warmIndex, {\n                path: absPath,\n                content\n              });\n            }\n            scheduleWordIndexPersist(cwd, warmIndex);\n          }\n        } catch {\n        }\n      }\n    } finally {\n      warmLease.release();\n    }\n  }\n  const latencyReport = result.latencyReport;\n  const listedDiagnostics = listDiagnosticsForCounts(result);\n  const lspRunner2 = latencyReport?.runners.find((runner) => runner.runnerId === \"lsp\");\n  const lsp = lspRunner2 ? {\n    // `deferred` means the runner entered the LSP path but its auxiliary\n    // coverage is delivered later, so it still counts as ran here. The\n    // status remains available to surfaces that need the coverage detail.\n    ran: lspRunner2.status !== \"skipped\" && lspRunner2.status !== \"when_skipped\" && lspRunner2.status !== \"test_file_skipped\",\n    status: lspRunner2.status,\n    ...lspRunner2.failureKind !== void 0 && {\n      failureKind: lspRunner2.failureKind\n    },\n    diagnosticCount: lspRunner2.diagnosticCount,\n    durationMs: lspRunner2.durationMs\n  } : void 0;\n  return {\n    filePath: absPath,\n    cwd,\n    fileKind: latencyReport?.fileKind,\n    durationMs,\n    hasBlockers: result.hasBlockers,\n    counts: {\n      diagnostics: listedDiagnostics.length,\n      blockers: result.blockers.length,\n      // #2420: `result.warnings` is the dispatch warnings bucket\n      // (`semantic:\"warning\"|\"none\"`), which still carries `hint`/`info`-tier\n      // findings folded in by the runner's severity\u2192semantic map. Project\n      // them out through the shared tier policy so the model sees real\n      // warnings and advisories separately.\n      ...summarizeWarningTiers(result.warnings),\n      fixed: result.fixed.length\n    },\n    lsp,\n    diagnostics: listedDiagnostics.map(toMcpDiagnostic),\n    latency: latencyReport ? {\n      totalDurationMs: latencyReport.totalDurationMs,\n      stoppedEarly: latencyReport.stoppedEarly,\n      runners: latencyReport.runners.map((runner) => ({\n        runnerId: runner.runnerId,\n        durationMs: runner.durationMs,\n        status: runner.status,\n        diagnosticCount: runner.diagnosticCount,\n        failureKind: runner.failureKind\n      }))\n    } : void 0\n  };\n}\nvar warmGraphFacts, DEFAULT_WORD_INDEX_IDLE_EVICT_MS, DEFAULT_WORD_INDEX_MAX_WARM_ROOTS, warmWordIndexes, WARMUP_CLIENT_WAIT_MS, WARMUP_DIAGNOSTICS_WAIT_MS;\nvar init_analyze = __esm({\n  \"dist/clients/mcp/analyze.js\"() {\n    \"use strict\";\n    init_analysis_root();\n    init_cache_manager();\n    init_integration();\n    init_bounded_telemetry();\n    init_fact_store();\n    init_file_kinds();\n    init_diagnostic_tracker();\n    init_capabilities();\n    init_path_keyed_map();\n    init_path_utils();\n    init_project_snapshot();\n    init_service();\n    init_widget_state();\n    init_word_index();\n    init_word_index_logger();\n    init_host_shim();\n    warmGraphFacts = new FactStore(\"mcp-analyze\");\n    DEFAULT_WORD_INDEX_IDLE_EVICT_MS = 20 * 6e4;\n    DEFAULT_WORD_INDEX_MAX_WARM_ROOTS = 8;\n    warmWordIndexes = new PathKeyedMap(normalizeMapKey);\n    setWordIndexPublishedListener(adoptPublishedWarmWordIndex);\n    WARMUP_CLIENT_WAIT_MS = 1e4;\n    WARMUP_DIAGNOSTICS_WAIT_MS = 6e3;\n  }\n});\n\n"
+    },
+    {
+      "start": 4706958,
+      "oldText": "import * as fs135 from \"node:fs\";\nimport * as path199 from \"node:path\";\n",
+      "newText": "import * as fs136 from \"node:fs\";\nimport * as path200 from \"node:path\";\n"
+    },
+    {
+      "start": 4707292,
+      "oldText": "    if (fs135.existsSync(dir)) {\n",
+      "newText": "    if (fs136.existsSync(dir)) {\n"
+    },
+    {
+      "start": 4707602,
+      "oldText": "  const historyPath = path199.join(getProjectDataDir(process.cwd()), HISTORY_FILE);\n  if (!fs135.existsSync(historyPath)) {\n",
+      "newText": "  const historyPath = path200.join(getProjectDataDir(process.cwd()), HISTORY_FILE);\n  if (!fs136.existsSync(historyPath)) {\n"
+    },
+    {
+      "start": 4707854,
+      "oldText": "    const content = fs135.readFileSync(historyPath, \"utf-8\");\n",
+      "newText": "    const content = fs136.readFileSync(historyPath, \"utf-8\");\n"
+    },
+    {
+      "start": 4708169,
+      "oldText": "  if (!fs135.existsSync(historyDir)) {\n    fs135.mkdirSync(historyDir, { recursive: true });\n",
+      "newText": "  if (!fs136.existsSync(historyDir)) {\n    fs136.mkdirSync(historyDir, { recursive: true });\n"
+    },
+    {
+      "start": 4708333,
+      "oldText": "  const historyPath = path199.join(historyDir, \"metrics-history.json\");\n",
+      "newText": "  const historyPath = path200.join(historyDir, \"metrics-history.json\");\n"
+    },
+    {
+      "start": 4708584,
+      "oldText": "  const relativePath = path199.relative(process.cwd(), filePath);\n  const commit = getCurrentCommit(path199.dirname(filePath));\n",
+      "newText": "  const relativePath = path200.relative(process.cwd(), filePath);\n  const commit = getCurrentCommit(path200.dirname(filePath));\n"
+    },
+    {
+      "start": 4710469,
+      "oldText": "    const relativePath = path199.relative(process.cwd(), file.filePath);\n    const commit = getCurrentCommit(path199.dirname(file.filePath));\n",
+      "newText": "    const relativePath = path200.relative(process.cwd(), file.filePath);\n    const commit = getCurrentCommit(path200.dirname(file.filePath));\n"
+    },
+    {
+      "start": 4716685,
+      "oldText": "import * as path201 from \"node:path\";\n",
+      "newText": "import * as path202 from \"node:path\";\n"
+    },
+    {
+      "start": 4716842,
+      "oldText": "  const filePath = frame?.filename ? path201.isAbsolute(frame.filename) ? frame.filename : path201.resolve(cwd, frame.filename) : cwd;\n",
+      "newText": "  const filePath = frame?.filename ? path202.isAbsolute(frame.filename) ? frame.filename : path202.resolve(cwd, frame.filename) : cwd;\n"
+    },
+    {
+      "start": 4719961,
+      "oldText": "import * as path202 from \"node:path\";\n",
+      "newText": "import * as path203 from \"node:path\";\n"
+    },
+    {
+      "start": 4720290,
+      "oldText": "    filePath: path202.isAbsolute(finding.file) ? finding.file : path202.resolve(cwd, finding.file),\n",
+      "newText": "    filePath: path203.isAbsolute(finding.file) ? finding.file : path203.resolve(cwd, finding.file),\n"
+    },
+    {
+      "start": 4721133,
+      "oldText": "import * as path203 from \"node:path\";\n",
+      "newText": "import * as path204 from \"node:path\";\n"
+    },
+    {
+      "start": 4721228,
+      "oldText": "  const filePath = finding.target ? path203.isAbsolute(finding.target) ? finding.target : path203.resolve(cwd, finding.target) : cwd;\n",
+      "newText": "  const filePath = finding.target ? path204.isAbsolute(finding.target) ? finding.target : path204.resolve(cwd, finding.target) : cwd;\n"
+    },
+    {
+      "start": 4721936,
+      "oldText": "    filePath: path203.isAbsolute(finding.file) ? finding.file : path203.resolve(cwd, finding.file),\n",
+      "newText": "    filePath: path204.isAbsolute(finding.file) ? finding.file : path204.resolve(cwd, finding.file),\n"
+    },
+    {
+      "start": 4730290,
+      "oldText": "import { resolve as resolve131 } from \"node:path\";\n",
+      "newText": "import { resolve as resolve132 } from \"node:path\";\n"
+    },
+    {
+      "start": 4730641,
+      "oldText": "    const owner = resolveLinkedWorktreeOwner(session, resolve131(sessionCwd, file));\n",
+      "newText": "    const owner = resolveLinkedWorktreeOwner(session, resolve132(sessionCwd, file));\n"
+    },
+    {
+      "start": 4731424,
+      "oldText": "import * as fs136 from \"node:fs\";\nimport * as path204 from \"node:path\";\n",
+      "newText": "import * as fs137 from \"node:fs\";\nimport * as path205 from \"node:path\";\n"
+    },
+    {
+      "start": 4731533,
+      "oldText": "  return path204.join(getProjectDataDir(cwd), \"cache\", fileName);\n",
+      "newText": "  return path205.join(getProjectDataDir(cwd), \"cache\", fileName);\n"
+    },
+    {
+      "start": 4732115,
+      "oldText": "  fs136.mkdirSync(path204.dirname(filePath), { recursive: true });\n",
+      "newText": "  fs137.mkdirSync(path205.dirname(filePath), { recursive: true });\n"
+    },
+    {
+      "start": 4732753,
+      "oldText": "  fs136.mkdirSync(path204.dirname(filePath), { recursive: true });\n",
+      "newText": "  fs137.mkdirSync(path205.dirname(filePath), { recursive: true });\n"
+    },
+    {
+      "start": 4733291,
+      "oldText": "      stat6 = fs136.statSync(filePath);\n",
+      "newText": "      stat6 = fs137.statSync(filePath);\n"
+    },
+    {
+      "start": 4733555,
+      "oldText": "          stale = hashDiagnosticContent(fs136.readFileSync(filePath, \"utf-8\")) !== fingerprint2.contentHash;\n",
+      "newText": "          stale = hashDiagnosticContent(fs137.readFileSync(filePath, \"utf-8\")) !== fingerprint2.contentHash;\n"
+    },
+    {
+      "start": 4734851,
+      "oldText": "import * as path205 from \"node:path\";\n",
+      "newText": "import * as path206 from \"node:path\";\n"
+    },
+    {
+      "start": 4735416,
+      "oldText": "    filePath: issue.file ? path205.isAbsolute(issue.file) ? issue.file : path205.resolve(cwd, issue.file) : cwd,\n",
+      "newText": "    filePath: issue.file ? path206.isAbsolute(issue.file) ? issue.file : path206.resolve(cwd, issue.file) : cwd,\n"
+    },
+    {
+      "start": 4736334,
+      "oldText": "import * as path206 from \"node:path\";\n",
+      "newText": "import * as path207 from \"node:path\";\n"
+    },
+    {
+      "start": 4736444,
+      "oldText": "  return path206.isAbsolute(issue.file) ? issue.file : path206.resolve(cwd, issue.file);\n",
+      "newText": "  return path207.isAbsolute(issue.file) ? issue.file : path207.resolve(cwd, issue.file);\n"
+    },
+    {
+      "start": 4740235,
+      "oldText": "import * as fs137 from \"node:fs\";\n",
+      "newText": "import * as fs138 from \"node:fs\";\n"
+    },
+    {
+      "start": 4740769,
+      "oldText": "      mtimeMs = fs137.statSync(entry.filePath).mtimeMs;\n",
+      "newText": "      mtimeMs = fs138.statSync(entry.filePath).mtimeMs;\n"
+    },
+    {
+      "start": 4742032,
+      "oldText": "      content = fs137.readFileSync(entry.filePath, \"utf-8\");\n",
+      "newText": "      content = fs138.readFileSync(entry.filePath, \"utf-8\");\n"
+    },
+    {
+      "start": 4745909,
+      "oldText": "import * as fs138 from \"node:fs\";\nimport * as path207 from \"node:path\";\n",
+      "newText": "import * as fs139 from \"node:fs\";\nimport * as path208 from \"node:path\";\n"
+    },
+    {
+      "start": 4746029,
+      "oldText": "    return fs138.readFileSync(filePath, \"utf-8\");\n",
+      "newText": "    return fs139.readFileSync(filePath, \"utf-8\");\n"
+    },
+    {
+      "start": 4746807,
+      "oldText": "    const owner = path207.resolve(cwd, diagnostic.filePath);\n",
+      "newText": "    const owner = path208.resolve(cwd, diagnostic.filePath);\n"
+    },
+    {
+      "start": 4752402,
+      "oldText": "import * as path208 from \"node:path\";\n",
+      "newText": "import * as path209 from \"node:path\";\n"
+    },
+    {
+      "start": 4752484,
+      "oldText": "  return path208.isAbsolute(filePath) ? filePath : path208.resolve(cwd, filePath);\n",
+      "newText": "  return path209.isAbsolute(filePath) ? filePath : path209.resolve(cwd, filePath);\n"
+    },
+    {
+      "start": 4754695,
+      "oldText": "import * as fs139 from \"node:fs\";\nimport * as path209 from \"node:path\";\n",
+      "newText": "import * as fs140 from \"node:fs\";\nimport * as path210 from \"node:path\";\n"
+    },
+    {
+      "start": 4783019,
+      "oldText": "        const primaryKey = normalizeMapKey(path209.resolve(run.filePath));\n",
+      "newText": "        const primaryKey = normalizeMapKey(path210.resolve(run.filePath));\n"
+    },
+    {
+      "start": 4783237,
+      "oldText": "        ].map((filePath) => normalizeMapKey(path209.resolve(filePath)));\n",
+      "newText": "        ].map((filePath) => normalizeMapKey(path210.resolve(filePath)));\n"
+    },
+    {
+      "start": 4784836,
+      "oldText": "    const absolute = path209.resolve(cwd, file);\n",
+      "newText": "    const absolute = path210.resolve(cwd, file);\n"
+    },
+    {
+      "start": 4826992,
+      "oldText": "      const absFiles = madgeFiles.map((file) => path209.resolve(cwd, file));\n",
+      "newText": "      const absFiles = madgeFiles.map((file) => path210.resolve(cwd, file));\n"
+    },
+    {
+      "start": 4827249,
+      "oldText": "        const absPath = path209.resolve(cwd, file);\n",
+      "newText": "        const absPath = path210.resolve(cwd, file);\n"
+    },
+    {
+      "start": 4828560,
+      "oldText": "        const abs = path209.isAbsolute(neighbor.filePath) ? neighbor.filePath : resolveRunnerPath(cwd, neighbor.filePath);\n",
+      "newText": "        const abs = path210.isAbsolute(neighbor.filePath) ? neighbor.filePath : resolveRunnerPath(cwd, neighbor.filePath);\n"
+    },
+    {
+      "start": 4829212,
+      "oldText": "    const entryPathKey = (entry) => normalizeMapKey(path209.resolve(cwd, entry.testFile));\n",
+      "newText": "    const entryPathKey = (entry) => normalizeMapKey(path210.resolve(cwd, entry.testFile));\n"
+    },
+    {
+      "start": 4830960,
+      "oldText": "      const testFile = path209.resolve(cwd, carried.testFile);\n",
+      "newText": "      const testFile = path210.resolve(cwd, carried.testFile);\n"
+    },
+    {
+      "start": 4832397,
+      "oldText": "      if (!config || isExcludedTestTarget(testFile, carriedRoot) || !fs139.existsSync(testFile)) {\n",
+      "newText": "      if (!config || isExcludedTestTarget(testFile, carriedRoot) || !fs140.existsSync(testFile)) {\n"
+    },
+    {
+      "start": 4835697,
+      "oldText": "        if (!fs139.existsSync(target.testFile)) {\n",
+      "newText": "        if (!fs140.existsSync(target.testFile)) {\n"
+    },
+    {
+      "start": 4846715,
+      "oldText": "          const shortFile = path209.basename(file);\n",
+      "newText": "          const shortFile = path210.basename(file);\n"
+    },
+    {
+      "start": 4869817,
+      "oldText": "              lateAuxContentValue = fs139.readFileSync(lateAuxPath, \"utf-8\");\n",
+      "newText": "              lateAuxContentValue = fs140.readFileSync(lateAuxPath, \"utf-8\");\n"
+    },
+    {
+      "start": 4878302,
+      "oldText": "  const unresolvedKeys = new Set(unresolvedBlockers.map((record6) => normalizeMapKey(path209.resolve(record6.filePath))));\n",
+      "newText": "  const unresolvedKeys = new Set(unresolvedBlockers.map((record6) => normalizeMapKey(path210.resolve(record6.filePath))));\n"
+    },
+    {
+      "start": 4880177,
+      "oldText": "    if (unresolvedKeys.has(normalizeMapKey(path209.resolve(entry.filePath))))\n",
+      "newText": "    if (unresolvedKeys.has(normalizeMapKey(path210.resolve(entry.filePath))))\n"
+    },
+    {
+      "start": 4885333,
+      "oldText": "              normalizeMapKey(path209.resolve(filePath)),\n",
+      "newText": "              normalizeMapKey(path210.resolve(filePath)),\n"
+    },
+    {
+      "start": 4885825,
+      "oldText": "      fileSeqByPath2[normalizeMapKey(path209.resolve(filePath))] = seq;\n",
+      "newText": "      fileSeqByPath2[normalizeMapKey(path210.resolve(filePath))] = seq;\n"
+    },
+    {
+      "start": 4894752,
+      "oldText": "  }\n});\n\n// dist/clients/mcp/host-shim.js\nfunction createMcpHost(overrides, projectRoot = process.cwd()) {\n  const config = loadPiLensGlobalConfig();\n  const projectConfig = loadPiLensProjectConfig(projectRoot);\n  return {\n    getFlag(name2, filePath) {\n      if (overrides && Object.hasOwn(overrides, name2)) {\n        return overrides[name2];\n      }\n      return resolvePiLensFlag(name2, void 0, config, projectConfig, filePath, projectRoot);\n    }\n  };\n}\nvar init_host_shim = __esm({\n  \"dist/clients/mcp/host-shim.js\"() {\n    \"use strict\";\n    init_lens_config();\n    init_project_lens_config();\n  }\n});\n\n// dist/clients/mcp/analyze.js\nimport * as fs142 from \"node:fs\";\nimport * as path215 from \"node:path\";\nfunction positiveEnv(name2, fallback) {\n  const parsed = Number.parseInt(process.env[name2] ?? \"\", 10);\n  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;\n}\nfunction idleEvictMs() {\n  return positiveEnv(\"PI_LENS_WORD_INDEX_IDLE_EVICT_MS\", DEFAULT_WORD_INDEX_IDLE_EVICT_MS);\n}\nfunction maxWarmRoots() {\n  return positiveEnv(\"PI_LENS_WORD_INDEX_MAX_WARM_ROOTS\", DEFAULT_WORD_INDEX_MAX_WARM_ROOTS);\n}\nfunction clearWarmWordIndexTimer(entry) {\n  if (entry.timer)\n    clearTimeout(entry.timer);\n  entry.timer = void 0;\n}\nfunction evictWarmWordIndex(key4, entry, reason) {\n  if (entry.leases > 0 || warmWordIndexes.get(key4) !== entry)\n    return false;\n  clearWarmWordIndexTimer(entry);\n  warmWordIndexes.delete(key4);\n  logWordIndex({\n    phase: \"warm_cache_evicted\",\n    cwd: key4,\n    trigger: \"mcp\",\n    reason\n  });\n  return true;\n}\nfunction scheduleWarmWordIndexIdleEviction(key4, entry) {\n  clearWarmWordIndexTimer(entry);\n  const generation = ++entry.generation;\n  const timer = setTimeout(() => {\n    entry.timer = void 0;\n    if (warmWordIndexes.get(key4) !== entry || entry.generation !== generation)\n      return;\n    if (!evictWarmWordIndex(key4, entry, \"idle\"))\n      scheduleWarmWordIndexIdleEviction(key4, entry);\n  }, idleEvictMs());\n  timer.unref?.();\n  entry.timer = timer;\n}\nfunction enforceWarmWordIndexLruCap() {\n  while (warmWordIndexes.size > maxWarmRoots()) {\n    const victim = [...warmWordIndexes.entries()].filter(([, entry]) => entry.leases === 0).sort(([, a], [, b]) => a.lastUsedAt - b.lastUsedAt)[0];\n    if (!victim || !evictWarmWordIndex(victim[0], victim[1], \"lru\"))\n      return;\n  }\n}\nfunction usableWarmWordIndex(index) {\n  return index?.forward ? index : void 0;\n}\nfunction acquireWarmWordIndex(cwd) {\n  const key4 = path215.resolve(cwd);\n  let entry = warmWordIndexes.get(key4);\n  if (!entry) {\n    const snapshot = loadProjectSnapshot(key4);\n    const index = usableWarmWordIndex(deserializeWordIndex(snapshot?.wordIndex) ?? void 0);\n    entry = {\n      index,\n      timer: void 0,\n      leases: 0,\n      lastUsedAt: Date.now(),\n      generation: 0\n    };\n    warmWordIndexes.set(key4, entry);\n  }\n  entry.leases++;\n  entry.lastUsedAt = Date.now();\n  scheduleWarmWordIndexIdleEviction(key4, entry);\n  enforceWarmWordIndexLruCap();\n  let released = false;\n  return {\n    index: entry.index,\n    release() {\n      if (released)\n        return;\n      released = true;\n      entry.leases = Math.max(0, entry.leases - 1);\n      entry.lastUsedAt = Date.now();\n      if (warmWordIndexes.get(key4) === entry) {\n        scheduleWarmWordIndexIdleEviction(key4, entry);\n        enforceWarmWordIndexLruCap();\n      }\n    }\n  };\n}\nfunction adoptPublishedWarmWordIndex(cwd, published, trigger) {\n  const index = usableWarmWordIndex(published);\n  if (!index)\n    return;\n  const key4 = path215.resolve(cwd);\n  const entry = warmWordIndexes.get(key4);\n  if (!entry || entry.index)\n    return;\n  entry.index = index;\n  entry.lastUsedAt = Date.now();\n  scheduleWarmWordIndexIdleEviction(key4, entry);\n  logWordIndex({\n    phase: \"warm_cache_adopted\",\n    cwd: key4,\n    trigger,\n    indexedFileCount: index.docCount,\n    tokens: index.postings.size\n  });\n}\nfunction summarizeWarningTiers(warnings) {\n  let advisories = 0;\n  for (const w of warnings) {\n    if (classifyDiagnosticTier(w) === \"advisory\")\n      advisories++;\n  }\n  return { warnings: warnings.length - advisories, advisories };\n}\nfunction listDiagnosticsForCounts(result) {\n  const listedIds = new Set(result.diagnostics.map((d) => d.id));\n  return [\n    ...result.diagnostics,\n    ...result.warnings.filter((w) => !listedIds.has(w.id))\n  ];\n}\nfunction toMcpDiagnostic(diagnostic) {\n  return {\n    line: diagnostic.line,\n    column: diagnostic.column,\n    severity: diagnostic.severity,\n    semantic: diagnostic.semantic,\n    tool: diagnostic.tool,\n    rule: diagnostic.rule,\n    code: diagnostic.code,\n    message: diagnostic.message,\n    fixable: diagnostic.fixable,\n    fixSuggestion: diagnostic.fixSuggestion\n  };\n}\nasync function warmLspForFile(absPath, host) {\n  if (host.getFlag(\"no-lsp\"))\n    return;\n  const lspService = getLSPService();\n  if (!lspService.supportsLSP(absPath))\n    return;\n  let content;\n  try {\n    content = fs142.readFileSync(absPath, \"utf8\");\n  } catch {\n    return;\n  }\n  try {\n    await lspService.touchFile(absPath, content, {\n      diagnostics: \"document\",\n      collectDiagnostics: true,\n      clientScope: \"primary\",\n      maxClientWaitMs: WARMUP_CLIENT_WAIT_MS,\n      maxDiagnosticsWaitMs: WARMUP_DIAGNOSTICS_WAIT_MS,\n      source: \"mcp-warmup\",\n      // #3405: every caller of `analyzeFile` (the MCP hosts' post-write hooks,\n      // warm and cold, and `pilens_analyze`) asks about the bytes on disk now,\n      // and this is the analysis's first push of them, so it is the save. A\n      // save-triggered server (Expert compiles on didSave and on nothing else)\n      // answers an MCP host's edit only because of it.\n      saved: true\n    });\n  } catch {\n  }\n}\nasync function analyzeFile(filePath, cwd, options = {}) {\n  const absPath = path215.isAbsolute(filePath) ? filePath : path215.resolve(cwd, filePath);\n  const host = createMcpHost({ \"no-delta\": true, ...options.flags }, cwd);\n  const observedAt = Date.now();\n  const analysisRootMode = resolveAnalysisRoot(absPath, cwd);\n  if (options.warmLsp !== false) {\n    await warmLspForFile(absPath, host);\n  }\n  const start = Date.now();\n  const result = await dispatchLintWithResult(absPath, cwd, host, void 0, void 0, {\n    blockingOnly: options.blockingOnly ?? false,\n    analysisRootMode,\n    // #3791: this is a pull surface. Each call is an independent question,\n    // so the synthetic coverage notice must come back on every call rather\n    // than being latched once per session by the dispatcher \u2014 otherwise a\n    // second pull of an unanalysable file reads as a false clean. The pi\n    // push surface keeps its once-per-session latch (the default).\n    dedupeCoverageNotice: false\n  });\n  const durationMs = Date.now() - start;\n  if (options.record !== false) {\n    recordDiagnostics(normalizeMapKey(absPath), result.diagnostics, void 0, observedAt);\n    if (result.diagnostics.length > 0) {\n      getDiagnosticTracker().trackShown(result.diagnostics);\n    }\n  }\n  if (options.registerTurnState) {\n    try {\n      const lineCount3 = fs142.readFileSync(absPath, \"utf8\").split(\"\\n\").length;\n      new CacheManager().addModifiedRange(absPath, { start: 1, end: lineCount3 }, true, cwd, options.ownerId ?? MCP_TURN_STATE_OWNER_ID, \"mcp\");\n    } catch {\n    }\n  }\n  if (options.updateGraph && !result.hasBlockers) {\n    const fileKind = detectFileKind(absPath);\n    if (fileKind && CASCADE_GRAPH_KINDS.has(fileKind)) {\n      try {\n        await buildOrUpdateGraph2(cwd, [absPath], warmGraphFacts);\n      } catch {\n      }\n    }\n    const warmLease = acquireWarmWordIndex(cwd);\n    const warmIndex = warmLease.index;\n    try {\n      if (warmIndex) {\n        try {\n          const content = fs142.readFileSync(absPath, \"utf8\");\n          if (!canWriteAnalysisRoot(analysisRootMode)) {\n            emitBounded(\"adopted_root_writer_skipped\", `${absPath}:word-index`, {\n              filePath: absPath,\n              durationMs: 0,\n              metadata: { writer: \"word-index\" }\n            }, {\n              ledgerKind: \"adopted-root-writer-skipped\",\n              risingEdgePer: \"identity\"\n            });\n          } else {\n            const byteLength = Buffer.byteLength(content, \"utf-8\");\n            if (byteLength > WORD_INDEX_MAX_BYTES) {\n              await removeWordIndexDocumentAsync(warmIndex, absPath);\n            } else {\n              await updateWordIndexDocumentForEdit(warmIndex, {\n                path: absPath,\n                content\n              });\n            }\n            scheduleWordIndexPersist(cwd, warmIndex);\n          }\n        } catch {\n        }\n      }\n    } finally {\n      warmLease.release();\n    }\n  }\n  const latencyReport = result.latencyReport;\n  const listedDiagnostics = listDiagnosticsForCounts(result);\n  const lspRunner2 = latencyReport?.runners.find((runner) => runner.runnerId === \"lsp\");\n  const lsp = lspRunner2 ? {\n    // `deferred` means the runner entered the LSP path but its auxiliary\n    // coverage is delivered later, so it still counts as ran here. The\n    // status remains available to surfaces that need the coverage detail.\n    ran: lspRunner2.status !== \"skipped\" && lspRunner2.status !== \"when_skipped\" && lspRunner2.status !== \"test_file_skipped\",\n    status: lspRunner2.status,\n    ...lspRunner2.failureKind !== void 0 && {\n      failureKind: lspRunner2.failureKind\n    },\n    diagnosticCount: lspRunner2.diagnosticCount,\n    durationMs: lspRunner2.durationMs\n  } : void 0;\n  return {\n    filePath: absPath,\n    cwd,\n    fileKind: latencyReport?.fileKind,\n    durationMs,\n    hasBlockers: result.hasBlockers,\n    counts: {\n      diagnostics: listedDiagnostics.length,\n      blockers: result.blockers.length,\n      // #2420: `result.warnings` is the dispatch warnings bucket\n      // (`semantic:\"warning\"|\"none\"`), which still carries `hint`/`info`-tier\n      // findings folded in by the runner's severity\u2192semantic map. Project\n      // them out through the shared tier policy so the model sees real\n      // warnings and advisories separately.\n      ...summarizeWarningTiers(result.warnings),\n      fixed: result.fixed.length\n    },\n    lsp,\n    diagnostics: listedDiagnostics.map(toMcpDiagnostic),\n    latency: latencyReport ? {\n      totalDurationMs: latencyReport.totalDurationMs,\n      stoppedEarly: latencyReport.stoppedEarly,\n      runners: latencyReport.runners.map((runner) => ({\n        runnerId: runner.runnerId,\n        durationMs: runner.durationMs,\n        status: runner.status,\n        diagnosticCount: runner.diagnosticCount,\n        failureKind: runner.failureKind\n      }))\n    } : void 0\n  };\n}\nvar warmGraphFacts, DEFAULT_WORD_INDEX_IDLE_EVICT_MS, DEFAULT_WORD_INDEX_MAX_WARM_ROOTS, warmWordIndexes, WARMUP_CLIENT_WAIT_MS, WARMUP_DIAGNOSTICS_WAIT_MS;\nvar init_analyze = __esm({\n  \"dist/clients/mcp/analyze.js\"() {\n    \"use strict\";\n    init_analysis_root();\n    init_cache_manager();\n    init_integration();\n    init_bounded_telemetry();\n    init_fact_store();\n    init_file_kinds();\n    init_diagnostic_tracker();\n    init_capabilities();\n    init_path_keyed_map();\n    init_path_utils();\n    init_project_snapshot();\n    init_service();\n    init_widget_state();\n    init_word_index();\n    init_word_index_logger();\n    init_host_shim();\n    warmGraphFacts = new FactStore(\"mcp-analyze\");\n    DEFAULT_WORD_INDEX_IDLE_EVICT_MS = 20 * 6e4;\n    DEFAULT_WORD_INDEX_MAX_WARM_ROOTS = 8;\n    warmWordIndexes = new PathKeyedMap(normalizeMapKey);\n    setWordIndexPublishedListener(adoptPublishedWarmWordIndex);\n    WARMUP_CLIENT_WAIT_MS = 1e4;\n    WARMUP_DIAGNOSTICS_WAIT_MS = 6e3;\n",
+      "newText": ""
+    },
+    {
+      "start": 5248527,
+      "oldText": "import * as path200 from \"node:path\";\n",
+      "newText": "import * as path201 from \"node:path\";\n"
+    },
+    {
+      "start": 5269582,
+      "oldText": "import * as path198 from \"node:path\";\n",
+      "newText": "import * as path199 from \"node:path\";\n"
+    },
+    {
+      "start": 5272902,
+      "oldText": "",
+      "newText": "init_analyze();\n"
+    },
+    {
+      "start": 5299382,
+      "oldText": "    const executable = path198.win32.basename(tokens[0] ?? \"\").toLowerCase().replace(/\\.(?:cmd|exe)$/, \"\");\n",
+      "newText": "    const executable = path199.win32.basename(tokens[0] ?? \"\").toLowerCase().replace(/\\.(?:cmd|exe)$/, \"\");\n"
+    },
+    {
+      "start": 5315875,
+      "oldText": "    if (path198.resolve(file) === path198.resolve(filePath)) {\n",
+      "newText": "    if (path199.resolve(file) === path199.resolve(filePath)) {\n"
+    },
+    {
+      "start": 5320037,
+      "oldText": "",
+      "newText": "  if (!runtime2.wordIndex) {\n    const lease = acquireWarmWordIndex(runtime2.projectRoot);\n    runtime2.wordIndex = lease.index ?? null;\n    lease.release();\n    if (runtime2.wordIndex) {\n      logLatency({\n        type: \"phase\",\n        phase: \"word_index_demand_adopt\",\n        filePath: runtime2.projectRoot,\n        durationMs: 0\n      });\n    }\n  }\n"
+    },
+    {
+      "start": 5327765,
+      "oldText": "    const ownPath = path198.resolve(filePath);\n",
+      "newText": "    const ownPath = path199.resolve(filePath);\n"
+    },
+    {
+      "start": 5327885,
+      "oldText": "      ...(result.changedFiles ?? []).map((changedFile) => path198.resolve(changedFile))\n",
+      "newText": "      ...(result.changedFiles ?? []).map((changedFile) => path199.resolve(changedFile))\n"
+    },
+    {
+      "start": 5333153,
+      "oldText": "  } else if (toolCallId !== void 0 && rawFilePath && !path198.isAbsolute(rawFilePath)) {\n    const guessedPath = path198.resolve(workspaceRoot, rawFilePath);\n",
+      "newText": "  } else if (toolCallId !== void 0 && rawFilePath && !path199.isAbsolute(rawFilePath)) {\n    const guessedPath = path199.resolve(workspaceRoot, rawFilePath);\n"
+    },
+    {
+      "start": 5345618,
+      "oldText": "        const owner = ownerRootOf(file) ?? (isUnderDir(path198.resolve(file), scanRoot) ? scanRoot : workspaceRoot);\n",
+      "newText": "        const owner = ownerRootOf(file) ?? (isUnderDir(path199.resolve(file), scanRoot) ? scanRoot : workspaceRoot);\n"
+    },
+    {
+      "start": 5365476,
+      "oldText": "          const observedTurnStateCwd = path198.resolve(workspaceRoot);\n",
+      "newText": "          const observedTurnStateCwd = path199.resolve(workspaceRoot);\n"
+    },
+    {
+      "start": 5377258,
+      "oldText": "  const turnStateCwd = path198.resolve(workspaceRoot);\n",
+      "newText": "  const turnStateCwd = path199.resolve(workspaceRoot);\n"
+    },
+    {
+      "start": 5384496,
+      "oldText": "    const resolvedChanged = path198.resolve(changedFile);\n",
+      "newText": "    const resolvedChanged = path199.resolve(changedFile);\n"
+    },
+    {
+      "start": 5384891,
+      "oldText": "    if (pathsEqual(path198.resolve(turnStateCwd, changedFile), path198.resolve(filePath)))\n",
+      "newText": "    if (pathsEqual(path199.resolve(turnStateCwd, changedFile), path199.resolve(filePath)))\n"
+    },
+    {
+      "start": 5393558,
+      "oldText": "  const normalized2 = toPosix(path200.resolve(filePath)).toLowerCase();\n  const base = path200.basename(filePath).toLowerCase();\n",
+      "newText": "  const normalized2 = toPosix(path201.resolve(filePath)).toLowerCase();\n  const base = path201.basename(filePath).toLowerCase();\n"
+    },
+    {
+      "start": 5406273,
+      "oldText": "    dbg2(`lsp auto-touch skipped: ${path200.basename(filePath)} (file kind not LSP-capable)`);\n",
+      "newText": "    dbg2(`lsp auto-touch skipped: ${path201.basename(filePath)} (file kind not LSP-capable)`);\n"
+    },
+    {
+      "start": 5406426,
+      "oldText": "    dbg2(`lsp auto-touch skipped: ${path200.basename(filePath)} (internal/support artifact)`);\n",
+      "newText": "    dbg2(`lsp auto-touch skipped: ${path201.basename(filePath)} (internal/support artifact)`);\n"
+    },
+    {
+      "start": 5406722,
+      "oldText": "    dbg2(`lsp read warm skipped: ${path200.basename(filePath)} (${readSkipReason})`);\n",
+      "newText": "    dbg2(`lsp read warm skipped: ${path201.basename(filePath)} (${readSkipReason})`);\n"
+    },
+    {
+      "start": 5407169,
+      "oldText": "        dbg2(`lsp read warm started: ${path200.basename(filePath)}`);\n",
+      "newText": "        dbg2(`lsp read warm started: ${path201.basename(filePath)}`);\n"
+    },
+    {
+      "start": 5407606,
+      "oldText": "            dbg2(`lsp read warm unavailable: ${path200.basename(filePath)} (no LSP client ready)`);\n",
+      "newText": "            dbg2(`lsp read warm unavailable: ${path201.basename(filePath)} (no LSP client ready)`);\n"
+    },
+    {
+      "start": 5407782,
+      "oldText": "            dbg2(`lsp read warm completed: ${path200.basename(filePath)}`);\n",
+      "newText": "            dbg2(`lsp read warm completed: ${path201.basename(filePath)}`);\n"
+    },
+    {
+      "start": 5412107,
+      "oldText": "        dbg2(`ts expanded read: ${path200.basename(filePath)} lines ${requestedReadOffset}\\u2013${requestedReadOffset + requestedReadLimit - 1} \\u2192 ${symbolPath} (${expansion.newOffset}\\u2013${expansion.newOffset + expansion.newLimit - 1})`);\n",
+      "newText": "        dbg2(`ts expanded read: ${path201.basename(filePath)} lines ${requestedReadOffset}\\u2013${requestedReadOffset + requestedReadLimit - 1} \\u2192 ${symbolPath} (${expansion.newOffset}\\u2013${expansion.newOffset + expansion.newLimit - 1})`);\n"
+    },
+    {
+      "start": 5431106,
+      "oldText": "        if (existingFile && path200.resolve(existingFile) !== path200.resolve(filePath) && !currentFileExports?.has(name2)) {\n          dupeWarnings.push(`\\`${name2}\\` already exists in ${path200.relative(runtime2.projectRoot, existingFile)}`);\n",
+      "newText": "        if (existingFile && path201.resolve(existingFile) !== path201.resolve(filePath) && !currentFileExports?.has(name2)) {\n          dupeWarnings.push(`\\`${name2}\\` already exists in ${path201.relative(runtime2.projectRoot, existingFile)}`);\n"
+    },
+    {
+      "start": 5442666,
+      "oldText": "import * as fs141 from \"node:fs\";\n",
+      "newText": "import * as fs142 from \"node:fs\";\n"
+    },
+    {
+      "start": 5442733,
+      "oldText": "import * as path214 from \"node:path\";\n",
+      "newText": "import * as path215 from \"node:path\";\n"
+    },
+    {
+      "start": 5442888,
+      "oldText": "import * as path210 from \"node:path\";\n",
+      "newText": "import * as path211 from \"node:path\";\n"
+    },
+    {
+      "start": 5442965,
+      "oldText": "  return path210.isAbsolute(file) ? file : path210.resolve(cwd, file);\n",
+      "newText": "  return path211.isAbsolute(file) ? file : path211.resolve(cwd, file);\n"
+    },
+    {
+      "start": 5443391,
+      "oldText": "    message: `Duplicate code (${clone.lines} lines) \\u2014 also at ${path210.relative(cwd, otherFile)}:${otherLine}`,\n",
+      "newText": "    message: `Duplicate code (${clone.lines} lines) \\u2014 also at ${path211.relative(cwd, otherFile)}:${otherLine}`,\n"
+    },
+    {
+      "start": 5444008,
+      "oldText": "import * as path211 from \"node:path\";\n",
+      "newText": "import * as path212 from \"node:path\";\n"
+    },
+    {
+      "start": 5444085,
+      "oldText": "  return path211.isAbsolute(file) ? file : path211.resolve(cwd, file);\n",
+      "newText": "  return path212.isAbsolute(file) ? file : path212.resolve(cwd, file);\n"
+    },
+    {
+      "start": 5444333,
+      "oldText": "  const rendered = `${members.map((f) => path211.basename(f)).join(\" \\u2192 \")} \\u2192 ${path211.basename(members[0] ?? \"\")}`;\n",
+      "newText": "  const rendered = `${members.map((f) => path212.basename(f)).join(\" \\u2192 \")} \\u2192 ${path212.basename(members[0] ?? \"\")}`;\n"
+    },
+    {
+      "start": 5445208,
+      "oldText": "import * as path212 from \"node:path\";\n",
+      "newText": "import * as path213 from \"node:path\";\n"
+    },
+    {
+      "start": 5445726,
+      "oldText": "    filePath: path212.isAbsolute(finding.path) ? finding.path : path212.resolve(cwd, finding.path),\n",
+      "newText": "    filePath: path213.isAbsolute(finding.path) ? finding.path : path213.resolve(cwd, finding.path),\n"
+    },
+    {
+      "start": 5446467,
+      "oldText": "import * as fs140 from \"node:fs\";\nimport * as path213 from \"node:path\";\n",
+      "newText": "import * as fs141 from \"node:fs\";\nimport * as path214 from \"node:path\";\n"
+    },
+    {
+      "start": 5448686,
+      "oldText": "  const missingKeys = new Set((cache2.provenance?.files ?? []).filter((file) => !fs140.existsSync(path213.resolve(root, file.path))).map((file) => advisoryPathKey(file.path, root)));\n",
+      "newText": "  const missingKeys = new Set((cache2.provenance?.files ?? []).filter((file) => !fs141.existsSync(path214.resolve(root, file.path))).map((file) => advisoryPathKey(file.path, root)));\n"
+    },
+    {
+      "start": 5449896,
+      "oldText": "  const requestedRoot = options.analysisRoot === void 0 ? cwd : path214.resolve(cwd, options.analysisRoot);\n",
+      "newText": "  const requestedRoot = options.analysisRoot === void 0 ? cwd : path215.resolve(cwd, options.analysisRoot);\n"
+    },
+    {
+      "start": 5450105,
+      "oldText": "      if (!fs141.statSync(requestedRoot).isDirectory()) {\n",
+      "newText": "      if (!fs142.statSync(requestedRoot).isDirectory()) {\n"
+    },
+    {
+      "start": 5450218,
+      "oldText": "      analysisRoot = fs141.realpathSync(requestedRoot);\n",
+      "newText": "      analysisRoot = fs142.realpathSync(requestedRoot);\n"
+    },
+    {
+      "start": 5456181,
+      "oldText": "      const isTsProject = fs141.existsSync(path214.join(analysisRoot, \"tsconfig.json\"));\n",
+      "newText": "      const isTsProject = fs142.existsSync(path215.join(analysisRoot, \"tsconfig.json\"));\n"
+    }
+  ]
+}

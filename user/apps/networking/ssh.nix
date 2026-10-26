@@ -1,7 +1,26 @@
 { lib, pkgs, pkgs-unstable, username, ... }:
 
+let
+  version = "2026.10.4";
+  cloudflared = pkgs-unstable.cloudflared.overrideAttrs {
+    inherit version;
+    src = pkgs-unstable.fetchFromGitHub {
+      owner = "cloudflare";
+      repo = "cloudflared";
+      tag = version;
+      hash = "sha256-HuKjytbGutwjUMepozeUmeeHczm4qI7vMvS+hgLsaZ0=";
+    };
+    vendorHash = "sha256-WtGk5HE6PxAWqwvj8mAAzobuoSw+y6BqBEEB0hRQafk=";
+    ldflags = [
+      "-s"
+      "-w"
+      "-X main.Version=${version}"
+      "-X github.com/cloudflare/cloudflared/cmd/cloudflared/updater.BuiltForPackageManager=nixpkgs"
+    ];
+  };
+in
 {
-  home.packages = [ pkgs-unstable.cloudflared ];
+  home.packages = [ cloudflared ];
 
   # Serving this host over ssh needs a persistent outbound connection to the
   # Cloudflare edge — nothing dials in, so a daemon must hold it open. With no
@@ -18,7 +37,7 @@
       ConditionPathExists = "%h/.cloudflared/config.yml";
     };
     Service = {
-      ExecStart = "${pkgs-unstable.cloudflared}/bin/cloudflared tunnel run";
+      ExecStart = "${cloudflared}/bin/cloudflared tunnel run";
       Restart = "on-failure";
     };
     Install.WantedBy = [ "default.target" ];
@@ -45,7 +64,7 @@
     # cloudflared tunnel route dns <name> <ssh-name>.pixelbru.sh
     settings = {
       "*.pixelbru.sh" = {
-        ProxyCommand = "${pkgs-unstable.cloudflared}/bin/cloudflared access ssh --hostname %h";
+        ProxyCommand = "${cloudflared}/bin/cloudflared access ssh --hostname %h";
         User = username;
         IdentitiesOnly = "yes";
       };

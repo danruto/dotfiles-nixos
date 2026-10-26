@@ -8,6 +8,7 @@
   "extensions": [
     "-builtin:mcp"
   ],
+  "fullscreenExitOutput": "resume-hint",
   "hideThinkingBlock": true,
   "lastChangelogVersion": "1.4.0",
   "packages": [
@@ -22,7 +23,11 @@
     "npm:pi-btw",
     "npm:pi-interactive-shell",
     "npm:pi-intercom",
-    "npm:pi-lens",
+    {
+      "source": "npm:pi-lens@4.4.5",
+      "extensions": []
+    },
+    "../../dotfiles-nixos/user/apps/ai/configs/pi-lens-patched.ts",
     "npm:pi-markdown-preview",
     "npm:pi-mcp-adapter",
     "npm:pi-prompt-template-model",

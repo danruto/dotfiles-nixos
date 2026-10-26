@@ -1,0 +1,459 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index c63c7f4..f085beb 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -1529,6 +1529,9 @@ file-scoped worklist and receives no project-wide scanner output.
+ 
+ ### Caches, stores, and project intelligence
+ 
++- Quick startup restores only export and rule metadata. Symbol queries and
++  mutation dispatch share the on-demand word index; eager warmup requires an
++  explicit `PI_LENS_WARMUP_DELAY_MS`.
+ - Behavior-gating durable stores use `clients/durable-store.ts`: lock, re-read,
+   merge the caller delta, atomically publish, refresh coupled mirrors before
+   releasing the lock. Best-effort derived caches declare their loss policy.
+diff --git a/clients/project-snapshot.ts b/clients/project-snapshot.ts
+index 252dc72..b8a1c75 100644
+--- a/clients/project-snapshot.ts
++++ b/clients/project-snapshot.ts
+@@ -191,12 +191,17 @@ function readStoredSeq(stored: {
+ 	return typeof stored.seq === "number" ? { seq: stored.seq } : null;
+ }
+ 
+-export function isProjectSnapshotFresh(
+-	snapshot: ProjectSnapshot | null | undefined,
++export function isProjectSnapshotFresh<
++	T extends Pick<
++		ProjectSnapshot,
++		"version" | "seq" | "incomplete" | "logEntries"
++	>,
++>(
++	snapshot: T | null | undefined,
+ 	currentProjectSeq: number,
+ 	/** `ProjectSequenceIndex.unlockedThrough` of the log read (#3511). */
+ 	unlockedThrough = 0,
+-): snapshot is ProjectSnapshot {
++): snapshot is T {
+ 	return (
+ 		!!snapshot &&
+ 		snapshot.version === PROJECT_SNAPSHOT_VERSION &&
+@@ -839,6 +844,7 @@ function readSnapshotExportsAndRulesBody(
+ 	gz: boolean,
+ ): ProjectSnapshotExportsAndRules | null {
+ 	try {
++		_snapshotBodyReadCountForTests++;
+ 		const json = gz
+ 			? gunzipSync(fs.readFileSync(bodyPath)).toString("utf-8")
+ 			: fs.readFileSync(bodyPath, "utf-8");
+diff --git a/clients/runtime-session.ts b/clients/runtime-session.ts
+index 0c1c6ec..d3c83d0 100644
+--- a/clients/runtime-session.ts
++++ b/clients/runtime-session.ts
+@@ -484,12 +484,15 @@ function retroactivelyHydrateAfterDeferredSequence(args: {
+ 	};
+ }
+ 
+-function loadSnapshotBodyUnlessStale(args: {
++function loadSnapshotBodyUnlessStale<
++	T extends ProjectSnapshotExportsAndRules,
++>(args: {
++	loadBody: (root: string) => T | null;
+ 	root: string;
+ 	currentProjectSeq: number;
+ 	unlockedThrough: number;
+ 	dbg: (msg: string) => void;
+-}): { snapshot: ProjectSnapshot | null; skippedStale: boolean } {
++}): { snapshot: T | null; skippedStale: boolean } {
+ 	const meta = readProjectSnapshotMeta(args.root);
+ 	if (
+ 		meta &&
+@@ -505,13 +508,13 @@ function loadSnapshotBodyUnlessStale(args: {
+ 		return { snapshot: null, skippedStale: true };
+ 	}
+ 	return {
+-		snapshot: loadProjectSnapshot(args.root),
++		snapshot: args.loadBody(args.root),
+ 		skippedStale: false,
+ 	};
+ }
+ 
+ function describeSnapshotMiss(
+-	snapshot: ProjectSnapshot | null,
++	snapshot: ProjectSnapshotExportsAndRules | null,
+ 	currentProjectSeq: number,
+ 	args: {
+ 		skippedStale: boolean;
+@@ -540,7 +543,7 @@ function logProjectSnapshotProbe(args: {
+ 	root: string;
+ 	currentProjectSeq: number;
+ 	unlockedThrough: number;
+-	snapshot: ProjectSnapshot | null;
++	snapshot: (ProjectSnapshotExportsAndRules & Partial<ProjectSnapshot>) | null;
+ 	missReason: string;
+ }): void {
+ 	args.dbg(
+@@ -2391,14 +2394,9 @@ export async function handleSessionStart(
+ 	// project, during which keystrokes are dropped or batched.
+ 	//
+ 	// Strategy:
+-	//   - Force the very first invocation to "quick" mode, which exits
+-	//     after a minimal runtime reset and snapshot hydration.
+-	//   - 2 seconds later, schedule a background warmup that walks the
+-	//     project asynchronously (yielding every 100 entries) and
+-	//     populates the in-process memo caches
+-	//     (startupScanContextCache + languageProfileCache).
+-	//   - The user's first /new (or any subsequent session_start) sees
+-	//     a cache hit on both walks and finishes the full path in <50ms.
++	//   - Start in quick mode and restore only exports and rule metadata.
++	//   - Leave the word index cold until a query or mutation needs it.
++	//   - Run optional background warmup only when its delay is explicit.
+ 	//
+ 	// Opt-out: PI_LENS_COLD_START_QUICK=0 disables this behaviour.
+ 	// Override: PI_LENS_STARTUP_MODE explicitly set wins (we honour it).
+@@ -2406,7 +2404,7 @@ export async function handleSessionStart(
+ 	//   no TUI keystroke latency to protect) skip the quick-mode heuristic
+ 	//   entirely — but only when PI_LENS_STARTUP_MODE is unset in the env
+ 	//   (an explicit env var still takes highest precedence).
+-	// Tunable: PI_LENS_WARMUP_DELAY_MS adjusts the warmup delay.
++	// PI_LENS_WARMUP_DELAY_MS opts into eager warmup with the chosen delay.
+ 	let startupMode = resolveStartupMode(deps.projectConfig, deps.globalConfig);
+ 	// SAFETY: these two flags are process-lifetime state pi-lens stashes on
+ 	// `globalThis` so a second extension instance in the same process sees the
+@@ -2455,11 +2453,12 @@ export async function handleSessionStart(
+ 	// the LSP-prewarm children / language-profile source walk it launches
+ 	// outlive settle with no session_shutdown teardown, holding the process
+ 	// open (the #1097/#1110/#1122-hyp-A class). So skip warmup entirely in
+-	// print mode; interactive first-sessions (not print) still warm.
++	// print mode; interactive sessions warm only when explicitly requested.
+ 	if (
+ 		startupMode === "quick" &&
+ 		!isPrintMode() &&
+ 		process.env.PI_LENS_COLD_START_QUICK !== "0" &&
++		process.env.PI_LENS_WARMUP_DELAY_MS !== undefined &&
+ 		!processGlobals.__piLensWarmupScheduled
+ 	) {
+ 		processGlobals.__piLensWarmupScheduled = true;
+@@ -2933,6 +2932,7 @@ export async function handleSessionStart(
+ 			nodeFs.existsSync(snapshotPath) ||
+ 			nodeFs.existsSync(getProjectSnapshotLegacyPath(snapshotRoot));
+ 		const snapshotGate = loadSnapshotBodyUnlessStale({
++			loadBody: loadProjectSnapshotExportsAndRules,
+ 			root: snapshotRoot,
+ 			currentProjectSeq: freshnessSeq,
+ 			unlockedThrough: latestSeq.unlockedThrough ?? 0,
+@@ -2959,6 +2959,7 @@ export async function handleSessionStart(
+ 				bytes: snapshotBytes,
+ 				fresh: snapshotFresh,
+ 				seq: snapshot?.seq ?? null,
++				content: "exports-and-rules",
+ 				reason: snapshotFresh ? undefined : snapshotMissReason,
+ 				...(snapshotGate.skippedStale ? { skippedStale: true } : {}),
+ 				...(timedOut ? { sequenceUnknown: true } : {}),
+@@ -2973,7 +2974,7 @@ export async function handleSessionStart(
+ 			missReason: snapshotMissReason,
+ 		});
+ 		if (snapshotFresh) {
+-			hydrateRuntimeFromProjectSnapshot(runtime, snapshot);
++			hydrateRuntimeFromProjectSnapshotIfIdle(runtime, snapshot);
+ 		}
+ 		const quickTools: string[] = [];
+ 		if (!getFlag("no-lsp")) {
+@@ -3121,6 +3122,7 @@ export async function handleSessionStart(
+ 		nodeFs.existsSync(snapshotPath) ||
+ 		nodeFs.existsSync(getProjectSnapshotLegacyPath(snapshotRoot));
+ 	const snapshotGate = loadSnapshotBodyUnlessStale({
++		loadBody: loadProjectSnapshot,
+ 		root: snapshotRoot,
+ 		currentProjectSeq: freshnessSeq,
+ 		unlockedThrough: latestSeq.unlockedThrough ?? 0,
+diff --git a/clients/runtime-tool-result.ts b/clients/runtime-tool-result.ts
+index c9b9356..d57d0aa 100644
+--- a/clients/runtime-tool-result.ts
++++ b/clients/runtime-tool-result.ts
+@@ -76,6 +76,7 @@ import {
+ import { PathKeyedMap } from "./path-keyed-map.js";
+ import { resolveLanguageRootForFile } from "./language-profile.js";
+ import { logLatency } from "./latency-logger.js";
++import { acquireWarmWordIndex } from "./mcp/analyze.js";
+ import {
+ 	classifyMutatingTool,
+ 	isBashDerivedReplay,
+@@ -1589,6 +1590,19 @@ async function dispatchPipelineAnalysis(args: {
+ 		runtime.fixedThisTurn,
+ 		sessionGeneration,
+ 	);
++	if (!runtime.wordIndex) {
++		const lease = acquireWarmWordIndex(runtime.projectRoot);
++		runtime.wordIndex = lease.index ?? null;
++		lease.release();
++		if (runtime.wordIndex) {
++			logLatency({
++				type: "phase",
++				phase: "word_index_demand_adopt",
++				filePath: runtime.projectRoot,
++				durationMs: 0,
++			});
++		}
++	}
+ 	const pipelinePromise = runPipeline(
+ 		{
+ 			signal: deps.signal,
+diff --git a/docs/environment-variables.md b/docs/environment-variables.md
+index 45b2ca2..86e0b2d 100644
+--- a/docs/environment-variables.md
++++ b/docs/environment-variables.md
+@@ -102,6 +102,14 @@ default `~/.pi-lens/` root to the supplied path. This is separate from
+ path. One-shot `pi --print` sessions auto-use `quick` to reduce latency
+ without changing the steady-state behaviour of an interactive session.
+ 
++### `PI_LENS_WARMUP_DELAY_MS`
++
++Opt into eager background warmup in interactive quick mode, after the specified
++delay in milliseconds. Unset by default: startup restores only export and rule
++metadata, while symbol queries and file mutations load the word index on demand.
++Language-server diagnostics remain available. First use pays the deferred cost.
++Print mode never schedules this warmup.
++
+ ### `PI_LENS_STARTUP_SCAN_VERDICT_TTL_MS`
+ 
+ How long (ms) a persisted size-skip startup-scan verdict (`too-many-source-files`
+diff --git a/docs/globalconfig.md b/docs/globalconfig.md
+index ddd58ab..0cf72d6 100644
+--- a/docs/globalconfig.md
++++ b/docs/globalconfig.md
+@@ -317,6 +317,9 @@ config and `.pi-lens.json`. Set one to `false` to skip that analyzer; pi-lens
+ records the disabled skip. `startup.mode` accepts `quick`, `full`, or
+ `minimal`, and `startup.scans.enabled: false` disables background startup scans
+ while leaving diagnostics and LSP active. `PI_LENS_STARTUP_MODE` still wins.
++Quick startup restores only export and rule metadata. Symbol queries and file
++mutations load the shared word index on demand; set `PI_LENS_WARMUP_DELAY_MS`
++explicitly to opt into eager background preparation instead.
+ 
+ - Unknown rule ids are ignored (forward-compat). Unrecognized **top-level** keys are logged once and then ignored — never fatal to the parse. The LSP namespaces a shared file legitimately carries (`servers`, `serverOverrides`, `disabledServers`, `warmFiles`) and `$schema` are tolerated silently; a user-level-only lens key placed here (e.g. `lsp`, `tests`, `delta`) is logged as "not honored at project scope"; anything else is logged as a likely typo. The raw parsed JSON is still exposed for forward-compat consumers regardless.
+ - Every toggle key in the table above must be a boolean, and its containing section must be an object. A wrong type is logged once and the key is treated as absent, so the flag falls through to its default rather than the whole file being rejected.
+diff --git a/tests/clients/runtime-session-snapshot-gate.test.ts b/tests/clients/runtime-session-snapshot-gate.test.ts
+index c054c64..b982812 100644
+--- a/tests/clients/runtime-session-snapshot-gate.test.ts
++++ b/tests/clients/runtime-session-snapshot-gate.test.ts
+@@ -28,6 +28,8 @@ import {
+ 	buildProjectSnapshotFromRuntime,
+ 	getProjectSnapshotMetaPath,
+ 	getProjectSnapshotPath,
++	getLastNarrowParseDigestForTests,
++	resetLastNarrowParseDigestForTests,
+ 	getSnapshotBodyReadCountForTests,
+ 	resetSnapshotBodyReadCountForTests,
+ 	saveProjectSnapshot,
+@@ -40,6 +42,8 @@ import {
+ 	resetSequenceFoldCountForTests,
+ } from "../../clients/project-changes.js";
+ import { RuntimeCoordinator } from "../../clients/runtime-coordinator.js";
++import { buildWordIndex } from "../../clients/word-index.js";
++import { symbolSearch } from "../../clients/lens-engine.js";
+ import { createTempFile, setupTestEnvironment } from "./test-utils.js";
+ import { installLspServiceDouble } from "../support/lsp-service-seam.js";
+ 
+@@ -281,6 +285,42 @@ describe("session_start snapshot meta-gate (#947)", () => {
+ 		}
+ 	});
+ 
++	it("leaves the persisted word index cold until a symbol search needs it", async () => {
++		// Eager postings hydration stalls startup even when no query is made.
++		const env = setupTestEnvironment("pi-lens-meta-gate-demand-");
++		process.env.PILENS_DATA_DIR = path.join(env.tmpDir, "data");
++		try {
++			const cwd = makeProject(env);
++			const file = path.join(cwd, "index.ts");
++			const seed = new RuntimeCoordinator();
++			seed.seedProjectSequence(0);
++			seed.cachedExports.set("makeThing", file);
++			seed.wordIndex = buildWordIndex([
++				{ path: file, content: "export const startupNeedle = 1;" },
++			]);
++			saveProjectSnapshot(
++				cwd,
++				buildProjectSnapshotFromRuntime({ cwd, runtime: seed }),
++			);
++			_resetProjectSnapshotParseCacheForTests();
++
++			const deps = makeDeps(cwd);
++			resetLastNarrowParseDigestForTests();
++			await handleSessionStart(deps);
++
++			expect(getLastNarrowParseDigestForTests()).toMatchObject({
++				containsHeavyKey: false,
++			});
++			expect(deps.runtime.cachedExports.get("makeThing")).toBe(file);
++			expect(deps.runtime.wordIndex).toBeNull();
++			const result = await symbolSearch("startupNeedle", cwd);
++			expect(result.available).toBe(true);
++			expect(result.results.map((hit) => hit.file)).toContain(file);
++		} finally {
++			env.cleanup();
++		}
++	});
++
+ 	it("stale meta (seq mismatch) → body NOT parsed, record carries skippedStale:true", async () => {
+ 		const env = setupTestEnvironment("pi-lens-meta-gate-stale-");
+ 		process.env.PILENS_DATA_DIR = path.join(env.tmpDir, "data");
+diff --git a/tests/clients/runtime-session-warmup-oneshot.test.ts b/tests/clients/runtime-session-warmup-oneshot.test.ts
+index 44f2580..9a53ae3 100644
+--- a/tests/clients/runtime-session-warmup-oneshot.test.ts
++++ b/tests/clients/runtime-session-warmup-oneshot.test.ts
+@@ -210,6 +210,32 @@ describe("quick-mode warmup one-shot retention (#1154)", () => {
+ 		}
+ 	});
+ 
++	it("does not arm eager warmup without an explicit delay", async () => {
++		// A background timer must not restart the expensive work a cold start deferred.
++		const env = setupTestEnvironment("pi-lens-warmup-oneshot-demand-");
++		process.env.PILENS_DATA_DIR = path.join(env.tmpDir, "data");
++		delete process.env.PI_LENS_WARMUP_DELAY_MS;
++		process.argv = prevArgv.filter((arg) => arg !== "--print" && arg !== "-p");
++		const realSetTimeout = globalThis.setTimeout;
++		const warmupTimers: NodeJS.Timeout[] = [];
++		vi.spyOn(globalThis, "setTimeout").mockImplementation(((
++			fn: () => void,
++			ms?: number,
++		) => {
++			const timer = realSetTimeout(fn, ms);
++			if (ms === 2000) warmupTimers.push(timer);
++			return timer;
++		}) as typeof setTimeout);
++		try {
++			await handleSessionStart(makeDeps(makeWarmableProject(env)));
++			expect(warmupTimers).toHaveLength(0);
++			expect(globals.__piLensWarmupScheduled).toBe(false);
++		} finally {
++			for (const timer of warmupTimers) clearTimeout(timer);
++			env.cleanup();
++		}
++	});
++
+ 	it("`.unref()`'s the warmup timer when it IS scheduled (interactive first session) — the ref'd-handle fix", async () => {
+ 		const env = setupTestEnvironment("pi-lens-warmup-oneshot-unref-");
+ 		process.env.PILENS_DATA_DIR = path.join(env.tmpDir, "data");
+diff --git a/tests/clients/runtime-tool-result-debounce.test.ts b/tests/clients/runtime-tool-result-debounce.test.ts
+index 60e9c24..c52b70f 100644
+--- a/tests/clients/runtime-tool-result-debounce.test.ts
++++ b/tests/clients/runtime-tool-result-debounce.test.ts
+@@ -8,6 +8,17 @@ import {
+ 	handleToolResult,
+ } from "../../clients/runtime-tool-result.js";
+ import { setupTestEnvironment } from "./test-utils.js";
++import {
++	buildProjectSnapshotFromRuntime,
++	saveProjectSnapshot,
++	_resetProjectSnapshotParseCacheForTests,
++} from "../../clients/project-snapshot.js";
++import {
++	buildWordIndex,
++	updateWordIndexDocument,
++} from "../../clients/word-index.js";
++import { symbolSearch } from "../../clients/lens-engine.js";
++import { _resetWarmWordIndexCacheForTests } from "../../clients/mcp/analyze.js";
+ 
+ vi.mock("../../clients/pipeline.js", () => ({
+ 	runPipeline: vi.fn(),
+@@ -67,6 +78,101 @@ describe("tool_result debounce (#115)", () => {
+ 		}
+ 	});
+ 
++	it("keeps on-demand symbol searches current after the first edit", async () => {
++		const env = setupTestEnvironment("pi-lens-debounce-demand-");
++		const priorSync = process.env.PI_LENS_SNAPSHOT_PERSIST_SYNC;
++		process.env.PI_LENS_SNAPSHOT_PERSIST_SYNC = "1";
++		process.env.PI_LENS_TOOL_RESULT_DEBOUNCE_MS = "0";
++		try {
++			const file = path.join(env.tmpDir, "index.ts");
++			fs.writeFileSync(file, "export const olduniquetoken = 1;");
++			const seed = new RuntimeCoordinator();
++			seed.seedProjectSequence(0);
++			seed.wordIndex = buildWordIndex([
++				{ path: file, content: fs.readFileSync(file, "utf8") },
++			]);
++			saveProjectSnapshot(
++				env.tmpDir,
++				buildProjectSnapshotFromRuntime({ cwd: env.tmpDir, runtime: seed }),
++			);
++			_resetProjectSnapshotParseCacheForTests();
++			expect(
++				(await symbolSearch("olduniquetoken", env.tmpDir)).results.map(
++					(hit) => hit.file,
++				),
++			).toContain(file);
++
++			const runtime = new RuntimeCoordinator();
++			runtime.projectRoot = env.tmpDir;
++			runtime.beginTurn();
++			const content = "export const newuniquetoken = 2;";
++			fs.writeFileSync(file, content);
++			const { runPipeline } = await import("../../clients/pipeline.js");
++			vi.mocked(runPipeline).mockImplementation(async (ctx) => {
++				if (ctx.wordIndex)
++					updateWordIndexDocument(ctx.wordIndex, { path: file, content });
++				return {
++					output: "",
++					hasBlockers: false,
++					isError: false,
++					fileModified: false,
++					checkedClean: false,
++				};
++			});
++			await handleToolResult(makeDeps(file, runtime, new CacheManager(false)));
++
++			expect(
++				(await symbolSearch("newuniquetoken", env.tmpDir)).results.map(
++					(hit) => hit.file,
++				),
++			).toContain(file);
++			expect(
++				(await symbolSearch("olduniquetoken", env.tmpDir)).results,
++			).toHaveLength(0);
++		} finally {
++			_resetWarmWordIndexCacheForTests();
++			if (priorSync === undefined)
++				delete process.env.PI_LENS_SNAPSHOT_PERSIST_SYNC;
++			else process.env.PI_LENS_SNAPSHOT_PERSIST_SYNC = priorSync;
++			env.cleanup();
++		}
++	});
++
++	it("preserves an already live index when dispatching another mutation", async () => {
++		const env = setupTestEnvironment("pi-lens-debounce-live-index-");
++		process.env.PI_LENS_TOOL_RESULT_DEBOUNCE_MS = "0";
++		try {
++			const file = path.join(env.tmpDir, "index.ts");
++			const content = "export const mutateduniquetoken = 2;";
++			fs.writeFileSync(file, content);
++			const runtime = new RuntimeCoordinator();
++			runtime.projectRoot = env.tmpDir;
++			runtime.beginTurn();
++			const live = buildWordIndex([
++				{ path: file, content: "export const originaluniquetoken = 1;" },
++			]);
++			runtime.wordIndex = live;
++			const { runPipeline } = await import("../../clients/pipeline.js");
++			vi.mocked(runPipeline).mockImplementation(async (ctx) => {
++				if (ctx.wordIndex)
++					updateWordIndexDocument(ctx.wordIndex, { path: file, content });
++				return {
++					output: "",
++					hasBlockers: false,
++					isError: false,
++					fileModified: false,
++					checkedClean: false,
++				};
++			});
++			await handleToolResult(makeDeps(file, runtime, new CacheManager(false)));
++			expect(live.postings.has("mutateduniquetoken")).toBe(true);
++			expect(live.postings.has("originaluniquetoken")).toBe(false);
++		} finally {
++			_resetWarmWordIndexCacheForTests();
++			env.cleanup();
++		}
++	});
++
+ 	it("coalesces two back-to-back tool_results within the window into one pipeline run", async () => {
+ 		process.env.PI_LENS_TOOL_RESULT_DEBOUNCE_MS = "150";
+ 		const env = setupTestEnvironment("pi-lens-debounce-coalesce-");

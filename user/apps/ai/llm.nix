@@ -8,6 +8,7 @@ let
 
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
   lazypi = pkgs.callPackage ./lazypi.nix { };
+  pi-bolt = pkgs.callPackage ./pi-bolt.nix { };
   dsh = pkgs-unstable.callPackage ./dsh.nix { };
   command-code = pkgs-unstable.callPackage ./command-code.nix { };
 
@@ -177,6 +178,8 @@ in
   ] ++ lib.optionals piEnabled [
     pi-coding-agent
     lazypi
+  ] ++ lib.optionals (piEnabled && lib.meta.availableOn pkgs.stdenv.hostPlatform pi-bolt) [
+    pi-bolt
   ];
 
   # CLAUDE.md, the statusline scripts and settings.json are out-of-store symlinks
