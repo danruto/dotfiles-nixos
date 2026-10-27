@@ -1,4 +1,6 @@
-{ lib, stdenvNoCC, fetchurl, makeWrapper, nodejs, ripgrep, fd, python3 }:
+{ lib, stdenvNoCC, fetchurl, makeWrapper, nodejs, ripgrep, fd, python3
+, agentDir ? null
+}:
 
 let
   version = "0.5.3";
@@ -17,6 +19,12 @@ let
     };
   };
   source = sources.${stdenvNoCC.hostPlatform.system};
+  # herdr-pig v0.2.1, Apache-2.0. Loaded only by PiG via llm.nix's home.file.
+  herdrExtension = fetchurl {
+    name = "herdr-pig-agent-state-0.2.1.ts";
+    url = "https://raw.githubusercontent.com/Hai-Fai-Solutions/herdr-pig/3ec680471e8282e0a8a64545781069f822c0c212/extensions/herdr-agent-state.ts";
+    hash = "sha256-CYiy0xLsiFe9qSqBMKchaV6iWecrPgQ+8y8C3bARdBE=";
+  };
 in
 stdenvNoCC.mkDerivation {
   pname = "pig";
@@ -29,6 +37,12 @@ stdenvNoCC.mkDerivation {
 
   nativeBuildInputs = [ makeWrapper ];
 
+  passthru.herdrExtension = herdrExtension;
+
+  # llm.nix pins the agent directory whose config files it symlinks, even when
+  # XDG_CONFIG_HOME is set. Do not enable PIG_USE_PI_DIRS: only configuration is
+  # shared with Pi, not credentials, sessions or installed packages.
+
   dontBuild = true;
   dontStrip = true;
 
@@ -36,7 +50,8 @@ stdenvNoCC.mkDerivation {
     runHook preInstall
     install -Dm755 pig "$out/libexec/pig/pig"
     makeWrapper "$out/libexec/pig/pig" "$out/bin/pig" \
-      --prefix PATH : ${lib.makeBinPath [ nodejs ripgrep fd python3 ]}
+      --prefix PATH : ${lib.makeBinPath [ nodejs ripgrep fd python3 ]} \
+      ${lib.optionalString (agentDir != null) "--set-default PIG_CODING_AGENT_DIR ${lib.escapeShellArg agentDir}"}
     runHook postInstall
   '';
 

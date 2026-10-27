@@ -5,9 +5,7 @@
   "defaultThinkingLevel": "high",
   "deviceId": "35da7abf-1268-4b0c-9e75-60441d4da5ee",
   "enableInstallTelemetry": false,
-  "extensions": [
-    "-builtin:mcp"
-  ],
+  "extensions": [],
   "fullscreenExitOutput": "resume-hint",
   "hideThinkingBlock": true,
   "lastChangelogVersion": "1.4.0",
@@ -29,7 +27,6 @@
     },
     "../../dotfiles-nixos/user/apps/ai/configs/pi-lens-patched.ts",
     "npm:pi-markdown-preview",
-    "npm:pi-mcp-adapter",
     "npm:pi-prompt-template-model",
     "npm:pi-skill-arg-hints",
     "npm:pi-subagents",

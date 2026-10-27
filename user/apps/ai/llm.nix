@@ -8,8 +8,10 @@ let
 
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
   lazypi = pkgs.callPackage ./lazypi.nix { };
-  pi-bolt = pkgs.callPackage ./pi-bolt.nix { };
-  pi-pig = pkgs.callPackage ./pi-pig.nix { };
+  pi-pig = pkgs.callPackage ./pi-pig.nix {
+    agentDir = "${config.home.homeDirectory}/.pig/agent";
+  };
+  piAgentDirs = [ ".pi/agent" ".pig/agent" ];
   dsh = pkgs-unstable.callPackage ./dsh.nix { };
   command-code = pkgs-unstable.callPackage ./command-code.nix { };
 
@@ -179,8 +181,6 @@ in
   ] ++ lib.optionals piEnabled [
     pi-coding-agent
     lazypi
-  ] ++ lib.optionals (piEnabled && lib.meta.availableOn pkgs.stdenv.hostPlatform pi-bolt) [
-    pi-bolt
   ] ++ lib.optionals (piEnabled && lib.meta.availableOn pkgs.stdenv.hostPlatform pi-pig) [
     pi-pig
   ];
@@ -199,7 +199,7 @@ in
   # this flake does not manage, so on a fresh machine register fff manually:
   #     claude mcp add --scope user fff fff-mcp
   # Verify with `claude mcp list` (expect "fff: fff-mcp - ✔ Connected").
-  # Pi's MCP config is unaffected and still reads its own settings file.
+  # Pi/PiG share settings below; native MCP server definitions live in mcp.json.
   home.file = (lib.foldl' lib.mergeAttrs { } (map
     (dir: {
       "${dir}/CLAUDE.md".source =
@@ -217,9 +217,13 @@ in
     # not duplicates — that fallback.
     ".config/opencode/AGENTS.md".source =
       config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/CLAUDE.md";
-  } // lib.optionalAttrs piEnabled {
-    ".pi/agent/AGENTS.md".source =
-      config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/CLAUDE.md";
+  } // lib.optionalAttrs piEnabled (lib.foldl' lib.mergeAttrs { } (map
+    (dir: {
+      "${dir}/AGENTS.md".source =
+        config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/CLAUDE.md";
+    })
+    piAgentDirs)) // lib.optionalAttrs (piEnabled && lib.meta.availableOn pkgs.stdenv.hostPlatform pi-pig) {
+    ".pig/agent/extensions/herdr-pig-agent-state.ts".source = pi-pig.herdrExtension;
   };
 
   # settings.json can't go through home.file/mkOutOfStoreSymlink: that routes the
@@ -264,22 +268,22 @@ in
       "${config.home.homeDirectory}/.config/opencode/opencode.json"
   '';
 
-  # Pi rewrites settings.json atomically, so use direct out-of-store symlinks
-  # for the same reason as Claude's settings above. Pi's own settings changes
-  # then land in this repo, while listed packages install on the next launch.
-  # The theme at ".pi/agent/themes/base16.json" is not linked here on purpose:
-  # scripts/theme-render writes it in place, and pi only hot-reloads the active
-  # theme by watching that directory for events on the file itself.
+  # Pi and PiG share direct out-of-store config links: settings writes land in
+  # the live repo, not a read-only home-manager store path. Their auth, sessions
+  # and package installations remain separate. These links intentionally use
+  # the repo as authoritative; detached local copies are replaced on activation.
+  # scripts/theme-render owns Pi's theme file; PiG reuses its theme directory.
   home.activation.piConfigLinks = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    run mkdir -p "${config.home.homeDirectory}/.pi/agent/extensions"
-    run ln -sfn "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-settings.json" \
-      "${config.home.homeDirectory}/.pi/agent/settings.json"
-    run ln -sfn "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-models.json" \
-      "${config.home.homeDirectory}/.pi/agent/models.json"
-    run ln -sfn "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-claude-bridge.json" \
-      "${config.home.homeDirectory}/.pi/agent/claude-bridge.json"
-    run ln -sfn "${config.home.homeDirectory}/dotfiles-nixos/user/apps/ai/configs/pi-usage-status.ts" \
-      "${config.home.homeDirectory}/.pi/agent/extensions/pi-usage-status.ts"
+    for dir in ${lib.concatMapStringsSep " " (d: ''"${config.home.homeDirectory}/${d}"'') piAgentDirs}; do
+      run mkdir -p "$dir/extensions"
+      run ln -sfn "${aiConfigs}/pi-settings.json" "$dir/settings.json"
+      run ln -sfn "${aiConfigs}/pi-models.json" "$dir/models.json"
+      run ln -sfn "${aiConfigs}/pi-claude-bridge.json" "$dir/claude-bridge.json"
+      run ln -sfn "${aiConfigs}/pi-usage-status.ts" "$dir/extensions/pi-usage-status.ts"
+    done
+    run mkdir -p "${config.home.homeDirectory}/.pi/agent/themes"
+    run ln -sfn "${config.home.homeDirectory}/.pi/agent/themes" \
+      "${config.home.homeDirectory}/.pig/agent/themes"
   '');
 
   # Command Code's global taste (~/.commandcode/taste) is a writable tree that
