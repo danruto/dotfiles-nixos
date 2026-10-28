@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { patchNpmLens } from "../user/apps/ai/configs/pi-lens-runtime.mjs";
+import { patchNpmLens } from "../../../user/apps/ai/configs/pi-lens-runtime.mjs";
 
 const digest = (text) => createHash("sha256").update(text).digest("hex");
 

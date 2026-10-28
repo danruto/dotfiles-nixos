@@ -33,7 +33,7 @@ spec = {
     "patchedSha256": hashlib.sha256(patched).hexdigest(),
     "edits": edits,
 }
-root = Path(__file__).resolve().parents[1]
+root = Path(__file__).resolve().parents[3]
 destination = root / "user/apps/ai/patches/pi-lens-4.4.5-runtime.json"
 destination.write_text(json.dumps(spec, ensure_ascii=True, indent=2) + "\n")
 print(f"Generated {destination.name}: {len(edits)} edits")

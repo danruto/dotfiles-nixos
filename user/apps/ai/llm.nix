@@ -11,6 +11,11 @@ let
   pi-pig = pkgs.callPackage ./pi-pig.nix {
     agentDir = "${config.home.homeDirectory}/.pig/agent";
   };
+  pigSettings = builtins.toFile "pig-settings.json" (builtins.toJSON (import ./pig-settings.nix {
+    inherit lib;
+    base = builtins.fromJSON (builtins.readFile ./configs/pi-settings.json);
+    overlay = builtins.fromJSON (builtins.readFile ./configs/pig-settings.json);
+  }));
   piAgentDirs = [ ".pi/agent" ".pig/agent" ];
   dsh = pkgs-unstable.callPackage ./dsh.nix { };
   command-code = pkgs-unstable.callPackage ./command-code.nix { };
@@ -199,7 +204,7 @@ in
   # this flake does not manage, so on a fresh machine register fff manually:
   #     claude mcp add --scope user fff fff-mcp
   # Verify with `claude mcp list` (expect "fff: fff-mcp - ✔ Connected").
-  # Pi/PiG share settings below; native MCP server definitions live in mcp.json.
+  # PiG inherits Pi settings with its own overlay; MCP definitions stay separate.
   home.file = (lib.foldl' lib.mergeAttrs { } (map
     (dir: {
       "${dir}/CLAUDE.md".source =
@@ -268,15 +273,22 @@ in
       "${config.home.homeDirectory}/.config/opencode/opencode.json"
   '';
 
-  # Pi and PiG share direct out-of-store config links: settings writes land in
-  # the live repo, not a read-only home-manager store path. Their auth, sessions
-  # and package installations remain separate. These links intentionally use
-  # the repo as authoritative; detached local copies are replaced on activation.
-  # scripts/theme-render owns Pi's theme file; PiG reuses its theme directory.
+  # Pi settings stay writable in the repo. PiG gets a writable copy of the
+  # merged settings at activation; runtime writes never touch the shared base.
+  # Auth, sessions and package installations remain separate.
   home.activation.piConfigLinks = lib.mkIf piEnabled (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p "${config.home.homeDirectory}/.pi/agent"
+    run ln -sfn "${aiConfigs}/pi-settings.json" "${config.home.homeDirectory}/.pi/agent/settings.json"
+    run mkdir -p "${config.home.homeDirectory}/.pig/agent"
+    run ${pkgs.runtimeShell} -c '
+      set -eu
+      tmp=$(${pkgs.coreutils}/bin/mktemp "$2.XXXXXX")
+      trap "${pkgs.coreutils}/bin/rm -f -- \"\$tmp\"" EXIT
+      ${pkgs.coreutils}/bin/install -m 600 "$1" "$tmp"
+      ${pkgs.coreutils}/bin/mv -fT "$tmp" "$2"
+    ' -- "${pigSettings}" "${config.home.homeDirectory}/.pig/agent/settings.json"
     for dir in ${lib.concatMapStringsSep " " (d: ''"${config.home.homeDirectory}/${d}"'') piAgentDirs}; do
       run mkdir -p "$dir/extensions"
-      run ln -sfn "${aiConfigs}/pi-settings.json" "$dir/settings.json"
       run ln -sfn "${aiConfigs}/pi-models.json" "$dir/models.json"
       run ln -sfn "${aiConfigs}/pi-claude-bridge.json" "$dir/claude-bridge.json"
       run ln -sfn "${aiConfigs}/pi-usage-status.ts" "$dir/extensions/pi-usage-status.ts"

@@ -1,4 +1,42 @@
-# Lens npm runtime patch
+# npm runtime patches
+
+The small loaders share a version- and hash-checked patch runner. It preflights
+all files before replacing any, skips already-patched files, preserves file
+permissions and refuses unexpected installer changes. Package updates remain
+explicit: update each version pin and verified patch together.
+
+Maintenance scripts live under `scripts/ai/<extension>/`; checks shared by
+extensions live under `scripts/ai/shared/`. Add future extension scripts to their
+own directory rather than the top-level `scripts/` list.
+
+## Hermes 0.9.11
+
+The shared Pi settings disable the npm extension entry and load
+`pi-hermes-patched.ts` instead. PiG inherits this choice. Both hosts retain eager
+memory initialization, automatic learning, indexing, recovery and final saves.
+
+The patch moves startup `quick_check` onto a read-only SQLite connection in a
+Node worker. A failed worker or failed check falls back to the active connection
+and the existing corruption-recovery path. Closing cancels stale workers;
+normal shutdown joins the scan before checkpointing and closing SQLite.
+Bun keeps the original synchronous check. No integrity check is disabled.
+
+`pi-hermes-0.9.11-runtime.json` patches the published source from
+`71cf5ab7d909318a383bf52bb3ad3cf83a9efc03`. Regenerate it from untouched npm source
+and a tested patched copy:
+
+```sh
+python3 scripts/ai/hermes/build-runtime-patch.py ORIGINAL_PACKAGE PATCHED_PACKAGE
+node --test scripts/ai/shared/test-package-runtime.mjs scripts/ai/lens/test-runtime.mjs
+HERMES_PACKAGE=PATCHED_PACKAGE node --import tsx --test scripts/ai/hermes/test-integrity.mjs
+```
+
+The integrity checks need a TypeScript loader such as `tsx` and the package's
+production dependencies. They use disposable databases, not personal memory.
+Run the matching upstream regressions and normal Pi/PiG launches before
+updating the deployed patch.
+
+## Lens 4.4.5
 
 Pi installs `npm:pi-lens@4.4.5` normally. No source checkout, fork publication,
 or development dependencies are needed on other machines.
@@ -30,7 +68,7 @@ First use still pays the deferred indexing cost.
 ## Checks
 
 ```sh
-node --test scripts/test-pi-lens-runtime.mjs
+node --test scripts/ai/lens/test-runtime.mjs
 ```
 
 The checks cover idempotence, reinstall recovery, version/hash refusal,
@@ -47,7 +85,7 @@ To regenerate the runtime data, build the patched source, obtain the untouched
 bundle from the published npm tarball, then run:
 
 ```sh
-python3 scripts/build-pi-lens-runtime-patch.py ORIGINAL_INDEX_JS PATCHED_INDEX_JS
+python3 scripts/ai/lens/build-runtime-patch.py ORIGINAL_INDEX_JS PATCHED_INDEX_JS
 ```
 
 The generator refuses an original bundle whose hash differs from the pinned

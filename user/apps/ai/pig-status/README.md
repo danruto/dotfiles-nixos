@@ -28,7 +28,7 @@ This extension reuses the existing usage adapter and installed usage provider. T
 For development with Go on PATH:
 
 ```sh
-scripts/check-pig-status.sh
+scripts/ai/pig-status/check.sh
 pig install ./user/apps/ai/pig-status --validate-only --json
 pig --no-extensions -e ./user/apps/ai/pig-status
 ```

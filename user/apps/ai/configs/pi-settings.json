@@ -33,7 +33,11 @@
     "npm:pi-web-access",
     "git:github.com/algal/pi-openai-server-compaction",
     "npm:@narumitw/pi-usage",
-    "npm:pi-hermes-memory",
+    {
+      "source": "npm:pi-hermes-memory@0.9.11",
+      "extensions": []
+    },
+    "../../dotfiles-nixos/user/apps/ai/configs/pi-hermes-patched.ts",
     "../../dev/pixelbrush/pb-skills",
     "../../dev/nearmap/bb2",
     "npm:pi-claude-bridge"

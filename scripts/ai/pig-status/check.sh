@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-root=$(cd "$(dirname "$0")/.." && pwd)
+script_dir=$(cd "$(dirname "$0")" && pwd)
+root=$(cd "$script_dir/../../.." && pwd)
 sdk=$(pig reload --sdk-path)
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
-node --test "$root/scripts/test-pig-status-usage.mjs"
+node --test "$script_dir/test-usage.mjs"
 
 cd "$root/user/apps/ai/pig-status"
 cp go.mod "$tmp/go.mod"
@@ -18,4 +19,4 @@ go vet -modfile="$tmp/go.mod" ./...
 mkdir -p "$tmp/package/bin"
 go build -modfile="$tmp/go.mod" -o "$tmp/package/bin/pig-status" .
 cp package.json "$tmp/package/package.json"
-PIG_STATUS_PACKAGE="$tmp/package" node --test "$root/scripts/test-pig-status-discovery.mjs"
+PIG_STATUS_PACKAGE="$tmp/package" node --test "$script_dir/test-discovery.mjs"

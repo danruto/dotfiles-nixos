@@ -1,0 +1,61 @@
+{
+  "name": "pi-hermes-memory",
+  "version": "0.9.11",
+  "sourceRevision": "71cf5ab7d909318a383bf52bb3ad3cf83a9efc03",
+  "files": [
+    {
+      "path": "src/store/db.ts",
+      "originalSha256": "c1564d454b31af43d3ca1b26a258d17642050a2e8b83910737bdcc348f24d11b",
+      "patchedSha256": "5dd235c642de8da476de7c262703edb0f8eb264f685d2901be89cafe3d9cffaf",
+      "edits": [
+        {
+          "start": 101,
+          "oldText": "",
+          "newText": "import { Worker } from 'node:worker_threads';\n"
+        },
+        {
+          "start": 355,
+          "oldText": "import { measureLifecycleSync } from '../lifecycle-timing.js';\n",
+          "newText": "import { measureLifecycle, measureLifecycleSync } from '../lifecycle-timing.js';\n"
+        },
+        {
+          "start": 5040,
+          "oldText": "",
+          "newText": "  private startupIntegrityWorker: Worker | null = null;\n"
+        },
+        {
+          "start": 9567,
+          "oldText": "      setTimeout(() => {\n",
+          "newText": "      setTimeout(async () => {\n"
+        },
+        {
+          "start": 9810,
+          "oldText": "          measureLifecycleSync('database.quick-check', () => {\n",
+          "newText": "          await measureLifecycle('database.quick-check', async () => {\n            let healthy = false;\n            if (!isBunRuntime()) {\n              try {\n                healthy = await this.checkIntegrityInWorker();\n              } catch {\n                // Unsupported workers retain the synchronous safety check.\n              }\n            }\n            if (this.db !== db || healthy) return;\n"
+        },
+        {
+          "start": 10524,
+          "oldText": "",
+          "newText": "  }\n\n  private async checkIntegrityInWorker(): Promise<boolean> {\n    const require = createRequire(import.meta.url);\n    const worker = new Worker(`\n      const { parentPort, workerData } = require('node:worker_threads');\n      let db;\n      let healthy = false;\n      try {\n        const Database = require(workerData.nativeModule);\n        db = new Database(workerData.dbPath, {\n          readonly: true, fileMustExist: true, timeout: workerData.timeout,\n        });\n        const rows = db.prepare('PRAGMA quick_check').all();\n        healthy = rows.length > 0 && rows.every(row =>\n          String(Object.values(row)[0] ?? '').toLowerCase() === 'ok');\n      } catch {\n        healthy = false;\n      } finally {\n        if (db) {\n          try { db.close(); } catch { healthy = false; }\n        }\n      }\n      parentPort.postMessage(healthy);\n    `, {\n      eval: true,\n      workerData: {\n        nativeModule: require.resolve('better-sqlite3'),\n        dbPath: this.dbPath,\n        timeout: SQLITE_BUSY_TIMEOUT_MS,\n      },\n    });\n    this.startupIntegrityWorker = worker;\n    try {\n      return await new Promise<boolean>((resolve) => {\n        let healthy = false;\n        worker.once('message', (result) => { healthy = result === true; });\n        worker.once('error', () => { healthy = false; });\n        worker.once('exit', (code) => resolve(code === 0 && healthy));\n      });\n    } finally {\n      if (this.startupIntegrityWorker === worker) this.startupIntegrityWorker = null;\n    }\n"
+        },
+        {
+          "start": 40814,
+          "oldText": "",
+          "newText": "    const worker = this.startupIntegrityWorker;\n    this.startupIntegrityWorker = null;\n    if (worker) void worker.terminate().catch(() => {});\n"
+        }
+      ]
+    },
+    {
+      "path": "src/index.ts",
+      "originalSha256": "2b057356d63b23fa81a5b0454e3a9525f0d292cdc116bb6c2b8eb680e5d69703",
+      "patchedSha256": "9db8c4597492a9bd0bcc9f78322343155b04cef7495cf52a3d8ead8221dccff3",
+      "edits": [
+        {
+          "start": 22038,
+          "oldText": "",
+          "newText": "        await dbManager.waitForStartupIntegrityScan();\n"
+        }
+      ]
+    }
+  ]
+}

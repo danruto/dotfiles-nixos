@@ -1,0 +1,9 @@
+{
+  "excludePackages": [
+    "npm:pi-claude-bridge"
+  ],
+  "extensions": [],
+  "packages": [
+    "npm:pig-claude-bridge@0.1.0"
+  ]
+}

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import usageStatus from "../user/apps/ai/configs/pi-usage-status.ts";
+import usageStatus from "../../../user/apps/ai/configs/pi-usage-status.ts";
 
 test("publishes structured totals and quota without changing Pi's text status", () => {
   const handlers = new Map();
