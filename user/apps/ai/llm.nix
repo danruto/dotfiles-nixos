@@ -281,6 +281,10 @@ in
       run ln -sfn "${aiConfigs}/pi-claude-bridge.json" "$dir/claude-bridge.json"
       run ln -sfn "${aiConfigs}/pi-usage-status.ts" "$dir/extensions/pi-usage-status.ts"
     done
+    ${lib.optionalString (lib.meta.availableOn pkgs.stdenv.hostPlatform pi-pig) ''
+      run ln -sfn "${pi-pig.statusExtension}" \
+        "${config.home.homeDirectory}/.pig/agent/extensions/pig-status"
+    ''}
     run mkdir -p "${config.home.homeDirectory}/.pi/agent/themes"
     run ln -sfn "${config.home.homeDirectory}/.pi/agent/themes" \
       "${config.home.homeDirectory}/.pig/agent/themes"

@@ -24,6 +24,7 @@ interface SessionEntry {
 interface PiAPI {
 	events: {
 		on(name: string, handler: (payload: unknown) => void): void;
+		emit(name: string, payload: unknown): void;
 	};
 	on(
 		name: string,
@@ -96,6 +97,12 @@ export default function (pi: PiAPI): void {
 		}
 
 		context.ui.setStatus(STATUS_ID, [...session, ...windows].join(" · "));
+		pi.events.emit("pig-status:usage", {
+			input,
+			output,
+			cost,
+			windows: state?.provider ? (state.usage?.windows ?? []) : [],
+		});
 	};
 
 	const update = (payload: unknown): void => {

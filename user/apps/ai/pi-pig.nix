@@ -1,4 +1,4 @@
-{ lib, stdenvNoCC, fetchurl, makeWrapper, nodejs, ripgrep, fd, python3
+{ lib, stdenvNoCC, fetchurl, fetchzip, makeWrapper, nodejs, ripgrep, fd, python3, go
 , agentDir ? null
 }:
 
@@ -19,6 +19,47 @@ let
     };
   };
   source = sources.${stdenvNoCC.hostPlatform.system};
+  sdkSource = fetchzip {
+    url = "https://github.com/MichaelKinsy/PiG/archive/refs/tags/v${version}.tar.gz";
+    hash = "sha256-XK27VNd799qUCsOUidYPo/leleMWtoan5gNuke9geqk=";
+  };
+  statusExtension = stdenvNoCC.mkDerivation {
+    pname = "pig-status";
+    version = "0.2.0";
+    src = ./pig-status;
+    nativeBuildInputs = [ go ];
+    env = {
+      CGO_ENABLED = "0";
+      GOTOOLCHAIN = "local";
+      GOPROXY = "off";
+      GOSUMDB = "off";
+    };
+    preBuild = ''
+      export HOME="$TMPDIR"
+      export GOCACHE="$TMPDIR/go-cache"
+      export GOMAXPROCS="$NIX_BUILD_CORES"
+      export GOFLAGS="-p=$NIX_BUILD_CORES"
+      go mod edit -replace github.com/MichaelKinsy/PiG/extensions/sdk=${sdkSource}/extensions/sdk
+    '';
+    buildPhase = ''
+      runHook preBuild
+      go build -trimpath -ldflags="-s -w" -o pig-status .
+      runHook postBuild
+    '';
+    doCheck = true;
+    checkPhase = ''
+      runHook preCheck
+      go test ./...
+      runHook postCheck
+    '';
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 pig-status "$out/bin/pig-status"
+      install -Dm644 package.json "$out/package.json"
+      runHook postInstall
+    '';
+    meta.platforms = builtins.attrNames sources;
+  };
   # herdr-pig v0.2.1, Apache-2.0. Loaded only by PiG via llm.nix's home.file.
   herdrExtension = fetchurl {
     name = "herdr-pig-agent-state-0.2.1.ts";
@@ -37,7 +78,7 @@ stdenvNoCC.mkDerivation {
 
   nativeBuildInputs = [ makeWrapper ];
 
-  passthru.herdrExtension = herdrExtension;
+  passthru = { inherit herdrExtension statusExtension; };
 
   # llm.nix pins the agent directory whose config files it symlinks, even when
   # XDG_CONFIG_HOME is set. Do not enable PIG_USE_PI_DIRS: only configuration is
