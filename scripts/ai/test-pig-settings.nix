@@ -65,6 +65,17 @@ let
       };
       expected.packages = [ "npm:old@2.0.0" ];
     };
+    testIntegratedCompactionSelection = {
+      expr = let
+        settings = compose
+          (builtins.fromJSON (builtins.readFile ../../user/apps/ai/configs/pi-settings.json))
+          (builtins.fromJSON (builtins.readFile ../../user/apps/ai/configs/pig-settings.json));
+      in builtins.filter (entry: builtins.elem entry [
+        "git:github.com/algal/pi-openai-server-compaction"
+        "../../dev/pixelbrush/pig-plugins"
+      ]) settings.packages;
+      expected = [ "../../dev/pixelbrush/pig-plugins" ];
+    };
     testEmptyOverlayKeepsBase = {
       expr = compose { theme = "base16"; skills = [ "shared" ]; } { };
       expected = { theme = "base16"; skills = [ "shared" ]; };

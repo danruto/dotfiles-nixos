@@ -9,6 +9,8 @@ let
   fff-mcp = fff.packages.${pkgs.stdenv.hostPlatform.system}.default;
   lazypi = pkgs.callPackage ./lazypi.nix { };
   pi-pig = pkgs.callPackage ./pi-pig.nix {
+    buildGoModule = pkgs-unstable.buildGo127Module;
+    go = pkgs-unstable.go_1_27;
     agentDir = "${config.home.homeDirectory}/.pig/agent";
   };
   pigSettings = builtins.toFile "pig-settings.json" (builtins.toJSON (import ./pig-settings.nix {
@@ -291,12 +293,16 @@ in
       run mkdir -p "$dir/extensions"
       run ln -sfn "${aiConfigs}/pi-models.json" "$dir/models.json"
       run ln -sfn "${aiConfigs}/pi-claude-bridge.json" "$dir/claude-bridge.json"
-      run ln -sfn "${aiConfigs}/pi-usage-status.ts" "$dir/extensions/pi-usage-status.ts"
     done
-    ${lib.optionalString (lib.meta.availableOn pkgs.stdenv.hostPlatform pi-pig) ''
-      run ln -sfn "${pi-pig.statusExtension}" \
-        "${config.home.homeDirectory}/.pig/agent/extensions/pig-status"
-    ''}
+    run ln -sfn "${config.home.homeDirectory}/dev/pixelbrush/pig-plugins/status/pi-text.ts" \
+      "${config.home.homeDirectory}/.pi/agent/extensions/pi-usage-status.ts"
+    for obsolete in \
+      "${config.home.homeDirectory}/.pig/agent/extensions/pi-usage-status.ts" \
+      "${config.home.homeDirectory}/.pig/agent/extensions/pig-status"; do
+      if [ -L "$obsolete" ]; then
+        run rm -f "$obsolete"
+      fi
+    done
     run mkdir -p "${config.home.homeDirectory}/.pi/agent/themes"
     run ln -sfn "${config.home.homeDirectory}/.pi/agent/themes" \
       "${config.home.homeDirectory}/.pig/agent/themes"

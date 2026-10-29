@@ -43,6 +43,20 @@ The existing todo-list and web-access packages are still inherited: tasks 0.1.0
 uses an incompatible SDK API, and websearch 0.1.1 lacks OpenAI/Codex search and
 several fetch capabilities.
 
+## Server compaction
+
+PiG uses the corrected server-compaction integration in `pig-plugins` rather than
+loading the inherited `pi-openai-server-compaction` package separately. Regular
+Pi keeps its existing package selection.
+
+The integration retains server-side opaque compaction history while preserving
+PiG's tool declarations and system/developer updates in outgoing requests. PiG's
+native providers own the OpenAI WebSocket/HTTP transport; the old extension's
+custom provider is not registered.
+Replacing the entire request history without those declarations leaves the model
+with no callable tools after compaction. The settings check verifies that PiG
+selects the integrated package without the duplicate upstream extension.
+
 ## Shared startup patches
 
 Hermes remains a shared TypeScript extension, pinned to `0.9.11` with its npm

@@ -38,10 +38,11 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 - When multiple valid approaches exist, present the options with your recommendation — I decide
 - Prefer fixes that stay correct as the surrounding code changes. Never narrow an assertion, weaken a spec, special-case the current input, or patch only the named symptom. If such a fix is out of scope, say so rather than shipping an expedient one silently.
 
-## Commits
+## Commits & pull requests
 
 - No AI attribution or Co-Authored-By footers; never push unless asked
 - Don't commit unless asked. Edit in place first.
+- NEVER create a pull request (including a draft) unless I explicitly ask for one or explicitly authorise its creation. Permission to implement, commit, push, deploy, or follow a workflow is not permission to create a PR.
 
 ## Machine & privacy
 

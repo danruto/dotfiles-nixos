@@ -1,0 +1,163 @@
+--- a/coding/extension/host/subprocess/event_bus.go
++++ b/coding/extension/host/subprocess/event_bus.go
+@@ -308,9 +308,15 @@
+ 		if err := h.xref.bind(memberConn, member, result.Realm); err != nil {
+ 			return err
+ 		}
+-		h.eventBus.add(&busListener{conn: memberConn, realm: result.Realm, handlerID: listener.HandlerID, channel: listener.Channel})
++		h.registerBusListener(ctx, &busListener{conn: memberConn, realm: result.Realm, handlerID: listener.HandlerID, channel: listener.Channel})
+ 	}
+ 	return nil
++}
++
++func (h *Host) registerBusListener(ctx context.Context, listener *busListener) {
++	dispatchCtx := context.WithoutCancel(ctx)
++	listener.untrack = h.providerRuntime.TrackEventBusSubscription(func() { h.removeBusListener(dispatchCtx, listener) })
++	h.eventBus.add(listener)
+ }
+ 
+ func (b *hostEventBus) add(listener *busListener) {
+@@ -510,9 +516,7 @@
+ 		}
+ 		// EventEmitter emits newListener before adding the listener.
+ 		h.dispatchEvent(dispatchCtx, "newListener", newChannelPayload(*args.Channel), nil, realm, "", nil)
+-		listener := &busListener{conn: conn, realm: realm, handlerID: args.HandlerID, channel: *args.Channel, value: args.Value}
+-		listener.untrack = h.providerRuntime.TrackEventBusSubscription(func() { h.removeBusListener(dispatchCtx, listener) })
+-		h.eventBus.add(listener)
++		h.registerBusListener(dispatchCtx, &busListener{conn: conn, realm: realm, handlerID: args.HandlerID, channel: *args.Channel, value: args.Value})
+ 	case callEventsOff:
+ 		if listener := h.eventBus.lookup(busHandlerKey{realm, args.HandlerID}); listener != nil {
+ 			listener.untrack()
+--- a/test/extension-conformance/events_bridge_test.go
++++ b/test/extension-conformance/events_bridge_test.go
+@@ -192,6 +192,21 @@
+ 
+ // Listeners run in registration order across realms, an unsubscribe removes only its own listener, unsubscribe is idempotent, and a new subscription goes to the end (event-bus.ts:12-33, EventEmitter).
+ func TestNativeEventBusRegistrationOrderAcrossRealms(t *testing.T) {
++	t.Run("AC1_AC2_node_listener_predates_native_subscription", func(t *testing.T) {
++		rig := newMigratedNodeBusRig(t)
++		rig.must("node", "emit", "ch json 1")
++		rig.expect(`node|ch|1`, `node|removed|{"by":"node","got":1}`, `node|ch|1`, `node|ch|1`)
++		rig.reset()
++
++		rig.must("node", "unsub", "0")
++		rig.must("node", "emit", "ch json 2")
++		rig.expect(`node|ch|2`, `node|ch|2`)
++		rig.reset()
++
++		rig.must("node", "unsub", "0")
++		rig.must("node", "emit", "ch json 3")
++		rig.expect(`node|ch|3`, `node|ch|3`)
++	})
+ 	eachBusRealm(t, true, func(t *testing.T, language, isolation string) {
+ 		rig := newBusRig(t,
+ 			busSpec("node", isolation, "n1"),
+@@ -214,6 +229,34 @@
+ 		rig.must("n1", "emit", "order json 3")
+ 		rig.expect(`n1|order|3`, `n2|order|3`, `g2|order|3`, `g|order|3`)
+ 	})
++}
++
++func TestNativeEventBusReload_AC3_RetiresMigratedNodeListeners(t *testing.T) {
++	stop := captureStderr(t)
++	rig := newMigratedNodeBusRig(t)
++	rig.host.SetConfigLoader(func() ([]subprocess.ExtConfig, error) { return rig.configs, nil })
++
++	rig.reload()
++	rig.must("node", "emit", "ch json 1")
++	rig.expect(`node|ch|1`, `node|removed|{"by":"node","got":1}`, `node|ch|1`)
++	rig.reset()
++	rig.must("node", "sub", "ch record")
++	rig.reload()
++	rig.must("node", "emit", "ch json 2")
++	rig.expect(`node|ch|2`, `node|removed|{"by":"node","got":2}`, `node|ch|2`)
++	rig.reset()
++	rig.must("node", "emit", "native json 10")
++	rig.expect(`migration-native|native|10`, `node|ack|{"by":"migration-native","got":10}`)
++	rig.host.Shutdown("test complete")
++
++	expectNoBusPanic(t, stop())
++}
++
++func expectNoBusPanic(t *testing.T, output string) {
++	t.Helper()
++	if strings.Contains(strings.ToLower(output), "panic") {
++		t.Fatalf("event-bus cleanup emitted a panic diagnostic:\n%s", output)
++	}
+ }
+ 
+ // A listener that emits from inside its handler runs the nested dispatch before the outer emit returns (event-bus.ts:15-17, EventEmitter is synchronous), across every realm kind.
+--- a/test/extension-conformance/events_bridge_fixtures_test.go
++++ b/test/extension-conformance/events_bridge_fixtures_test.go
+@@ -610,11 +610,12 @@
+ 
+ // busRig loads the fixtures in order and returns them by name with the shared log.
+ type busRig struct {
+-	t    *testing.T
+-	log  string
+-	cwd  string
+-	exts map[string]extension.Extension
+-	host *subprocess.Host
++	t       *testing.T
++	log     string
++	cwd     string
++	exts    map[string]extension.Extension
++	host    *subprocess.Host
++	configs []subprocess.ExtConfig
+ }
+ 
+ func newBusRig(t *testing.T, specs ...busFixture) *busRig {
+@@ -644,11 +645,52 @@
+ 	if len(failures) == 0 && len(loaded) != len(configs) {
+ 		t.Fatalf("loaded %d of %d extensions without a failure", len(loaded), len(configs))
+ 	}
+-	rig := &busRig{t: t, log: log, cwd: cwd, host: h, exts: map[string]extension.Extension{}}
++	rig := &busRig{t: t, log: log, cwd: cwd, host: h, exts: map[string]extension.Extension{}, configs: configs}
+ 	for _, ext := range loaded {
+ 		rig.exts[ext.Name] = ext
+ 	}
+ 	return rig, failures
++}
++
++func newMigratedNodeBusRig(t *testing.T) *busRig {
++	t.Helper()
++	rig := newBusRig(t, busSpec("node", "shared-ok", "node",
++		busListenerAt{"ch", "record+echo=removed"}, busListenerAt{"ch", "record"},
++		busListenerAt{"ack", "record"}, busListenerAt{"removed", "record"}))
++	rig.must("node", "emit", "ch json 0")
++	rig.expect(`node|ch|0`, `node|removed|{"by":"node","got":0}`, `node|ch|0`)
++	rig.reset()
++
++	spec := busSpec("go", "isolated", "migration-native", busListenerAt{"native", "record+echo=ack"})
++	spec.Log, spec.cwd = rig.log, rig.cwd
++	root := findModuleRoot(t)
++	cfg := busConfig(t, root, spec)
++	manifest := fmt.Sprintf("module %s\n\ngo 1.26\n\nrequire github.com/MichaelKinsy/PiG/extensions/sdk v0.0.0\n\nreplace github.com/MichaelKinsy/PiG/extensions/sdk => %s\n", cfg.ModulePath, strconv.Quote(filepath.Join(root, "extensions", "sdk")))
++	if err := os.WriteFile(filepath.Join(cfg.Source, "go.mod"), []byte(manifest), 0o600); err != nil {
++		t.Fatal(err)
++	}
++	loaded, failures := rig.host.LoadAll(t.Context(), []subprocess.ExtConfig{cfg})
++	if len(failures) != 0 || len(loaded) != 1 {
++		t.Fatalf("late native load: loaded=%v failures=%v", loaded, failures)
++	}
++	rig.exts[loaded[0].Name] = loaded[0]
++	rig.configs = append(rig.configs, cfg)
++	rig.must("node", "emit", "native json 9")
++	rig.expect(`migration-native|native|9`, `node|ack|{"by":"migration-native","got":9}`)
++	rig.reset()
++	rig.must("node", "sub", "ch record")
++	return rig
++}
++
++func (r *busRig) reload() {
++	r.t.Helper()
++	loaded, err := r.host.Reload(r.t.Context())
++	if err != nil {
++		r.t.Fatal(err)
++	}
++	for _, ext := range loaded {
++		r.exts[ext.Name] = ext
++	}
+ }
+ 
+ // run executes one command of a fixture, as the user would.

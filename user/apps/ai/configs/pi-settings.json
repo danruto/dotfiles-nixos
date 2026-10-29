@@ -10,7 +10,6 @@
   "hideThinkingBlock": true,
   "lastChangelogVersion": "1.4.0",
   "packages": [
-    "../../dev/nearmap/bubblebeam",
     "git:github.com/davebcn87/pi-autoresearch",
     "git:github.com/tintinweb/pi-manage-todo-list",
     "npm:@ff-labs/pi-fff",

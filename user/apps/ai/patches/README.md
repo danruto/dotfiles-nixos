@@ -1,6 +1,6 @@
-# npm runtime patches
+# Runtime patches
 
-The small loaders share a version- and hash-checked patch runner. It preflights
+The npm loaders share a version- and hash-checked patch runner. It preflights
 all files before replacing any, skips already-patched files, preserves file
 permissions and refuses unexpected installer changes. Package updates remain
 explicit: update each version pin and verified patch together.
@@ -8,6 +8,20 @@ explicit: update each version pin and verified patch together.
 Maintenance scripts live under `scripts/ai/<extension>/`; checks shared by
 extensions live under `scripts/ai/shared/`. Add future extension scripts to their
 own directory rather than the top-level `scripts/` list.
+
+## PiG 0.5.3
+
+`pi-pig.nix` builds the fixed-hash `v0.5.3` source archive with Go 1.27.3 and applies `pig-0.5.3-event-bus-cleanup.patch`. The upstream source commit is `526c86df885eba5e214355e7f70205e06d59bfa2`. The diagnostic build identity ends in `event-bus-cleanup`.
+
+The patch registers migrated Node event listeners with the same runtime-owned cleanup mechanism as new listeners. This preserves explicit unsubscribe, repeated unsubscribe, reload and connection-close behavior when a native extension moves the Node bus onto the shared host registry. It does not disable extensions or hide panic diagnostics.
+
+The patch includes mixed Go/Node regression tests. The Nix check phase runs the migrated-listener unsubscribe/idempotence case, reload guard and existing subscription-lifetime owners with disposable home and agent roots. The package retains the existing runtime tools, default agent directory and Herdr reporter.
+
+Git-backed flake references omit untracked patch files. Until a new patch is tracked, use a `path:$PWD` flake reference so builds include it.
+
+A temporary PiG-only activation adds a `pig` Nix profile entry at priority 4. After a Home Manager switch includes the fixed package, inspect `nix profile list` and remove that temporary entry with `nix profile remove pig` so it cannot mask later updates. Restart PiG after changing its package; `/reload` does not replace a running host binary.
+
+When a later upstream release includes the equivalent lifetime fix, remove the patch while retaining the regression checks and return to the upstream packaging path only after mixed-extension shutdown passes. Source and module hashes must change explicitly with the release pin.
 
 ## Hermes 0.9.11
 

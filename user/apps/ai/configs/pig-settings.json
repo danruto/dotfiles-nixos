@@ -1,9 +1,12 @@
 {
   "excludePackages": [
-    "npm:pi-claude-bridge"
+    "npm:pi-claude-bridge",
+    "npm:@narumitw/pi-usage",
+    "git:github.com/algal/pi-openai-server-compaction"
   ],
   "extensions": [],
   "packages": [
-    "npm:pig-claude-bridge@0.1.0"
+    "git:github.com/balcsida/pig-claude-bridge@670c5a379a9843db82ea069aad840f71099afde2",
+    "../../dev/pixelbrush/pig-plugins"
   ]
 }
