@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Bump the hand-pinned upstream packages (version + hashes) in place.
 # Usage: scripts/bump [pkg ...]   (no args = all)
-# Packages: claude-code tokscale pi opencode revdiff hunk command-code
+# Packages: claude-code tokscale pi opencode revdiff hunk herdr-core command-code
 set -euo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
 llm=$root/user/apps/ai/llm.nix
 hunknix=$root/user/apps/git/hunk.nix
 pinix=$root/user/apps/ai/pi.nix
+herdrcore=$root/user/apps/terminal/herdr-core.nix
 
 # Both helpers scope to the `  <block> =` attribute of a nix file, which ends at
 # the next column-2 binding. Block "-" means the whole file.
@@ -89,6 +90,20 @@ bump_hunk() {
     hunkdiff-linux-x64 hunkdiff-linux-arm64 hunkdiff-darwin-x64 hunkdiff-darwin-arm64
 }
 
+# herdr-core publishes a manifest with each platform's sha256, in the nix file's
+# order: x86_64-linux, aarch64-linux, x86_64-darwin, aarch64-darwin.
+bump_herdr-core() {
+  local m v i=0 t
+  m=$(curl -sf https://releases.herdr.dev/core/latest.json)
+  v=$(jq -er .version <<<"$m")
+  [ "$v" = "$(nixget "$herdrcore" - version 1)" ] && { echo "herdr-core: already $v"; return; }
+  nixset "$herdrcore" - version 1 "$v"
+  for t in linux-x86_64 linux-aarch64 macos-x86_64 macos-aarch64; do
+    nixset "$herdrcore" - sha256 $((++i)) "$(jq -er ".targets[\"$t\"].sha256" <<<"$m")"
+  done
+  echo "herdr-core -> $v"
+}
+
 # pi.nix pins src and modelData (hashes 1 and 2 of the file) plus npmDepsHash.
 bump_pi() {
   local v tmp url
@@ -108,5 +123,5 @@ bump_pi() {
 bump_command-code() { "$root/user/apps/ai/bump-command-code.sh"; }
 
 pkgs=("$@")
-[ ${#pkgs[@]} -eq 0 ] && pkgs=(claude-code tokscale pi opencode revdiff hunk command-code)
+[ ${#pkgs[@]} -eq 0 ] && pkgs=(claude-code tokscale pi opencode revdiff hunk herdr-core command-code)
 for p in "${pkgs[@]}"; do "bump_$p"; done

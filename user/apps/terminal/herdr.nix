@@ -1,6 +1,9 @@
 { pkgs, config, herdr, ... }:
 {
-  home.packages = [ herdr.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+  home.packages = [
+    herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
+    (pkgs.callPackage ./herdr-core.nix { })
+  ];
 
   # herdr writes back to config.toml at runtime (theme/sound/agent-view toggles,
   # onboarding=false). A read-only nix-store symlink makes those writes fail, so
