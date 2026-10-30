@@ -1,0 +1,9 @@
+{
+  "package": "pele",
+  "version": "1.6.0",
+  "source": "Aqua Cutter's installed, repository-patched diagram engine",
+  "file": "pele.mjs",
+  "sha256": "d1ebc1889f3069d7759fe5db34c4ad4b4823285edbee2b537d0ef3d505a76d8d",
+  "license": "MIT",
+  "scope": "Standalone Mermaid-to-SVG generation; not Aqua Cutter's walkthrough UI or wire contract"
+}
