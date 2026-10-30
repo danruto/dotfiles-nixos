@@ -196,6 +196,11 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # Disabled until in the Linux testing wave — then uncomment, and uncomment
+    # ../../system/apps/rex.nix in hosts/mf285/configuration.nix.
+    # Needs the token in /etc/nix/netrc (machine pkgs.superlogical.com)
+    # rex.url = "https://pkgs.superlogical.com/rex/nix/snapshot.tar.gz";
+
     # Mac inputs
     darwin = {
       url = "github:LnL7/nix-darwin/nix-darwin-26.05";
