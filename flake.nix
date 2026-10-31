@@ -37,7 +37,7 @@
           blocklist-hosts neovim-nightly-overlay wanderer fff
           nixos-wsl niri mango nixos-hardware
           helium dms dms-plugin-diskusage helix helix-fork ghostty
-          nix-doom-emacs-unstraightened;
+          rex;
 
         # Since gcc 16, ld.bfd rejects the debug relocations in libghostty-vt's
         # zig-built compiler_rt.o ("undefined reference to `no symbol'"); lld accepts them.
@@ -143,17 +143,6 @@
       # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    nix-doom-emacs-unstraightened = {
-      url = "github:marienz/nix-doom-emacs-unstraightened";
-      inputs = {
-        doomdir = {
-          url = "./user/apps/emacs/doom";
-          flake = false;
-        };
-        nixpkgs.follows = "";
-      };
-    };
-
     # WSL inputs
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL";
@@ -196,10 +185,8 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Disabled until in the Linux testing wave — then uncomment, and uncomment
-    # ../../system/apps/rex.nix in hosts/mf285/configuration.nix.
     # Needs the token in /etc/nix/netrc (machine pkgs.superlogical.com)
-    # rex.url = "https://pkgs.superlogical.com/rex/nix/snapshot.tar.gz";
+    rex.url = "https://pkgs.superlogical.com/rex/nix/snapshot.tar.gz";
 
     # Mac inputs
     darwin = {

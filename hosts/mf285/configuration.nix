@@ -17,8 +17,7 @@ with lib;
     ../../system/wm/niri.nix
     ../../system/wm/dms.nix
     ../../system/apps/docker.nix
-    # Disabled until in the rex Linux testing wave (see system/apps/rex.nix)
-    # ../../system/apps/rex.nix
+    ../../system/apps/rex.nix
     ../../user/apps/fileman/nautilus.nix
     ../../user/apps/browser/helium.nix
     ./hardware-configuration.nix
