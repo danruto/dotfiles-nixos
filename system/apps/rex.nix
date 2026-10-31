@@ -1,4 +1,4 @@
-{ rex, username, ... }:
+{ rex, username, hostname, ... }:
 
 # Shared server on /run/rex/server.sock; members of the rex group can connect.
 # Also installs the rex CLI for every user, the xterm-rex terminfo, and the
@@ -7,6 +7,10 @@
   imports = [ rex.nixosModules.default ];
 
   services.rex.enable = true;
+  services.rex.tailscale = {
+    enable = true;
+    hostname = "rex-${hostname}";
+  };
 
   # Rex sends no telemetry itself; its embedded Tailscale (off by default)
   # would upload logs and metrics to Tailscale unless this is set.
