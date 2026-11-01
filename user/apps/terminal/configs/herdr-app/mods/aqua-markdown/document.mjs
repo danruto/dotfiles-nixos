@@ -1,7 +1,8 @@
 import { readFile, rm } from 'node:fs/promises';
 import nodeProcess from 'node:process';
 import { Buffer } from 'node:buffer';
-import { dirname, join, basename } from 'node:path';
+import { realpathSync } from 'node:fs';
+import { dirname, join, basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { extractMermaids } from './markdown.mjs';
 import { renderDocument } from './render.mjs';
@@ -81,10 +82,10 @@ export async function buildDocument(payload, directory) {
   return { ...rendered, sections: sections.map(section => section.kind === 'markdown' ? { ...section, markdown: section.markdown + (definitions ? '\n\n' + definitions : '') } : { kind: 'diagram', diagram: rendered.diagrams[section.index] }), background: diagramStyle(payload.colours ?? 'App', payload.theme).theme.background };
 }
 
-if (runtime.argv[1] === fileURLToPath(import.meta.url)) {
+if (runtime.argv[1] && resolve(realpathSync(runtime.argv[1])) === resolve(realpathSync(fileURLToPath(import.meta.url)))) {
   const input = runtime.argv[2];
-  const data = join(runtime.env.HOME ?? '', '.config/herdr-app/data');
-  const allowed = typeof input === 'string' && dirname(input) === data && /^aqua-markdown-input-[A-Za-z0-9-]+\.json$/.test(basename(input));
+  const data = join(runtime.env.HOME ?? runtime.env.USERPROFILE ?? '', '.config/herdr-app/data');
+  const allowed = typeof input === 'string' && resolve(dirname(input)) === resolve(data) && /^aqua-markdown-input-[A-Za-z0-9-]+\.json$/.test(basename(input));
   try {
     if (!allowed) throw new Error('Expected a viewer-owned temporary input file');
     const payload = JSON.parse(await readFile(input, 'utf8'));

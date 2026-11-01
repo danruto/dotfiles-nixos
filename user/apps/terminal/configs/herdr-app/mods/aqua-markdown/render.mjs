@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
 import { readFile, writeFile, rename, mkdir, readdir, stat, rm } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
-import { dirname, join, basename } from 'node:path';
+import { realpathSync } from 'node:fs';
+import { dirname, join, basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse, render } from './vendor/pele.mjs';
 import { extractMermaids } from './markdown.mjs';
@@ -76,10 +77,10 @@ export async function renderDocument(payload, directory) {
   return { ok: true, engine: `Pele ${provenance.version}`, elapsedMs: Math.round(performance.now() - started), diagrams };
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && resolve(realpathSync(process.argv[1])) === resolve(realpathSync(fileURLToPath(import.meta.url)))) {
   const input = process.argv[2];
-  const data = join(process.env.HOME, '.config/herdr-app/data');
-  const allowed = typeof input === 'string' && dirname(input) === data && /^aqua-svg-input-[A-Za-z0-9-]+\.json$/.test(basename(input));
+  const data = join(process.env.HOME ?? process.env.USERPROFILE, '.config/herdr-app/data');
+  const allowed = typeof input === 'string' && resolve(dirname(input)) === resolve(data) && /^aqua-svg-input-[A-Za-z0-9-]+\.json$/.test(basename(input));
   try {
     if (!allowed) throw new Error('Expected a viewer-owned temporary input file');
     const payload = JSON.parse(await readFile(input, 'utf8'));

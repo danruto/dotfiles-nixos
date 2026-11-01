@@ -118,7 +118,6 @@ export default class Threads extends View {
       .when(Boolean(tab?.status), el => el.child(this.status(tab.status)))
       .child(panelButton("files", "Files", "folder"))
       .child(panelButton("changes", "Changes", "changes"))
-      .child(panelButton("jira", "Jira", "jira"))
       .when(Boolean(focused()?.pane), el => el.child(this.button("split", this.icon("split"), () => run("pane.split", { direction: "down" }), false, "Split terminal below")))
       .when(window()?.buttons, el => el.child(this.button("minimize", "−", () => run("window.minimize")))
         .child(this.button("maximize", "□", () => run("window.maximize")))

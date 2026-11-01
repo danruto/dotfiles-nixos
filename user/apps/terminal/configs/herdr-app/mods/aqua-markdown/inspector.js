@@ -12,6 +12,7 @@ import { DiagramViewport } from "./viewport.js";
 const DOCUMENT = "aqua.svg.document";
 /** @param {Record<string, string>} t */
 const palette = t => ({ background: t.background, foreground: t.foreground, muted: t.muted, surface: t.surface, raised: t.raised, border: t.border, accent: t.accent });
+const isAbsolute = value => value.startsWith("/") || /^[A-Za-z]:[\\/]/.test(value) || value.startsWith("\\\\");
 
 export default class DiagramInspector {
   /** @param {unknown} _props @param {import("gpui-kit").AsyncContext} cx */
@@ -57,9 +58,11 @@ export default class DiagramInspector {
     const space = spaces().find(space => space.active), focus = focused();
     const pane = panes().find(pane => pane.pane === focus?.pane);
     const on = this.document ? this.document.on : space?.machine ?? null;
-    const cwd = this.document?.path.slice(0, this.document.path.lastIndexOf("/")) || pane?.cwd || focus?.cwd || space?.folder;
-    if (!value.startsWith("/") && !cwd) { this.message = "Use an absolute file path, or open a project first."; cx.notify(); return; }
-    const path = value.startsWith("/") ? value : cwd.replace(/\/$/, "") + "/" + value;
+    const source = this.document?.path, cut = source ? Math.max(source.lastIndexOf("/"), source.lastIndexOf("\\")) : -1;
+    const cwd = (cut >= 0 ? source.slice(0, cut) : "") || pane?.cwd || focus?.cwd || space?.folder;
+    if (!isAbsolute(value) && !cwd) { this.message = "Use an absolute file path, or open a project first."; cx.notify(); return; }
+    const separator = cwd?.includes("\\") && !cwd.includes("/") ? "\\" : "/";
+    const path = isAbsolute(value) ? value : cwd.replace(/[\\/]+$/, "") + separator + value;
     this.source = { path, on, revision: Date.now() };
     cx.notify();
   }

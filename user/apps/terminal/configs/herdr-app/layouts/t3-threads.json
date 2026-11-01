@@ -89,8 +89,7 @@
                   "active": "files",
                   "children": [
                     { "id": "files", "type": "block", "content": { "mod": "design-files" } },
-                    { "id": "changes", "type": "block", "content": { "mod": "changes" } },
-                    { "id": "jira", "type": "block", "content": { "mod": "jira-tickets", "props": { "layoutBlock": "jira" } } }
+                    { "id": "changes", "type": "block", "content": { "mod": "changes" } }
                   ]
                 }
               ]

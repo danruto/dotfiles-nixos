@@ -140,14 +140,6 @@
                       "content": {
                         "mod": "changes"
                       }
-                    },
-                    {
-                      "id": "jira",
-                      "type": "block",
-                      "content": {
-                        "mod": "jira-tickets",
-                        "props": { "layoutBlock": "jira" }
-                      }
                     }
                   ],
                   "active": "files"
