@@ -58,10 +58,10 @@
     # gitbutler - switched to flatpak
     (pkgs.symlinkJoin {
       name = "yaak-wrapped";
-      paths = [ yaak ];
+      paths = [ pkgs-unstable.yaak ];
       nativeBuildInputs = [ pkgs.makeWrapper ];
       postBuild = ''
-        wrapProgram $out/bin/yaak-app \
+        wrapProgram $out/bin/yaak-app-client \
           --set WEBKIT_DISABLE_DMABUF_RENDERER 0 \
           --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}" \
           --prefix XDG_DATA_DIRS : "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}" \

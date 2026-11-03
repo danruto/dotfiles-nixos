@@ -55,10 +55,10 @@
     fakeroot
     (symlinkJoin {
       name = "yaak-wrapped";
-      paths = [ yaak ];
+      paths = [ pkgs-unstable.yaak ];
       nativeBuildInputs = [ makeWrapper ];
       postBuild = ''
-        wrapProgram $out/bin/yaak-app \
+        wrapProgram $out/bin/yaak-app-client \
           --set WEBKIT_DISABLE_DMABUF_RENDERER 0 \
           --prefix XDG_DATA_DIRS : "${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}" \
           --prefix XDG_DATA_DIRS : "${gtk3}/share/gsettings-schemas/${gtk3.name}" \
