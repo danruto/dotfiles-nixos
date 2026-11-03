@@ -7,6 +7,7 @@ let
     (name: type: type == "regular" && (lib.hasSuffix ".json" name || lib.hasSuffix ".svg" name))
     (builtins.readDir ./configs/herdr-app/layouts));
   assets = [ "keys.json" "settings.json" ] ++ map (name: "mods/${name}") mods ++ map (name: "layouts/${name}") layouts;
+  herdrApp = pkgs.callPackage ./herdr-app-desktop.nix { };
 in
 {
   home.packages = [ pkgs.nodejs pkgs.python3
@@ -15,7 +16,18 @@ in
       exec ${pkgs.nodejs}/bin/node "${appConfigs}/mods/jira-tickets/helper.mjs" "$@"
     '')
   ]
-    ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.xdg-utils ];
+    ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.xdg-utils herdrApp ];
+
+  xdg.desktopEntries = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+    herdr-app = {
+      name = "Herdr";
+      comment = "Terminals and coding agents that keep running";
+      exec = "${herdrApp}/bin/herdr-app";
+      icon = "${herdrApp}/share/icons/hicolor/scalable/apps/herdr-app.svg";
+      terminal = false;
+      categories = [ "Development" ];
+    };
+  };
 
   # Direct links accept an already-linked checkout and keep atomic app writes
   # outside the store. Shipped files, layout state and caches stay local.

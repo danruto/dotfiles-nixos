@@ -135,7 +135,7 @@ endif
 else
 	@echo "Building for profile: $(PROFILE) on NixOS"
 	set -o pipefail; sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake ".#$(PROFILE)" --show-trace \
-		--log-format internal-json -v |& nix run --inputs-from . nixpkgs#nix-output-monitor -- --json
+		--log-format internal-json -v |& nom --json
 endif
 
 norb:

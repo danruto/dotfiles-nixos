@@ -25,6 +25,7 @@
     ../../user/apps/terminal/helix-fork.nix
     ../../user/apps/terminal/kitty.nix
     ../../user/apps/terminal/foot.nix
+    ../../user/apps/terminal/herdr-app.nix # Herdr desktop app layouts/mods
     ../../user/wm/hyprland/hyprland.nix
     ../../user/wm/niri/niri.nix
     ../../user/apps/ai/llm.nix

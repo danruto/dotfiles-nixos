@@ -90,6 +90,9 @@ with lib;
   networking.hostName = hostname; # Define your hostname.
   networking.networkmanager.enable = true;
 
+  # One-off login: `sudo tailscale up --hostname=framework`.
+  services.tailscale.enable = true;
+
   # Timezone and locale
   time.timeZone = timezone; # time zone
   i18n.defaultLocale = locale;
