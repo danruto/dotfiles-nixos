@@ -13,12 +13,14 @@ with tempfile.TemporaryDirectory() as directory:
         folder.mkdir(parents=True)
     (source / "mods/custom/main.js").write_text("synthetic")
     (source / "layouts/custom.json").write_text("{}")
+    (source / "keys.json").write_text("{}")
+    (live / "keys.json").symlink_to(source / "keys.json")
     mod = live / "mods/custom"
     mod.symlink_to(source / "mods/custom")
     layout = live / "layouts/custom.json"
     layout.symlink_to(source / "layouts/custom.json")
     original = mod.lstat().st_ino
-    assert module.reload_links(source, live) == 2
+    assert module.reload_links(source, live) == 3
     assert mod.lstat().st_ino != original
     assert (mod / "main.js").read_text() == "synthetic"
     assert layout.read_text() == "{}"

@@ -6,7 +6,7 @@ let
   layouts = builtins.attrNames (lib.filterAttrs
     (name: type: type == "regular" && (lib.hasSuffix ".json" name || lib.hasSuffix ".svg" name))
     (builtins.readDir ./configs/herdr-app/layouts));
-  assets = map (name: "mods/${name}") mods ++ map (name: "layouts/${name}") layouts;
+  assets = [ "keys.json" ] ++ map (name: "mods/${name}") mods ++ map (name: "layouts/${name}") layouts;
 in
 {
   home.packages = [ pkgs.nodejs pkgs.python3

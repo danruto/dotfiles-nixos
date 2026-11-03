@@ -9,6 +9,7 @@ Personal layouts and mods for the Herdr desktop app. This is separate from the H
 - **review-tabs** and **t3-threads**: the layouts' custom navigation.
 - **design-files**: a file panel with **Read Markdown** for local or remote files.
 - **aqua-markdown**: a native Markdown reader with inline Mermaid diagrams and a pan/zoom inspector. The vendored Pele engine includes its licence and provenance.
+- **keys.json**: keybindings ported from the Herdr terminal client's direct Alt keys (alt-hjkl panes, alt-n/m splits, alt-z zoom, alt-[ ] spaces, alt-left/right tabs, alt-up/down agents).
 - **jira-tickets**: a VM-backed ticket sidebar with exact @mentions, status filters and Hide done. See its README for private per-machine setup.
 
 ## Install on another computer
@@ -41,7 +42,7 @@ New assets must be linked by Home Manager before this check can pass. Shipped fi
 
 ## Kept local
 
-Settings, keybindings, active layout selection, spaces, tabs, machine addresses, pane state, layout click state, shared mod state, generated diagrams, caches and screenshots are not shared. No app-wide directory is symlinked.
+Settings, active layout selection, spaces, tabs, machine addresses, pane state, layout click state, shared mod state, generated diagrams, caches and screenshots are not shared. No app-wide directory is symlinked.
 
 ## Checks
 
