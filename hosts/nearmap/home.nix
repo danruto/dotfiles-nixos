@@ -26,6 +26,8 @@ in
     ../../user/lang/shell/shell.nix # shell tools
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/helix-fork.nix
+    ../../user/apps/terminal/herdr-app.nix
+    ../../user/apps/terminal/rex-app.nix
     ../../user/apps/networking/ssh.nix
   ];
 
