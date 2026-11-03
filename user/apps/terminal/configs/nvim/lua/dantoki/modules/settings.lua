@@ -144,3 +144,16 @@ elseif vim.fn.executable("/opt/orbstack-guest/bin/pbcopy") == 1 then
 		cache_enabled = 0,
 	}
 end
+
+-- Herdr OSC 52 clipboard: copy through the terminal into the desktop clipboard.
+if os.getenv("HC_TERMINAL_ID") then
+	local osc52 = require("vim.ui.clipboard.osc52")
+	local previous = vim.g.clipboard and vim.g.clipboard.paste
+	local system = (vim.uv or vim.loop).os_uname().sysname
+	local fallback = system == "Darwin" and "pbpaste" or "wl-paste"
+	vim.g.clipboard = {
+		name = "Herdr OSC 52",
+		copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+		paste = previous or { ["+"] = fallback, ["*"] = fallback },
+	}
+end
