@@ -1,0 +1,11 @@
+{
+  "zoom": 1.0,
+  "sounds": {
+    "enabled": true
+  },
+  "font": "D2KodingLigature Nerd Font Mono",
+  "font_size": 12.0,
+  "telemetry": false,
+  "minimum_contrast": 1.0,
+  "option_as_alt": "on"
+}

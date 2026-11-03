@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def reload_links(source, live):
-    assets = [Path("keys.json")]
+    assets = [Path("keys.json"), Path("settings.json")]
     assets += sorted(path.relative_to(source) for path in (source / "mods").iterdir() if path.is_dir())
     assets += sorted(path.relative_to(source) for path in (source / "layouts").iterdir() if path.suffix in {".json", ".svg"})
     for asset in assets:
