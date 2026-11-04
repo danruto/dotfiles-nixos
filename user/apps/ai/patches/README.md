@@ -21,7 +21,9 @@ Git-backed flake references omit untracked patch files. Until a new patch is tra
 
 A temporary PiG-only activation adds a `pig` Nix profile entry at priority 4. After a Home Manager switch includes the fixed package, inspect `nix profile list` and remove that temporary entry with `nix profile remove pig` so it cannot mask later updates. Restart PiG after changing its package; `/reload` does not replace a running host binary.
 
-When a later upstream release includes the equivalent lifetime fix, remove the patch while retaining the regression checks and return to the upstream packaging path only after mixed-extension shutdown passes. Source and module hashes must change explicitly with the release pin.
+Run `scripts/bump pig` to update the release version, upstream build revision, source hash and module hash. PiG is also included in `scripts/bump` with no arguments. The updater builds a temporary candidate with the existing patch and package checks before replacing `pi-pig.nix`; failures leave the pin unchanged. Run `python3 scripts/ai/pig/test-bump.py` for the offline updater checks.
+
+The updater does not remove patches or relax the pinned Go compiler and compatibility-version check. When a later upstream release includes the equivalent lifetime fix, remove the patch while retaining the regression checks and return to the upstream packaging path only after mixed-extension shutdown passes. Source and module hashes must change explicitly with the release pin.
 
 ## Hermes 0.9.11
 

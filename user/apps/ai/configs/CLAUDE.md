@@ -44,6 +44,15 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 - Don't commit unless asked. Edit in place first.
 - NEVER create a pull request (including a draft) unless I explicitly ask for one or explicitly authorise its creation. Permission to implement, commit, push, deploy, or follow a workflow is not permission to create a PR.
 
+## Version control
+
+A session-start hook prints the repo's mode as a `VCS:` line: GitButler workspace mode, GitButler single-branch mode, or plain git.
+
+- Before any Git write (commit, branch, pull, push, reset), check the mode again with `bash ~/dotfiles-nixos/user/apps/ai/configs/vcs-mode.sh`. It can change mid-session
+- GitButler, either mode: use `but` for commits, branches, updates and pushes. Never run `git commit`, `git switch`, `git checkout`, `git rebase`, `git pull` or `git reset`
+- On `main`: never commit. Start work with `but branch new <name>`
+- After a branch's PR is squash-merged: don't pull into that branch. Switch to `main`, update it, delete the old branch, then start a new one
+
 ## Machine & privacy
 
 - Never write private identifiers (private repo names, private issue numbers) into tracked or public files. Never commit a gitignored file

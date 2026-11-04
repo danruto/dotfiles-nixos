@@ -4,6 +4,7 @@
 
 let
   version = "0.5.3";
+  upstreamRevision = "526c86df885eba5e214355e7f70205e06d59bfa2";
   platforms = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
   # herdr-pig v0.2.1, Apache-2.0. Loaded only by PiG via llm.nix's home.file.
   herdrExtension = fetchurl {
@@ -38,7 +39,7 @@ buildGoModule {
   postPatch = ''
     printf '\nreplace github.com/MichaelKinsy/PiG/extensions/sdk => ./extensions/sdk\n' >> go.mod
   '';
-  ldflags = [ "-s" "-w" "-X github.com/MichaelKinsy/PiG/coding/cli.Build=526c86df885eba5e214355e7f70205e06d59bfa2-event-bus-cleanup" ];
+  ldflags = [ "-s" "-w" "-X github.com/MichaelKinsy/PiG/coding/cli.Build=${upstreamRevision}-event-bus-cleanup" ];
 
   nativeBuildInputs = [ makeWrapper ];
   nativeCheckInputs = [ nodejs ];

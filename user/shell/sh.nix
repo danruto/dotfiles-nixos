@@ -68,7 +68,7 @@ in
       };
       claude-nm = {
         description = "Run claude with the nm org subscription config dir";
-        body = "CLAUDE_CONFIG_DIR=$HOME/.claude-nm claude $argv --plugin-dir ~/dev/nearmap/bb2";
+        body = "CLAUDE_CONFIG_DIR=$HOME/.claude-nm claude --plugin-dir ~/dev/nearmap/bubblebeam $argv";
       };
       # mosh can't forward ports, so tunnels ride a separate ssh. Keeping the browser
       # on localhost keeps secure-context, OAuth loopback and passkey rules happy.
