@@ -1,1 +1,4 @@
 user/apps/ai/configs/settings.json merge=keep-local
+
+# aqua-markdown hashes the vendored Pele engine, so keep LF on every platform.
+user/apps/terminal/configs/herdr-app/** text eol=lf

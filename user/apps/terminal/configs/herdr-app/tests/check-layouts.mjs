@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const root = new URL("../", import.meta.url);
@@ -25,7 +25,7 @@ assert.equal(threadGroups(auto, [agent], [], [], "pig")[0].threads[0].title, "Fi
 assert.equal(threadGroups(auto, [], [{ tab: "automatic", title: "Shell", branch: "topic" }], [], "topic")[0].threads[0].title, "Shell");
 
 function nodes(node) { return [node, ...(node.children ?? []).flatMap(nodes)]; }
-for (const name of ["herdr-compact", "t3-threads"]) {
+for (const name of ["herdr-compact"]) {
   const tree = JSON.parse(await readFile(new URL(`layouts/${name}.json`, root), "utf8"));
   const all = nodes(tree), pane = all.find(node => node.id === "main").content.pane;
   assert.equal(new Set(all.map(node => node.id)).size, all.length, `${name}: unique node IDs`);
@@ -35,11 +35,38 @@ for (const name of ["herdr-compact", "t3-threads"]) {
   assert.equal(pane.header.reveal, "hover");
   assert.equal(all.find(node => node.id === "panel").hidden, true);
   const panels = all.find(node => node.id === "panel-body").children;
-  assert.deepEqual(panels.map(node => node.id), ["files", "changes", "jira"]);
+  assert.deepEqual(panels.map(node => node.id).filter(id => id !== "jira"), ["files", "changes"]);
   assert.equal(panels.find(node => node.id === "files").content.mod, "design-files");
-  assert.equal(panels.find(node => node.id === "jira").content.mod, "jira-tickets");
-  assert.equal(panels.find(node => node.id === "jira").content.props.layoutBlock, "jira");
+  // The Jira panel is per-machine: present in the shared layouts, dropped on Windows.
+  for (const jira of panels.filter(node => node.id === "jira")) {
+    assert.equal(jira.content.mod, "jira-tickets");
+    assert.equal(jira.content.props.layoutBlock, "jira");
+  }
   if (name === "herdr-compact") assert.equal(all.find(node => node.id === "tabs").content.mod, "review-tabs");
   await readFile(new URL(tree.preview, root));
 }
-console.log("PASS: thread filtering, stable pins, remote grouping, settled shelf, title fallback, status labels, and both layout contracts");
+
+const workbench = JSON.parse(await readFile(new URL("layouts/workbench.json", root), "utf8"));
+const wb = nodes(workbench);
+assert.equal(new Set(wb.map(node => node.id)).size, wb.length, "workbench: unique node IDs");
+assert.equal(wb.find(node => node.id === "tabs").content.mod, "review-tabs");
+const wbPane = wb.find(node => node.id === "terminal").content.pane;
+assert.equal(wbPane.border.width, 0);
+assert.equal(wbPane.focus.width, 0);
+assert.equal(wbPane.radius, 0);
+assert.equal(wbPane.header.reveal, "hover");
+assert.deepEqual(wb.find(node => node.id === "sidebar").children.map(node => node.id), ["brand", "workbench"]);
+assert.equal(wb.find(node => node.id === "workbench").content.mod, "workbench");
+const center = wb.find(node => node.id === "center");
+assert.equal(center.active, "terminal");
+assert.deepEqual(center.children.map(node => node.id), ["terminal", "jira", "github", "aqua", "files", "changes"]);
+assert.equal(center.children.find(node => node.id === "jira").content.mod, "mission-control-jira");
+assert.equal(center.children.find(node => node.id === "github").content.mod, "mission-control-github");
+assert.equal(center.children.find(node => node.id === "aqua").content.mod, "aqua-cutter");
+assert.equal(center.children.find(node => node.id === "files").content.mod, "files");
+assert.equal(center.children.find(node => node.id === "changes").content.mod, "changes");
+await readFile(new URL(workbench.preview, root));
+await readFile(new URL("mods/workbench/mod.json", root));
+await readFile(new URL("mods/aqua-cutter/main.js", root));
+await readFile(new URL("mods/mission-control-jira/main.js", root));
+console.log("PASS: thread filtering, stable pins, remote grouping, settled shelf, title fallback, status labels, and every layout contract");

@@ -12,6 +12,11 @@ const EDGES = ["Document", "Straight", "Curved", "Stepped"];
 const DOCUMENT = "aqua.svg.document";
 /** @param {Record<string, string>} t */
 const palette = t => ({ background: t.background, foreground: t.foreground, muted: t.muted, surface: t.surface, raised: t.raised, border: t.border, accent: t.accent });
+const isAbsolute = value => value.startsWith("/") || /^[A-Za-z]:[\\/]/.test(value) || value.startsWith("\\\\");
+const openExternal = url => appWindow().platform === "macos" ? ["open", [url]]
+  : appWindow().platform === "windows" ? ["cmd", ["/c", "start", "", url]]
+  : ["xdg-open", [url]];
+const removeFile = path => appWindow().platform === "windows" ? ["cmd", ["/c", "del", "/f", "/q", path]] : ["rm", ["-f", path]];
 
 export default class MarkdownReader {
   /** @param {unknown} _props @param {import("gpui-kit").AsyncContext} cx */
@@ -51,7 +56,7 @@ export default class MarkdownReader {
 
   /** @param {Document} document @param {Context} cx @param {boolean} [remember] */
   open(document, cx, remember = true) {
-    if (!document.path.startsWith("/")) { this.message = "Use an absolute Markdown path."; cx.notify(); return; }
+    if (!isAbsolute(document.path)) { this.message = "Use an absolute Markdown path."; cx.notify(); return; }
     const changed = this.document?.path !== document.path || this.document?.on !== document.on;
     if (changed) {
       if (remember && this.document) this.history.push(this.document);
@@ -84,7 +89,7 @@ export default class MarkdownReader {
         this.message = `${result.diagrams.length} diagram${result.diagrams.length === 1 ? "" : "s"}${errors ? ` · ${errors} diagram error${errors === 1 ? "" : "s"}` : ""} · ${result.engine} · ${result.elapsedMs} ms · read-only`; 
       } catch (error) { if (request === this.generation) this.message = error instanceof Error ? error.message : String(error); }
       finally {
-        if (input && !helperFinished) await exec("rm", ["-f", input]).catch(() => false);
+        if (input && !helperFinished) { const [command, args] = removeFile(input); await exec(command, args).catch(() => false); }
         if (request === this.generation) { this.loading = false; cx.notify(); }
       }
     });
@@ -123,7 +128,8 @@ export default class MarkdownReader {
     else if (target.kind === "external" && target.url) {
       cx.spawn(async cx => {
         try {
-          const response = await exec(appWindow().platform === "macos" ? "open" : "xdg-open", [target.url]);
+          const [command, args] = openExternal(target.url);
+          const response = await exec(command, args);
           if (response.code !== 0) throw new Error(response.stderr || "Could not open the link");
         } catch (error) { this.message = error instanceof Error ? error.message : String(error); cx.notify(); }
       });

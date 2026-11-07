@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600">
+<rect width="960" height="600" rx="12" fill="#151619"/>
+<path d="M12 0H288V600H12Q0 600 0 588V12Q0 0 12 0" fill="#1c1d21"/>
+<path d="M288 0V600M288 42H960M0 46H288M0 572H960" stroke="#303138" fill="none"/>
+<g font-family="Arial,sans-serif" font-size="13" fill="#e7e7ea">
+<circle cx="18" cy="23" r="5" fill="#ff6057"/><circle cx="35" cy="23" r="5" fill="#febc2e"/><circle cx="52" cy="23" r="5" fill="#28c840"/>
+<text x="84" y="28" font-weight="bold">Herdr</text><text x="246" y="28" fill="#a5a6ae">&#128269;</text><text x="264" y="28" fill="#a5a6ae">&#9707;</text>
+<rect x="8" y="52" width="272" height="30" rx="8" fill="#151619" stroke="#303138"/><circle cx="22" cy="67" r="4" stroke="#85878f" fill="none"/><text x="34" y="71" font-size="11" fill="#85878f">Search or run&#8230;</text><rect x="236" y="59" width="36" height="16" rx="4" fill="#2b2d35"/><text x="244" y="70" font-size="9" fill="#85878f">Ctrl P</text>
+<rect x="8" y="90" width="272" height="36" rx="10" fill="#24252b"/>
+<rect x="11" y="93" width="52" height="30" rx="7" fill="#151619"/><text x="30" y="113" font-size="13" fill="#e7e7ea">&#9656;_</text>
+<text x="78" y="113" font-size="13" fill="#a5a6ae">&#9634;</text><text x="132" y="113" font-size="13" fill="#a5a6ae">&#9776;</text><text x="186" y="113" font-size="13" fill="#a5a6ae">&#128196;</text><text x="240" y="113" font-size="13" fill="#a5a6ae">&#8646;</text>
+<text x="8" y="152" font-size="10.5" font-weight="bold" fill="#a5a6ae">AGENTS</text><text x="58" y="152" font-size="10.5" fill="#85878f">3</text><text x="262" y="152" font-size="10" fill="#f0c674">&#9679; 1</text>
+<text x="12" y="174" font-size="11" fill="#c9cacf">pb2</text><text x="266" y="174" font-size="10" fill="#85878f">&#9662;</text>
+<circle cx="18" cy="192" r="3" fill="#85878f"/><text x="30" y="196" font-size="12" fill="#c9cacf">rblx</text><text x="244" y="196" font-size="10" fill="#85878f">&lt;1m</text>
+<text x="12" y="222" font-size="11" fill="#c9cacf">healix</text><text x="266" y="222" font-size="10" fill="#85878f">&#9662;</text>
+<circle cx="18" cy="240" r="3" fill="#85878f"/><text x="30" y="244" font-size="12" fill="#c9cacf">api</text><text x="244" y="244" font-size="10" fill="#85878f">&lt;1m</text>
+<text x="36" y="264" font-size="10.5" fill="#85878f">&#8627; pb-work-loop-m19-r1</text><text x="246" y="264" font-size="10" fill="#b8a2fa">&#9680;</text>
+<circle cx="18" cy="284" r="3" fill="#f0c674"/><text x="30" y="288" font-size="12" fill="#c9cacf">mmq</text><text x="244" y="288" font-size="10" fill="#85878f">6m</text>
+<text x="8" y="320" font-size="10.5" font-weight="bold" fill="#a5a6ae">SPACES</text><text x="64" y="320" font-size="10.5" fill="#85878f">4</text><text x="264" y="320" font-size="11" fill="#a5a6ae">+</text>
+<text x="14" y="342" font-size="11" fill="#c9cacf">&#9656; This computer</text><text x="262" y="342" font-size="11" fill="#85878f">+</text>
+<text x="40" y="358" font-size="9.5" fill="#85878f">CPU 12%  &#183;  MEM 38%  &#183;  DSK 71%</text>
+<rect x="8" y="366" width="272" height="26" rx="6" fill="#2b2d35"/><circle cx="22" cy="379" r="3" fill="#22a99a"/><text x="34" y="383" font-size="11.5">pb</text><circle cx="250" cy="379" r="3" fill="#b8a2fa"/>
+<circle cx="22" cy="406" r="3" fill="#5b8def"/><text x="34" y="410" font-size="11.5" fill="#c9cacf">healix</text>
+<text x="14" y="436" font-size="11" fill="#c9cacf">&#9656; 192.168.0.245</text><text x="262" y="436" font-size="11" fill="#85878f">+</text>
+<text x="40" y="452" font-size="9.5" fill="#85878f">CPU 64%  &#183;  MEM 42%  &#183;  DSK 69%</text>
+<path d="M0 480H288" stroke="#303138"/>
+<text x="14" y="500" font-size="10.5" fill="#a5a6ae">+ Add machine</text><text x="244" y="500" font-size="10.5" fill="#85878f">Manage</text>
+<rect x="8" y="510" width="272" height="48" rx="12" fill="#24252b" stroke="#303138"/>
+<rect x="20" y="521" width="26" height="26" rx="8" fill="#2b2d35"/><text x="27" y="539" font-size="11" fill="#a5a6ae">&#8984;</text>
+<text x="56" y="533" font-size="12.5" font-weight="bold">healix</text><text x="56" y="549" font-size="10" fill="#85878f">192.168.0.245 &#183; 3 workspaces</text>
+<rect x="296" y="8" width="66" height="26" rx="7" fill="#24252b"/><circle cx="310" cy="21" r="3" fill="#b8a2fa"/><text x="319" y="26" font-size="11.5" fill="#c9cacf">dot</text>
+<rect x="368" y="8" width="76" height="26" rx="7" fill="#2b2d35" stroke="#303138"/><text x="378" y="26" font-size="11.5" fill="#e7e7ea">mmq</text><circle cx="431" cy="21" r="3" fill="#b8a2fa"/>
+<text x="452" y="26" font-size="12" fill="#85878f">+</text>
+<text x="802" y="26" font-size="11.5" fill="#a5a6ae">Files</text><text x="842" y="26" font-size="11.5" fill="#85878f">Changes</text>
+<g font-family="monospace" font-size="12" fill="#85878f">
+<text x="312" y="76" fill="#82b1ff">&#9656; One sidebar from cockpit, the terminal from herdr-compact.</text>
+<text x="312" y="104">The strip switches the center: Terminal, Jira, Aqua Cutter,</text>
+<text x="312" y="126">Files, Changes. Clicking a tab or space returns to Terminal.</text>
+<text x="312" y="158">Agents group by space and fold; spaces group by machine.</text>
+<text x="312" y="196" fill="#8dd5b3">&#10003; CPU, memory and disk sit on each machine row.</text>
+<text x="312" y="234" fill="#a5a6ae">$</text><rect x="324" y="224" width="8" height="14" fill="#e7e7ea"/>
+</g>
+<text x="304" y="590" font-size="10.5" fill="#85878f">healix &#183; main</text>
+</g></svg>
