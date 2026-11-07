@@ -26,12 +26,12 @@ let
   # https://downloads.claude.ai/claude-code-releases/<version>/manifest.zst.json
   claude-code-unwrapped = pkgs-master.claude-code.override {
     manifest = {
-      version = "2.1.318";
+      version = "2.1.319";
       platforms = {
-        "darwin-arm64" = { binary = "claude.zst"; checksum = "f49b990254804131f0be0f60260da9b4a55ec9fa73af0252816e423cb0e178dc"; };
-        "darwin-x64" = { binary = "claude.zst"; checksum = "17e41df7c85b0915a0d062608866de966654a1ddb7c6881465ab99fea5a19599"; };
-        "linux-arm64" = { binary = "claude.zst"; checksum = "579259965c17034f3172b0c31db3f6922cde92e5f183f14541d1615607461d21"; };
-        "linux-x64" = { binary = "claude.zst"; checksum = "760aaca865c68a315e49d129614a5f5dc9cab99f7de75899257faed68f553f3b"; };
+        "darwin-arm64" = { binary = "claude.zst"; checksum = "82a59698bcec8a2074cb7bacbd130cf557c103523f1a450ad113ab8dd8778a8e"; };
+        "darwin-x64" = { binary = "claude.zst"; checksum = "7e0ce461550d322fabb9f762f420b1599970cce2d54ca544862b98885a23a957"; };
+        "linux-arm64" = { binary = "claude.zst"; checksum = "fdd8a686cb0d4bba6f2a59d5f120de976b5d5ef976df029e48b802dd15381130"; };
+        "linux-x64" = { binary = "claude.zst"; checksum = "9977d90303740415af76bc808536b34620d0b30b7f08b0813603689875372ea0"; };
       };
     };
   };

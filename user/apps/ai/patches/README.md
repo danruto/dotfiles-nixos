@@ -9,9 +9,9 @@ Maintenance scripts live under `scripts/ai/<extension>/`; checks shared by
 extensions live under `scripts/ai/shared/`. Add future extension scripts to their
 own directory rather than the top-level `scripts/` list.
 
-## PiG 0.5.3
+## PiG 0.7.0
 
-`pi-pig.nix` builds the fixed-hash `v0.5.3` source archive with Go 1.27.3 and applies `pig-0.5.3-event-bus-cleanup.patch`. The upstream source commit is `526c86df885eba5e214355e7f70205e06d59bfa2`. The diagnostic build identity ends in `event-bus-cleanup`.
+`pi-pig.nix` builds the fixed-hash `v0.7.0` source archive with Go 1.27.3 and applies `pig-0.5.3-event-bus-cleanup.patch`. The upstream source commit is `beb56447c476da70d05d8e1e1ca9e993b367cb8b`. The diagnostic build identity ends in `event-bus-cleanup`.
 
 The patch registers migrated Node event listeners with the same runtime-owned cleanup mechanism as new listeners. This preserves explicit unsubscribe, repeated unsubscribe, reload and connection-close behavior when a native extension moves the Node bus onto the shared host registry. It does not disable extensions or hide panic diagnostics.
 
