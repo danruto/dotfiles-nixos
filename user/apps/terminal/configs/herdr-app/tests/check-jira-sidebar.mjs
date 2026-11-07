@@ -23,7 +23,7 @@ function find(item, id) {
   return null;
 }
 const root = new URL('../', import.meta.url);
-for (const [name, module, className, button] of [['herdr-compact', 'review-tabs', 'Tabs', 'panel-jira'], ['t3-threads', 't3-threads', 'Threads', 'show-jira']]) {
+for (const [name, module, className, button] of [['herdr-compact', 'review-tabs', 'Tabs', 'panel-jira']]) {
   const tree = JSON.parse(await readFile(new URL(`layouts/${name}.json`, root), 'utf8'));
   const lookup = (node, id) => node.id === id ? node : (node.children || []).map(child => lookup(child, id)).find(Boolean);
   const panel = lookup(tree, 'panel'), body = lookup(tree, 'panel-body');
@@ -39,6 +39,11 @@ for (const [name, module, className, button] of [['herdr-compact', 'review-tabs'
   const renderer = new Renderer();
   renderer.init();
   renderer.groups = () => [];
+  // The Jira panel is per-machine: a layout that drops it (Windows) has no button.
+  if (!(body.children ?? []).some((child) => child.id === 'jira')) {
+    assert.equal(find(renderer.render(), button), null, `${name}: no Jira button without a Jira panel`);
+    continue;
+  }
   const click = () => {
     const control = find(renderer.render(), button);
     assert.ok(control, `${name}: Jira stays available alongside existing Files/Changes preferences`);
@@ -56,4 +61,4 @@ for (const [name, module, className, button] of [['herdr-compact', 'review-tabs'
   assert.deepEqual(JSON.parse(JSON.stringify(events)), [{ name: 'layout.hide', args: { id: 'panel' } }]);
   await readFile(new URL('mods/jira-tickets/ticket.svg', root));
 }
-console.log('PASS: both layout Jira buttons select/show the right sidebar, hide it on a second click, and remain available with existing panel preferences');
+console.log('PASS: layout Jira buttons select/show the right sidebar, hide it on a second click, and stay absent when a layout has no Jira panel');

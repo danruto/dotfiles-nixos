@@ -1,0 +1,62 @@
+{
+  "id": "root",
+  "type": "row",
+  "titlebar": "none",
+  "traffic_lights": [12, 16],
+  "preview": "layouts/workbench.svg",
+  "background": "canvas",
+  "terminal_padding": [6, 10],
+  "divider": { "width": 1, "color": "border" },
+  "children": [
+    {
+      "id": "sidebar",
+      "type": "column",
+      "size": { "px": 288 },
+      "min": 44,
+      "max": 480,
+      "background": "chrome",
+      "resizable": false,
+      "children": [
+        { "id": "brand", "type": "block", "size": { "px": 46 }, "window_drag": true, "content": { "mod": "workspace-chrome" } },
+        { "id": "workbench", "type": "block", "content": { "mod": "workbench" }, "size": { "weight": 1 }, "min": 120 }
+      ]
+    },
+    {
+      "id": "work",
+      "type": "column",
+      "resizable": false,
+      "children": [
+        { "id": "tabs", "type": "block", "size": { "px": 42 }, "window_drag": true, "content": { "mod": "review-tabs" } },
+        {
+          "id": "center",
+          "type": "stack",
+          "active": "terminal",
+          "children": [
+            {
+              "id": "terminal",
+              "type": "block",
+              "content": {
+                "tab": "active",
+                "pane": {
+                  "gap": 4,
+                  "radius": 0,
+                  "background": "background",
+                  "border": { "width": 0, "color": "border" },
+                  "focus": { "width": 0, "color": "border" },
+                  "lone": true,
+                  "header": { "content": { "mod": "pane" }, "height": 28, "position": "top", "reveal": "hover" }
+                }
+              }
+            },
+            { "id": "jira", "type": "block", "content": { "mod": "mission-control-jira", "props": { "view": "panel", "hideHeader": true } } },
+            { "id": "github", "type": "block", "content": { "mod": "mission-control-github", "props": { "view": "issues", "hideHeader": true } } },
+            { "id": "aqua", "type": "block", "content": { "mod": "aqua-cutter", "props": { "file": "/home/danruto/dev/pixelbrush/aqua-cutter/docs/pr/2026-10-17-bb2-local-walkthrough-draft.json", "on": "192.168.0.245" } } },
+            { "id": "files", "type": "block", "content": { "mod": "files" } },
+            { "id": "changes", "type": "block", "content": { "mod": "changes" } }
+          ]
+        },
+        { "id": "status", "type": "block", "size": { "px": 28 }, "content": { "mod": "workspace-status" } }
+      ]
+    }
+  ]
+}

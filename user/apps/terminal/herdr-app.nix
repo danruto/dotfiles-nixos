@@ -37,4 +37,12 @@ in
       ${lib.escapeShellArg "${config.home.homeDirectory}/.config/herdr-app"} \
       ${lib.escapeShellArgs assets}
   '';
+
+  # Herdr's asset loader does not resolve SVGs behind a link on Windows, so the
+  # workbench view icons are copied into a real folder instead of linked.
+  home.activation.herdrAppIcons = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p ${lib.escapeShellArg "${config.home.homeDirectory}/.config/herdr-app/wb-icons"}
+    run cp -f ${./configs/herdr-app/workbench-icons}/*.svg \
+      ${lib.escapeShellArg "${config.home.homeDirectory}/.config/herdr-app/wb-icons/"}
+  '';
 }
