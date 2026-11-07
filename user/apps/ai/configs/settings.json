@@ -108,12 +108,14 @@
       "mcp__fff__find_files",
       "mcp__fff__multi_grep"
     ],
+    "ask": [
+      "Bash(but push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git push:*)"
+    ],
     "defaultMode": "auto",
     "deny": [
       "Bash(rm -rf:*)",
-      "Bash(git push:*)",
-      "Bash(but push:*)",
-      "Bash(git push --force:*)",
       "Bash(git reset --hard:*)",
       "Bash(sudo:*)",
       "Read(.env)",
