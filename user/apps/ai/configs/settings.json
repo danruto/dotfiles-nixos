@@ -1,7 +1,4 @@
 {
-  "env": {
-    "CLAUDE_CODE_SHELL_PREFIX": "/home/danruto/dotfiles-nixos/user/apps/ai/configs/kill-guard.sh"
-  },
   "$schema": "https://www.schemastore.org/claude-code-settings.json",
   "alwaysThinkingEnabled": true,
   "attribution": {
@@ -33,6 +30,9 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true
   },
+  "env": {
+    "CLAUDE_CODE_SHELL_PREFIX": "/home/danruto/dotfiles-nixos/user/apps/ai/configs/kill-guard.sh"
+  },
   "extraKnownMarketplaces": {
     "bubblebeam": {
       "source": {
@@ -54,6 +54,11 @@
         "hooks": [
           {
             "command": "bash '/home/danruto/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10,
+            "type": "command"
+          },
+          {
+            "command": "bash '/home/danruto/dotfiles-nixos/user/apps/ai/configs/vcs-mode.sh'",
             "timeout": 10,
             "type": "command"
           }
@@ -103,12 +108,14 @@
       "mcp__fff__find_files",
       "mcp__fff__multi_grep"
     ],
+    "ask": [
+      "Bash(but push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git push:*)"
+    ],
     "defaultMode": "auto",
     "deny": [
       "Bash(rm -rf:*)",
-      "Bash(git push:*)",
-      "Bash(but push:*)",
-      "Bash(git push --force:*)",
       "Bash(git reset --hard:*)",
       "Bash(sudo:*)",
       "Read(.env)",

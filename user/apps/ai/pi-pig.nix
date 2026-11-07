@@ -3,7 +3,8 @@
 }:
 
 let
-  version = "0.5.3";
+  version = "0.7.0";
+  upstreamRevision = "beb56447c476da70d05d8e1e1ca9e993b367cb8b";
   platforms = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
   # herdr-pig v0.2.1, Apache-2.0. Loaded only by PiG via llm.nix's home.file.
   herdrExtension = fetchurl {
@@ -12,18 +13,18 @@ let
     hash = "sha256-CYiy0xLsiFe9qSqBMKchaV6iWecrPgQ+8y8C3bARdBE=";
   };
 in
-assert lib.assertMsg (go.version == "1.27.3") "PiG 0.5.3 requires Go 1.27.3";
+assert lib.assertMsg (go.version == "1.27.3") "PiG ${version} requires Go 1.27.3";
 buildGoModule {
   pname = "pig";
   inherit version;
 
   src = fetchurl {
     url = "https://github.com/MichaelKinsy/PiG/archive/refs/tags/v${version}.tar.gz";
-    hash = "sha256-/mfp8ReVVZIdJLxgxk/Sd9FknIW63vA4jqE/WIDT92E=";
+    hash = "sha256-p3Ax4r2kN3Wi1bVJKwZY2mg1yDl2frEqBdOvfUs641Q=";
   };
 
   patches = [ ./patches/pig-0.5.3-event-bus-cleanup.patch ];
-  vendorHash = "sha256-qbP5xZrm+dErqoo7IP4KdxW8B5aMImVAq4IfLEWB/xc=";
+  vendorHash = "sha256-TxiMiTBUE8KqTMbxLecJ9NzvWH8PE3wIXs66ENnZ4S8=";
   proxyVendor = true;
   subPackages = [ "cmd/pig" ];
   # The extension host needs the Go compiler at runtime.
@@ -38,7 +39,7 @@ buildGoModule {
   postPatch = ''
     printf '\nreplace github.com/MichaelKinsy/PiG/extensions/sdk => ./extensions/sdk\n' >> go.mod
   '';
-  ldflags = [ "-s" "-w" "-X github.com/MichaelKinsy/PiG/coding/cli.Build=526c86df885eba5e214355e7f70205e06d59bfa2-event-bus-cleanup" ];
+  ldflags = [ "-s" "-w" "-X github.com/MichaelKinsy/PiG/coding/cli.Build=${upstreamRevision}-event-bus-cleanup" ];
 
   nativeBuildInputs = [ makeWrapper ];
   nativeCheckInputs = [ nodejs ];
@@ -72,7 +73,10 @@ buildGoModule {
   doInstallCheck = true;
   installCheckPhase = ''
     runHook preInstallCheck
-    PIG_CODING_AGENT_DIR="$TMPDIR/agent" "$out/bin/pig" --version | grep -F "${version}+1.4.0"
+    # The binary must report the pinned release plus the Pi version baked into its source.
+    upstream=$(sed -n 's/^const UpstreamVersion = "\([^"]*\)"$/\1/p' internal/coding/pigversion/pigversion.go)
+    [ -n "$upstream" ]
+    PIG_CODING_AGENT_DIR="$TMPDIR/agent" "$out/bin/pig" --version | grep -Fx "${version}+$upstream"
     runHook postInstallCheck
   '';
 

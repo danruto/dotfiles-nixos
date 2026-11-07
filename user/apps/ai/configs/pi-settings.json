@@ -38,7 +38,7 @@
     },
     "../../dotfiles-nixos/user/apps/ai/configs/pi-hermes-patched.ts",
     "../../dev/pixelbrush/pb-skills",
-    "../../dev/nearmap/bb2",
+    "../../dev/nearmap/bubblebeam",
     "npm:pi-claude-bridge"
   ],
   "quietStartup": true,

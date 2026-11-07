@@ -20,6 +20,7 @@
       editor = {
         line-number = "relative";
         mouse = true;
+        clipboard-provider = "termcode";
         auto-info = true;
         true-color = true;
         color-modes = true;

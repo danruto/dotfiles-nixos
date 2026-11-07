@@ -9,9 +9,9 @@ Maintenance scripts live under `scripts/ai/<extension>/`; checks shared by
 extensions live under `scripts/ai/shared/`. Add future extension scripts to their
 own directory rather than the top-level `scripts/` list.
 
-## PiG 0.5.3
+## PiG 0.7.0
 
-`pi-pig.nix` builds the fixed-hash `v0.5.3` source archive with Go 1.27.3 and applies `pig-0.5.3-event-bus-cleanup.patch`. The upstream source commit is `526c86df885eba5e214355e7f70205e06d59bfa2`. The diagnostic build identity ends in `event-bus-cleanup`.
+`pi-pig.nix` builds the fixed-hash `v0.7.0` source archive with Go 1.27.3 and applies `pig-0.5.3-event-bus-cleanup.patch`. The upstream source commit is `beb56447c476da70d05d8e1e1ca9e993b367cb8b`. The diagnostic build identity ends in `event-bus-cleanup`.
 
 The patch registers migrated Node event listeners with the same runtime-owned cleanup mechanism as new listeners. This preserves explicit unsubscribe, repeated unsubscribe, reload and connection-close behavior when a native extension moves the Node bus onto the shared host registry. It does not disable extensions or hide panic diagnostics.
 
@@ -21,7 +21,9 @@ Git-backed flake references omit untracked patch files. Until a new patch is tra
 
 A temporary PiG-only activation adds a `pig` Nix profile entry at priority 4. After a Home Manager switch includes the fixed package, inspect `nix profile list` and remove that temporary entry with `nix profile remove pig` so it cannot mask later updates. Restart PiG after changing its package; `/reload` does not replace a running host binary.
 
-When a later upstream release includes the equivalent lifetime fix, remove the patch while retaining the regression checks and return to the upstream packaging path only after mixed-extension shutdown passes. Source and module hashes must change explicitly with the release pin.
+Run `scripts/bump pig` to update the release version, upstream build revision, source hash and module hash. PiG is also included in `scripts/bump` with no arguments. The updater builds a temporary candidate with the existing patch and package checks before replacing `pi-pig.nix`; failures leave the pin unchanged. Run `python3 scripts/ai/pig/test-bump.py` for the offline updater checks.
+
+The updater does not remove patches or relax the pinned Go compiler and compatibility-version check. When a later upstream release includes the equivalent lifetime fix, remove the patch while retaining the regression checks and return to the upstream packaging path only after mixed-extension shutdown passes. Source and module hashes must change explicitly with the release pin.
 
 ## Hermes 0.9.11
 

@@ -8,6 +8,7 @@ let
     alejandra
     deadnix
     statix
+    nix-output-monitor
   ];
 in
 {

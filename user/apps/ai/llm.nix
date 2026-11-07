@@ -26,12 +26,12 @@ let
   # https://downloads.claude.ai/claude-code-releases/<version>/manifest.zst.json
   claude-code-unwrapped = pkgs-master.claude-code.override {
     manifest = {
-      version = "2.1.316";
+      version = "2.1.319";
       platforms = {
-        "darwin-arm64" = { binary = "claude.zst"; checksum = "e43d57df0ce383e084b22f1d4fb7be6e0bdb1d40b4ceb042f3cfba96d5ec468f"; };
-        "darwin-x64" = { binary = "claude.zst"; checksum = "df7365b5c8019682aa8cf5e66b5547e9fa4980bc74ed64dbac4c1eb45ef228e5"; };
-        "linux-arm64" = { binary = "claude.zst"; checksum = "d4ed34a7ecd889497fccc0951c869867b2369196804e3d83b8e486d424b973e1"; };
-        "linux-x64" = { binary = "claude.zst"; checksum = "4108764100675c0773d98011d5091f427f30eebfc567aa9f1b5f4d9a54630a10"; };
+        "darwin-arm64" = { binary = "claude.zst"; checksum = "82a59698bcec8a2074cb7bacbd130cf557c103523f1a450ad113ab8dd8778a8e"; };
+        "darwin-x64" = { binary = "claude.zst"; checksum = "7e0ce461550d322fabb9f762f420b1599970cce2d54ca544862b98885a23a957"; };
+        "linux-arm64" = { binary = "claude.zst"; checksum = "fdd8a686cb0d4bba6f2a59d5f120de976b5d5ef976df029e48b802dd15381130"; };
+        "linux-x64" = { binary = "claude.zst"; checksum = "9977d90303740415af76bc808536b34620d0b30b7f08b0813603689875372ea0"; };
       };
     };
   };
@@ -58,12 +58,12 @@ let
   # `npm view @tokscale/cli-<plat> dist.integrity`.
   tokscale =
     let
-      version = "4.20.1";
+      version = "4.21.0";
       sources = {
-        "x86_64-linux" = { plat = "linux-x64-gnu"; hash = "sha512-ekkNcNnXzDS6UdL5qlb3gRzWmE3NiwHXYqvwJU+EiI+3Gi4DKMyTm406gYwv+B6dhRfYA5YLyMeHsNUoiDDRNw=="; };
-        "aarch64-linux" = { plat = "linux-arm64-gnu"; hash = "sha512-pxv1BSVMIPbGj1ne/o/PqDdRMBfBfLLEAEWKsxjsGDs22p7boaXEM2cLXR4G70eprUv8KH0NPllmFwqb5jHnwQ=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-YRhKmVczmh1Ca+Pv4LqeoypT2mgD7mE1MLaaqUSzOH4y/XM04GV9//Zjjpx48HEiHRgH7p+H2IU/xE4EbzyzLw=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-aHI7EKMQNfe80A1FGPX9HbyPZ4XF3pjm13rZCssdWIvx5AZBWtFua54she9AwcgagxIxuk754NywuWHPz30jrA=="; };
+        "x86_64-linux" = { plat = "linux-x64-gnu"; hash = "sha512-cvsZUSszZB/Azz2M+Otr39buF1P43tN0Ji7r78sP5Z5EjdfxDdOdB5J/JtehsR0Lx5bto1+mOgpsMD38U0OUIA=="; };
+        "aarch64-linux" = { plat = "linux-arm64-gnu"; hash = "sha512-jR021Rk+bOah41cOk0Py6THxSJdvbcFSVxBzqkG9t6k9G9zV4olAHkMH+3TgeC5AsThz+Bcd+TqEVyg2yhFIrQ=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-mqx2jk7S9/bL8J3riGYu6PClcD0MhiEAIXsMIdUV3GePJFiabO/5kF4M6nEhL4v4ZHeyvu13ne9ewuBVHXWGIw=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-rmXtFTvbV6j7CU7Vi0h5xcDTLCMb6/FLczCW9NhdDjpJCVptZeKebjEL70seheUaOC7biAaXAn9FFPsm4giPxQ=="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in
@@ -132,12 +132,12 @@ let
 
   revdiff =
     let
-      version = "1.13.0";
+      version = "1.14.0";
       sources = {
-        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-bML8vcsuhlpwY5RfBzX2mRb2jMIaiGhUIXIzx5PttMc="; };
-        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-QEkq6zalfxDCvKGlzJX66GnXI2v7BO+32dHD2ChRr/U="; };
-        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-6TPjW/kbKuIKXIP3+d+KsNBpfx49b9l1qAnLOQnejPY="; };
-        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-mXzMnxZP4HIOY0m9k8c+eennDdAFjufMeoysTBYx6aQ="; };
+        "x86_64-linux" = { suffix = "linux_amd64"; hash = "sha256-XfbkjnzL4hLcRQviMd905Fx6GXnFn0KL56J3K2YHd/g="; };
+        "aarch64-linux" = { suffix = "linux_arm64"; hash = "sha256-tu8uc807vde/js4mG4WnP8USlBcghoXNj9wIYIi9Tr0="; };
+        "x86_64-darwin" = { suffix = "darwin_amd64"; hash = "sha256-A69PhvYA2s1SRhLUqcsbX7oANg2GF0VXW5lAi6PprtQ="; };
+        "aarch64-darwin" = { suffix = "darwin_arm64"; hash = "sha256-ms5KTCoGUFlPfJJ91O/nOZnnoiOEjb4gWtcFpAL8Z6s="; };
       };
       target = sources.${pkgs.stdenv.hostPlatform.system};
     in

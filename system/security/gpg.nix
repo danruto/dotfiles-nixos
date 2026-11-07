@@ -39,6 +39,10 @@ in
     };
   };
 
+  # gnome-keyring turns this on by default, and its socket then claims
+  # SSH_AUTH_SOCK ahead of gpg-agent. Only one agent can own SSH.
+  services.gnome.gcr-ssh-agent.enable = false;
+
   # secret-tool and other libsecret clients.
   environment.systemPackages = [ pkgs.libsecret ];
 
