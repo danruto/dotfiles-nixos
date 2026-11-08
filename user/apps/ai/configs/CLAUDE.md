@@ -24,6 +24,7 @@ Write to ISO 24495-1:2023 (plain language) and JAN ADHD guidance. Optimise for a
 - Name the exact command, file, or value, in a code block — don't describe it vaguely
 - Simple answers: 1-2 sentences. Longer deliverables: as long as the content needs, no filler
 - Don't repeat back what I said unless clarifying ambiguity
+- When a report (review, audit, research, plan, summary) is saved as a file, make it a self-contained `.html` file, never `.md`. Replies in chat stay as normal text. Exception: docs the repo tracks as Markdown by convention (`README.md`, `CLAUDE.md`, specs and designs under `docs/`)
 
 ## Coding Style
 
