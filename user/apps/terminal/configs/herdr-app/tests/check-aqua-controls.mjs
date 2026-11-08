@@ -4,9 +4,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runInNewContext } from "node:vm";
 import { spawnSync } from "node:child_process";
-import { DiagramViewport } from "../mods/aqua-markdown/viewport.js";
-import { COLOURS, EDGES, diagramStyle } from "../mods/aqua-markdown/styles.js";
-import { renderDocument } from "../mods/aqua-markdown/render.mjs";
+import { DiagramViewport } from "../mods/aqua-cutter/viewport.js";
+import { COLOURS, EDGES, diagramStyle } from "../mods/aqua-cutter/styles.js";
+import { renderDocument } from "../mods/aqua-cutter/render.mjs";
 
 const theme = { background: "#17171b", foreground: "#eeedf2", muted: "#aaa6b5", surface: "#24242b", raised: "#302b40", border: "#68636f", accent: "#c4b5fd" };
 const viewport = new DiagramViewport();
@@ -50,26 +50,24 @@ function element() {
   } });
   return builder;
 }
-const storage = new Map();
 let tasks = 0, notifications = 0, stopped = 0;
-const closed = [];
-let inspectorProps = { overlay: "synthetic-inspector" };
+const closed = [], cycled = [];
+let inspectorProps = { overlay: "synthetic-inspector", diagrams: [{ title: "First", source: "flowchart LR\n A-->B", line: 3 }, { title: "Second", source: "sequenceDiagram\n A->>B: Hi" }, { title: "Broken" }], selected: 1 };
+const rendered = new Map([["flowchart LR\n A-->B", { path: "first.svg", type: "flowchart", width: 1000, height: 800, background: "#f8fafc" }], ["sequenceDiagram\n A->>B: Hi", { path: "second.svg", type: "sequence", width: 1000, height: 800 }]]);
+const ensured = [];
 const cx = { spawn: () => tasks++, notify: () => notifications++, stop_propagation: () => stopped++ };
-const source = await readFile(new URL("../mods/aqua-markdown/inspector.js", import.meta.url), "utf8");
-const Viewer = runInNewContext(source.replace(/^import .*;\n/gm, "").replace("export default class DiagramInspector", "class DiagramInspector") + "\nDiagramInspector;", {
-  View: class {}, div: element, h_flex: element, v_flex: element, image: element,
-  InputState: { new: () => ({ on() {}, set_value() {} }) }, Input: { new: element },
-  localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) },
-  theme: () => theme, shared: () => null, props: () => inspectorProps, closeOverlay: id => closed.push(id), DiagramViewport, COLOURS, EDGES, diagramStyle,
-  appHome: () => "/app", readTextFile: async () => "# Synthetic", writeTextFile: async () => {},
-  exec: async command => {
-    assert.equal(command, "node", "Resolve Node through PATH on every machine");
-    return { code: 0, stdout: JSON.stringify({ ok: true, diagrams: [{ title: "First", line: 10 }, { title: "Second", line: 30 }], elapsedMs: 1, engine: "Synthetic" }) };
-  },
+const source = await readFile(new URL("../mods/aqua-cutter/diagram-inspector.js", import.meta.url), "utf8");
+const Viewer = runInNewContext(source.replace(/^import [^;]*;\n/gm, "").replace("export default class DiagramInspector", "class DiagramInspector") + "\nDiagramInspector;", {
+  div: element, h_flex: element, v_flex: element, image: element,
+  button: (_t, id, label, action) => element().id(id).child(label).on_click((_event, cx) => action(cx)),
+  theme: () => theme, props: () => inspectorProps, closeOverlay: id => closed.push(id), nextCommand: () => new Promise(() => {}), DiagramViewport,
+  DiagramCache: class { ensure(sources) { ensured.push(sources); } get(source) { return rendered.get(source); } },
+  stylePrefs: () => ({ colours: "App", edges: "Document" }), cycleStyle: kind => cycled.push(kind),
 });
 const viewer = new Viewer();
 viewer.init({}, cx);
-viewer.diagrams = [{ path: "synthetic.svg", type: "flowchart", width: 1000, height: 800, title: "Synthetic", line: 1 }];
+assert.equal(viewer.items.length, 2, "Items without a source are dropped");
+assert.equal(viewer.selected, 1, "Opens at the requested diagram");
 const find = (element, id) => {
   if (!element || typeof element !== "object") return null;
   const node = element._node;
@@ -82,6 +80,10 @@ const click = id => {
   assert.ok(button, id);
   button.handlers.on_click({}, cx);
 };
+assert.equal(find(viewer.render(cx), "aqua-svg-edges"), null, "Non-flowcharts must not offer an inert routing control");
+click("aqua-svg-block-0");
+assert.equal(viewer.selected, 0);
+assert.deepEqual(ensured.at(-1), ["flowchart LR\n A-->B", "sequenceDiagram\n A->>B: Hi"], "Every diagram renders through the shared cache");
 click("aqua-svg-one");
 click("aqua-svg-right");
 assert.equal(viewer.view.pan.x, 60);
@@ -109,34 +111,14 @@ assert.ok(notifications > 0 && stopped > 0);
 click("aqua-svg-fit");
 assert.equal(viewer.view.fit, true);
 click("aqua-svg-colours");
-assert.equal(viewer.colours, "Light");
-assert.equal(storage.get("colours"), "Light");
 click("aqua-svg-edges");
-assert.equal(viewer.edges, "Straight");
-assert.equal(storage.get("edges"), "Straight");
-viewer.diagrams[0].type = "sequence";
-assert.equal(find(viewer.render(cx), "aqua-svg-edges"), null, "Non-flowcharts must not offer an inert routing control");
-const restored = new Viewer();
-restored.init({}, cx);
-assert.equal(restored.colours, "Light");
-assert.equal(restored.edges, "Straight");
+assert.deepEqual(cycled, ["colours", "edges"], "Style buttons change the shared style");
 click("aqua-inspector-close");
 assert.deepEqual(closed, ["synthetic-inspector"], "The Close button closes only its own overlay");
-inspectorProps = { overlay: "selected-inspector", document: { path: "/project/design.md", on: "remote", revision: 1 }, line: 30, colours: "Colourful", edges: "Curved" };
-const selected = new Viewer(), pending = [], loadContext = { spawn: task => pending.push(task), notify() {} };
-selected.init({}, loadContext);
-selected.load(inspectorProps.document, loadContext);
-await pending[1](loadContext);
-assert.equal(selected.selected, 1, "Inspect diagram selects the clicked source line");
-assert.equal(selected.document.on, "remote");
-assert.equal(selected.colours, "Colourful");
-assert.equal(selected.edges, "Curved");
-selected.select(0, loadContext);
-selected.load(inspectorProps.document, loadContext);
-await pending[2](loadContext);
-assert.equal(selected.selected, 0, "Refresh keeps a subsequent user selection rather than forcing the initial diagram again");
-selected.dismiss();
-assert.equal(closed.at(-1), "selected-inspector");
+inspectorProps = { overlay: "empty", diagrams: [] };
+const empty = new Viewer();
+empty.init({}, cx);
+assert.equal(find(empty.render(cx), "aqua-svg-fit"), null, "No zoom controls without a diagram");
 
 const directory = await mkdtemp(join(tmpdir(), "aqua-controls-check-"));
 try {
@@ -172,14 +154,14 @@ try {
   const configuredSvg = await readFile(join(directory, configured.diagrams[0].file), 'utf8');
   assert.match(configuredSvg, /d="[^"]*C/, 'An explicit viewer routing choice overrides document defaults without rewriting source');
   for (const colours of ['Light', 'Dark', 'Colourful']) {
-    const result = await renderDocument({ markdown: await readFile(new URL('../mods/aqua-markdown/example.md', import.meta.url), 'utf8'), theme, colours }, directory);
+    const result = await renderDocument({ markdown: await readFile(new URL('../mods/aqua-cutter/example.md', import.meta.url), 'utf8'), theme, colours }, directory);
     assert.ok(result.diagrams.every(diagram => !('error' in diagram)), `${colours}: every supported family renders`);
   }
   await assert.rejects(renderDocument({ markdown, theme, colours: 'unknown' }, directory), /colour preset/);
   await assert.rejects(renderDocument({ markdown, theme, edges: 'unknown' }, directory), /edge preset/);
-  const rejected = spawnSync(process.env.AQUA_PYTHON ?? 'python3', [new URL('../mods/aqua-markdown/bake_svg.py', import.meta.url).pathname], {
+  const rejected = spawnSync(process.env.AQUA_PYTHON ?? 'python3', [new URL('../mods/aqua-cutter/bake_svg.py', import.meta.url).pathname], {
     input: JSON.stringify({ svg: '<svg xmlns="http://www.w3.org/2000/svg"/>', width: 10, height: 10, theme, nodeColours: [{ fill: 'url(https://example.invalid)', stroke: '#123456' }] }), encoding: 'utf8',
   });
   assert.equal(rejected.status, 1, 'Colour palettes cannot introduce SVG resource URLs');
 } finally { await rm(directory, { recursive: true, force: true }); }
-console.log('PASS: pan arrows/drag/wheel/cancel/centre, anchored bounded zoom, saved style controls, all colour presets, distinct flowchart routing, cache identity/reuse, source styles, and safe SVG');
+console.log('PASS: pan arrows/drag/wheel/cancel/centre, anchored bounded zoom, diagram selection, shared style controls, all colour presets, distinct flowchart routing, cache identity/reuse, source styles, and safe SVG');

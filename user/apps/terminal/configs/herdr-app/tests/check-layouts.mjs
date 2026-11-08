@@ -36,7 +36,7 @@ for (const name of ["herdr-compact"]) {
   assert.equal(all.find(node => node.id === "panel").hidden, true);
   const panels = all.find(node => node.id === "panel-body").children;
   assert.deepEqual(panels.map(node => node.id).filter(id => id !== "jira"), ["files", "changes"]);
-  assert.equal(panels.find(node => node.id === "files").content.mod, "design-files");
+  assert.equal(panels.find(node => node.id === "files").content.mod, "files");
   // The Jira panel is per-machine: present in the shared layouts, dropped on Windows.
   for (const jira of panels.filter(node => node.id === "jira")) {
     assert.equal(jira.content.mod, "jira-tickets");

@@ -1,0 +1,583 @@
+{
+  "schemaVersion": "2.0.0",
+  "title": "Explore a synthetic asynchronous lifecycle",
+  "lead": "All timings, completed effects, read results, faults, snippets and references are synthetic and unverified. No runtime measurements, execution or passing tests are claimed.",
+  "changes": [
+    "Compare ordered states with their concurrent-read results and completed effects",
+    "Inspect the declared window and explicit closure without inferring read visibility",
+    "Retain independent choices across Lifecycle and all earlier lenses"
+  ],
+  "references": [
+    {
+      "label": "Synthetic scope",
+      "value": "Fictional admission and retry flows; no source access, reference resolution or verified results."
+    }
+  ],
+  "sections": [
+    {
+      "id": "command-lifecycle",
+      "type": "lifecycle",
+      "title": "From acceptance to read visibility",
+      "reason": "A receipt does not guarantee read visibility. The declared window closes at Applied, but a lagging replica can still return no row; the read result is authored separately.",
+      "readLabel": "GET /synthetic/commands/{id} right now returns",
+      "states": [
+        {
+          "id": "accepted",
+          "label": "Accepted",
+          "t": "t+0ms",
+          "happened": "The valid command is acknowledged; no projection write has completed.",
+          "readReturns": "404 · not projected (synthetic)",
+          "inWindow": true
+        },
+        {
+          "id": "published",
+          "label": "Published",
+          "t": "t+8ms",
+          "happened": "The valid command has entered the stream.",
+          "readReturns": "404 · not projected; stream publication is not a visible read.",
+          "inWindow": true
+        },
+        {
+          "id": "applied",
+          "label": "Applied",
+          "t": "t+8ms",
+          "happened": "The consumer has committed the projection write. A completed write does not imply every replica has caught up.",
+          "readReturns": "200 · row on the primary, or 404 · a lagging replica may still return no row. Authored uncertainty, not a measured response.",
+          "inWindow": false
+        },
+        {
+          "id": "visible",
+          "label": "Visible",
+          "happened": "The synthetic reader has observed the row. Literal </script><script>not executable</script> and <effect> text remain local claims.",
+          "readReturns": "200 · row visible. Literal https://example.invalid/read is text, not a request. This deliberately long synthetic read explanation wraps without hiding authored uncertainty or implying a live response. This deliberately long synthetic read explanation wraps without hiding authored uncertainty or implying a live response. This deliberately long synthetic read explanation wraps without hiding authored uncertainty or implying a live response. This deliberately long synthetic read explanation wraps without hiding authored uncertainty or implying a live response. This deliberately long synthetic read explanation wraps without hiding authored uncertainty or implying a live response. "
+        }
+      ]
+    },
+    {
+      "id": "single-state-lifecycle",
+      "type": "lifecycle",
+      "title": "An independent no-window snapshot",
+      "reason": "No consistency window or timing hint is declared. The default read label applies; outside-window membership does not imply projection completion.",
+      "states": [
+        {
+          "id": "accepted",
+          "label": "Accepted <snapshot>",
+          "happened": "Only the receipt is recorded in this synthetic snapshot; no projection completion is claimed.",
+          "readReturns": "Unknown · the author does not assert a visible projection."
+        }
+      ]
+    },
+    {
+      "id": "admission-faults",
+      "type": "what-breaks",
+      "title": "If the admission guard disappears",
+      "reason": "Select an authored fault; inspect the selected node below the argument. Diagram hover only inspects relationships.",
+      "diagram": {
+        "kind": "flowchart",
+        "source": "flowchart LR\nA[Receive] --> N[Normalize]\nN --> V[Validate]\nV -->|publish| P[Publish]\nV -->|reject| R[Respond]\nP --> R",
+        "description": "Synthetic handler flow. Receive is an ordinary non-fault node; normalization, validation, publication and response each have a distinct authored fault."
+      },
+      "faults": [
+        {
+          "id": "skip-normalization",
+          "node": "N",
+          "title": "Skip normalization",
+          "severity": "med",
+          "breaks": "Equivalent caller names can enter different buckets in this authored hypothesis.",
+          "becomes": "202 accepted → 409 conflict for a name that differs only in whitespace.",
+          "brokenRule": "Normalize the name before comparing its identity.",
+          "invariant": "invariant:normalize-before-compare"
+        },
+        {
+          "id": "remove-validation",
+          "node": "V",
+          "title": "Remove validation",
+          "severity": "high",
+          "breaks": "Invalid commands enter the stream and become the consumer’s problem (synthetic claim).",
+          "becomes": "400 → 202: caller sees acceptance instead of rejection.",
+          "brokenRule": "Reject invalid input before publication.",
+          "invariant": "invariant:reject-before-publish",
+          "corpus": "case:invalid-name"
+        },
+        {
+          "id": "lose-publication",
+          "node": "P",
+          "title": "Lose publication acknowledgement",
+          "severity": "high",
+          "breaks": "The caller receives no receipt after publication; its retry may duplicate an accepted command.",
+          "becomes": "202 receipt → unknown outcome: no response, not proof of failed publication.",
+          "brokenRule": "Describe an unknown response truthfully; do not turn it into a verified rejection.",
+          "corpus": "case:lost-acknowledgement"
+        },
+        {
+          "id": "literal-response",
+          "node": "R",
+          "title": "Return literal </script><script>not executable</script> and <response> markup with a deliberately long synthetic caller-facing explanation that wraps without hiding any part of the selected counterfactual argument",
+          "severity": "low",
+          "breaks": "The authored response message exposes literal <response> text rather than the intended label. This is a display hypothesis, not an executed failure.",
+          "becomes": "202 accepted → 202 with text \"</script>\" and https://example.invalid/ (literal, not a link).",
+          "brokenRule": "Keep caller-facing labels readable. This deliberately long synthetic explanation remains visible and local; This deliberately long synthetic explanation remains visible and local; This deliberately long synthetic explanation remains visible and local; This deliberately long synthetic explanation remains visible and local; This deliberately long synthetic explanation remains visible and local; This deliberately long synthetic explanation remains visible and local; This deliberately long synthetic explanation remains visible and local; "
+        }
+      ],
+      "initialFault": "remove-validation"
+    },
+    {
+      "id": "retry-faults",
+      "type": "what-breaks",
+      "title": "An independent retry argument",
+      "reason": "initialFault is omitted, so the first supplied fault starts selected. Change it independently of the admission section.",
+      "diagram": {
+        "kind": "flowchart",
+        "source": "flowchart LR\nI[Receive retry] --> D[Deduplicate]\nD --> S[Store receipt]\nS --> O[Return receipt]",
+        "description": "Synthetic retry flow with ordinary receive and return nodes, plus two independent fault choices."
+      },
+      "faults": [
+        {
+          "id": "skip-deduplication",
+          "node": "D",
+          "title": "Skip deduplication",
+          "severity": "high",
+          "breaks": "A repeated request can publish twice in the authored hypothesis.",
+          "becomes": "202 same receipt → 202 another receipt.",
+          "brokenRule": "Reuse the existing receipt for an exact retry."
+        },
+        {
+          "id": "forget-receipt",
+          "node": "S",
+          "title": "Forget the receipt",
+          "severity": "med",
+          "breaks": "A caller cannot correlate a later retry with the original acceptance.",
+          "becomes": "202 stable receipt → 202 without a stable receipt identifier.",
+          "brokenRule": "Keep a stable acceptance receipt.",
+          "invariant": "invariant:<stable-receipt>",
+          "corpus": "case:</script><script>inert reference</script>"
+        }
+      ]
+    },
+    {
+      "id": "implementing-code",
+      "type": "code-lens",
+      "title": "Implementing code",
+      "reason": "Inspect why each curated hunk matters, without treating curation as the entire change.",
+      "initialHunk": "guard",
+      "entries": [
+        {
+          "id": "receive",
+          "title": "Normalize the request",
+          "file": "src/admission.ts",
+          "hunk": " const request = read();\n-const name = request.name;\n+const name = request.name.trim();",
+          "oldStart": 10,
+          "newStart": 20,
+          "why": "The synthetic check consumes a normalized name.",
+          "references": ["scenario:normalize-name"]
+        },
+        {
+          "id": "guard",
+          "title": "Reject before publication",
+          "file": "src/admission.ts",
+          "hunk": " const name = request.name;\n-publish(request);\n+if (!name) return reject();\n+publish(request);\n+",
+          "oldStart": 40,
+          "newStart": 51,
+          "why": "This synthetic guard rejects an empty name before the first publish. A marker-only addition preserves an empty code body.",
+          "references": ["scenario:reject-before-publish", "case:invalid-name"]
+        },
+        {
+          "id": "cleanup",
+          "title": "Remove late validation",
+          "file": "src/consumer.ts",
+          "hunk": "-if (!event.name) return reject();\r\n-retryValidation(event);",
+          "oldStart": 80,
+          "newStart": 0,
+          "why": "The fictional consumer no longer owns the admission check.",
+          "references": []
+        },
+        {
+          "id": "literal",
+          "title": "Keep literal display text",
+          "file": "examples/literal-<markup>-and-a-deliberately-long-synthetic-folder-name-for-wrapping/admission.ts",
+          "hunk": "+const literal = \"</script><script>not executable</script>\";\r+const note = \"https://example.invalid/ is text, not a link\";\r+const explanation = \"synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; synthetic context; \";\r++literalMarker;\r+-literalMinus;\r+@literalAnnotation;",
+          "oldStart": 0,
+          "newStart": 1,
+          "why": "Literal markup, URL-like text and long source rows remain local text, with no source request.",
+          "references": [
+            "case:<literal-markup>",
+            "https://example.invalid/citation (inert identifier)"
+          ]
+        }
+      ],
+      "coverage": {
+        "total": 9,
+        "omitted": [
+          {
+            "label": "Tests (not execution evidence)",
+            "count": 3
+          },
+          {
+            "label": "Formatting",
+            "count": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "complete-code",
+      "type": "code-lens",
+      "title": "Fully surfaced small scope",
+      "reason": "This independent selection starts at the first entry because initialHunk is omitted.",
+      "entries": [
+        {
+          "id": "create",
+          "title": "Create an inert helper",
+          "file": "examples/helper.ts",
+          "hunk": "+export const label = \"synthetic\";",
+          "oldStart": 0,
+          "newStart": 1,
+          "why": "Pure additions have no old line zero. No references field is supplied."
+        },
+        {
+          "id": "remove",
+          "title": "Remove an obsolete helper",
+          "file": "examples/old/helper.ts",
+          "hunk": "-export const oldLabel = \"illustration\";",
+          "oldStart": 7,
+          "newStart": 0,
+          "why": "Pure deletions have no new line zero. Equal basenames remain separate full identifiers.",
+          "references": []
+        }
+      ],
+      "coverage": {
+        "total": 2,
+        "omitted": []
+      }
+    },
+    {
+      "id": "request-flow",
+      "type": "trace",
+      "title": "Request path",
+      "reason": "An authored request may publish or record rejection.",
+      "diagram": {
+        "kind": "flowchart",
+        "source": "flowchart LR\nA[Receive] -->|check| B[Validate]\nB -->|publish| C[Publish]\nB -->|reject| R[Record outcome]",
+        "description": "Synthetic validation and publication flow."
+      },
+      "paths": [
+        {
+          "id": "admit",
+          "label": "Admit request",
+          "steps": [
+            {
+              "title": "Receive request",
+              "narration": "Begin with an illustrative request.",
+              "node": "A"
+            },
+            {
+              "title": "Validate request",
+              "narration": "Follow the authored check connection.",
+              "node": "B",
+              "incoming": {
+                "from": "A",
+                "to": "B",
+                "label": "check",
+                "occurrence": 0
+              }
+            },
+            {
+              "title": "Publish request",
+              "narration": "Finish at the publisher.",
+              "node": "C",
+              "incoming": {
+                "from": "B",
+                "to": "C",
+                "label": "publish",
+                "occurrence": 0
+              }
+            }
+          ],
+          "outcome": "ok",
+          "outcomeDescription": "The author says this synthetic request reaches publication; no execution is verified."
+        },
+        {
+          "id": "decline",
+          "label": "Reject request",
+          "steps": [
+            {
+              "title": "Receive rejected request",
+              "narration": "Begin another illustrative request.",
+              "node": "A"
+            },
+            {
+              "title": "Check rejected request",
+              "narration": "Reach validation before recording the outcome.",
+              "node": "B",
+              "incoming": {
+                "from": "A",
+                "to": "B",
+                "label": "check",
+                "occurrence": 0
+              }
+            },
+            {
+              "title": "Record rejection",
+              "narration": "Recording the authored outcome is the last step.",
+              "node": "R",
+              "incoming": {
+                "from": "B",
+                "to": "R",
+                "label": "reject",
+                "occurrence": 0
+              }
+            }
+          ],
+          "outcome": "reject",
+          "outcomeDescription": "The author declares publication not reached; this is not an observed rejection.",
+          "notReached": {
+            "nodes": ["C"],
+            "edges": [
+              {
+                "from": "B",
+                "to": "C",
+                "label": "publish",
+                "occurrence": 0
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-sequence",
+      "type": "trace",
+      "title": "Request messages",
+      "reason": "Exact authored messages can revisit an actor or return a reply.",
+      "diagram": {
+        "kind": "sequence",
+        "source": "sequenceDiagram\nparticipant A as Receiver\nparticipant B as Validator\nparticipant C as Publisher\nA->>B: check\nB-->>A: answer\nB->>B: record\nA->>C: publish",
+        "description": "Synthetic checks, replies, self-recording and publication."
+      },
+      "paths": [
+        {
+          "id": "admit",
+          "label": "Admit messages",
+          "steps": [
+            {
+              "title": "Begin messages",
+              "narration": "Start at the receiver.",
+              "node": "A"
+            },
+            {
+              "title": "Check message",
+              "narration": "Ask the validator.",
+              "node": "B",
+              "incoming": {
+                "from": "A",
+                "to": "B",
+                "label": "check",
+                "occurrence": 0
+              }
+            },
+            {
+              "title": "Answer message",
+              "narration": "Return to the receiver.",
+              "node": "A",
+              "incoming": {
+                "from": "B",
+                "to": "A",
+                "label": "answer",
+                "occurrence": 0
+              }
+            },
+            {
+              "title": "Publish message",
+              "narration": "Finish at the publisher.",
+              "node": "C",
+              "incoming": {
+                "from": "A",
+                "to": "C",
+                "label": "publish",
+                "occurrence": 0
+              }
+            }
+          ],
+          "outcome": "ok",
+          "outcomeDescription": "Authored OK message outcome, not verified execution."
+        },
+        {
+          "id": "decline",
+          "label": "Reject messages",
+          "steps": [
+            {
+              "title": "Begin rejected messages",
+              "narration": "Start at the receiver.",
+              "node": "A"
+            },
+            {
+              "title": "Check rejected messages",
+              "narration": "Reach the validator.",
+              "node": "B",
+              "incoming": {
+                "from": "A",
+                "to": "B",
+                "label": "check",
+                "occurrence": 0
+              }
+            },
+            {
+              "title": "Record rejected messages",
+              "narration": "The validator records the authored outcome.",
+              "node": "B",
+              "incoming": {
+                "from": "B",
+                "to": "B",
+                "label": "record",
+                "occurrence": 0
+              }
+            }
+          ],
+          "outcome": "reject",
+          "outcomeDescription": "Only the explicitly declared publication is not reached in this illustrative path.",
+          "notReached": {
+            "nodes": ["C"],
+            "edges": [
+              {
+                "from": "A",
+                "to": "C",
+                "label": "publish",
+                "occurrence": 0
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "admission-diff",
+      "type": "trace-diff",
+      "title": "Compare the authored change",
+      "reason": "TraceDiff describes change, separately from the selected Trace path.",
+      "before": {
+        "kind": "flowchart",
+        "source": "flowchart LR\nA[Receive] --> C[Publish]",
+        "description": "Illustrative original route.",
+        "steps": ["Receive", "Publish"],
+        "nodeChanges": [],
+        "edgeChanges": []
+      },
+      "after": {
+        "kind": "flowchart",
+        "source": "flowchart LR\nA[Receive] --> B[Validate]\nB --> C[Publish]",
+        "description": "Illustrative changed route, not an execution result.",
+        "steps": ["Receive", "Validate", "Publish"],
+        "nodeChanges": [
+          {
+            "node": "B",
+            "status": "added"
+          }
+        ],
+        "edgeChanges": []
+      }
+    }
+  ],
+  "story": {
+    "stops": [
+      {
+        "section": "command-lifecycle",
+        "title": "From acceptance to read visibility",
+        "takeaway": "Acceptance does not guarantee read visibility, even outside the declared window.",
+        "inspections": [
+          {
+            "section": "command-lifecycle",
+            "label": "Inspect From acceptance to read visibility"
+          }
+        ]
+      },
+      {
+        "section": "single-state-lifecycle",
+        "title": "An independent no-window snapshot",
+        "takeaway": "No window is declared; the supplied read result still owns the claim.",
+        "inspections": [
+          {
+            "section": "single-state-lifecycle",
+            "label": "Inspect An independent no-window snapshot"
+          }
+        ]
+      },
+      {
+        "section": "admission-faults",
+        "title": "If the admission guard disappears",
+        "takeaway": "Without admission, invalid commands can reach publication.",
+        "inspections": [
+          {
+            "section": "admission-faults",
+            "label": "Inspect If the admission guard disappears"
+          }
+        ]
+      },
+      {
+        "section": "retry-faults",
+        "title": "An independent retry argument",
+        "takeaway": "A retry argument is independent of the admission decision.",
+        "inspections": [
+          {
+            "section": "retry-faults",
+            "label": "Inspect An independent retry argument"
+          }
+        ]
+      },
+      {
+        "section": "implementing-code",
+        "title": "Implementing code",
+        "takeaway": "Curated hunks explain the ownership change; they are not the whole diff.",
+        "inspections": [
+          {
+            "section": "implementing-code",
+            "label": "Inspect Implementing code"
+          }
+        ]
+      },
+      {
+        "section": "complete-code",
+        "title": "Fully surfaced small scope",
+        "takeaway": "This small scope surfaces every supplied hunk.",
+        "inspections": [
+          {
+            "section": "complete-code",
+            "label": "Inspect Fully surfaced small scope"
+          }
+        ]
+      },
+      {
+        "section": "request-flow",
+        "title": "Request path",
+        "takeaway": "The request either publishes or records rejection.",
+        "inspections": [
+          {
+            "section": "request-flow",
+            "label": "Inspect Request path"
+          }
+        ]
+      },
+      {
+        "section": "request-sequence",
+        "title": "Request messages",
+        "takeaway": "The decision and reply have an explicit authored order.",
+        "inspections": [
+          {
+            "section": "request-sequence",
+            "label": "Inspect Request messages"
+          }
+        ]
+      },
+      {
+        "section": "admission-diff",
+        "title": "Compare the authored change",
+        "takeaway": "Compare the change separately from a selected request path.",
+        "inspections": [
+          {
+            "section": "admission-diff",
+            "label": "Inspect Compare the authored change"
+          }
+        ]
+      }
+    ]
+  }
+}

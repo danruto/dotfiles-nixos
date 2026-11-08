@@ -3,7 +3,7 @@ import { mkdtemp, rm, readFile, writeFile, readdir } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { extractMermaids } from './markdown.mjs';
+import { extractMermaids } from './markdown.js';
 import { renderDocument } from './render.mjs';
 
 assert.equal(typeof globalThis.document, 'undefined');

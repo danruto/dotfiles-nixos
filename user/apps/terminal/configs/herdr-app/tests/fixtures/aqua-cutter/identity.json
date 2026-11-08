@@ -1,0 +1,1115 @@
+{
+  "schemaVersion": "2.0.0",
+  "title": "Same work, separate attempts, fresh obligations",
+  "lead": "Synthetic identity pairs make scope, literal ingredients and lifetime explicit. No key generation or external-effect verification occurs.",
+  "changes": [
+    "Keep raw, normalized, missing, null and literal values separate.",
+    "Read declared relations without inferring them from equal keys.",
+    "Distinguish retained retry identity from explicit new work."
+  ],
+  "references": [
+    {
+      "label": "Synthetic identity source",
+      "value": "fixture://identity/illustration-only"
+    }
+  ],
+  "pins": [
+    {
+      "section": "work-identities",
+      "architecture": "identity-context",
+      "level": "context",
+      "pane": "single",
+      "target": {
+        "kind": "node",
+        "node": "Work"
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "identity-context",
+      "type": "c4",
+      "title": "Identity context",
+      "reason": "The pin addresses the section, not an identity or a pair.",
+      "mode": "single",
+      "levels": [
+        {
+          "id": "context",
+          "title": "Synthetic work and delivery",
+          "altitude": "c1",
+          "drills": [],
+          "diagram": {
+            "kind": "flowchart",
+            "source": "flowchart LR\n  Caller[Caller] -->|command| Work[Logical work]\n  Work -->|obligation| Delivery[Delivery]",
+            "description": "Commands and delivery obligations have different identity roles.",
+            "steps": ["Read the authored scope before comparing keys."],
+            "nodeChanges": [],
+            "edgeChanges": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "prior-recovery",
+      "type": "recovery",
+      "title": "Prior Recovery reader",
+      "reason": "Retained intent remains separate from identity equivalence.",
+      "operations": [
+        {
+          "id": "correction-command",
+          "title": "Lost command response",
+          "intent": "Finish the original correction.",
+          "identity": "synthetic-command-19",
+          "points": [
+            {
+              "id": "pending",
+              "title": "Unknown commit",
+              "attempt": "Command sent; response missing.",
+              "observation": "unknown",
+              "known": ["The original command label is retained."],
+              "unknown": ["Whether the remote correction committed."],
+              "retained": ["synthetic-command-19"],
+              "alternatives": [
+                {
+                  "id": "park",
+                  "action": "Park for reconciliation",
+                  "when": "If authoritative status remains unavailable.",
+                  "owner": "Synthetic correction owner",
+                  "outcome": "park",
+                  "result": "Keep unresolved work and its original intent."
+                }
+              ],
+              "prohibited": ["Do not treat equal key text as a remote success receipt."]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prior-policy",
+      "type": "decision-table",
+      "title": "Prior Decision Table reader",
+      "reason": "Declared policy does not infer whether two examples are the same work.",
+      "tables": [
+        {
+          "id": "correction-command",
+          "title": "Synthetic correction choice",
+          "policy": "unique",
+          "conditions": [
+            {
+              "id": "intent",
+              "label": "Intent description"
+            }
+          ],
+          "rules": [
+            {
+              "id": "retain",
+              "title": "Retain original intent",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "retry"
+                }
+              ],
+              "result": {
+                "outcome": "Describe reuse",
+                "reason": "The author declares a retry of the original work.",
+                "allowed": ["Read the identity lifetime."],
+                "prohibited": ["Do not execute a correction."]
+              }
+            }
+          ],
+          "unmatched": {
+            "outcome": "Unmatched intent",
+            "reason": "No permission is implied.",
+            "allowed": [],
+            "prohibited": ["Do not infer reuse."]
+          },
+          "cases": [
+            {
+              "id": "retry",
+              "title": "Declared retry",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "retry"
+                }
+              ],
+              "matches": ["retain"],
+              "selectedRule": "retain",
+              "explanation": "A declaration, not an evaluated predicate."
+            },
+            {
+              "id": "unknown",
+              "title": "No declared match",
+              "cells": [
+                {
+                  "kind": "unknown"
+                }
+              ],
+              "matches": [],
+              "explanation": "Unknown intent supplies no winner."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "work-identities",
+      "type": "identity",
+      "title": "Work identity and lifetime",
+      "reason": "Compare location, command and delivery roles without calculating keys or verifying effects.",
+      "initialIdentity": "location-key",
+      "identities": [
+        {
+          "id": "location-key",
+          "title": "Location within a synthetic claim",
+          "role": "Logical location work",
+          "scope": "Only within synthetic claim C-19 and the declared location scheme. Equal text outside this scope implies nothing.",
+          "namespace": "synthetic-location-v2",
+          "encoding": "Supplied readable labels in ingredient order; these are not computed hashes.",
+          "normalization": "The author supplies selected trimmed examples. The renderer does not trim, parse or normalize any value.",
+          "ingredients": [
+            {
+              "id": "address",
+              "label": "Raw address",
+              "meaning": "Authored location text, not a geocoded property identity."
+            },
+            {
+              "id": "latitude",
+              "label": "Latitude member",
+              "meaning": "A tagged null differs from the literal spelling null."
+            },
+            {
+              "id": "longitude",
+              "label": "Longitude member",
+              "meaning": "A number shown as text stays literal, never parsed."
+            },
+            {
+              "id": "qualifier",
+              "label": "Optional qualifier",
+              "meaning": "Missing still occupies its positional slot; empty and whitespace remain supplied text."
+            }
+          ],
+          "initialPair": "same-location",
+          "pairs": [
+            {
+              "id": "other-location",
+              "title": "Different property on one claim",
+              "left": {
+                "label": "Original property",
+                "scheme": "Location scheme 2",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "1 Main"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "null"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "-122.0"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "missing"
+                    }
+                  }
+                ],
+                "encoded": "synthetic:C-19|1 Main|null|-122.0|missing",
+                "key": "synthetic-location-original"
+              },
+              "right": {
+                "label": "Another property",
+                "scheme": "Location scheme 2",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "2 Main"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "null"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "-122.0"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "missing"
+                    }
+                  }
+                ],
+                "key": "synthetic-location-other"
+              },
+              "relation": "different",
+              "reason": "The author separates the second property even though the claim is unchanged."
+            },
+            {
+              "id": "same-location",
+              "title": "Supplied normalization, same declared work",
+              "left": {
+                "label": "Original supplied spelling",
+                "scheme": "Location scheme 2",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "  1 Main\t"
+                    },
+                    "normalized": {
+                      "kind": "literal",
+                      "text": "1 Main"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "null"
+                    },
+                    "normalized": {
+                      "kind": "null"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "-122.0"
+                    },
+                    "normalized": {
+                      "kind": "literal",
+                      "text": "-122"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "missing"
+                    },
+                    "normalized": {
+                      "kind": "missing"
+                    }
+                  }
+                ],
+                "encoded": "synthetic:C-19|1 Main|null|-122|missing",
+                "key": "synthetic-location-retained"
+              },
+              "right": {
+                "label": "Repeated logical location",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "1 Main"
+                    },
+                    "normalized": {
+                      "kind": "literal",
+                      "text": "1 Main"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "null"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "-122"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "missing"
+                    }
+                  }
+                ],
+                "encoded": "synthetic:C-19|1 Main|null|-122|missing",
+                "key": "synthetic-location-retained"
+              },
+              "relation": "same",
+              "reason": "The author declares equivalence within this scheme and claim. Displayed normalization is not verified or applied."
+            },
+            {
+              "id": "absence-shapes",
+              "title": "Unknown despite equal empty keys",
+              "left": {
+                "label": "Missing, null and empty",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "missing"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "null"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": ""
+                    },
+                    "normalized": {
+                      "kind": "literal",
+                      "text": ""
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "  \t\n "
+                    }
+                  }
+                ],
+                "encoded": "",
+                "key": ""
+              },
+              "right": {
+                "label": "Literal spellings stay literal",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "undefined"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "null"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "0"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": ""
+                    }
+                  }
+                ],
+                "key": ""
+              },
+              "relation": "unknown",
+              "reason": "Equal empty supplied keys cannot upgrade unknown to same. Missing, tagged null, literal null, empty and whitespace all remain distinct."
+            }
+          ],
+          "lifetime": [
+            {
+              "event": "Retry",
+              "action": "reuse",
+              "reason": "Retain the logical location for the same authored work."
+            },
+            {
+              "event": "Restart",
+              "action": "reuse",
+              "reason": "A process restart alone does not declare new location work."
+            },
+            {
+              "event": "Continuation",
+              "action": "reuse",
+              "reason": "Carry the same authored location identity into the continuation."
+            },
+            {
+              "event": "Explicit new location work",
+              "action": "replace",
+              "reason": "A fresh location request has its own identity; no historical receipt proves its effect."
+            },
+            {
+              "event": "Retire old scheme",
+              "action": "retire",
+              "reason": "Old labels remain historical, not aliases accepted automatically."
+            },
+            {
+              "event": "Unspecified external collision",
+              "action": "unknown",
+              "reason": "No lookup or uniqueness check was supplied or performed."
+            }
+          ],
+          "evolution": {
+            "before": "Scheme 1 used the claim label only. <old-scheme> </script>",
+            "after": "Scheme 2 includes supplied raw location members; no hash is generated here.",
+            "existingRecords": "Historical labels remain recorded. New scheme labels do not automatically join old runs or attest to old effects."
+          }
+        },
+        {
+          "id": "correction-command",
+          "title": "Correction command, not transport delivery",
+          "role": "Logical command",
+          "scope": "One admitted synthetic correction and its pinned execution; transport retries are not new commands.",
+          "encoding": "Literal command and digest labels supplied by the author.",
+          "normalization": "No normalization. Preserve every supplied character.",
+          "ingredients": [
+            {
+              "id": "command",
+              "label": "Command label",
+              "meaning": "Retained logical command, not an HTTP attempt ID."
+            },
+            {
+              "id": "digest",
+              "label": "Content digest label",
+              "meaning": "A supplied label only; no hashing or digest verification occurs."
+            }
+          ],
+          "pairs": [
+            {
+              "id": "resend",
+              "title": "Resend retains command and content",
+              "left": {
+                "label": "First send",
+                "scheme": "Synthetic command 1",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "command-19"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "digest-label-19"
+                    }
+                  }
+                ],
+                "key": "command-19"
+              },
+              "right": {
+                "label": "Resend",
+                "scheme": "Synthetic command 1",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "command-19"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "digest-label-19"
+                    }
+                  }
+                ],
+                "encoded": "",
+                "key": "command-19"
+              },
+              "relation": "same",
+              "reason": "Same authored command and content; transport delivery and remote completion remain separate questions."
+            },
+            {
+              "id": "fresh-command",
+              "title": "Explicit new correction",
+              "left": {
+                "label": "Original correction",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "command-19"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "digest-label-19"
+                    }
+                  }
+                ]
+              },
+              "right": {
+                "label": "Fresh correction",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "command-20"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "digest-label-20"
+                    }
+                  }
+                ],
+                "key": "command-20"
+              },
+              "relation": "different",
+              "reason": "Explicit new work replaces the logical command; old execution receipts are not current effect evidence."
+            },
+            {
+              "id": "literal-markup-with-a-long-local-id-abcdefghijklmnopqrstuvwxyz",
+              "title": "Inactive literal <command> </script><script>not executable</script>",
+              "left": {
+                "label": "Literal left <sample>",
+                "scheme": "Literal </script> scheme",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "\n  <command>\r\n</script><script>not executable</script> & [link](https://invalid.example)  "
+                    },
+                    "normalized": {
+                      "kind": "literal",
+                      "text": "<normalized> </script>"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "null"
+                    }
+                  }
+                ],
+                "encoded": "<encoded> </script>",
+                "key": "synthetic-long-key-abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789</script><key>&literal"
+              },
+              "right": {
+                "label": "Literal right </script>",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "  \t\r\n "
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "missing"
+                    },
+                    "normalized": {
+                      "kind": "null"
+                    }
+                  }
+                ],
+                "encoded": "",
+                "key": "synthetic-long-key-abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789</script><key>&literal"
+              },
+              "relation": "unknown",
+              "reason": "Equal supplied key strings do not prove equivalence or external deduplication. <inactive-reason> </script>"
+            }
+          ],
+          "lifetime": [
+            {
+              "event": "Retry",
+              "action": "reuse",
+              "reason": "Resend only the retained command and content."
+            },
+            {
+              "event": "Restart",
+              "action": "reuse",
+              "reason": "Keep the execution pin after process restart."
+            },
+            {
+              "event": "Continuation",
+              "action": "reuse",
+              "reason": "Carry original intent into the next run."
+            },
+            {
+              "event": "Explicit new correction",
+              "action": "replace",
+              "reason": "New work needs a fresh command; do not borrow an old receipt."
+            },
+            {
+              "event": "Command no longer admissible",
+              "action": "retire",
+              "reason": "Keep history without implying execution permission. </script>"
+            },
+            {
+              "event": "Unknown remote receipt",
+              "action": "unknown",
+              "reason": "A retained key alone cannot settle external completion."
+            }
+          ]
+        },
+        {
+          "id": "delivery-obligation",
+          "title": "Fresh obligation after reopen",
+          "role": "Subscriber delivery obligation",
+          "scope": "One synthetic subscriber obligation, distinct from admission delivery and transport attempts.",
+          "namespace": "synthetic-subscriber-obligations",
+          "encoding": "Author-supplied obligation labels; no UUID or encoded output is generated.",
+          "normalization": "No normalization; task and obligation labels remain literal.",
+          "ingredients": [
+            {
+              "id": "task",
+              "label": "Task label",
+              "meaning": "Business task shared across reopen cycles."
+            },
+            {
+              "id": "obligation",
+              "label": "Obligation label",
+              "meaning": "Fresh delivery obligation, not a retry counter or admission HTTP ID."
+            }
+          ],
+          "initialPair": "reopen",
+          "pairs": [
+            {
+              "id": "retry",
+              "title": "Another attempt of one obligation",
+              "left": {
+                "label": "Original attempt",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "task-19"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "obligation-a"
+                    }
+                  }
+                ],
+                "encoded": "task-19|obligation-a",
+                "key": "obligation-a"
+              },
+              "right": {
+                "label": "Retry after continuation",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "task-19"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "obligation-a"
+                    }
+                  }
+                ],
+                "key": "obligation-a"
+              },
+              "relation": "same",
+              "reason": "Attempt, restart and continuation preserve this declared obligation, not a transport attempt ID."
+            },
+            {
+              "id": "reopen",
+              "title": "Explicit reopen creates new work",
+              "left": {
+                "label": "Previous obligation",
+                "scheme": "Obligation 1",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "task-19"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "obligation-a"
+                    }
+                  }
+                ],
+                "key": "obligation-a"
+              },
+              "right": {
+                "label": "Fresh obligation",
+                "scheme": "Obligation 1",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "task-19"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "obligation-b"
+                    }
+                  }
+                ],
+                "key": "obligation-b"
+              },
+              "relation": "different",
+              "reason": "Same task, different obligation. A prior receipt is not proof of delivery for the fresh obligation."
+            },
+            {
+              "id": "receipt-unknown",
+              "title": "Unknown receipt scope",
+              "left": {
+                "label": "Historical receipt description",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "task-19"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "missing"
+                    }
+                  }
+                ]
+              },
+              "right": {
+                "label": "Current obligation description",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "task-19"
+                    }
+                  },
+                  {
+                    "raw": {
+                      "kind": "null"
+                    }
+                  }
+                ],
+                "encoded": "",
+                "key": ""
+              },
+              "relation": "unknown",
+              "reason": "Neither missing nor null identifies an externally verified receipt or current effect."
+            }
+          ],
+          "lifetime": [
+            {
+              "event": "Retry",
+              "action": "reuse",
+              "reason": "Keep this obligation's identity while another transport attempt is made."
+            },
+            {
+              "event": "Restart",
+              "action": "reuse",
+              "reason": "Restart retains the same delivery obligation."
+            },
+            {
+              "event": "Continuation",
+              "action": "reuse",
+              "reason": "Carry the obligation across continuation without resetting intent."
+            },
+            {
+              "event": "Explicit reopen",
+              "action": "replace",
+              "reason": "Create a fresh obligation; do not reuse historical receipts as delivery evidence."
+            },
+            {
+              "event": "Obligation retired",
+              "action": "retire",
+              "reason": "Retain its historical receipt only for that old obligation."
+            },
+            {
+              "event": "External delivery unobserved",
+              "action": "unknown",
+              "reason": "The reader cannot attest to remote side effects."
+            }
+          ],
+          "evolution": {
+            "before": "A synthetic task-scoped label could outlive one obligation.",
+            "after": "A supplied obligation-scoped label distinguishes fresh work.",
+            "existingRecords": "Historical receipt labels remain historical. No compatibility, rollout or external delivery guarantee is implied. <records> </script>"
+          }
+        }
+      ]
+    },
+    {
+      "id": "independent-identities",
+      "type": "identity",
+      "title": "Independent local identity and pair choices",
+      "reason": "Equal local IDs in this section never share selection with Work identity and lifetime.",
+      "identities": [
+        {
+          "id": "location-key",
+          "title": "Independent location",
+          "role": "Independent example role",
+          "scope": "Only this synthetic card.",
+          "encoding": "Literal supplied strings.",
+          "normalization": "No normalization.",
+          "ingredients": [
+            {
+              "id": "address",
+              "label": "Independent address",
+              "meaning": "Not a reference target or a shared selection key."
+            }
+          ],
+          "pairs": [
+            {
+              "id": "same-location",
+              "title": "Independent first pair",
+              "left": {
+                "label": "Independent left",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": ""
+                    }
+                  }
+                ],
+                "encoded": "",
+                "key": ""
+              },
+              "right": {
+                "label": "Independent right",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "missing"
+                    }
+                  }
+                ]
+              },
+              "relation": "unknown",
+              "reason": "No equivalence declaration despite matching local IDs elsewhere."
+            },
+            {
+              "id": "other-location",
+              "title": "Independent second pair",
+              "left": {
+                "label": "Before",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "A"
+                    }
+                  }
+                ]
+              },
+              "right": {
+                "label": "After",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "B"
+                    }
+                  }
+                ]
+              },
+              "relation": "different",
+              "reason": "Only this card's pair changes."
+            }
+          ],
+          "lifetime": [
+            {
+              "event": "Unknown lifecycle",
+              "action": "unknown",
+              "reason": "No wider reuse policy supplied."
+            }
+          ]
+        },
+        {
+          "id": "correction-command",
+          "title": "Independent command",
+          "role": "Independent logical command",
+          "scope": "Only this independent example.",
+          "encoding": "Literal labels.",
+          "normalization": "No normalization.",
+          "ingredients": [
+            {
+              "id": "command",
+              "label": "Command",
+              "meaning": "Not the command in another owner."
+            }
+          ],
+          "pairs": [
+            {
+              "id": "resend",
+              "title": "Independent repeat",
+              "left": {
+                "label": "Original",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "independent"
+                    }
+                  }
+                ]
+              },
+              "right": {
+                "label": "Repeat",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "independent"
+                    }
+                  }
+                ]
+              },
+              "relation": "same",
+              "reason": "Authored equivalence only within this scope."
+            }
+          ],
+          "lifetime": [
+            {
+              "event": "Retry",
+              "action": "reuse",
+              "reason": "Reuse only this independent work."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "supplied-cases",
+      "type": "corpus",
+      "title": "Independent old reader",
+      "reason": "The historical selector remains independent from Identity and Decision Table.",
+      "entries": [
+        {
+          "id": "same-location",
+          "title": "Supplied repeat",
+          "provenance": "Synthetic, not captured.",
+          "dependency": "synthetic-identity-19",
+          "normalise": "No normalization.",
+          "input": "<location> </script>",
+          "expected": "Authored relation only"
+        },
+        {
+          "id": "reopen",
+          "title": "Supplied fresh work",
+          "provenance": "Synthetic, not replayed.",
+          "dependency": "synthetic-identity-19",
+          "normalise": "Keep exact text.",
+          "input": "null",
+          "expected": "Fresh obligation"
+        }
+      ]
+    },
+    {
+      "id": "identity-tour",
+      "type": "tour",
+      "title": "Read identity scope and lifetime",
+      "reason": "Section-level Tour never chooses an identity, pair or local target.",
+      "chapters": [
+        {
+          "id": "recovery",
+          "title": "Retained intent",
+          "body": "Keep uncertainty separate from equal supplied labels.",
+          "target": "prior-recovery"
+        },
+        {
+          "id": "policy",
+          "title": "Declared policy",
+          "body": "Change the case without evaluating a predicate.",
+          "target": "prior-policy"
+        },
+        {
+          "id": "identity",
+          "title": "Scope before strings",
+          "body": "Choose location-key, correction-command and delivery-obligation manually. Inspect ingredients, pairs and complete lifetime rules.",
+          "target": "work-identities"
+        },
+        {
+          "id": "independent",
+          "title": "Independent choices",
+          "body": "Equal local IDs do not share identity or pair selection.",
+          "target": "independent-identities"
+        },
+        {
+          "id": "old",
+          "title": "Old reader",
+          "body": "Corpus keeps its selected case independently.",
+          "target": "supplied-cases"
+        },
+        {
+          "id": "return",
+          "title": "Return to retained choices",
+          "body": "The Tour did not generate keys, infer equality or verify any remote effect.",
+          "target": "work-identities"
+        }
+      ]
+    }
+  ],
+  "story": {
+    "stops": [
+      {
+        "section": "identity-context",
+        "title": "Identity context",
+        "takeaway": "The map pin locates identity without computing a key or pair result.",
+        "inspections": [
+          {
+            "section": "identity-context",
+            "label": "Inspect Identity context"
+          }
+        ]
+      },
+      {
+        "section": "prior-recovery",
+        "title": "Prior Recovery reader",
+        "takeaway": "Retained intent is separate from policy and identity equivalence.",
+        "inspections": [
+          {
+            "section": "prior-recovery",
+            "label": "Inspect Prior Recovery reader"
+          }
+        ]
+      },
+      {
+        "section": "prior-policy",
+        "title": "Prior Decision Table reader",
+        "takeaway": "Declared policy does not infer whether two examples represent the same work.",
+        "inspections": [
+          {
+            "section": "prior-policy",
+            "label": "Inspect Prior Decision Table reader"
+          }
+        ]
+      },
+      {
+        "section": "work-identities",
+        "title": "Work identity and lifetime",
+        "takeaway": "Location, command and delivery identities have different scopes and lifetimes.",
+        "inspections": [
+          {
+            "section": "work-identities",
+            "label": "Inspect Work identity and lifetime"
+          }
+        ]
+      },
+      {
+        "section": "independent-identities",
+        "title": "Independent local identity and pair choices",
+        "takeaway": "Repeated identity and pair IDs do not couple separate readers.",
+        "inspections": [
+          {
+            "section": "independent-identities",
+            "label": "Inspect Independent local identity and pair choices"
+          }
+        ]
+      },
+      {
+        "section": "supplied-cases",
+        "title": "Independent old reader",
+        "takeaway": "Case evidence stays independently selectable alongside the newer readers.",
+        "inspections": [
+          {
+            "section": "supplied-cases",
+            "label": "Inspect Independent old reader"
+          }
+        ]
+      }
+    ]
+  }
+}

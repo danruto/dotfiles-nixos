@@ -5,7 +5,7 @@ import { realpathSync } from 'node:fs';
 import { dirname, join, basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse, render } from './vendor/pele.mjs';
-import { extractMermaids } from './markdown.mjs';
+import { extractMermaids } from './markdown.js';
 import { diagramStyle, edgeCurve } from './styles.js';
 
 const root = dirname(fileURLToPath(import.meta.url));

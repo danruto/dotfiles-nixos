@@ -1,0 +1,382 @@
+{
+  "schemaVersion": "2.0.0",
+  "title": "Decision Table — complete synthetic 1.18 example",
+  "lead": "Synthetic first-match and unique tables compare authored outcomes without evaluating inputs or credentials.",
+  "changes": [
+    "Show overlapping intake gates in authored precedence order.",
+    "Distinguish literal, absent, null, unknown and wildcard cells.",
+    "Keep refusal, unmatched results and prohibited effects explicit."
+  ],
+  "references": [
+    {
+      "label": "Synthetic policy source",
+      "value": "fixture://decision-table/illustration-only"
+    }
+  ],
+  "sections": [
+    {
+      "id": "intake-policy",
+      "type": "decision-table",
+      "title": "Intake and credential policy",
+      "reason": "Read every rule and its explicit effects; selected cases are declarations, not computed matches.",
+      "initialTable": "intake-gates",
+      "tables": [
+        {
+          "id": "intake-gates",
+          "title": "Intake gates in precedence order",
+          "policy": "first-match",
+          "conditions": [
+            {
+              "id": "authentication",
+              "label": "Authentication description"
+            },
+            {
+              "id": "shape",
+              "label": "Shape description"
+            }
+          ],
+          "rules": [
+            {
+              "id": "deny-auth",
+              "title": "Authentication refusal first",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "not authenticated (authored description)"
+                },
+                {
+                  "kind": "any"
+                }
+              ],
+              "result": {
+                "outcome": "Refuse authentication",
+                "reason": "The first declared gate wins even if a later gate is also declared matched.",
+                "allowed": ["Return the authored refusal."],
+                "prohibited": ["Do not decode or admit work."]
+              }
+            },
+            {
+              "id": "deny-shape",
+              "title": "Shape refusal after authentication",
+              "cells": [
+                {
+                  "kind": "any"
+                },
+                {
+                  "kind": "literal",
+                  "text": "missing required shape (overlapping description)"
+                }
+              ],
+              "result": {
+                "outcome": "Refuse shape",
+                "reason": "Only wins when earlier gates are not declared matched.",
+                "allowed": ["Return the shape refusal."],
+                "prohibited": ["Do not start work."]
+              }
+            },
+            {
+              "id": "accept",
+              "title": "Admit supplied valid request",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "admitted identity"
+                },
+                {
+                  "kind": "literal",
+                  "text": "supplied valid shape"
+                }
+              ],
+              "result": {
+                "outcome": "Admit",
+                "reason": "Synthetic declaration, not verified admission.",
+                "allowed": ["Record the admitted request."],
+                "prohibited": []
+              }
+            }
+          ],
+          "unmatched": {
+            "outcome": "Unmatched intake",
+            "reason": "No authored rule was declared matched; no implicit last rule applies.",
+            "allowed": [],
+            "prohibited": ["Do not infer admission or exhaustive coverage."]
+          },
+          "initialCase": "overlap",
+          "cases": [
+            {
+              "id": "overlap",
+              "title": "Two gates declared matched",
+              "cells": [
+                {
+                  "kind": "absent"
+                },
+                {
+                  "kind": "literal",
+                  "text": "missing shape"
+                }
+              ],
+              "matches": ["deny-auth", "deny-shape"],
+              "selectedRule": "deny-auth",
+              "explanation": "Authentication wins in rule order. No literal is compared against any condition.",
+              "references": ["Synthetic precedence scenario"]
+            },
+            {
+              "id": "shape-only",
+              "title": "Only the second gate declared matched",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "identity present"
+                },
+                {
+                  "kind": "null"
+                }
+              ],
+              "matches": ["deny-shape"],
+              "selectedRule": "deny-shape",
+              "explanation": "The supplied winner is the first and only declared match."
+            },
+            {
+              "id": "accept",
+              "title": "Accepted synthetic request",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "admitted identity"
+                },
+                {
+                  "kind": "literal",
+                  "text": "valid"
+                }
+              ],
+              "matches": ["accept"],
+              "selectedRule": "accept",
+              "explanation": "This display does not authorize a request.",
+              "references": []
+            }
+          ]
+        },
+        {
+          "id": "credential-choice",
+          "title": "Unique credential choice without checking credentials",
+          "policy": "unique",
+          "conditions": [
+            {
+              "id": "backend",
+              "label": "Backend"
+            },
+            {
+              "id": "credential",
+              "label": "Credential input"
+            },
+            {
+              "id": "token",
+              "label": "Token observation"
+            },
+            {
+              "id": "metadata",
+              "label": "Literal metadata"
+            }
+          ],
+          "rules": [
+            {
+              "id": "signed",
+              "title": "Signed correction declaration",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "worker"
+                },
+                {
+                  "kind": "literal",
+                  "text": "*"
+                },
+                {
+                  "kind": "unknown"
+                },
+                {
+                  "kind": "literal",
+                  "text": ""
+                }
+              ],
+              "result": {
+                "outcome": "Use supplied signed credential",
+                "reason": "An authored choice, not token verification or permission to send an update.",
+                "allowed": ["Describe the signed path."],
+                "prohibited": ["Do not infer a valid signature."]
+              }
+            },
+            {
+              "id": "absent",
+              "title": "Absent credential refusal",
+              "cells": [
+                {
+                  "kind": "any"
+                },
+                {
+                  "kind": "absent"
+                },
+                {
+                  "kind": "null"
+                },
+                {
+                  "kind": "literal",
+                  "text": "null"
+                }
+              ],
+              "result": {
+                "outcome": "Refuse absent credential",
+                "reason": "Absent, tagged null and literal null are different displays.",
+                "allowed": [],
+                "prohibited": ["Do not send an update."]
+              }
+            },
+            {
+              "id": "null",
+              "title": "Null credential is not a wildcard",
+              "cells": [
+                {
+                  "kind": "any"
+                },
+                {
+                  "kind": "null"
+                },
+                {
+                  "kind": "unknown"
+                },
+                {
+                  "kind": "literal",
+                  "text": "   \t"
+                }
+              ],
+              "result": {
+                "outcome": "Refuse null credential",
+                "reason": "Whitespace is retained exactly, not converted to an absent value.",
+                "allowed": [],
+                "prohibited": ["Do not substitute another credential."]
+              }
+            }
+          ],
+          "unmatched": {
+            "outcome": "Unmatched credential choice",
+            "reason": "No declared match supplies no winner and no credential permission.",
+            "allowed": [],
+            "prohibited": ["Do not verify credentials or submit an update from this reader."]
+          },
+          "initialCase": "signed",
+          "cases": [
+            {
+              "id": "signed",
+              "title": "Literal star and empty metadata",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "worker"
+                },
+                {
+                  "kind": "literal",
+                  "text": "*"
+                },
+                {
+                  "kind": "unknown"
+                },
+                {
+                  "kind": "literal",
+                  "text": ""
+                }
+              ],
+              "matches": ["signed"],
+              "selectedRule": "signed",
+              "explanation": "Literal * is text, not Any (wildcard). Empty literal remains an exact zero-byte value.",
+              "references": ["Synthetic correction choice <literal>"]
+            },
+            {
+              "id": "absent",
+              "title": "Absent versus null versus literal null",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "worker"
+                },
+                {
+                  "kind": "absent"
+                },
+                {
+                  "kind": "null"
+                },
+                {
+                  "kind": "literal",
+                  "text": "null"
+                }
+              ],
+              "matches": ["absent"],
+              "selectedRule": "absent",
+              "explanation": "The unique declaration supplies one winner; it does not prove exclusivity."
+            },
+            {
+              "id": "null",
+              "title": "Tagged null with whitespace literal",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "worker"
+                },
+                {
+                  "kind": "null"
+                },
+                {
+                  "kind": "unknown"
+                },
+                {
+                  "kind": "literal",
+                  "text": "   \t"
+                }
+              ],
+              "matches": ["null"],
+              "selectedRule": "null",
+              "explanation": "Whitespace is visible in its bordered literal region, not trimmed."
+            },
+            {
+              "id": "unmatched-case-with-a-long-local-id-abcdefghijklmnopqrstuvwxyz",
+              "title": "Unmatched markup-like input </script><script>not executable</script>",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "<backend> </script><script>not executable</script>"
+                },
+                {
+                  "kind": "unknown"
+                },
+                {
+                  "kind": "absent"
+                },
+                {
+                  "kind": "literal",
+                  "text": "[source](https://invalid.example) & null"
+                }
+              ],
+              "matches": [],
+              "explanation": "No matches and no winner; show the explicit unmatched result. Nothing is fetched or evaluated. <inactive-case> </script>",
+              "references": ["Literal </script><script>not executable</script> reference"]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "story": {
+    "stops": [
+      {
+        "section": "intake-policy",
+        "title": "Intake and credential policy",
+        "takeaway": "The declared winner controls the supplied case; no predicate is evaluated.",
+        "inspections": [
+          {
+            "section": "intake-policy",
+            "label": "Inspect Intake and credential policy"
+          }
+        ]
+      }
+    ]
+  }
+}

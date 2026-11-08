@@ -833,7 +833,7 @@ function nextPage(header, current, repositoryId) {
     const alternate = current.pathname.replace(/\/repos\/[^/]+\/[^/]+\/issues$/, "/repositories/" + repositoryId + "/issues");
     if (target.origin !== current.origin || ![lower(current.pathname), lower(alternate)].includes(lower(target.pathname))) fail5("INVALID_SCOPE");
     for (const key of target.searchParams.keys()) {
-      if (!["page", "state", "per_page", "sort", "direction"].includes(key) || target.searchParams.getAll(key).length !== 1 || key !== "page" && target.searchParams.get(key) !== current.searchParams.get(key)) fail5("INVALID_SCOPE");
+      if (!["page", "after", "state", "per_page", "sort", "direction"].includes(key) || target.searchParams.getAll(key).length !== 1 || key !== "page" && key !== "after" && target.searchParams.get(key) !== current.searchParams.get(key)) fail5("INVALID_SCOPE");
     }
     const page = target.searchParams.get("page");
     if (!/^[1-9][0-9]*$/.test(page || "") || !number(Number(page)) || Number(page) !== Number(current.searchParams.get("page")) + 1) fail5("INVALID_SCOPE");
@@ -1348,7 +1348,7 @@ function nextPage2(header, current, repositoryId) {
     }
     const alternate = current.pathname.replace(/\/repos\/[^/]+\/[^/]+\/pulls$/, "/repositories/" + repositoryId + "/pulls");
     if (target.origin !== current.origin || ![lower3(current.pathname), lower3(alternate)].includes(lower3(target.pathname))) fail7("INVALID_SCOPE");
-    for (const key of target.searchParams.keys()) if (!["page", "state", "per_page", "sort", "direction"].includes(key) || target.searchParams.getAll(key).length !== 1 || key !== "page" && target.searchParams.get(key) !== current.searchParams.get(key)) fail7("INVALID_SCOPE");
+    for (const key of target.searchParams.keys()) if (!["page", "after", "state", "per_page", "sort", "direction"].includes(key) || target.searchParams.getAll(key).length !== 1 || key !== "page" && key !== "after" && target.searchParams.get(key) !== current.searchParams.get(key)) fail7("INVALID_SCOPE");
     const page = target.searchParams.get("page");
     if (!/^[1-9][0-9]*$/.test(page || "") || !positive(Number(page)) || Number(page) !== Number(current.searchParams.get("page")) + 1) fail7("INVALID_SCOPE");
     next = Number(page);

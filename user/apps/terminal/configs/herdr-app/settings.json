@@ -1,9 +1,10 @@
 {
-  "zoom": 1.2,
+  "zoom": 1.0,
   "sounds": {
     "enabled": true
   },
-  "font": "D2Codingligature Nerd Font",
+  "font": "Geist Mono",
+  "font_ligatures": false,
   "telemetry": false,
   "minimum_contrast": 1.0
 }

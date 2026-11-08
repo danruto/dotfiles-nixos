@@ -131,7 +131,7 @@
                       "id": "files",
                       "type": "block",
                       "content": {
-                        "mod": "design-files"
+                        "mod": "files"
                       }
                     },
                     {

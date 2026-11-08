@@ -1,0 +1,1261 @@
+{
+  "schemaVersion": "2.0.0",
+  "title": "Synthetic data crossings at the admission boundary",
+  "lead": "Synthetic authored classifications, controls, architecture and outcomes; not real personal information, verified security enforcement or execution results.",
+  "changes": [
+    "DataFlow C: complete crossing notes beside a Control margin.",
+    "Explicit exact-edge inspection lends the same existing C4; reading notes never drives it.",
+    "All data, controls, references and outcomes are invented for review; no enforcement or tests were verified."
+  ],
+  "references": [
+    {
+      "label": "Synthetic scope",
+      "value": "Invented data descriptions and boundary controls; not real personal data, captures, verified source or passing tests."
+    }
+  ],
+  "sections": [
+    {
+      "id": "admission-crossings",
+      "type": "data-flow",
+      "title": "Crossing notes at admission",
+      "reason": "Supplied input order interleaves classes. Display order is Untrusted, Token, PII, Internal, stable within each class; this is not a computed risk score.",
+      "architecture": "architecture-diff",
+      "crossings": [
+        {
+          "id": "published-first",
+          "level": "admission",
+          "pane": "after",
+          "edge": {
+            "to": "Queue",
+            "label": "publish",
+            "occurrence": 0,
+            "from": "API"
+          },
+          "classification": "internal",
+          "data": "Accepted command description",
+          "control": "Schema validation (authored)",
+          "note": "First emitted publication occurrence; a different authored pin remains on occurrence 1."
+        },
+        {
+          "id": "prior-input",
+          "level": "admission-components",
+          "pane": "before",
+          "edge": {
+            "to": "Guard",
+            "label": "validate",
+            "occurrence": 0,
+            "from": "API"
+          },
+          "classification": "untrusted",
+          "data": "Command body <literal> & </script><script>not executable</script>",
+          "control": "Decode and validate (authored)",
+          "note": "Literal prose only: https://example.invalid/not-fetched. This synthetic crossing note remains complete and wraps; no guard was executed. This synthetic crossing note remains complete and wraps; no guard was executed. This synthetic crossing note remains complete and wraps; no guard was executed. This synthetic crossing note remains complete and wraps; no guard was executed. This synthetic crossing note remains complete and wraps; no guard was executed. This synthetic crossing note remains complete and wraps; no guard was executed. This synthetic crossing note remains complete and wraps; no guard was executed. This synthetic crossing note remains complete and wraps; no guard was executed. "
+        },
+        {
+          "id": "synthetic-profile",
+          "level": "reporting",
+          "pane": "after",
+          "edge": {
+            "to": "Store",
+            "label": "",
+            "occurrence": 0,
+            "from": "Worker"
+          },
+          "classification": "pii",
+          "data": "Invented profile field description — no real personal information",
+          "control": "Authored field allowlist"
+        },
+        {
+          "id": "prior-token",
+          "level": "admission-components",
+          "pane": "before",
+          "edge": {
+            "to": "API",
+            "label": "admit",
+            "occurrence": 0,
+            "from": "Guard"
+          },
+          "classification": "token",
+          "data": "Fictional admission token description",
+          "control": "Verify fictional token (authored)",
+          "note": "A supplied control name, not proof of protection."
+        },
+        {
+          "id": "published-second",
+          "level": "admission",
+          "pane": "after",
+          "edge": {
+            "to": "Queue",
+            "label": "publish",
+            "occurrence": 1,
+            "from": "API"
+          },
+          "classification": "internal",
+          "data": "Accepted command description on second occurrence",
+          "control": "Authored schema check"
+        },
+        {
+          "id": "prior-projection",
+          "level": "admission",
+          "pane": "before",
+          "edge": {
+            "to": "Store",
+            "label": "",
+            "occurrence": 0,
+            "from": "Queue"
+          },
+          "classification": "untrusted",
+          "data": "Synthetic legacy projection input",
+          "control": "unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_unbroken_named_control_"
+        },
+        {
+          "id": "same-address-token",
+          "level": "admission-components",
+          "pane": "before",
+          "edge": {
+            "to": "Guard",
+            "label": "validate",
+            "occurrence": 0,
+            "from": "API"
+          },
+          "classification": "token",
+          "data": "Fictional token on the same validation message",
+          "control": "Different authored control on a repeated address"
+        },
+        {
+          "id": "prior-cache",
+          "level": "reporting-components",
+          "pane": "before",
+          "edge": {
+            "to": "Cache",
+            "label": "",
+            "occurrence": 0,
+            "from": "Read"
+          },
+          "classification": "internal",
+          "data": "Synthetic prior cache lookup",
+          "control": "Authored lookup boundary",
+          "note": "Only Before exists at this level; no After pane is invented."
+        }
+      ]
+    },
+    {
+      "id": "single-crossings",
+      "type": "data-flow",
+      "title": "Independent single-reader crossings",
+      "reason": "Equal local crossing IDs and repeated addresses are independent supplied records, not shared selections.",
+      "architecture": "architecture-single",
+      "crossings": [
+        {
+          "id": "published-first",
+          "level": "containers",
+          "pane": "single",
+          "edge": {
+            "to": "Store",
+            "label": "write",
+            "occurrence": 0,
+            "from": "API"
+          },
+          "classification": "internal",
+          "data": "Synthetic projection write",
+          "control": "Authored write schema"
+        },
+        {
+          "id": "prior-input",
+          "level": "context",
+          "pane": "single",
+          "edge": {
+            "to": "System",
+            "label": "submit",
+            "occurrence": 0,
+            "from": "User"
+          },
+          "classification": "untrusted",
+          "data": "Fictional submitted command",
+          "control": "Authored request decoder",
+          "note": "A sequence message into the existing single architecture."
+        },
+        {
+          "id": "receipt",
+          "level": "context",
+          "pane": "single",
+          "edge": {
+            "to": "User",
+            "label": "receipt",
+            "occurrence": 0,
+            "from": "System"
+          },
+          "classification": "token",
+          "data": "Fictional receipt description",
+          "control": "Authored receipt check"
+        },
+        {
+          "id": "component-input",
+          "level": "components",
+          "pane": "single",
+          "edge": {
+            "to": "Guard",
+            "label": "",
+            "occurrence": 0,
+            "from": "Parse"
+          },
+          "classification": "untrusted",
+          "data": "Parsed synthetic command",
+          "control": "Authored validation boundary"
+        }
+      ]
+    },
+    {
+      "id": "admission-decisions",
+      "type": "tradeoffs",
+      "title": "Where should invalid input stop?",
+      "reason": "All questions, alternatives, why-not arguments and accepted costs are synthetic authored examples, not independently verified.",
+      "architecture": "architecture-diff",
+      "initialDecision": "admission",
+      "decisions": [
+        {
+          "id": "projection",
+          "level": "admission",
+          "pane": "after",
+          "target": {
+            "kind": "node",
+            "node": "Store"
+          },
+          "question": "Where should invalid input stop?",
+          "source": "synthetic/decisions/admission",
+          "seam": "Admission → publication",
+          "options": [
+            {
+              "label": "Keep the later boundary",
+              "verdict": "rejected",
+              "why": "Synthetic why-not: a later rejection cannot retract an already published command."
+            },
+            {
+              "label": "Validate at admission",
+              "verdict": "chosen",
+              "why": "Synthetic choice: reject invalid input before publication."
+            },
+            {
+              "label": "Validate at both boundaries",
+              "verdict": "rejected",
+              "why": "Synthetic why-not: duplicated policy would require coordinated changes."
+            }
+          ],
+          "tradeoff": "Synthetic accepted cost: policy checks add work to the request path; no measured latency or verified production outcome is claimed.",
+          "references": [
+            "synthetic/requirements/admission",
+            "https://example.invalid/plain-reference"
+          ]
+        },
+        {
+          "id": "admission",
+          "level": "admission",
+          "pane": "after",
+          "target": {
+            "kind": "node",
+            "node": "API"
+          },
+          "question": "Should admission validate before publication?",
+          "source": "synthetic/decisions/admission",
+          "seam": "Admission → publication",
+          "options": [
+            {
+              "label": "Keep the later boundary",
+              "verdict": "rejected",
+              "why": "Synthetic why-not: a later rejection cannot retract an already published command."
+            },
+            {
+              "label": "Validate at admission",
+              "verdict": "chosen",
+              "why": "Synthetic choice: reject invalid input before publication."
+            },
+            {
+              "label": "Validate at both boundaries",
+              "verdict": "rejected",
+              "why": "Synthetic why-not: duplicated policy would require coordinated changes."
+            }
+          ],
+          "tradeoff": "Synthetic accepted cost: policy checks add work to the request path; no measured latency or verified production outcome is claimed.",
+          "references": []
+        },
+        {
+          "id": "consumer",
+          "level": "admission",
+          "pane": "before",
+          "target": {
+            "kind": "node",
+            "node": "Queue"
+          },
+          "question": "Should the prior consumer retain validation?",
+          "source": "synthetic/decisions/admission",
+          "seam": "Admission → publication",
+          "options": [
+            {
+              "label": "Retain this recorded boundary",
+              "verdict": "chosen",
+              "why": "Only this synthetic chosen option was supplied. No exhaustive comparison is claimed."
+            }
+          ],
+          "tradeoff": "Synthetic accepted cost: policy checks add work to the request path; no measured latency or verified production outcome is claimed."
+        }
+      ]
+    },
+    {
+      "id": "admission-signals",
+      "type": "telemetry",
+      "title": "Can operations see the rejection?",
+      "reason": "Interleaved input groups into Metric, Span and Log field. Names and shared emitters do not merge independent entry IDs.",
+      "architecture": "architecture-diff",
+      "operationalChange": "Synthetic proposal: a new rejection counter feeds a rejection alert and dashboard. The validation span supports triage; removing the old cache field requires a panel update. These supplied consequences are unverified, not live operational health.",
+      "entries": [
+        {
+          "id": "validation-span",
+          "signal": "span",
+          "name": "commands.validate",
+          "status": "added",
+          "level": "admission-components",
+          "pane": "after",
+          "node": "Guard",
+          "powers": "Validation trace",
+          "affects": "Synthetic trace panel gains a validation step."
+        },
+        {
+          "id": "rejection-counter",
+          "signal": "metric",
+          "name": "commands_rejected_total",
+          "status": "added",
+          "level": "admission",
+          "pane": "after",
+          "node": "API",
+          "kind": "counter",
+          "powers": "Rejection alert and dashboard",
+          "affects": "Synthetic rejection alert requires a matching counter rule; no alert has fired."
+        },
+        {
+          "id": "rejection-reason",
+          "signal": "log",
+          "name": "reject_reason",
+          "status": "changed",
+          "level": "admission",
+          "pane": "before",
+          "node": "API",
+          "powers": "Reason-based triage"
+        }
+      ]
+    },
+    {
+      "id": "impact-dependencies",
+      "type": "impact",
+      "title": "Authored admission dependencies",
+      "reason": "The complete forest keeps supplied root/sibling order. A forward parent reference is regrouped into depth-first ancestry; no dependencies are discovered.",
+      "architecture": "architecture-diff",
+      "hits": [
+        {
+          "id": "projection",
+          "title": "Status projection",
+          "ring": "downstream",
+          "level": "admission",
+          "pane": "after",
+          "target": {
+            "kind": "node",
+            "node": "Store"
+          },
+          "parent": "consumer"
+        },
+        {
+          "id": "admission",
+          "title": "Admission handler",
+          "ring": "changed",
+          "level": "admission",
+          "pane": "after",
+          "target": {
+            "kind": "node",
+            "node": "API"
+          },
+          "why": "Synthetic change: validate before publication. The separate authored pin remains on publish occurrence 1."
+        },
+        {
+          "id": "consumer",
+          "title": "Event consumer",
+          "ring": "downstream",
+          "level": "admission",
+          "pane": "before",
+          "target": {
+            "kind": "node",
+            "node": "Queue"
+          },
+          "parent": "admission",
+          "why": "An authored downstream dependency on admission, not a source-verified propagation claim."
+        }
+      ]
+    },
+    {
+      "id": "architecture-diff",
+      "type": "c4",
+      "title": "Architecture change: independent paired and one-sided levels",
+      "reason": "These supplied markers are not inferred from geometry. Equal node IDs in different panes or levels are separate addresses.",
+      "mode": "diff",
+      "initialLevel": "admission-components",
+      "levels": [
+        {
+          "id": "context",
+          "title": "System context",
+          "altitude": "c1",
+          "drills": [
+            {
+              "pane": "before",
+              "node": "API",
+              "level": "admission"
+            },
+            {
+              "pane": "before",
+              "node": "Reports",
+              "level": "reporting"
+            },
+            {
+              "pane": "after",
+              "node": "API",
+              "level": "admission"
+            },
+            {
+              "pane": "after",
+              "node": "Reports",
+              "level": "reporting"
+            }
+          ],
+          "before": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nUser[Reviewer] --> API[Command system]\nUser --> Reports[Reporting system]",
+            "description": "Synthetic architecture, not a verified source model.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [
+              {
+                "node": "API",
+                "status": "moved"
+              },
+              {
+                "node": "User",
+                "status": "same"
+              }
+            ],
+            "edgeChanges": [],
+            "initialFocus": {
+              "kind": "node",
+              "node": "API"
+            }
+          },
+          "after": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nUser[Reviewer] --> API[Command system]\nUser --> Reports[Reporting system]",
+            "description": "Synthetic architecture, not a verified source model.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [
+              {
+                "node": "API",
+                "status": "moved"
+              },
+              {
+                "node": "User",
+                "status": "same"
+              }
+            ],
+            "edgeChanges": [],
+            "initialFocus": {
+              "kind": "node",
+              "node": "API"
+            }
+          }
+        },
+        {
+          "id": "admission",
+          "title": "Admission containers",
+          "altitude": "c2",
+          "drills": [
+            {
+              "pane": "before",
+              "node": "API",
+              "level": "admission-components"
+            },
+            {
+              "pane": "after",
+              "node": "API",
+              "level": "admission-components"
+            }
+          ],
+          "before": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nAPI[Admission API] -->|publish| Queue[Command queue]\nAPI -->|publish| Queue\nQueue --> Store[Projection store]",
+            "description": "Two identical publish connections retain separate occurrence identities. Literal <architecture> and </script><script>not executable</script> remain inert text.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [
+              {
+                "node": "API",
+                "status": "same"
+              },
+              {
+                "node": "Queue",
+                "status": "removed"
+              },
+              {
+                "node": "Store",
+                "status": "moved"
+              }
+            ],
+            "edgeChanges": [
+              {
+                "edge": {
+                  "from": "API",
+                  "to": "Queue",
+                  "label": "publish",
+                  "occurrence": 0
+                },
+                "status": "moved"
+              },
+              {
+                "edge": {
+                  "from": "API",
+                  "to": "Queue",
+                  "label": "publish",
+                  "occurrence": 1
+                },
+                "status": "removed"
+              }
+            ]
+          },
+          "after": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nAPI[Admission API] -->|publish| Queue[Command queue]\nAPI -->|publish| Queue\nQueue --> Store[Projection store]",
+            "description": "Two identical publish connections retain separate occurrence identities. Literal <architecture> and </script><script>not executable</script> remain inert text.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [
+              {
+                "node": "API",
+                "status": "same"
+              },
+              {
+                "node": "Queue",
+                "status": "added"
+              },
+              {
+                "node": "Store",
+                "status": "removed"
+              }
+            ],
+            "edgeChanges": [
+              {
+                "edge": {
+                  "from": "API",
+                  "to": "Queue",
+                  "label": "publish",
+                  "occurrence": 0
+                },
+                "status": "moved"
+              },
+              {
+                "edge": {
+                  "from": "API",
+                  "to": "Queue",
+                  "label": "publish",
+                  "occurrence": 1
+                },
+                "status": "added"
+              }
+            ],
+            "initialFocus": {
+              "kind": "edge",
+              "edge": {
+                "from": "API",
+                "to": "Queue",
+                "label": "publish",
+                "occurrence": 1
+              }
+            }
+          }
+        },
+        {
+          "id": "reporting",
+          "title": "Reporting containers — a deliberately long authored title with literal <markup> and </script> text",
+          "altitude": "c2",
+          "drills": [
+            {
+              "pane": "after",
+              "node": "Worker",
+              "level": "reporting-components"
+            }
+          ],
+          "after": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nWorker[Reporting worker] --> Store[Read store]",
+            "description": "Synthetic architecture, not a verified source model.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "At narrow widths, check that the complete long Reporting containers ancestry button wraps without widening the page.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [],
+            "edgeChanges": []
+          }
+        },
+        {
+          "id": "admission-components",
+          "title": "Admission components",
+          "altitude": "c3",
+          "drills": [],
+          "before": {
+            "kind": "sequence",
+            "source": "sequenceDiagram\nparticipant API as Admission API\nparticipant Guard as Policy guard\nparticipant Queue as Command queue\nAPI->>+Guard: validate\nGuard-->>-API: admit\nAPI->>Queue: publish",
+            "description": "Synthetic architecture, not a verified source model.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [
+              {
+                "node": "Guard",
+                "status": "added"
+              }
+            ],
+            "edgeChanges": []
+          },
+          "after": {
+            "kind": "sequence",
+            "source": "sequenceDiagram\nparticipant API as Admission API\nparticipant Guard as Policy guard\nparticipant Queue as Command queue\nAPI->>+Guard: validate\nGuard-->>-API: admit\nAPI->>Queue: publish",
+            "description": "Synthetic architecture, not a verified source model.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [
+              {
+                "node": "Guard",
+                "status": "added"
+              }
+            ],
+            "edgeChanges": []
+          }
+        },
+        {
+          "id": "reporting-components",
+          "title": "Prior reporting components",
+          "altitude": "c3",
+          "drills": [],
+          "before": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nRead[Read handler] --> Cache[Old cache]",
+            "description": "Synthetic architecture, not a verified source model.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [
+              {
+                "node": "Cache",
+                "status": "removed"
+              }
+            ],
+            "edgeChanges": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "architecture-single",
+      "type": "c4",
+      "title": "An independent single architecture with actor drills",
+      "reason": "The initial root is implicit. Sequence actors drill to explicitly declared children; descriptions and source remain readable.",
+      "mode": "single",
+      "levels": [
+        {
+          "id": "context",
+          "title": "Single system context",
+          "altitude": "c1",
+          "drills": [
+            {
+              "pane": "single",
+              "node": "System",
+              "level": "containers"
+            }
+          ],
+          "diagram": {
+            "kind": "sequence",
+            "source": "sequenceDiagram\nparticipant User as Reviewer\nparticipant System as Command system\nUser->>System: submit\nSystem-->>User: receipt",
+            "description": "Synthetic architecture, not a verified source model.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [],
+            "edgeChanges": []
+          }
+        },
+        {
+          "id": "containers",
+          "title": "Single containers",
+          "altitude": "c2",
+          "drills": [
+            {
+              "pane": "single",
+              "node": "API",
+              "level": "components"
+            },
+            {
+              "pane": "single",
+              "node": "Store",
+              "level": "storage"
+            }
+          ],
+          "diagram": {
+            "kind": "sequence",
+            "source": "sequenceDiagram\nparticipant API as Admission API\nparticipant Store as Projection store\nAPI->>Store: write\nStore-->>API: committed",
+            "description": "Synthetic architecture, not a verified source model.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [],
+            "edgeChanges": [],
+            "initialFocus": {
+              "kind": "node",
+              "node": "API"
+            }
+          }
+        },
+        {
+          "id": "components",
+          "title": "Single admission components",
+          "altitude": "c3",
+          "drills": [],
+          "diagram": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nParse[Parse] --> Guard[Guard]\nGuard --> Publish[Publish]",
+            "description": "Synthetic architecture, not a verified source model.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [],
+            "edgeChanges": []
+          }
+        },
+        {
+          "id": "storage",
+          "title": "Single storage components",
+          "altitude": "c3",
+          "drills": [],
+          "diagram": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nRead[Read model] --> Index[Lookup index]",
+            "description": "Synthetic architecture, not a verified source model.",
+            "steps": [
+              "Read the supplied architecture and exact authored markers.",
+              "Inspect source and narration; node drills open only the declared child."
+            ],
+            "nodeChanges": [],
+            "edgeChanges": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "dependency-cases",
+      "type": "corpus",
+      "title": "Input → expected",
+      "reason": "Choose synthetic valid/rejected expectations or empty input/expected; no replay is claimed.",
+      "initialCase": "valid/command~1",
+      "entries": [
+        {
+          "id": "invalid/name~1",
+          "title": "Invalid name",
+          "provenance": "Synthetic UI fixture; invented, not captured or replayed",
+          "dependency": "validator 1.0 — illustrative pin, not installed or verified",
+          "normalise": "None",
+          "input": "{ \"name\": \"\" }\n",
+          "expected": "{ \"status\": 400, \"published\": false }\n",
+          "maps": ["gwt~synthetic-invalid-name~1"]
+        },
+        {
+          "id": "valid/command~1",
+          "title": "Valid command",
+          "provenance": "Synthetic UI fixture; invented, not captured or replayed",
+          "dependency": "validator 1.0 — illustrative pin, not installed or verified",
+          "normalise": "None",
+          "input": "{ \"name\": \"River site\" }\n",
+          "expected": "{ \"status\": 202, \"published\": true }\n",
+          "maps": ["gwt~synthetic-valid-command~1"]
+        },
+        {
+          "id": "empty-input",
+          "title": "Empty input",
+          "provenance": "Synthetic UI fixture; invented, not captured or replayed",
+          "dependency": "validator 1.0 — illustrative pin, not installed or verified",
+          "normalise": "None",
+          "input": "",
+          "expected": "Synthetic expectation for zero input; not observed.\n"
+        },
+        {
+          "id": "empty-expected",
+          "title": "Empty expected",
+          "provenance": "Synthetic UI fixture; invented, not captured or replayed",
+          "dependency": "validator 1.0 — illustrative pin, not installed or verified",
+          "normalise": "None",
+          "input": "Synthetic no-output command\n",
+          "expected": "",
+          "maps": []
+        }
+      ]
+    },
+    {
+      "id": "publication-seam",
+      "type": "contracts",
+      "title": "The publication seam",
+      "reason": "Choose Command API, Accepted event or Unclassified interface; exact bodies and optional metadata remain authored text.",
+      "initialContract": "accepted/event~1",
+      "contracts": [
+        {
+          "id": "command/api~1",
+          "title": "Command API",
+          "kind": "HTTP",
+          "summary": "Accept valid commands; reject invalid names before publication. This is an authored interface, not a measured response.",
+          "provenance": [
+            "api/commands.yaml @ synthetic-review",
+            "requirements/admission @ fictional-revision",
+            "https://example.invalid/source @ not-fetched"
+          ],
+          "spec": "\nPOST /synthetic/commands\r\nContent-Type: application/json\r\n\r\n{\"name\": \"synthetic\", \"note\": \"<literal> & </script>\"}\r\n\r\n202 Accepted — synthetic receipt only\r400 Bad Request — synthetic invalid name\n  "
+        },
+        {
+          "id": "accepted/event~1",
+          "title": "Accepted event",
+          "kind": "Event",
+          "summary": "Only admitted commands enter this illustrative stream; publication does not guarantee projected visibility.",
+          "provenance": [
+            "events/accepted.json @ synthetic-review",
+            "requirements/admission @ fictional-revision"
+          ],
+          "spec": "{\n  \"type\": \"CommandAccepted\",\n  \"name\": \"synthetic\",\n  \"note\": \"</script><script>not executable</script>\",\n  \"reference\": \"https://example.invalid/not-fetched\"\n}\n"
+        },
+        {
+          "id": "unclassified",
+          "title": "Unclassified interface — metadata omitted",
+          "spec": "flowchart LR\n  Source[Literal source, not a diagram] --> Reader[Plain text only]\n"
+        }
+      ]
+    },
+    {
+      "id": "admission-model",
+      "type": "event-model",
+      "title": "Admission event model",
+      "reason": "Start at the nonfirst admission flow. Compare shared scenarios, literal references and independent flow viewports; coverage is authored, never executed.",
+      "flows": [
+        {
+          "id": "projection",
+          "title": "Projection recovery with a long literal <markup> title and </script> text — verify complete button wrapping at narrow widths without ellipsis or horizontal page overflow",
+          "diagram": {
+            "kind": "flowchart",
+            "source": "flowchart TD\n  Retry[Retry received] -->|replay| Apply[Apply accepted event]\n  Apply -->|update| Read[Read state]",
+            "description": "Independent viewer and selections; shared scenario body resolves within this section."
+          },
+          "blocks": [
+            {
+              "node": "Retry",
+              "title": "Retry trigger",
+              "role": "trigger",
+              "coverage": {
+                "scenarioIds": ["missing-body", "reject-invalid-command"],
+                "requirements": [],
+                "cases": ["synthetic-retry"]
+              }
+            },
+            {
+              "node": "Apply",
+              "title": "Apply accepted event",
+              "role": "command",
+              "coverage": {
+                "scenarioIds": ["accept-command"],
+                "requirements": [
+                  {
+                    "id": "projection/idempotent",
+                    "text": "Repeated delivery does not duplicate the authored effect."
+                  }
+                ],
+                "architecture": ["architecture-diff / admission-components / after / API"]
+              }
+            },
+            {
+              "node": "Read",
+              "title": "Read state",
+              "role": "view"
+            }
+          ]
+        },
+        {
+          "id": "admission",
+          "title": "Command admission — reject before publication",
+          "diagram": {
+            "kind": "flowchart",
+            "source": "flowchart LR\n  Request[Request received] -->|submit| Admit[Validate command]\n  Admit -->|accepted| Accepted[Command accepted]\n  Accepted -->|project| View[Read projection]\n  Admit -->|inspect| Notes[Ordinary inspection node]\n  %% Literal </script> stays a source comment",
+            "description": "All four roles with an ordinary undeclared Notes node. Click or keyboard-activate blocks to show coverage; drag without selecting."
+          },
+          "blocks": [
+            {
+              "node": "Admit",
+              "title": "Validate command",
+              "role": "command",
+              "coverage": {
+                "title": "Admission expectations — synthetic and unverified",
+                "scenarioIds": ["reject-invalid-command", "accept-command", "missing-body"],
+                "requirements": [
+                  {
+                    "id": "admission/nonblank",
+                    "text": "Reject invalid names before publication; this is an authored requirement."
+                  },
+                  {
+                    "id": "receipt-is-not-visibility"
+                  }
+                ],
+                "architecture": [
+                  "architecture-diff / admission-components / after / API",
+                  "https://example.invalid/literal-reference"
+                ],
+                "seams": ["POST /commands", "shared-identifier"],
+                "cases": ["synthetic-invalid-name", "shared-identifier"]
+              }
+            },
+            {
+              "node": "Request",
+              "title": "Request received — no coverage supplied",
+              "role": "trigger"
+            },
+            {
+              "node": "Accepted",
+              "title": "Command accepted — explicitly empty coverage",
+              "role": "event",
+              "coverage": {
+                "scenarioIds": [],
+                "requirements": []
+              }
+            },
+            {
+              "node": "View",
+              "title": "Projection view with shared rejection scenario",
+              "role": "view",
+              "coverage": {
+                "scenarioIds": ["reject-invalid-command", "missing-body"],
+                "requirements": [
+                  {
+                    "id": "receipt-is-not-visibility"
+                  }
+                ],
+                "architecture": [],
+                "seams": [],
+                "cases": []
+              }
+            }
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "accept-command",
+          "name": "Admit a valid command",
+          "body": "Given a normalized synthetic command\nWhen admission accepts it\nThen the model expects an accepted event\n  And the view may still lag; this is authored prose, not an execution result."
+        },
+        {
+          "id": "reject-invalid-command",
+          "name": "Reject literal <markup> without publication",
+          "body": "Given an invalid name containing <b>literal text</b>\n  And the literal string </script><script>not executable</script>\nWhen admission rejects the synthetic command\nThen the authored expectation is 400 and no publication\n\nNo scenario was run. These lines are shown completely."
+        },
+        {
+          "id": "missing-body"
+        },
+        {
+          "id": "unused-catalogue",
+          "name": "Unused scenario retained in the plain fallback",
+          "body": "Given an unused authored scenario\nWhen no block cites it\nThen it does not create inferred coverage."
+        }
+      ],
+      "initialFlow": "admission"
+    },
+    {
+      "id": "command-lifecycle",
+      "type": "lifecycle",
+      "title": "From acceptance to read visibility",
+      "reason": "A receipt does not guarantee read visibility. The declared window closes at Applied, but a lagging replica can still return no row; the read result is authored separately.",
+      "readLabel": "GET /synthetic/commands/{id} right now returns",
+      "states": [
+        {
+          "id": "accepted",
+          "label": "Accepted",
+          "t": "t+0ms",
+          "happened": "The valid command is acknowledged; no projection write has completed.",
+          "readReturns": "404 · not projected (synthetic)",
+          "inWindow": true
+        },
+        {
+          "id": "published",
+          "label": "Published",
+          "t": "t+8ms",
+          "happened": "The valid command has entered the stream.",
+          "readReturns": "404 · not projected; stream publication is not a visible read.",
+          "inWindow": true
+        },
+        {
+          "id": "applied",
+          "label": "Applied",
+          "t": "t+8ms",
+          "happened": "The consumer has committed the projection write. A completed write does not imply every replica has caught up.",
+          "readReturns": "200 · row on the primary, or 404 · a lagging replica may still return no row. Authored uncertainty, not a measured response.",
+          "inWindow": false
+        },
+        {
+          "id": "visible",
+          "label": "Visible",
+          "happened": "The synthetic reader has observed the row. Literal </script><script>not executable</script> and <effect> text remain local claims.",
+          "readReturns": "200 · row visible. Literal https://example.invalid/read is text, not a request. This deliberately long synthetic read explanation wraps without hiding authored uncertainty or implying a live response. This deliberately long synthetic read explanation wraps without hiding authored uncertainty or implying a live response. This deliberately long synthetic read explanation wraps without hiding authored uncertainty or implying a live response. This deliberately long synthetic read explanation wraps without hiding authored uncertainty or implying a live response. This deliberately long synthetic read explanation wraps without hiding authored uncertainty or implying a live response. "
+        }
+      ]
+    },
+    {
+      "id": "request-flow",
+      "type": "trace",
+      "title": "Request path",
+      "reason": "An authored request may publish or record rejection.",
+      "diagram": {
+        "kind": "flowchart",
+        "source": "flowchart LR\nA[Receive] -->|check| B[Validate]\nB -->|publish| C[Publish]\nB -->|reject| R[Record outcome]",
+        "description": "Synthetic validation and publication flow."
+      },
+      "paths": [
+        {
+          "id": "admit",
+          "label": "Admit request",
+          "steps": [
+            {
+              "title": "Receive request",
+              "narration": "Begin with an illustrative request.",
+              "node": "A"
+            },
+            {
+              "title": "Validate request",
+              "narration": "Follow the authored check connection.",
+              "node": "B",
+              "incoming": {
+                "from": "A",
+                "to": "B",
+                "label": "check",
+                "occurrence": 0
+              }
+            },
+            {
+              "title": "Publish request",
+              "narration": "Finish at the publisher.",
+              "node": "C",
+              "incoming": {
+                "from": "B",
+                "to": "C",
+                "label": "publish",
+                "occurrence": 0
+              }
+            }
+          ],
+          "outcome": "ok",
+          "outcomeDescription": "The author says this synthetic request reaches publication; no execution is verified."
+        },
+        {
+          "id": "decline",
+          "label": "Reject request",
+          "steps": [
+            {
+              "title": "Receive rejected request",
+              "narration": "Begin another illustrative request.",
+              "node": "A"
+            },
+            {
+              "title": "Check rejected request",
+              "narration": "Reach validation before recording the outcome.",
+              "node": "B",
+              "incoming": {
+                "from": "A",
+                "to": "B",
+                "label": "check",
+                "occurrence": 0
+              }
+            },
+            {
+              "title": "Record rejection",
+              "narration": "Recording the authored outcome is the last step.",
+              "node": "R",
+              "incoming": {
+                "from": "B",
+                "to": "R",
+                "label": "reject",
+                "occurrence": 0
+              }
+            }
+          ],
+          "outcome": "reject",
+          "outcomeDescription": "The author declares publication not reached; this is not an observed rejection.",
+          "notReached": {
+            "nodes": ["C"],
+            "edges": [
+              {
+                "from": "B",
+                "to": "C",
+                "label": "publish",
+                "occurrence": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "story": {
+    "stops": [
+      {
+        "section": "admission-crossings",
+        "title": "Crossing notes at admission",
+        "takeaway": "Classification and a named control describe different parts of the boundary.",
+        "inspections": [
+          {
+            "section": "admission-crossings",
+            "label": "Inspect Crossing notes at admission"
+          }
+        ]
+      },
+      {
+        "section": "single-crossings",
+        "title": "Independent single-reader crossings",
+        "takeaway": "Repeated addresses remain independent authored crossings.",
+        "inspections": [
+          {
+            "section": "single-crossings",
+            "label": "Inspect Independent single-reader crossings"
+          }
+        ]
+      },
+      {
+        "section": "admission-decisions",
+        "title": "Where should invalid input stop?",
+        "takeaway": "The chosen admission boundary has explicit alternatives and accepted costs.",
+        "inspections": [
+          {
+            "section": "admission-decisions",
+            "label": "Inspect Where should invalid input stop?"
+          }
+        ]
+      },
+      {
+        "section": "admission-signals",
+        "title": "Can operations see the rejection?",
+        "takeaway": "Signal definitions describe intended operational use, not live measurements.",
+        "inspections": [
+          {
+            "section": "admission-signals",
+            "label": "Inspect Can operations see the rejection?"
+          }
+        ]
+      },
+      {
+        "section": "impact-dependencies",
+        "title": "Authored admission dependencies",
+        "takeaway": "The dependency forest is authored; the reader does not discover dependencies.",
+        "inspections": [
+          {
+            "section": "impact-dependencies",
+            "label": "Inspect Authored admission dependencies"
+          }
+        ]
+      },
+      {
+        "section": "architecture-diff",
+        "title": "Architecture change: independent paired and one-sided levels",
+        "takeaway": "Before and after are independent, exact architecture addresses.",
+        "inspections": [
+          {
+            "section": "architecture-diff",
+            "label": "Inspect Architecture change: independent paired and one-sided levels"
+          }
+        ]
+      },
+      {
+        "section": "architecture-single",
+        "title": "An independent single architecture with actor drills",
+        "takeaway": "Actor drills follow declared child relationships.",
+        "inspections": [
+          {
+            "section": "architecture-single",
+            "label": "Inspect An independent single architecture with actor drills"
+          }
+        ]
+      },
+      {
+        "section": "dependency-cases",
+        "title": "Input → expected",
+        "takeaway": "Input and expected output are supplied case material, not replay results.",
+        "inspections": [
+          {
+            "section": "dependency-cases",
+            "label": "Inspect Input → expected"
+          }
+        ]
+      },
+      {
+        "section": "publication-seam",
+        "title": "The publication seam",
+        "takeaway": "The accepted event, command API and wire binding are separate supplied interfaces.",
+        "inspections": [
+          {
+            "section": "publication-seam",
+            "label": "Inspect The publication seam"
+          }
+        ]
+      },
+      {
+        "section": "admission-model",
+        "title": "Admission event model",
+        "takeaway": "The event flow links to authored scenarios and requirements, not executed coverage.",
+        "inspections": [
+          {
+            "section": "admission-model",
+            "label": "Inspect Admission event model"
+          }
+        ]
+      },
+      {
+        "section": "command-lifecycle",
+        "title": "From acceptance to read visibility",
+        "takeaway": "Acceptance does not guarantee read visibility, even outside the declared window.",
+        "inspections": [
+          {
+            "section": "command-lifecycle",
+            "label": "Inspect From acceptance to read visibility"
+          }
+        ]
+      },
+      {
+        "section": "request-flow",
+        "title": "Request path",
+        "takeaway": "The request either publishes or records rejection.",
+        "inspections": [
+          {
+            "section": "request-flow",
+            "label": "Inspect Request path"
+          }
+        ]
+      }
+    ]
+  }
+}

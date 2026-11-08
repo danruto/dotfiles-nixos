@@ -1,0 +1,1421 @@
+{
+  "schemaVersion": "2.0.0",
+  "title": "Admission and recovery — complete synthetic catalogue",
+  "lead": "Move validation to the admission boundary, keep rejected input out of the stream, and make acceptance distinct from read visibility.",
+  "changes": [
+    "Validate the command before the first publication side effect.",
+    "Return a clear rejection to the caller; keep the consumer focused on accepted events.",
+    "Document the changed interfaces, failure modes and operational signals. This entire PR is a synthetic example, not executed evidence.",
+    "Add Recovery with retained intent, unknown outcomes and conditional alternatives; no live recovery or passing-test claim."
+  ],
+  "references": [
+    {
+      "label": "Sample PR",
+      "value": "PR #184 · command admission · synthetic review"
+    },
+    {
+      "label": "Changed source",
+      "value": "src/admission.ts, src/consumer.ts · illustrative revision 7c8a21e"
+    },
+    {
+      "label": "Decision",
+      "value": "ADR-012 · validate at admission · synthetic"
+    },
+    {
+      "label": "Scope",
+      "value": "Invented source, requirements, cases and outcomes; no repository, service or test execution is implied."
+    }
+  ],
+  "sections": [
+    {
+      "id": "flow-change",
+      "type": "trace-diff",
+      "title": "The flow changes at admission",
+      "reason": "The queue should only receive admitted commands. Compare the old order with the new guard and rejection path.",
+      "before": {
+        "kind": "flowchart",
+        "source": "flowchart LR\nReceive[Receive command] -->|publish| Queue[Event stream]\nQueue -->|consume| Check[Validate in consumer]\nCheck -->|apply| View[Read projection]",
+        "description": "Before: invalid commands can enter the stream before the consumer checks them.",
+        "steps": [
+          "Receive the command.",
+          "Publish before validation.",
+          "Let the consumer discover invalid input."
+        ],
+        "nodeChanges": [
+          {
+            "node": "Check",
+            "status": "removed"
+          }
+        ],
+        "edgeChanges": [
+          {
+            "edge": {
+              "from": "Receive",
+              "to": "Queue",
+              "label": "publish",
+              "occurrence": 0
+            },
+            "status": "removed"
+          }
+        ]
+      },
+      "after": {
+        "kind": "flowchart",
+        "source": "flowchart LR\nReceive[Receive command] -->|validate| Guard[Admission guard]\nGuard -->|valid| Queue[Event stream]\nGuard -->|invalid| Reject[400 response]\nQueue -->|apply| View[Read projection]",
+        "description": "After: validation decides whether publication can happen.",
+        "steps": [
+          "Validate before the side effect.",
+          "Publish an admitted command.",
+          "Return a rejection without publication."
+        ],
+        "nodeChanges": [
+          {
+            "node": "Guard",
+            "status": "added"
+          },
+          {
+            "node": "Reject",
+            "status": "added"
+          }
+        ],
+        "edgeChanges": [
+          {
+            "edge": {
+              "from": "Guard",
+              "to": "Queue",
+              "label": "valid",
+              "occurrence": 0
+            },
+            "status": "added"
+          }
+        ]
+      }
+    },
+    {
+      "id": "review-tour",
+      "type": "tour",
+      "title": "Take the guided review",
+      "reason": "Read at your own pace. The tour uses these same readers, including the architecture inspected by companion lenses.",
+      "chapters": [
+        {
+          "id": "change",
+          "title": "Start with the change",
+          "target": "flow-change",
+          "body": "Compare before and after. Validation now happens before the queue sees a command.",
+          "hint": "Pan, zoom or open Full view; your viewport stays with the reader."
+        },
+        {
+          "id": "paths",
+          "title": "Follow both outcomes",
+          "target": "request-paths",
+          "body": "Choose Accept or Reject and walk the steps. A rejected command never reaches publication."
+        },
+        {
+          "id": "code",
+          "title": "Read the implementing hunks",
+          "target": "implementing-code",
+          "body": "Read the highlighted admission guard and consumer change. Coverage is curated, not the entire patch."
+        },
+        {
+          "id": "failure",
+          "title": "Check the counterfactual",
+          "target": "failure-modes",
+          "body": "Removing the guard changes the caller outcome and breaks the publication rule."
+        },
+        {
+          "id": "visibility",
+          "title": "Separate receipt from visibility",
+          "target": "read-lifecycle",
+          "body": "Select each state. A 202 receipt does not mean the projection is already readable."
+        },
+        {
+          "id": "architecture",
+          "title": "Explore the same architecture",
+          "target": "command-architecture",
+          "body": "Drill from context into admission, then inspect the sequence. Keep your selected level for later inspections."
+        },
+        {
+          "id": "requirements",
+          "title": "Read the authored requirements",
+          "target": "admission-model",
+          "body": "Select a block and compare its scenario and requirement references. These are authored expectations, not executed scenarios."
+        },
+        {
+          "id": "interfaces",
+          "title": "Inspect interface source",
+          "target": "publication-contracts",
+          "body": "Switch between the YAML command API and JSON accepted event. Both show their exact supplied source."
+        },
+        {
+          "id": "cases",
+          "title": "Compare input and expected",
+          "target": "command-cases",
+          "body": "Inspect accepted and rejected examples. The expected pane is supplied material, not actual output."
+        },
+        {
+          "id": "crossings",
+          "title": "Inspect a trust-boundary crossing",
+          "target": "boundary-crossings",
+          "body": "Choose Inspect bound C4 edge. The same architecture reader opens in an inspection; Close inspection returns to this chapter.",
+          "hint": "Try Full view inside the inspection, then close it before returning."
+        },
+        {
+          "id": "impact",
+          "title": "Trace downstream impact",
+          "target": "change-impact",
+          "body": "Follow guard, stream and projection dependencies. The relation labels are authored, not an inferred risk score."
+        },
+        {
+          "id": "operations",
+          "title": "Check operational consequences",
+          "target": "operational-signals",
+          "body": "Compare added rejection metrics, changed validation spans and the removed consumer error field."
+        },
+        {
+          "id": "decision",
+          "title": "Review the accepted cost",
+          "target": "design-decisions",
+          "body": "Read the chosen boundary, rejected alternatives and accepted request-path work. Exit returns every reader inline."
+        }
+      ]
+    },
+    {
+      "id": "request-paths",
+      "type": "trace",
+      "title": "Follow accepted and rejected requests",
+      "reason": "The same authored flow has two outcomes. Select a path, then inspect each active step.",
+      "diagram": {
+        "kind": "flowchart",
+        "source": "flowchart LR\nReceive[Receive request] -->|check| Guard[Validate command]\nGuard -->|publish| Queue[Publish accepted event]\nGuard -->|reject| Reject[Return 400]",
+        "description": "Only the valid path reaches the event stream."
+      },
+      "paths": [
+        {
+          "id": "accept",
+          "label": "Accept valid command",
+          "outcome": "ok",
+          "outcomeDescription": "202 Accepted with a receipt; projection visibility is still pending.",
+          "steps": [
+            {
+              "title": "Receive request",
+              "narration": "The caller submits a command for River site.",
+              "node": "Receive"
+            },
+            {
+              "title": "Validate command",
+              "narration": "The required name is present and nonblank.",
+              "node": "Guard",
+              "incoming": {
+                "from": "Receive",
+                "to": "Guard",
+                "label": "check",
+                "occurrence": 0
+              }
+            },
+            {
+              "title": "Publish accepted event",
+              "narration": "The command enters the stream after admission succeeds.",
+              "node": "Queue",
+              "incoming": {
+                "from": "Guard",
+                "to": "Queue",
+                "label": "publish",
+                "occurrence": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "reject",
+          "label": "Reject blank name",
+          "outcome": "reject",
+          "outcomeDescription": "400 Bad Request; no event is published.",
+          "steps": [
+            {
+              "title": "Receive request",
+              "narration": "The supplied name is blank.",
+              "node": "Receive"
+            },
+            {
+              "title": "Validate command",
+              "narration": "Admission rejects the invalid command.",
+              "node": "Guard",
+              "incoming": {
+                "from": "Receive",
+                "to": "Guard",
+                "label": "check",
+                "occurrence": 0
+              }
+            },
+            {
+              "title": "Return rejection",
+              "narration": "The caller receives a reason without a queue side effect.",
+              "node": "Reject",
+              "incoming": {
+                "from": "Guard",
+                "to": "Reject",
+                "label": "reject",
+                "occurrence": 0
+              }
+            }
+          ],
+          "notReached": {
+            "nodes": ["Queue"],
+            "edges": [
+              {
+                "from": "Guard",
+                "to": "Queue",
+                "label": "publish",
+                "occurrence": 0
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "implementing-code",
+      "type": "code-lens",
+      "title": "The implementing code",
+      "reason": "Two curated hunks show the ownership change. Tests and unrelated formatting are not surfaced here.",
+      "entries": [
+        {
+          "id": "admission-guard",
+          "title": "Reject before the first side effect",
+          "file": "src/admission.ts",
+          "oldStart": 18,
+          "newStart": 18,
+          "hunk": " export async function admit(command: Command) {\n+  // Keep invalid input outside the event stream.\n+  const name = command.name.trim();\n+  if (!name) {\n+    return { status: 400, error: \"name_required\" };\n+  }\n-  await publish(command);\n+  await publish({ ...command, name });\n   return { status: 202 };\n }",
+          "why": "The guard returns before publication. Normalization is shared with the accepted payload.",
+          "references": ["admission/nonblank", "reject-blank-name"]
+        },
+        {
+          "id": "consumer-cleanup",
+          "title": "Consume only accepted events",
+          "file": "src/consumer.ts",
+          "oldStart": 31,
+          "newStart": 31,
+          "hunk": " export async function consume(event: CommandAccepted) {\n-  if (!event.name.trim()) {\n-    throw new Error(\"invalid_command\");\n-  }\n   await projection.apply(event);\n }",
+          "why": "Admission owns caller validation. The consumer retains responsibility for projection effects.",
+          "references": ["ADR-012", "accepted-event"]
+        }
+      ],
+      "coverage": {
+        "total": 5,
+        "omitted": [
+          {
+            "label": "Test hunks — not execution evidence",
+            "count": 2
+          },
+          {
+            "label": "Formatting",
+            "count": 1
+          }
+        ]
+      },
+      "maxLines": 12
+    },
+    {
+      "id": "failure-modes",
+      "type": "what-breaks",
+      "title": "What breaks without the guard?",
+      "reason": "A counterfactual explains the rule the code protects. It is not executed fault injection.",
+      "diagram": {
+        "kind": "flowchart",
+        "source": "flowchart LR\nReceive[Receive] --> Guard[Validate]\nGuard -->|valid| Queue[Publish]\nGuard -->|invalid| Reject[Reject]",
+        "description": "The selected fault marks the step whose responsibility disappears."
+      },
+      "faults": [
+        {
+          "id": "remove-guard",
+          "node": "Guard",
+          "title": "Remove admission validation",
+          "severity": "high",
+          "breaks": "Invalid input enters the stream and becomes the consumer's problem.",
+          "becomes": "400 rejection becomes a misleading 202 receipt.",
+          "brokenRule": "Reject invalid commands before publication.",
+          "invariant": "admission/nonblank",
+          "corpus": "reject-blank-name"
+        },
+        {
+          "id": "lose-publication",
+          "node": "Queue",
+          "title": "Lose publication acknowledgement",
+          "severity": "med",
+          "breaks": "The caller cannot tell whether an accepted event was published.",
+          "becomes": "202 receipt becomes an unknown outcome, not a verified rejection.",
+          "brokenRule": "Describe unknown outcomes honestly; never infer no publication from a missing response."
+        }
+      ]
+    },
+    {
+      "id": "read-lifecycle",
+      "type": "lifecycle",
+      "title": "Acceptance is not read visibility",
+      "reason": "The API receipt and projected read model are separate. Timings below are illustrative, not measured.",
+      "readLabel": "GET /commands/receipt-184 returns",
+      "states": [
+        {
+          "id": "accepted",
+          "label": "Accepted",
+          "t": "t+0ms",
+          "happened": "Admission succeeds and a receipt is returned.",
+          "readReturns": "404 · the projection has not applied the event.",
+          "inWindow": true
+        },
+        {
+          "id": "published",
+          "label": "Published",
+          "t": "t+8ms",
+          "happened": "The accepted event is durable in the stream.",
+          "readReturns": "404 · stream durability is not read visibility.",
+          "inWindow": true
+        },
+        {
+          "id": "visible",
+          "label": "Visible",
+          "t": "t+24ms",
+          "happened": "The consumer has applied the event and the reader observes it.",
+          "readReturns": "200 · River site is visible.",
+          "inWindow": false
+        }
+      ]
+    },
+    {
+      "id": "command-architecture",
+      "type": "c4",
+      "title": "Where the responsibility moves",
+      "reason": "Drill from system context to admission and the component sequence. Companion inspections use this same architecture.",
+      "mode": "diff",
+      "initialLevel": "admission",
+      "levels": [
+        {
+          "id": "context",
+          "title": "Command service",
+          "altitude": "c1",
+          "drills": [
+            {
+              "pane": "before",
+              "node": "Service",
+              "level": "admission"
+            },
+            {
+              "pane": "after",
+              "node": "Service",
+              "level": "admission"
+            }
+          ],
+          "before": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nClient[Command author] -->|submit| Service[Command service]\nService -->|read| Reader[Read client]",
+            "description": "The service boundary stays the same.",
+            "steps": ["A caller submits a command to the service."],
+            "nodeChanges": [],
+            "edgeChanges": []
+          },
+          "after": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nClient[Command author] -->|submit| Service[Command service]\nService -->|read| Reader[Read client]",
+            "description": "The responsibility moves inside the existing service.",
+            "steps": ["Drill into Command service to inspect the admission change."],
+            "nodeChanges": [
+              {
+                "node": "Service",
+                "status": "same"
+              }
+            ],
+            "edgeChanges": []
+          }
+        },
+        {
+          "id": "admission",
+          "title": "Admission and projection",
+          "altitude": "c2",
+          "drills": [
+            {
+              "pane": "after",
+              "node": "Guard",
+              "level": "components"
+            }
+          ],
+          "before": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nClient[Client] -->|submit| API[Admission API]\nAPI -->|publish| Queue[Event stream]\nQueue -->|consume| Worker[Consumer validates]\nWorker -->|project| Store[Read projection]",
+            "description": "Before: the consumer discovers invalid commands after publication.",
+            "steps": ["Publication precedes the consumer check."],
+            "nodeChanges": [
+              {
+                "node": "Worker",
+                "status": "moved"
+              }
+            ],
+            "edgeChanges": []
+          },
+          "after": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nClient[Client] -->|submit| API[Admission API]\nAPI -->|validate| Guard[Admission guard]\nGuard -->|publish| Queue[Event stream]\nGuard -->|reject| Reject[400 response]\nQueue -->|consume| Worker[Projection consumer]\nWorker -->|project| Store[Read projection]",
+            "description": "After: the new guard separates caller admission from asynchronous projection.",
+            "steps": [
+              "Validate at admission.",
+              "Publish accepted events.",
+              "Apply the projection independently."
+            ],
+            "nodeChanges": [
+              {
+                "node": "Guard",
+                "status": "added"
+              },
+              {
+                "node": "Reject",
+                "status": "added"
+              },
+              {
+                "node": "Worker",
+                "status": "moved"
+              }
+            ],
+            "edgeChanges": [
+              {
+                "edge": {
+                  "from": "Guard",
+                  "to": "Queue",
+                  "label": "publish",
+                  "occurrence": 0
+                },
+                "status": "added"
+              }
+            ]
+          }
+        },
+        {
+          "id": "components",
+          "title": "Admission sequence",
+          "altitude": "c3",
+          "drills": [],
+          "before": {
+            "kind": "sequence",
+            "source": "sequenceDiagram\nparticipant API as Admission API\nparticipant Queue as Event stream\nparticipant Guard as Validation\nAPI->>Queue: publish\nQueue->>Guard: validate later",
+            "description": "Before: the event already exists when validation runs.",
+            "steps": ["Publish, then validate."],
+            "nodeChanges": [],
+            "edgeChanges": []
+          },
+          "after": {
+            "kind": "sequence",
+            "source": "sequenceDiagram\nparticipant API as Admission API\nparticipant Guard as Validation\nparticipant Queue as Event stream\nAPI->>Guard: validate\nGuard-->>API: admitted\nAPI->>Queue: publish\nQueue-->>API: receipt",
+            "description": "After: the admitted result precedes publication.",
+            "steps": ["Ask for admission.", "Publish only after an admitted result."],
+            "nodeChanges": [
+              {
+                "node": "Guard",
+                "status": "moved"
+              }
+            ],
+            "edgeChanges": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "admission-model",
+      "type": "event-model",
+      "title": "Requirements along the event flow",
+      "reason": "Select a role-bearing block to read its authored scenarios and references below the diagram.",
+      "flows": [
+        {
+          "id": "admission",
+          "title": "Command admission",
+          "diagram": {
+            "kind": "flowchart",
+            "source": "flowchart LR\nRequest[Request received] -->|submit| Validate[Validate command]\nValidate -->|accept| Accepted[Command accepted]\nAccepted -->|project| View[Read projection]",
+            "description": "Trigger, command, event and view show how admission relates to projection."
+          },
+          "blocks": [
+            {
+              "node": "Request",
+              "title": "Request received",
+              "role": "trigger"
+            },
+            {
+              "node": "Validate",
+              "title": "Validate command",
+              "role": "command",
+              "coverage": {
+                "scenarioIds": ["reject-blank-name", "accept-valid-command"],
+                "requirements": [
+                  {
+                    "id": "admission/nonblank",
+                    "text": "A blank name cannot cause publication."
+                  }
+                ],
+                "architecture": ["command-architecture / admission / after / Guard"],
+                "seams": ["POST /commands"],
+                "cases": ["reject-blank-name", "accept-valid-command"]
+              }
+            },
+            {
+              "node": "Accepted",
+              "title": "Command accepted",
+              "role": "event",
+              "coverage": {
+                "scenarioIds": ["accept-valid-command"],
+                "requirements": [
+                  {
+                    "id": "receipt-before-visibility",
+                    "text": "A receipt does not promise projected visibility."
+                  }
+                ]
+              }
+            },
+            {
+              "node": "View",
+              "title": "Read projection",
+              "role": "view"
+            }
+          ]
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "reject-blank-name",
+          "name": "Reject without publication",
+          "body": "Given a command with a blank name\nWhen admission validates the command\nThen the caller receives 400\nAnd no event is published"
+        },
+        {
+          "id": "accept-valid-command",
+          "name": "Publish an admitted command",
+          "body": "Given a command named River site\nWhen admission accepts the command\nThen the event is published\nAnd the caller receives a 202 receipt"
+        }
+      ]
+    },
+    {
+      "id": "publication-contracts",
+      "type": "contracts",
+      "title": "The supplied interface contracts",
+      "reason": "The request API and accepted event describe how commands are published. Syntax colours do not imply validation or compatibility.",
+      "contracts": [
+        {
+          "id": "command-api",
+          "title": "Command API",
+          "kind": "openapi",
+          "summary": "Reject blank names before publication; return a receipt for admitted commands.",
+          "provenance": ["api/commands.yaml · synthetic revision 7c8a21e"],
+          "spec": "openapi: 3.1.0\ninfo:\n  title: Command admission\n  version: 1.0.0\npaths:\n  /commands:\n    post:\n      summary: Admit a command\n      responses:\n        '202':\n          description: Accepted; projection may still lag\n        '400':\n          description: Invalid name; nothing published\n"
+        },
+        {
+          "id": "accepted-event",
+          "title": "Accepted event",
+          "kind": "json",
+          "summary": "Only admitted commands enter this illustrative event stream.",
+          "provenance": ["events/command-accepted.json · synthetic revision 7c8a21e"],
+          "spec": "{\n  \"type\": \"CommandAccepted\",\n  \"receiptId\": \"receipt-184\",\n  \"name\": \"River site\",\n  \"schemaVersion\": 1\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "command-cases",
+      "type": "corpus",
+      "title": "Input and expected outcome",
+      "reason": "Compare supplied case material. Nothing here is a captured or executed result.",
+      "entries": [
+        {
+          "id": "reject-blank-name",
+          "title": "Blank name is rejected",
+          "provenance": "Invented sample PR case",
+          "dependency": "Admission policy v1 · illustrative",
+          "normalise": "None",
+          "input": "{ \"name\": \"  \" }\n",
+          "expected": "{ \"status\": 400, \"error\": \"name_required\", \"published\": false }\n",
+          "maps": ["reject-blank-name"]
+        },
+        {
+          "id": "accept-valid-command",
+          "title": "Valid command is admitted",
+          "provenance": "Invented sample PR case",
+          "dependency": "Admission policy v1 · illustrative",
+          "normalise": "None",
+          "input": "{ \"name\": \" River site \" }\n",
+          "expected": "{ \"status\": 202, \"name\": \"River site\", \"published\": true }\n",
+          "maps": ["accept-valid-command"]
+        },
+        {
+          "id": "yaml-text-example",
+          "title": "YAML text example",
+          "provenance": "Invented syntax-colour example; not a supported request format",
+          "dependency": "No runtime binding — presentation fixture",
+          "normalise": "None",
+          "input": "name: River site\nrequest:\n  receipt: true\n",
+          "expected": "receipt:\n  status: 202\nprojection:\n  visible: false\n"
+        },
+        {
+          "id": "html-text-example",
+          "title": "HTML text example",
+          "provenance": "Invented syntax-colour example; not a rendered page or supported request format",
+          "dependency": "No runtime binding — presentation fixture",
+          "normalise": "None",
+          "input": "<form>\n  <label>Command name <input name=\"name\" value=\"  \" /></label>\n</form>\n",
+          "expected": "<p role=\"alert\">Command name is required.</p>\n"
+        }
+      ]
+    },
+    {
+      "id": "boundary-crossings",
+      "type": "data-flow",
+      "title": "Data crossing the boundary",
+      "reason": "Classification describes carried data; a named control describes the authored boundary. Neither proves enforcement.",
+      "architecture": "command-architecture",
+      "crossings": [
+        {
+          "id": "request-body",
+          "level": "admission",
+          "pane": "after",
+          "edge": {
+            "from": "Client",
+            "to": "API",
+            "label": "submit",
+            "occurrence": 0
+          },
+          "classification": "untrusted",
+          "data": "Command name from the request body",
+          "control": "Decode, normalize and validate at admission",
+          "note": "A caller cannot turn a blank name into a published event."
+        },
+        {
+          "id": "caller-token",
+          "level": "admission",
+          "pane": "after",
+          "edge": {
+            "from": "Client",
+            "to": "API",
+            "label": "submit",
+            "occurrence": 0
+          },
+          "classification": "token",
+          "data": "Fictional caller credential",
+          "control": "Authenticate before admission",
+          "note": "This is a control description, not a verified authentication implementation."
+        },
+        {
+          "id": "profile-name",
+          "level": "admission",
+          "pane": "after",
+          "edge": {
+            "from": "Worker",
+            "to": "Store",
+            "label": "project",
+            "occurrence": 0
+          },
+          "classification": "pii",
+          "data": "Invented profile display-name description",
+          "control": "Project only allowlisted fields",
+          "note": "Synthetic field description only; no real personal information is included."
+        },
+        {
+          "id": "accepted-command",
+          "level": "admission",
+          "pane": "after",
+          "edge": {
+            "from": "Guard",
+            "to": "Queue",
+            "label": "publish",
+            "occurrence": 0
+          },
+          "classification": "internal",
+          "data": "Normalized CommandAccepted event",
+          "control": "Publish only after the admission result"
+        }
+      ]
+    },
+    {
+      "id": "change-impact",
+      "type": "impact",
+      "title": "What depends on the change",
+      "reason": "The authored ledger connects the directly changed guard to downstream stream and projection responsibilities.",
+      "architecture": "command-architecture",
+      "hits": [
+        {
+          "id": "guard",
+          "title": "Admission guard",
+          "ring": "changed",
+          "level": "admission",
+          "pane": "after",
+          "target": {
+            "kind": "node",
+            "node": "Guard"
+          },
+          "why": "Owns rejection before the publication side effect."
+        },
+        {
+          "id": "stream",
+          "parent": "guard",
+          "title": "Accepted-event stream",
+          "ring": "downstream",
+          "level": "admission",
+          "pane": "after",
+          "target": {
+            "kind": "node",
+            "node": "Queue"
+          },
+          "why": "Receives only admitted commands in this proposed flow."
+        },
+        {
+          "id": "projection",
+          "parent": "stream",
+          "title": "Read projection",
+          "ring": "downstream",
+          "level": "admission",
+          "pane": "after",
+          "target": {
+            "kind": "node",
+            "node": "Store"
+          },
+          "why": "Keeps asynchronous visibility separate from the admission receipt."
+        }
+      ]
+    },
+    {
+      "id": "operational-signals",
+      "type": "telemetry",
+      "title": "How operations sees the change",
+      "reason": "These are signal definitions and intended uses, not live measurements or collected telemetry.",
+      "architecture": "command-architecture",
+      "operationalChange": "Move invalid-command detection to admission. Alert on unexpected rejection growth rather than consumer validation failures.",
+      "entries": [
+        {
+          "id": "rejection-count",
+          "signal": "metric",
+          "status": "added",
+          "name": "commands_rejected_total",
+          "kind": "counter",
+          "level": "admission",
+          "pane": "after",
+          "node": "Guard",
+          "powers": "Admission health and invalid-input rate",
+          "affects": "Add an admission rejection panel; investigate sustained increases."
+        },
+        {
+          "id": "validation-span",
+          "signal": "span",
+          "status": "changed",
+          "name": "command.validate",
+          "level": "admission",
+          "pane": "after",
+          "node": "Guard",
+          "powers": "Separate request-path validation work from publication",
+          "affects": "Move the span beneath admission in the trace view."
+        },
+        {
+          "id": "late-error",
+          "signal": "log",
+          "status": "removed",
+          "name": "consumer.invalid_command",
+          "level": "admission",
+          "pane": "before",
+          "node": "Worker",
+          "powers": "Legacy late-validation diagnosis",
+          "affects": "Retire the obsolete consumer validation alert after rollout."
+        }
+      ]
+    },
+    {
+      "id": "design-decisions",
+      "type": "tradeoffs",
+      "title": "Why validate here?",
+      "reason": "The chosen option, alternatives and accepted cost explain the boundary without claiming an independent review verdict.",
+      "architecture": "command-architecture",
+      "decisions": [
+        {
+          "id": "validation-boundary",
+          "question": "Where should invalid commands stop?",
+          "source": "ADR-012 · synthetic decision",
+          "seam": "Admission guard → event stream",
+          "level": "admission",
+          "pane": "after",
+          "target": {
+            "kind": "node",
+            "node": "Guard"
+          },
+          "options": [
+            {
+              "label": "Validate at admission",
+              "verdict": "chosen",
+              "why": "The caller gets a rejection before any publication side effect."
+            },
+            {
+              "label": "Keep validation in the consumer",
+              "verdict": "rejected",
+              "why": "A later rejection cannot retract an already published event."
+            },
+            {
+              "label": "Duplicate validation at both boundaries",
+              "verdict": "rejected",
+              "why": "Two policy owners would need coordinated rule changes."
+            }
+          ],
+          "tradeoff": "Validation now adds work to the request path. This example makes no measured latency claim.",
+          "references": ["admission/nonblank", "ADR-012"]
+        },
+        {
+          "id": "receipt-boundary",
+          "question": "Should a receipt promise read visibility?",
+          "source": "ADR-012 · synthetic decision",
+          "seam": "Event stream → read projection",
+          "level": "admission",
+          "pane": "after",
+          "target": {
+            "kind": "node",
+            "node": "Store"
+          },
+          "options": [
+            {
+              "label": "Acknowledge durable admission",
+              "verdict": "chosen",
+              "why": "Keep the API independent of projection lag."
+            },
+            {
+              "label": "Wait for the read model",
+              "verdict": "rejected",
+              "why": "Projection availability would become part of request success."
+            }
+          ],
+          "tradeoff": "Callers must distinguish receipt from visibility and handle a temporarily absent read result."
+        }
+      ]
+    },
+    {
+      "id": "delivery-recovery",
+      "type": "recovery",
+      "title": "Delivery recovery ledger",
+      "reason": "Read the supplied evidence boundary before considering any conditional action. Unknown is not confirmed failure.",
+      "initialOperation": "resumed-uploads",
+      "operations": [
+        {
+          "id": "lost-complete",
+          "title": "Lost Complete response",
+          "intent": "Complete the existing synthetic delivery once; never replace its identity just because the response was lost.",
+          "identity": "delivery-synthetic-42; provider task provider-synthetic-7; the pinned revision remains revision-3. Repeated identity alone does not prove provider idempotency.",
+          "points": [
+            {
+              "id": "interrupted",
+              "title": "Response lost after Complete was sent",
+              "attempt": "The Complete request was sent, but the owner restarted before receiving its response. Literal payload: <complete> </script><script>not executable</script> & unchanged.",
+              "observation": "unknown",
+              "known": [
+                "The retained intent names the existing provider task.",
+                "The request was sent before the response channel was lost."
+              ],
+              "unknown": [
+                "Whether the provider committed Complete.",
+                "Whether a lost response contained an error or a successful receipt."
+              ],
+              "retained": [
+                "Delivery identity delivery-synthetic-42 and pinned revision-3.",
+                "Uploaded object receipts upload-a and upload-b."
+              ],
+              "budget": "2 of 5 attempts used; original deadline retained",
+              "alternatives": [
+                {
+                  "id": "reconcile",
+                  "action": "Reconcile a completed provider status",
+                  "when": "If authoritative provider evidence confirms the same task is complete.",
+                  "owner": "Delivery coordinator",
+                  "outcome": "complete",
+                  "result": "Record the completion receipt for the pinned delivery without sending another Complete."
+                },
+                {
+                  "id": "resume",
+                  "action": "Resume the same pending task",
+                  "when": "If provider evidence confirms pending work and the retained policy permits another attempt.",
+                  "owner": "Delivery coordinator",
+                  "outcome": "continue",
+                  "result": "Resume completion for provider-synthetic-7 with the original identity, uploads and carried budget."
+                },
+                {
+                  "id": "manual-recovery",
+                  "action": "Park in manual-recovery",
+                  "when": "If authoritative status remains unavailable or conflicting after the supplied recovery boundary.",
+                  "owner": "Synthetic operations duty owner",
+                  "outcome": "park",
+                  "result": "manual-recovery remains unresolved; the duty owner must reconcile provider-synthetic-7 before settlement. Literal note <pending> </script> is not a control."
+                }
+              ],
+              "prohibited": [
+                "Do not turn unknown into confirmed-failure.",
+                "Do not create a new provider task or repeat completed uploads solely because a response is missing."
+              ]
+            },
+            {
+              "id": "reconciled",
+              "title": "Matching provider completion evidence supplied",
+              "attempt": "The author supplies a later authoritative completion receipt for the same provider task.",
+              "observation": "confirmed-success",
+              "known": ["The supplied receipt names provider-synthetic-7 and revision-3."],
+              "unknown": [],
+              "retained": ["The original delivery identity and all upload receipts."],
+              "alternatives": [
+                {
+                  "id": "reconcile",
+                  "action": "Settle the retained completion",
+                  "when": "If the receipt is accepted by the authored system's admission policy.",
+                  "owner": "Delivery coordinator",
+                  "outcome": "complete",
+                  "result": "Settle this delivery using the supplied receipt; this display does not verify it."
+                }
+              ],
+              "prohibited": []
+            }
+          ]
+        },
+        {
+          "id": "resumed-uploads",
+          "title": "Resume retained uploads",
+          "intent": "Finish the same delivery after an interrupted upload without discarding confirmed progress.",
+          "identity": "delivery-synthetic-42; object manifest manifest-synthetic-v3; the task and manifest remain pinned across continuation.",
+          "points": [
+            {
+              "id": "interrupted",
+              "title": "One upload attempt failed",
+              "attempt": "The provider explicitly rejected upload-c. Receipts for upload-a and upload-b were retained before restart.",
+              "observation": "confirmed-failure",
+              "known": [
+                "upload-a and upload-b have supplied retained receipts.",
+                "The upload-c attempt returned an explicit rejection."
+              ],
+              "unknown": [],
+              "retained": [
+                "The completed upload-a and upload-b receipts.",
+                "Pinned object identifier object-synthetic-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz."
+              ],
+              "budget": "2 of 5 attempts used; original deadline retained",
+              "alternatives": [
+                {
+                  "id": "resume",
+                  "action": "Resume the remaining upload",
+                  "when": "If the same manifest is still admitted and the carried policy permits the remaining upload.",
+                  "owner": "Upload coordinator",
+                  "outcome": "continue",
+                  "result": "Upload only upload-c, retaining existing receipts and the original deadline."
+                },
+                {
+                  "id": "refuse",
+                  "action": "Refuse a replacement manifest",
+                  "when": "If the proposed continuation changes the pinned manifest or delivery identity.",
+                  "owner": "Upload admission guard",
+                  "outcome": "refuse",
+                  "result": "Reject the replacement request without claiming the wider delivery succeeded or failed."
+                }
+              ],
+              "prohibited": [
+                "Do not repeat upload-a or upload-b.",
+                "Do not reset the carried budget, deadline or pinned identity."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "awareness-handoff",
+          "title": "Bounded awareness handoff",
+          "intent": "Notify an observer about an already settled business result without changing that result.",
+          "identity": "notice-synthetic-8 names delivery-synthetic-42 and its existing business receipt; the notice is separate work.",
+          "points": [
+            {
+              "id": "interrupted",
+              "title": "Notice has not yet been attempted",
+              "attempt": "The owner resumed with an authored pending notice, before any send attempt.",
+              "observation": "not-attempted",
+              "known": [],
+              "unknown": [],
+              "retained": ["The original business receipt and the separate notice identity."],
+              "alternatives": [
+                {
+                  "id": "resume",
+                  "action": "Continue the awareness handoff",
+                  "when": "If the authored notice policy still admits a first send.",
+                  "owner": "Awareness handoff owner",
+                  "outcome": "continue",
+                  "result": "Attempt the existing notice without rerunning the business delivery."
+                },
+                {
+                  "id": "skip",
+                  "action": "Skip the awareness action",
+                  "when": "If the supplied handoff policy has closed the notice window.",
+                  "owner": "Awareness handoff owner",
+                  "outcome": "skip",
+                  "result": "Skip only this notice. The task's business outcome stays unchanged; no wider success or failure is invented."
+                }
+              ],
+              "prohibited": ["Do not reopen the settled business task to send a notice."]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "independent-recovery",
+      "type": "recovery",
+      "title": "Independent recovery choices",
+      "reason": "Equal local operation, point and alternative IDs do not share state or become reference targets.",
+      "operations": [
+        {
+          "id": "lost-complete",
+          "title": "Independent lost response",
+          "intent": "Keep this second synthetic delivery independent of the first card.",
+          "identity": "delivery-independent-99; provider-independent-2.",
+          "points": [
+            {
+              "id": "interrupted",
+              "title": "Independent uncertainty",
+              "attempt": "No response is available for this separate attempt.",
+              "observation": "unknown",
+              "known": [],
+              "unknown": ["The provider outcome for provider-independent-2."],
+              "retained": [],
+              "alternatives": [
+                {
+                  "id": "manual-recovery",
+                  "action": "Park in independent manual-recovery",
+                  "when": "If the separate task cannot be reconciled.",
+                  "owner": "Independent duty owner",
+                  "outcome": "park",
+                  "result": "The separate task remains unresolved; this owner must supply reconciliation evidence."
+                }
+              ],
+              "prohibited": []
+            }
+          ]
+        },
+        {
+          "id": "resumed-uploads",
+          "title": "Independent retained progress",
+          "intent": "Demonstrate a second locally selected operation with literal markup.",
+          "identity": "<identity> </script><script>not executable</script> & provider-independent-2",
+          "points": [
+            {
+              "id": "interrupted",
+              "title": "Independent work has not started",
+              "attempt": "The retained record names work, not execution evidence.",
+              "observation": "not-attempted",
+              "known": [],
+              "unknown": [],
+              "retained": [],
+              "alternatives": [
+                {
+                  "id": "refuse",
+                  "action": "Refuse without permission <literal>",
+                  "when": "If the named owner has no applicable authorization. </script>",
+                  "owner": "Independent admission owner <not-html>",
+                  "outcome": "refuse",
+                  "result": "No action is authorized by an empty evidence list. Literal [reference](https://invalid.example) stays text."
+                }
+              ],
+              "prohibited": [
+                "Do not infer permission from empty supplied lists. <literal> & </script>"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "section": "flow-change",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "node",
+        "node": "Guard"
+      }
+    },
+    {
+      "section": "request-paths",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "node",
+        "node": "Guard"
+      }
+    },
+    {
+      "section": "implementing-code",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "edge",
+        "edge": {
+          "from": "Guard",
+          "to": "Queue",
+          "label": "publish",
+          "occurrence": 0
+        }
+      }
+    },
+    {
+      "section": "failure-modes",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "node",
+        "node": "Guard"
+      }
+    },
+    {
+      "section": "read-lifecycle",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "node",
+        "node": "Store"
+      }
+    },
+    {
+      "section": "admission-model",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "node",
+        "node": "Guard"
+      }
+    },
+    {
+      "section": "publication-contracts",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "node",
+        "node": "API"
+      }
+    },
+    {
+      "section": "command-cases",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "node",
+        "node": "Guard"
+      }
+    },
+    {
+      "section": "boundary-crossings",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "node",
+        "node": "API"
+      }
+    },
+    {
+      "section": "change-impact",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "node",
+        "node": "Queue"
+      }
+    },
+    {
+      "section": "operational-signals",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "node",
+        "node": "Reject"
+      }
+    },
+    {
+      "section": "design-decisions",
+      "architecture": "command-architecture",
+      "level": "admission",
+      "pane": "after",
+      "target": {
+        "kind": "edge",
+        "edge": {
+          "from": "Guard",
+          "to": "Queue",
+          "label": "publish",
+          "occurrence": 0
+        }
+      }
+    }
+  ],
+  "story": {
+    "stops": [
+      {
+        "section": "flow-change",
+        "title": "The flow changes at admission",
+        "takeaway": "Validate before publishing; rejected input must not enter the queue.",
+        "inspections": [
+          {
+            "section": "flow-change",
+            "label": "Inspect The flow changes at admission"
+          }
+        ]
+      },
+      {
+        "section": "request-paths",
+        "title": "Follow accepted and rejected requests",
+        "takeaway": "Accepted and rejected requests share a flow but stop at different points.",
+        "inspections": [
+          {
+            "section": "request-paths",
+            "label": "Inspect Follow accepted and rejected requests"
+          }
+        ]
+      },
+      {
+        "section": "implementing-code",
+        "title": "The implementing code",
+        "takeaway": "Curated hunks explain the ownership change; they are not the whole diff.",
+        "inspections": [
+          {
+            "section": "implementing-code",
+            "label": "Inspect The implementing code"
+          }
+        ]
+      },
+      {
+        "section": "failure-modes",
+        "title": "What breaks without the guard?",
+        "takeaway": "Removing the guard breaks the admission rule; this is a counterfactual, not a test result.",
+        "inspections": [
+          {
+            "section": "failure-modes",
+            "label": "Inspect What breaks without the guard?"
+          }
+        ]
+      },
+      {
+        "section": "read-lifecycle",
+        "title": "Acceptance is not read visibility",
+        "takeaway": "An API receipt and a projected read are separate observations.",
+        "inspections": [
+          {
+            "section": "read-lifecycle",
+            "label": "Inspect Acceptance is not read visibility"
+          }
+        ]
+      },
+      {
+        "section": "command-architecture",
+        "title": "Where the responsibility moves",
+        "takeaway": "Admission owns the guard before the stream and projection.",
+        "inspections": [
+          {
+            "section": "command-architecture",
+            "label": "Inspect Where the responsibility moves"
+          }
+        ]
+      },
+      {
+        "section": "admission-model",
+        "title": "Requirements along the event flow",
+        "takeaway": "The event flow links to authored scenarios and requirements, not executed coverage.",
+        "inspections": [
+          {
+            "section": "admission-model",
+            "label": "Inspect Requirements along the event flow"
+          }
+        ]
+      },
+      {
+        "section": "publication-contracts",
+        "title": "The supplied interface contracts",
+        "takeaway": "Request and event interfaces describe publication without proving compatibility.",
+        "inspections": [
+          {
+            "section": "publication-contracts",
+            "label": "Inspect The supplied interface contracts"
+          }
+        ]
+      },
+      {
+        "section": "command-cases",
+        "title": "Input and expected outcome",
+        "takeaway": "Supplied inputs and expectations explain the admission boundary.",
+        "inspections": [
+          {
+            "section": "command-cases",
+            "label": "Inspect Input and expected outcome"
+          }
+        ]
+      },
+      {
+        "section": "boundary-crossings",
+        "title": "Data crossing the boundary",
+        "takeaway": "Carried-data classification is not proof that a boundary control is enforced.",
+        "inspections": [
+          {
+            "section": "boundary-crossings",
+            "label": "Inspect Data crossing the boundary"
+          }
+        ]
+      },
+      {
+        "section": "change-impact",
+        "title": "What depends on the change",
+        "takeaway": "The guard’s authored dependencies extend to the stream and projection.",
+        "inspections": [
+          {
+            "section": "change-impact",
+            "label": "Inspect What depends on the change"
+          }
+        ]
+      },
+      {
+        "section": "operational-signals",
+        "title": "How operations sees the change",
+        "takeaway": "Operational signals state intended uses, not collected telemetry.",
+        "inspections": [
+          {
+            "section": "operational-signals",
+            "label": "Inspect How operations sees the change"
+          }
+        ]
+      },
+      {
+        "section": "design-decisions",
+        "title": "Why validate here?",
+        "takeaway": "Validation at the boundary has an explicit rationale and trade-off.",
+        "inspections": [
+          {
+            "section": "design-decisions",
+            "label": "Inspect Why validate here?"
+          }
+        ]
+      },
+      {
+        "section": "delivery-recovery",
+        "title": "Delivery recovery ledger",
+        "takeaway": "Unknown delivery is not confirmed failure; inspect retained evidence before retrying.",
+        "inspections": [
+          {
+            "section": "delivery-recovery",
+            "label": "Inspect Delivery recovery ledger"
+          }
+        ]
+      },
+      {
+        "section": "independent-recovery",
+        "title": "Independent recovery choices",
+        "takeaway": "Each operation keeps its own point and alternative selection.",
+        "inspections": [
+          {
+            "section": "independent-recovery",
+            "label": "Inspect Independent recovery choices"
+          }
+        ]
+      }
+    ]
+  }
+}

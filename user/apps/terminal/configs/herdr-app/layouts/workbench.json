@@ -50,7 +50,7 @@
             },
             { "id": "jira", "type": "block", "content": { "mod": "mission-control-jira", "props": { "view": "panel", "hideHeader": true } } },
             { "id": "github", "type": "block", "content": { "mod": "mission-control-github", "props": { "view": "issues", "hideHeader": true } } },
-            { "id": "aqua", "type": "block", "content": { "mod": "aqua-cutter", "props": { "file": "/home/danruto/dev/pixelbrush/aqua-cutter/docs/pr/2026-10-17-bb2-local-walkthrough-draft.json", "on": "192.168.0.245" } } },
+            { "id": "aqua", "type": "block", "content": { "mod": "aqua-cutter" } },
             { "id": "files", "type": "block", "content": { "mod": "files" } },
             { "id": "changes", "type": "block", "content": { "mod": "changes" } }
           ]

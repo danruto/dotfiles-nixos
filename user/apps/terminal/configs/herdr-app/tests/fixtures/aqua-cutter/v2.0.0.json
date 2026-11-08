@@ -1,0 +1,1168 @@
+{
+  "schemaVersion": "2.0.0",
+  "title": "Authored release states, coexistence and rollback",
+  "lead": "Synthetic snapshots only. No environment, deployment, readiness, version comparison or remote evidence is verified.",
+  "changes": [
+    "Separate code delivery from downstream activation.",
+    "Keep worker enablement separate from new-work routing.",
+    "Keep release-together constraints and retained obligations explicit."
+  ],
+  "references": [
+    {
+      "label": "Synthetic rollout material",
+      "value": "fixture://rollout/illustration-only"
+    }
+  ],
+  "pins": [
+    {
+      "section": "rollout-plans",
+      "architecture": "rollout-context",
+      "level": "context",
+      "pane": "single",
+      "target": {
+        "kind": "node",
+        "node": "Work"
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "rollout-context",
+      "type": "c4",
+      "title": "Synthetic rollout context",
+      "reason": "The pin points at the whole Rollout section, never a local phase.",
+      "mode": "single",
+      "levels": [
+        {
+          "id": "context",
+          "title": "Synthetic producers and retained work",
+          "altitude": "c1",
+          "drills": [],
+          "diagram": {
+            "kind": "flowchart",
+            "source": "flowchart LR\n  Caller[Caller] -->|command| Work[Logical work]\n  Work -->|obligation| Delivery[Delivery]",
+            "description": "Commands and delivery obligations have different identity roles.",
+            "steps": ["Read the authored scope before comparing keys."],
+            "nodeChanges": [],
+            "edgeChanges": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "prior-recovery",
+      "type": "recovery",
+      "title": "Prior Recovery reader",
+      "reason": "Retained intent remains separate from identity equivalence.",
+      "operations": [
+        {
+          "id": "correction-command",
+          "title": "Lost command response",
+          "intent": "Finish the original correction.",
+          "identity": "synthetic-command-19",
+          "points": [
+            {
+              "id": "pending",
+              "title": "Unknown commit",
+              "attempt": "Command sent; response missing.",
+              "observation": "unknown",
+              "known": ["The original command label is retained."],
+              "unknown": ["Whether the remote correction committed."],
+              "retained": ["synthetic-command-19"],
+              "alternatives": [
+                {
+                  "id": "park",
+                  "action": "Park for reconciliation",
+                  "when": "If authoritative status remains unavailable.",
+                  "owner": "Synthetic correction owner",
+                  "outcome": "park",
+                  "result": "Keep unresolved work and its original intent."
+                }
+              ],
+              "prohibited": ["Do not treat equal key text as a remote success receipt."]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prior-policy",
+      "type": "decision-table",
+      "title": "Prior Decision Table reader",
+      "reason": "Declared policy does not infer whether two examples are the same work.",
+      "tables": [
+        {
+          "id": "correction-command",
+          "title": "Synthetic correction choice",
+          "policy": "unique",
+          "conditions": [
+            {
+              "id": "intent",
+              "label": "Intent description"
+            }
+          ],
+          "rules": [
+            {
+              "id": "retain",
+              "title": "Retain original intent",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "retry"
+                }
+              ],
+              "result": {
+                "outcome": "Describe reuse",
+                "reason": "The author declares a retry of the original work.",
+                "allowed": ["Read the identity lifetime."],
+                "prohibited": ["Do not execute a correction."]
+              }
+            }
+          ],
+          "unmatched": {
+            "outcome": "Unmatched intent",
+            "reason": "No permission is implied.",
+            "allowed": [],
+            "prohibited": ["Do not infer reuse."]
+          },
+          "cases": [
+            {
+              "id": "retry",
+              "title": "Declared retry",
+              "cells": [
+                {
+                  "kind": "literal",
+                  "text": "retry"
+                }
+              ],
+              "matches": ["retain"],
+              "selectedRule": "retain",
+              "explanation": "A declaration, not an evaluated predicate."
+            },
+            {
+              "id": "unknown",
+              "title": "No declared match",
+              "cells": [
+                {
+                  "kind": "unknown"
+                }
+              ],
+              "matches": [],
+              "explanation": "Unknown intent supplies no winner."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prior-identity",
+      "type": "identity",
+      "title": "Prior Identity reader",
+      "reason": "Identity selection stays independent of Rollout.",
+      "identities": [
+        {
+          "id": "location-key",
+          "title": "Independent location",
+          "role": "Independent example role",
+          "scope": "Only this synthetic card.",
+          "encoding": "Literal supplied strings.",
+          "normalization": "No normalization.",
+          "ingredients": [
+            {
+              "id": "address",
+              "label": "Independent address",
+              "meaning": "Not a reference target or a shared selection key."
+            }
+          ],
+          "pairs": [
+            {
+              "id": "same-location",
+              "title": "Independent first pair",
+              "left": {
+                "label": "Independent left",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": ""
+                    }
+                  }
+                ],
+                "encoded": "",
+                "key": ""
+              },
+              "right": {
+                "label": "Independent right",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "missing"
+                    }
+                  }
+                ]
+              },
+              "relation": "unknown",
+              "reason": "No equivalence declaration despite matching local IDs elsewhere."
+            },
+            {
+              "id": "other-location",
+              "title": "Independent second pair",
+              "left": {
+                "label": "Before",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "A"
+                    }
+                  }
+                ]
+              },
+              "right": {
+                "label": "After",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "B"
+                    }
+                  }
+                ]
+              },
+              "relation": "different",
+              "reason": "Only this card's pair changes."
+            }
+          ],
+          "lifetime": [
+            {
+              "event": "Unknown lifecycle",
+              "action": "unknown",
+              "reason": "No wider reuse policy supplied."
+            }
+          ]
+        },
+        {
+          "id": "correction-command",
+          "title": "Independent command",
+          "role": "Independent logical command",
+          "scope": "Only this independent example.",
+          "encoding": "Literal labels.",
+          "normalization": "No normalization.",
+          "ingredients": [
+            {
+              "id": "command",
+              "label": "Command",
+              "meaning": "Not the command in another owner."
+            }
+          ],
+          "pairs": [
+            {
+              "id": "resend",
+              "title": "Independent repeat",
+              "left": {
+                "label": "Original",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "independent"
+                    }
+                  }
+                ]
+              },
+              "right": {
+                "label": "Repeat",
+                "values": [
+                  {
+                    "raw": {
+                      "kind": "literal",
+                      "text": "independent"
+                    }
+                  }
+                ]
+              },
+              "relation": "same",
+              "reason": "Authored equivalence only within this scope."
+            }
+          ],
+          "lifetime": [
+            {
+              "event": "Retry",
+              "action": "reuse",
+              "reason": "Reuse only this independent work."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rollout-plans",
+      "type": "rollout",
+      "title": "Release states and retained obligations",
+      "reason": "Read authored snapshots, not live progress, verified tests or permission to proceed.",
+      "initialRollout": "staged-enablement",
+      "rollouts": [
+        {
+          "id": "staged-enablement",
+          "title": "Code delivery before downstream activation",
+          "initialPhase": "activation-blocked",
+          "phases": [
+            {
+              "id": "producer-deployed",
+              "title": "Producer deployed, consumer unavailable",
+              "intent": "Authored deployed-producer snapshot, not an observed environment.",
+              "components": [
+                {
+                  "component": "Synthetic producer",
+                  "version": "producer-2",
+                  "settings": "Send the optional instruction field; activation=false. Delivered code is not downstream enablement."
+                },
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-1",
+                  "settings": "Ignores the new instruction; workflow support unavailable."
+                }
+              ],
+              "gates": [
+                {
+                  "condition": "Downstream consumer reads the optional instruction.",
+                  "assessment": "unmet"
+                }
+              ],
+              "existingWork": "Previously admitted work keeps the original instruction behavior.",
+              "newWork": "New work remains on the old behavior while activation is off.",
+              "verification": [
+                {
+                  "check": "Plan a consumer interpretation check before activation."
+                }
+              ],
+              "rollback": {
+                "mode": "switch-back",
+                "action": "Describe returning the producer to the earlier sending behavior.",
+                "existingWork": "Keep existing admitted work under its original settings.",
+                "newWork": "Describe new admission using the old field set.",
+                "boundary": "Only before new instruction-dependent obligations are admitted."
+              }
+            },
+            {
+              "id": "activation-blocked",
+              "title": "Activation blocked despite a supplied claim",
+              "intent": "Read the unmet gate and supplied evidence separately; the claim cannot enable the phase.",
+              "components": [
+                {
+                  "component": "Synthetic producer",
+                  "version": "producer-2",
+                  "settings": "Send the optional instruction field; activation=false. Delivered code is not downstream enablement."
+                },
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-1",
+                  "settings": "Ignores the new instruction; workflow support unavailable."
+                },
+                {
+                  "component": "Synthetic activation configuration",
+                  "version": "configuration-label-not-semver",
+                  "settings": "synthetic-setting-abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789 <setting> </script><script>not executable</script> & [source](https://invalid.example)\r\nPreserve this supplied settings text."
+                }
+              ],
+              "gates": [
+                {
+                  "condition": "Consumer workflow support is available.",
+                  "assessment": "unmet",
+                  "evidence": {
+                    "description": "Author supplies a producer-only rehearsal claim; it does not establish consumer support. <claim> </script>",
+                    "source": "fixture://rollout/source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch- <source> </script><script>not executable</script>\r\nSynthetic claim only; not a runtime receipt."
+                  }
+                },
+                {
+                  "condition": "In-flight instruction-dependent obligations have a documented owner.",
+                  "assessment": "unknown"
+                }
+              ],
+              "existingWork": "Existing in-flight work remains owned by the original backend; unresolved ownership remains unknown.",
+              "newWork": "Activation stays blocked in this authored snapshot, even though a claim was supplied.",
+              "verification": [
+                {
+                  "check": "Plan an end-to-end consumer interpretation check.",
+                  "evidence": {
+                    "description": "Supplied producer rehearsal description only, not a verified end-to-end result.",
+                    "source": "fixture://rollout/producer-rehearsal <planned-check> </script>"
+                  }
+                },
+                {
+                  "check": "Plan a retained-obligation ownership review. <check> </script>"
+                }
+              ],
+              "rollback": {
+                "mode": "unknown",
+                "action": "No complete reversal response is supplied for unknown in-flight ownership. <action> </script>",
+                "existingWork": "Ownership of in-flight obligations remains unknown; do not silently discard them.",
+                "newWork": "Describe keeping new admission on the old route while ownership is investigated.",
+                "boundary": "Unknown boundary: the supplied producer claim does not establish reversal safety. </script>"
+              }
+            },
+            {
+              "id": "authored-enabled",
+              "title": "Authored enabled snapshot",
+              "intent": "Describe a later supplied configuration; selection does not activate it.",
+              "components": [
+                {
+                  "component": "Synthetic producer",
+                  "version": "producer-2",
+                  "settings": "Send the optional instruction field; activation=false. Delivered code is not downstream enablement."
+                },
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-2",
+                  "settings": "Reads the optional instruction only when activation=true."
+                }
+              ],
+              "gates": [
+                {
+                  "condition": "Author declares downstream support present.",
+                  "assessment": "met",
+                  "evidence": {
+                    "description": "Synthetic authored consumer support claim, not renderer verification.",
+                    "source": "fixture://rollout/consumer-support"
+                  }
+                }
+              ],
+              "existingWork": "Earlier work retains its originally admitted behavior.",
+              "newWork": "Author describes instruction-enabled new work. No environment is queried.",
+              "verification": [],
+              "rollback": {
+                "mode": "unavailable",
+                "action": "No switch-only rollback is described after instruction-dependent side effects.",
+                "existingWork": "Retain the obligations already admitted; no cancellation is inferred.",
+                "newWork": "New-work behavior needs an operator-owned response not supplied here.",
+                "boundary": "After external instruction-dependent effects, reversal is not described."
+              }
+            }
+          ],
+          "combinations": [
+            {
+              "id": "producer-old-consumer",
+              "title": "New producer with old consumer",
+              "components": [
+                {
+                  "component": "Synthetic producer",
+                  "version": "producer-2",
+                  "settings": "Send the optional instruction field; activation=false. Delivered code is not downstream enablement."
+                },
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-1",
+                  "settings": "Ignores the new instruction; workflow support unavailable."
+                }
+              ],
+              "compatibility": "compatible",
+              "reason": "Author permits coexistence with activation off only; this does not enable the feature."
+            },
+            {
+              "id": "activation-without-consumer",
+              "title": "Activation with unsupported consumer",
+              "components": [
+                {
+                  "component": "Synthetic producer",
+                  "version": "producer-2",
+                  "settings": "Send the optional instruction field; activation=false. Delivered code is not downstream enablement."
+                },
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-1",
+                  "settings": "activation=true; instruction support unavailable."
+                }
+              ],
+              "compatibility": "incompatible",
+              "reason": "Author says activating this combination loses the intended interpretation."
+            },
+            {
+              "id": "unreviewed-settings",
+              "title": "Unreviewed configuration labels",
+              "components": [
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-next-or-previous-not-compared",
+                  "settings": "synthetic-setting-abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789 <setting> </script><script>not executable</script> & [source](https://invalid.example)\r\nPreserve this supplied settings text."
+                }
+              ],
+              "compatibility": "unknown",
+              "reason": "No compatibility conclusion was supplied. Equal labels or lexical version order do not settle it. <reason> </script>"
+            }
+          ],
+          "releaseTogether": []
+        },
+        {
+          "id": "backend-coexistence",
+          "title": "Worker enablement is separate from new-work routing",
+          "phases": [
+            {
+              "id": "workers-enabled",
+              "title": "Both workers enabled, new work still legacy",
+              "intent": "Describe coexistence without moving new admission.",
+              "components": [
+                {
+                  "component": "Legacy backend",
+                  "version": "legacy-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Existing legacy work stays here."
+                },
+                {
+                  "component": "New backend",
+                  "version": "next-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Enabling a worker does not route new work to it."
+                }
+              ],
+              "gates": [],
+              "existingWork": "Legacy tasks and retained obligations remain on the legacy worker.",
+              "newWork": "All new work still targets legacy.",
+              "verification": [],
+              "rollback": {
+                "mode": "switch-back",
+                "action": "Keep new-work targeting legacy; retain both workers while they own obligations.",
+                "existingWork": "Existing new-backend obligations, if any, must still be serviced.",
+                "newWork": "Describe continuing legacy admission.",
+                "boundary": "Do not disable a worker until its retained obligations are accounted for."
+              }
+            },
+            {
+              "id": "route-new-work",
+              "title": "New admission targets the new backend",
+              "intent": "Worker enablement and routing are separate authored settings.",
+              "components": [
+                {
+                  "component": "Legacy backend",
+                  "version": "legacy-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Existing legacy work stays here."
+                },
+                {
+                  "component": "New backend",
+                  "version": "next-label",
+                  "settings": "workerEnabled=true; newWorkTarget=new. Already admitted work retains its original owner."
+                }
+              ],
+              "gates": [
+                {
+                  "condition": "Author has described existing-work ownership.",
+                  "assessment": "met"
+                }
+              ],
+              "existingWork": "Existing legacy tasks continue on legacy; existing new-backend tasks continue on new. In-flight completion remains owned by the admitting backend.",
+              "newWork": "New admission goes to new in this snapshot.",
+              "verification": [
+                {
+                  "check": "Plan a routing and retained-obligation review."
+                }
+              ],
+              "rollback": {
+                "mode": "switch-back",
+                "action": "Describe switching only the new-work target back to legacy, not disabling the new worker.",
+                "existingWork": "Keep the new worker enabled until every retained in-flight obligation settles; legacy tasks remain on legacy.",
+                "newWork": "Future admission targets legacy after the described switch.",
+                "boundary": "A routing switch cannot migrate or cancel existing work. Unknown external effects remain unresolved."
+              }
+            }
+          ],
+          "combinations": [
+            {
+              "id": "both-workers",
+              "title": "Enabled workers with legacy admission",
+              "components": [
+                {
+                  "component": "Legacy backend",
+                  "version": "legacy-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Existing legacy work stays here."
+                },
+                {
+                  "component": "New backend",
+                  "version": "next-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Enabling a worker does not route new work to it."
+                }
+              ],
+              "compatibility": "compatible",
+              "reason": "Authored coexistence allows both workers without moving admission."
+            },
+            {
+              "id": "disabled-obligation-owner",
+              "title": "Disabled new worker with retained new obligations",
+              "components": [
+                {
+                  "component": "New backend",
+                  "version": "next-label",
+                  "settings": "workerEnabled=false; retained in-flight tasks still assigned here."
+                }
+              ],
+              "compatibility": "incompatible",
+              "reason": "Author says disabling the retained owner strands obligations."
+            },
+            {
+              "id": "unknown-inflight",
+              "title": "Unknown in-flight external outcome",
+              "components": [
+                {
+                  "component": "Legacy backend",
+                  "version": "legacy-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Existing legacy work stays here."
+                },
+                {
+                  "component": "New backend",
+                  "version": "next-label",
+                  "settings": "workerEnabled=true; newWorkTarget=new. Already admitted work retains its original owner."
+                }
+              ],
+              "compatibility": "unknown",
+              "reason": "The author supplies no settlement evidence for an external delivery. Coexistence is not a readiness verdict."
+            }
+          ],
+          "releaseTogether": []
+        },
+        {
+          "id": "release-unit",
+          "title": "Release together, not implementation order",
+          "initialPhase": "repair-boundary",
+          "phases": [
+            {
+              "id": "prepared",
+              "title": "Changes prepared independently",
+              "intent": "Development may proceed in separate slices; this does not authorize independent release.",
+              "components": [
+                {
+                  "component": "Subscriber recovery",
+                  "version": "recovery-label",
+                  "settings": "Retain the same obligation across attempts."
+                },
+                {
+                  "component": "Exhaustion seal",
+                  "version": "seal-label",
+                  "settings": "Seal exhausted attempts before creating fresh obligations."
+                }
+              ],
+              "gates": [],
+              "existingWork": "Retain original obligations and any unresolved receipts.",
+              "newWork": "No independently safe intermediate release is claimed.",
+              "verification": [],
+              "rollback": {
+                "mode": "unknown",
+                "action": "No independent intermediate release response is described.",
+                "existingWork": "Retain historical receipts for their original obligations.",
+                "newWork": "Do not infer independent release permission.",
+                "boundary": "Unknown until the complete release unit is described."
+              }
+            },
+            {
+              "id": "repair-boundary",
+              "title": "Reversal needs repair after fresh obligations",
+              "intent": "The author describes a point beyond a switch-only reversal.",
+              "components": [
+                {
+                  "component": "Subscriber recovery",
+                  "version": "recovery-label",
+                  "settings": "Retain attempt identity within an obligation."
+                },
+                {
+                  "component": "Exhaustion seal",
+                  "version": "seal-label",
+                  "settings": "synthetic-setting-abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789 <setting> </script><script>not executable</script> & [source](https://invalid.example)\r\nPreserve this supplied settings text."
+                }
+              ],
+              "gates": [
+                {
+                  "condition": "Author declares both changes in the same release unit.",
+                  "assessment": "met"
+                }
+              ],
+              "existingWork": "Historical receipts remain scoped to old obligations. Fresh in-flight obligations keep their own owners.",
+              "newWork": "Reopen can create a fresh obligation; an old receipt cannot settle it.",
+              "verification": [
+                {
+                  "check": "Plan a fresh-obligation and exhaustion-boundary review.",
+                  "evidence": {
+                    "description": "Authored rehearsal claim only. <verification> </script>",
+                    "source": "fixture://rollout/source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch- <source> </script><script>not executable</script>\r\nSynthetic claim only; not a runtime receipt."
+                  }
+                }
+              ],
+              "rollback": {
+                "mode": "repair-required",
+                "action": "Describe repairing recorded obligation state before reversing the release unit. <rollback> </script>",
+                "existingWork": "Retain and reconcile fresh in-flight obligations; historical receipts do not prove their delivery.",
+                "newWork": "Pause or redirect future admission only under a separately described operator response.",
+                "boundary": "After fresh obligations or seals are recorded, toggling a setting cannot undo them. Repair and reconciliation are required. <boundary> </script>"
+              }
+            }
+          ],
+          "combinations": [
+            {
+              "id": "complete-unit",
+              "title": "Both changes together",
+              "components": [
+                {
+                  "component": "Subscriber recovery",
+                  "version": "recovery-label",
+                  "settings": "Obligation-scoped retry."
+                },
+                {
+                  "component": "Exhaustion seal",
+                  "version": "seal-label",
+                  "settings": "Bound attempts without borrowing old receipts."
+                }
+              ],
+              "compatibility": "compatible",
+              "reason": "Author describes this pair as the release unit, not an observed safe rollout."
+            },
+            {
+              "id": "partial-unit",
+              "title": "Recovery without its seal",
+              "components": [
+                {
+                  "component": "Subscriber recovery",
+                  "version": "recovery-label",
+                  "settings": "Seal change absent."
+                }
+              ],
+              "compatibility": "incompatible",
+              "reason": "Author does not permit the partial release."
+            }
+          ],
+          "releaseTogether": [
+            {
+              "members": ["Subscriber recovery", "Exhaustion seal"],
+              "reason": "These changes release together even if developed in separate branches or in a different order. This is not a phase dependency graph."
+            },
+            {
+              "members": ["Exhaustion seal", "Fresh-obligation authoring"],
+              "reason": "Overlapping members in different groups are independent descriptions. No component registry is inferred. <group> </script>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "independent-rollouts",
+      "type": "rollout",
+      "title": "Independent rollout and phase choices",
+      "reason": "Equal local IDs do not couple cards or imply compatible releases.",
+      "rollouts": [
+        {
+          "id": "staged-enablement",
+          "title": "Independent staged snapshot choices",
+          "phases": [
+            {
+              "id": "producer-deployed",
+              "title": "Producer deployed, consumer unavailable",
+              "intent": "Authored deployed-producer snapshot, not an observed environment.",
+              "components": [
+                {
+                  "component": "Synthetic producer",
+                  "version": "producer-2",
+                  "settings": "Send the optional instruction field; activation=false. Delivered code is not downstream enablement."
+                },
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-1",
+                  "settings": "Ignores the new instruction; workflow support unavailable."
+                }
+              ],
+              "gates": [
+                {
+                  "condition": "Downstream consumer reads the optional instruction.",
+                  "assessment": "unmet"
+                }
+              ],
+              "existingWork": "Previously admitted work keeps the original instruction behavior.",
+              "newWork": "New work remains on the old behavior while activation is off.",
+              "verification": [
+                {
+                  "check": "Plan a consumer interpretation check before activation."
+                }
+              ],
+              "rollback": {
+                "mode": "switch-back",
+                "action": "Describe returning the producer to the earlier sending behavior.",
+                "existingWork": "Keep existing admitted work under its original settings.",
+                "newWork": "Describe new admission using the old field set.",
+                "boundary": "Only before new instruction-dependent obligations are admitted."
+              }
+            },
+            {
+              "id": "activation-blocked",
+              "title": "Activation blocked despite a supplied claim",
+              "intent": "Read the unmet gate and supplied evidence separately; the claim cannot enable the phase.",
+              "components": [
+                {
+                  "component": "Synthetic producer",
+                  "version": "producer-2",
+                  "settings": "Send the optional instruction field; activation=false. Delivered code is not downstream enablement."
+                },
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-1",
+                  "settings": "Ignores the new instruction; workflow support unavailable."
+                },
+                {
+                  "component": "Synthetic activation configuration",
+                  "version": "configuration-label-not-semver",
+                  "settings": "synthetic-setting-abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789 <setting> </script><script>not executable</script> & [source](https://invalid.example)\r\nPreserve this supplied settings text."
+                }
+              ],
+              "gates": [
+                {
+                  "condition": "Consumer workflow support is available.",
+                  "assessment": "unmet",
+                  "evidence": {
+                    "description": "Author supplies a producer-only rehearsal claim; it does not establish consumer support. <claim> </script>",
+                    "source": "fixture://rollout/source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch-source-description-without-fetch- <source> </script><script>not executable</script>\r\nSynthetic claim only; not a runtime receipt."
+                  }
+                },
+                {
+                  "condition": "In-flight instruction-dependent obligations have a documented owner.",
+                  "assessment": "unknown"
+                }
+              ],
+              "existingWork": "Existing in-flight work remains owned by the original backend; unresolved ownership remains unknown.",
+              "newWork": "Activation stays blocked in this authored snapshot, even though a claim was supplied.",
+              "verification": [
+                {
+                  "check": "Plan an end-to-end consumer interpretation check.",
+                  "evidence": {
+                    "description": "Supplied producer rehearsal description only, not a verified end-to-end result.",
+                    "source": "fixture://rollout/producer-rehearsal <planned-check> </script>"
+                  }
+                },
+                {
+                  "check": "Plan a retained-obligation ownership review. <check> </script>"
+                }
+              ],
+              "rollback": {
+                "mode": "unknown",
+                "action": "No complete reversal response is supplied for unknown in-flight ownership. <action> </script>",
+                "existingWork": "Ownership of in-flight obligations remains unknown; do not silently discard them.",
+                "newWork": "Describe keeping new admission on the old route while ownership is investigated.",
+                "boundary": "Unknown boundary: the supplied producer claim does not establish reversal safety. </script>"
+              }
+            }
+          ],
+          "combinations": [
+            {
+              "id": "producer-old-consumer",
+              "title": "New producer with old consumer",
+              "components": [
+                {
+                  "component": "Synthetic producer",
+                  "version": "producer-2",
+                  "settings": "Send the optional instruction field; activation=false. Delivered code is not downstream enablement."
+                },
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-1",
+                  "settings": "Ignores the new instruction; workflow support unavailable."
+                }
+              ],
+              "compatibility": "compatible",
+              "reason": "Author permits coexistence with activation off only; this does not enable the feature."
+            },
+            {
+              "id": "activation-without-consumer",
+              "title": "Activation with unsupported consumer",
+              "components": [
+                {
+                  "component": "Synthetic producer",
+                  "version": "producer-2",
+                  "settings": "Send the optional instruction field; activation=false. Delivered code is not downstream enablement."
+                },
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-1",
+                  "settings": "activation=true; instruction support unavailable."
+                }
+              ],
+              "compatibility": "incompatible",
+              "reason": "Author says activating this combination loses the intended interpretation."
+            },
+            {
+              "id": "unreviewed-settings",
+              "title": "Unreviewed configuration labels",
+              "components": [
+                {
+                  "component": "Synthetic consumer",
+                  "version": "consumer-next-or-previous-not-compared",
+                  "settings": "synthetic-setting-abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789 <setting> </script><script>not executable</script> & [source](https://invalid.example)\r\nPreserve this supplied settings text."
+                }
+              ],
+              "compatibility": "unknown",
+              "reason": "No compatibility conclusion was supplied. Equal labels or lexical version order do not settle it. <reason> </script>"
+            }
+          ],
+          "releaseTogether": []
+        },
+        {
+          "id": "backend-coexistence",
+          "title": "Worker enablement is separate from new-work routing",
+          "phases": [
+            {
+              "id": "workers-enabled",
+              "title": "Both workers enabled, new work still legacy",
+              "intent": "Describe coexistence without moving new admission.",
+              "components": [
+                {
+                  "component": "Legacy backend",
+                  "version": "legacy-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Existing legacy work stays here."
+                },
+                {
+                  "component": "New backend",
+                  "version": "next-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Enabling a worker does not route new work to it."
+                }
+              ],
+              "gates": [],
+              "existingWork": "Legacy tasks and retained obligations remain on the legacy worker.",
+              "newWork": "All new work still targets legacy.",
+              "verification": [],
+              "rollback": {
+                "mode": "switch-back",
+                "action": "Keep new-work targeting legacy; retain both workers while they own obligations.",
+                "existingWork": "Existing new-backend obligations, if any, must still be serviced.",
+                "newWork": "Describe continuing legacy admission.",
+                "boundary": "Do not disable a worker until its retained obligations are accounted for."
+              }
+            },
+            {
+              "id": "route-new-work",
+              "title": "New admission targets the new backend",
+              "intent": "Worker enablement and routing are separate authored settings.",
+              "components": [
+                {
+                  "component": "Legacy backend",
+                  "version": "legacy-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Existing legacy work stays here."
+                },
+                {
+                  "component": "New backend",
+                  "version": "next-label",
+                  "settings": "workerEnabled=true; newWorkTarget=new. Already admitted work retains its original owner."
+                }
+              ],
+              "gates": [
+                {
+                  "condition": "Author has described existing-work ownership.",
+                  "assessment": "met"
+                }
+              ],
+              "existingWork": "Existing legacy tasks continue on legacy; existing new-backend tasks continue on new. In-flight completion remains owned by the admitting backend.",
+              "newWork": "New admission goes to new in this snapshot.",
+              "verification": [
+                {
+                  "check": "Plan a routing and retained-obligation review."
+                }
+              ],
+              "rollback": {
+                "mode": "switch-back",
+                "action": "Describe switching only the new-work target back to legacy, not disabling the new worker.",
+                "existingWork": "Keep the new worker enabled until every retained in-flight obligation settles; legacy tasks remain on legacy.",
+                "newWork": "Future admission targets legacy after the described switch.",
+                "boundary": "A routing switch cannot migrate or cancel existing work. Unknown external effects remain unresolved."
+              }
+            }
+          ],
+          "combinations": [
+            {
+              "id": "both-workers",
+              "title": "Enabled workers with legacy admission",
+              "components": [
+                {
+                  "component": "Legacy backend",
+                  "version": "legacy-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Existing legacy work stays here."
+                },
+                {
+                  "component": "New backend",
+                  "version": "next-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Enabling a worker does not route new work to it."
+                }
+              ],
+              "compatibility": "compatible",
+              "reason": "Authored coexistence allows both workers without moving admission."
+            },
+            {
+              "id": "disabled-obligation-owner",
+              "title": "Disabled new worker with retained new obligations",
+              "components": [
+                {
+                  "component": "New backend",
+                  "version": "next-label",
+                  "settings": "workerEnabled=false; retained in-flight tasks still assigned here."
+                }
+              ],
+              "compatibility": "incompatible",
+              "reason": "Author says disabling the retained owner strands obligations."
+            },
+            {
+              "id": "unknown-inflight",
+              "title": "Unknown in-flight external outcome",
+              "components": [
+                {
+                  "component": "Legacy backend",
+                  "version": "legacy-label",
+                  "settings": "workerEnabled=true; newWorkTarget=legacy. Existing legacy work stays here."
+                },
+                {
+                  "component": "New backend",
+                  "version": "next-label",
+                  "settings": "workerEnabled=true; newWorkTarget=new. Already admitted work retains its original owner."
+                }
+              ],
+              "compatibility": "unknown",
+              "reason": "The author supplies no settlement evidence for an external delivery. Coexistence is not a readiness verdict."
+            }
+          ],
+          "releaseTogether": []
+        }
+      ]
+    },
+    {
+      "id": "supplied-cases",
+      "type": "corpus",
+      "title": "Independent old reader",
+      "reason": "The historical selector stays independent of Rollout and its predecessor readers.",
+      "entries": [
+        {
+          "id": "same-location",
+          "title": "Supplied repeat",
+          "provenance": "Synthetic, not captured.",
+          "dependency": "synthetic-identity-19",
+          "normalise": "No normalization.",
+          "input": "<location> </script>",
+          "expected": "Authored relation only"
+        },
+        {
+          "id": "reopen",
+          "title": "Supplied fresh work",
+          "provenance": "Synthetic, not replayed.",
+          "dependency": "synthetic-identity-19",
+          "normalise": "Keep exact text.",
+          "input": "null",
+          "expected": "Fresh obligation"
+        }
+      ]
+    },
+    {
+      "id": "rollout-tour",
+      "type": "tour",
+      "title": "Read release states without executing them",
+      "reason": "Section-level Tour never selects a rollout or phase.",
+      "chapters": [
+        {
+          "id": "phases",
+          "title": "Blocked and enabled descriptions",
+          "body": "Read staged-enablement, then select activation-blocked and authored-enabled manually. Evidence never changes the gate.",
+          "target": "rollout-plans"
+        },
+        {
+          "id": "independent",
+          "title": "Independent state",
+          "body": "Change the second Rollout reader. Local IDs do not share phase choices.",
+          "target": "independent-rollouts"
+        },
+        {
+          "id": "identity",
+          "title": "Preceding Identity",
+          "body": "Identity does not infer compatibility from equal keys.",
+          "target": "prior-identity"
+        },
+        {
+          "id": "old",
+          "title": "Historical selector",
+          "body": "Corpus retains its own selection.",
+          "target": "supplied-cases"
+        },
+        {
+          "id": "return",
+          "title": "Return to rollback obligations",
+          "body": "Choose backend-coexistence and release-unit. Read existing and new work, release groups and repair-required boundaries.",
+          "target": "rollout-plans"
+        }
+      ]
+    }
+  ],
+  "story": {
+    "stops": [
+      {
+        "section": "rollout-context",
+        "title": "Synthetic rollout context",
+        "takeaway": "The map locates a rollout section, not a live phase or release status.",
+        "inspections": [
+          {
+            "section": "rollout-context",
+            "label": "Inspect Synthetic rollout context"
+          }
+        ]
+      },
+      {
+        "section": "prior-recovery",
+        "title": "Prior Recovery reader",
+        "takeaway": "Retained intent is separate from policy and identity equivalence.",
+        "inspections": [
+          {
+            "section": "prior-recovery",
+            "label": "Inspect Prior Recovery reader"
+          }
+        ]
+      },
+      {
+        "section": "prior-policy",
+        "title": "Prior Decision Table reader",
+        "takeaway": "Declared policy does not infer whether two examples represent the same work.",
+        "inspections": [
+          {
+            "section": "prior-policy",
+            "label": "Inspect Prior Decision Table reader"
+          }
+        ]
+      },
+      {
+        "section": "prior-identity",
+        "title": "Prior Identity reader",
+        "takeaway": "Identity choices remain independent of rollout snapshots.",
+        "inspections": [
+          {
+            "section": "prior-identity",
+            "label": "Inspect Prior Identity reader"
+          }
+        ]
+      },
+      {
+        "section": "rollout-plans",
+        "title": "Release states and retained obligations",
+        "takeaway": "Authored release snapshots preserve gates and rollback obligations without deploying.",
+        "inspections": [
+          {
+            "section": "rollout-plans",
+            "label": "Inspect Release states and retained obligations"
+          }
+        ]
+      },
+      {
+        "section": "independent-rollouts",
+        "title": "Independent rollout and phase choices",
+        "takeaway": "Repeated rollout and phase IDs do not imply compatible releases.",
+        "inspections": [
+          {
+            "section": "independent-rollouts",
+            "label": "Inspect Independent rollout and phase choices"
+          }
+        ]
+      },
+      {
+        "section": "supplied-cases",
+        "title": "Independent old reader",
+        "takeaway": "Case evidence stays independently selectable alongside the newer readers.",
+        "inspections": [
+          {
+            "section": "supplied-cases",
+            "label": "Inspect Independent old reader"
+          }
+        ]
+      }
+    ]
+  }
+}
