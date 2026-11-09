@@ -48,8 +48,6 @@
                 }
               }
             },
-            { "id": "jira", "type": "block", "content": { "mod": "mission-control-jira", "props": { "view": "panel", "hideHeader": true } } },
-            { "id": "github", "type": "block", "content": { "mod": "mission-control-github", "props": { "view": "issues", "hideHeader": true } } },
             { "id": "aqua", "type": "block", "content": { "mod": "aqua-cutter" } },
             { "id": "files", "type": "block", "content": { "mod": "files" } },
             { "id": "changes", "type": "block", "content": { "mod": "changes" } }

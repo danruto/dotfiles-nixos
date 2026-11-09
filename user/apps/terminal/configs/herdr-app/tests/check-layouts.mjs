@@ -59,14 +59,11 @@ assert.deepEqual(wb.find(node => node.id === "sidebar").children.map(node => nod
 assert.equal(wb.find(node => node.id === "workbench").content.mod, "workbench");
 const center = wb.find(node => node.id === "center");
 assert.equal(center.active, "terminal");
-assert.deepEqual(center.children.map(node => node.id), ["terminal", "jira", "github", "aqua", "files", "changes"]);
-assert.equal(center.children.find(node => node.id === "jira").content.mod, "mission-control-jira");
-assert.equal(center.children.find(node => node.id === "github").content.mod, "mission-control-github");
+assert.deepEqual(center.children.map(node => node.id), ["terminal", "aqua", "files", "changes"]);
 assert.equal(center.children.find(node => node.id === "aqua").content.mod, "aqua-cutter");
 assert.equal(center.children.find(node => node.id === "files").content.mod, "files");
 assert.equal(center.children.find(node => node.id === "changes").content.mod, "changes");
 await readFile(new URL(workbench.preview, root));
 await readFile(new URL("mods/workbench/mod.json", root));
 await readFile(new URL("mods/aqua-cutter/main.js", root));
-await readFile(new URL("mods/mission-control-jira/main.js", root));
 console.log("PASS: thread filtering, stable pins, remote grouping, settled shelf, title fallback, status labels, and every layout contract");

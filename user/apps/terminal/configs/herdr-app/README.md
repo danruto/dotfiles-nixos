@@ -4,7 +4,7 @@ Personal layouts and mods for the Herdr desktop app. This is separate from the H
 
 ## Included
 
-- **workbench**: a cockpit-shaped sidebar (search, view tiles, agents, spaces pinned at the bottom with a per-machine load/memory/disk readout, workspace footer) over herdr-compact's tab bar and terminal. The view tiles switch the center between Terminal, Jira, GitHub issues, Aqua Cutter, Files and Changes. Agents are one priority-sorted list: tool icon, thread name, state and age, with a foreground-process check that shows Working/Waiting when the terminal is running something other than the agent itself. Spaces sit at the bottom with coloured CPU/MEM/DSK values. Jira and GitHub are the vendored `mission-control-*` mods from CiprianSpiridon/herdr-mission-control (NOTICE files included) and have their own setup/credentials. Files and Changes are Herdr's shipped views.
+- **workbench**: a cockpit-shaped sidebar (search, view tiles, agents, spaces pinned at the bottom with a per-machine load/memory/disk readout, workspace footer) over herdr-compact's tab bar and terminal. The view tiles switch the center between Terminal, Aqua Cutter, Files and Changes. Agents are one priority-sorted list: tool icon, thread name, state and age, with a foreground-process check that shows Working/Waiting when the terminal is running something other than the agent itself. Spaces sit at the bottom with coloured CPU/MEM/DSK values. Files and Changes are Herdr's shipped views.
 - **aqua-cutter**: one native reader for Aqua Cutter walkthrough JSON and Markdown, whichever file the path names; **Browse** is a file tree of the focused session's repository (local or remote). Walkthroughs show title, changes, references, trace rails, what-breaks faults, code-lens hunks and diagrams; Markdown is laid out like a walkthrough: the H1 as the title, the text before the first H2 as the lead, each H2 as a collapsible numbered card, and code fences and Mermaid diagrams in reader frames (Copy / Inspect in the bar), with relative `.md` links opening in place (**Back** returns). **Latest** opens the newest `docs/pr/*.json` in the focused space; a layout can pin a path. Every diagram renders through the vendored Pele engine (licence and provenance included) and has **Inspect ↗** for the pan/zoom diagram inspector; **Colour** (App, Light, Dark, Colourful) and **Edges** (Document, Straight, Curved, Stepped) are one shared style for the page, section dialogs and inspector. Limits: 1 MiB per document, 32 Mermaid blocks, 8 KiB / 256 lines per diagram; Mermaid inside lists or blockquotes, heading jumps and embedded images aren't supported.
 - **workbench/sysinfo**: parses per-machine CPU, memory and disk locally (PowerShell) and remotely (Linux `/proc` + `df`).
 - **herdr-compact**: compact workspace chrome, review tabs and a Files/Changes/Jira panel.
@@ -12,6 +12,7 @@ Personal layouts and mods for the Herdr desktop app. This is separate from the H
 - **review-tabs**: the custom tab bar used by **herdr-compact** and **workbench**.
 - **keys.json**: keybindings ported from the Herdr terminal client's direct Alt keys (alt-hjkl panes, alt-n/m splits, alt-z zoom, alt-[ ] spaces, alt-left/right tabs, alt-up/down agents).
 - **settings.json**: app settings (font, zoom, sounds, `option_as_alt: "on"` so Option acts as Alt on non-US layouts like Australian). The app writes through the symlink, so Settings UI changes land in this repo.
+- **themes/**: Flexoki (dark, light) and Ayu (dark, mirage, light) terminal themes, linked into `~/.config/herdr-app/themes/` so they show up in the theme picker.
 - **jira-tickets**: a VM-backed ticket sidebar with exact @mentions, status filters and Hide done. See its README for private per-machine setup.
 
 ## Install on another computer
@@ -26,7 +27,7 @@ Personal layouts and mods for the Herdr desktop app. This is separate from the H
    # Or: herdr-app do layout.switch --name herdr-compact
    ```
 
-   In workbench the view tiles switch the center; Jira and GitHub issues are Mission Control's views (open one for its setup), Aqua Cutter reads `docs/pr` walkthroughs for the focused space and any file picked in its Browse tree, Files and Changes are the shipped views. `spaces`, the previous two-list layout, is gone.
+   In workbench the view tiles switch the center; Aqua Cutter reads `docs/pr` walkthroughs for the focused space and any file picked in its Browse tree, Files and Changes are the shipped views. `spaces`, the previous two-list layout, is gone.
 
 Home Manager creates direct out-of-store symlinks from each custom mod directory and layout asset under `~/.config/herdr-app/` to this live checkout, like the settings activation in `llm.nix`. Edits through either location change the repository copy without a rebuild. Adding another custom mod directory or layout JSON/SVG requires another Home Manager activation to create its link.
 

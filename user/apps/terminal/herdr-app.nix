@@ -6,7 +6,11 @@ let
   layouts = builtins.attrNames (lib.filterAttrs
     (name: type: type == "regular" && (lib.hasSuffix ".json" name || lib.hasSuffix ".svg" name))
     (builtins.readDir ./configs/herdr-app/layouts));
-  assets = [ "keys.json" "settings.json" ] ++ map (name: "mods/${name}") mods ++ map (name: "layouts/${name}") layouts;
+  themes = builtins.attrNames (lib.filterAttrs
+    (name: type: type == "regular" && lib.hasSuffix ".json" name)
+    (builtins.readDir ./configs/herdr-app/themes));
+  assets = [ "keys.json" "settings.json" ] ++ map (name: "mods/${name}") mods
+    ++ map (name: "layouts/${name}") layouts ++ map (name: "themes/${name}") themes;
   herdrApp = pkgs.callPackage ./herdr-app-desktop.nix { };
 in
 {

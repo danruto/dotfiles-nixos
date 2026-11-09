@@ -15,8 +15,6 @@ const WINDOWS = "$c=(Get-CimInstance Win32_Processor | Measure-Object -Property 
 const MARK = { ansi6: "#22a99a", ansi3: "#e3814f", ansi4: "#5b8def", ansi5: "#8b7cf6", ansi2: "#3fae6a", ansi1: "#d9649a" };
 const VIEWS = [
   { id: "terminal", label: "Terminal", icon: "wb-icons/terminal.svg" },
-  { id: "jira", label: "Jira", icon: "wb-icons/jira.svg" },
-  { id: "github", label: "GitHub issues", icon: "wb-icons/github.svg" },
   { id: "aqua", label: "Aqua Cutter", icon: "wb-icons/aqua.svg" },
   { id: "files", label: "Files", icon: "mods/files/file.svg" },
   { id: "changes", label: "Changes", icon: "mods/changes/changes.svg" },
