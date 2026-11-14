@@ -11,6 +11,7 @@ with lib;
     ../../system/security/blocklist.nix
     ../../system/security/sshd.nix
     ../../system/security/remote-access.nix
+    ../../system/security/1password-sdk.nix
     ../../system/wm/fonts.nix
     ../../system/apps/starship.nix
     ../../system/wm/wayland.nix

@@ -48,10 +48,11 @@ buildNpmPackage (finalAttrs: {
     npm prune --omit=dev --no-save
   '';
 
-  # Workspace symlinks in the output point into packages/, which isn't copied.
-  # Replace coding-agent's transitive @earendil-works workspace deps with real
-  # copies (resolved from package.json, so new/dropped packages need no edit),
-  # then delete the remaining links.
+  # Workspace symlinks in the output point into workspace dirs (packages/,
+  # apps/, ...), which aren't copied. Replace coding-agent's transitive
+  # @earendil-works workspace deps with real copies (resolved from
+  # package.json, so new/dropped packages need no edit), then delete the
+  # remaining dangling links.
   postInstall = ''
     local nm="$out/lib/node_modules/pi-monorepo/node_modules"
     local map
@@ -72,8 +73,7 @@ buildNpmPackage (finalAttrs: {
       done
     done
 
-    find "$nm" -type l -lname '*/packages/*' -delete
-    find "$nm/.bin" -xtype l -delete
+    find "$nm" -xtype l -delete
   ''
   + lib.optionalString stdenvNoCC.hostPlatform.isDarwin ''
     rm -rf \

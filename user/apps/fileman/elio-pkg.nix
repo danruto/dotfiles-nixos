@@ -3,6 +3,8 @@
 , fetchFromGitHub
 , pkg-config
 , oniguruma
+, zstd
+, sqlite
 , stdenv
 , darwin
 }:
@@ -29,12 +31,15 @@ rustPlatform.buildRustPackage rec {
 
   buildInputs = [
     oniguruma
+    zstd
+    sqlite
   ] ++ lib.optionals stdenv.hostPlatform.isDarwin [
     darwin.apple_sdk.frameworks.AppKit
   ];
 
   env = {
     RUSTONIG_SYSTEM_LIBONIG = "1";
+    ZSTD_SYS_USE_PKG_CONFIG = "1";
   };
 
   doCheck = false;

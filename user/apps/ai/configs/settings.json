@@ -25,13 +25,23 @@
     "bb@bubblebeam": true,
     "claude-code-setup@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
+    "lua-lsp@claude-plugins-official": true,
     "revdiff@revdiff": true,
     "runpod@runpod": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true
   },
   "env": {
-    "CLAUDE_CODE_SHELL_PREFIX": "/home/danruto/dotfiles-nixos/user/apps/ai/configs/kill-guard.sh"
+    "CLAUDE_CODE_SHELL_PREFIX": "/home/danruto/dotfiles-nixos/user/apps/ai/configs/kill-guard.sh",
+    "CURL_CA_BUNDLE": "/run/user/1000/aproxy/ca-bundle.pem",
+    "HTTPS_PROXY": "http://127.0.0.1:14500",
+    "NODE_EXTRA_CA_CERTS": "/run/user/1000/aproxy/ca.pem",
+    "NODE_USE_ENV_PROXY": "1",
+    "NO_PROXY": "localhost,127.0.0.1,::1,.anthropic.com,claude.ai",
+    "REQUESTS_CA_BUNDLE": "/run/user/1000/aproxy/ca-bundle.pem",
+    "SSL_CERT_FILE": "/run/user/1000/aproxy/ca-bundle.pem",
+    "https_proxy": "http://127.0.0.1:14500",
+    "no_proxy": "localhost,127.0.0.1,::1,.anthropic.com,claude.ai"
   },
   "extraKnownMarketplaces": {
     "bubblebeam": {

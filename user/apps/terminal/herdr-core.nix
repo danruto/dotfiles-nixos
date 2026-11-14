@@ -1,22 +1,22 @@
 { lib, stdenvNoCC, fetchurl }:
 let
-  version = "0.1.20";
+  version = "0.1.21";
   targets = {
     x86_64-linux = {
       name = "linux-x86_64";
-      sha256 = "ac6b86890c451a37584620aaa438b71bc0d0bd430a2e7c1d7e095f052c414e74";
+      sha256 = "78424755c10a40dde38a0bdb55c20ac19706e9ae05ed68fc2acf1fcff0d941c1";
     };
     aarch64-linux = {
       name = "linux-aarch64";
-      sha256 = "5f3037379d15cc76cfc72d2fd1a4262ea1c5b24df278bf7cfd8adcff7b914862";
+      sha256 = "e844a2bfab48a226097679d076bc83042fe57fccef5387ef802e5b24e78b529a";
     };
     x86_64-darwin = {
       name = "macos-x86_64";
-      sha256 = "36c0331c3ffea0ffaada195b89a3c7496f7f3fc5bf35e4605c19c84e5c205a56";
+      sha256 = "e377e1d342cddce0346da5b2f3c281b9701e4731c00024c7c5028265e77a217f";
     };
     aarch64-darwin = {
       name = "macos-aarch64";
-      sha256 = "e58985d3fef6e909f33d3c5a4426e4898c81564a557d4636591cec9e3a06af26";
+      sha256 = "1ab38dd9270f63a8f794d6d60e8702eb0d1c85a72bda85d735e5eea43f05ffed";
     };
   };
   target = targets.${stdenvNoCC.hostPlatform.system}

@@ -18,6 +18,14 @@ let
     ];
   });
 
+  # yaak links libgit2-sys and libsqlite3-sys against system libraries, but the
+  # nixpkgs recipe provides neither.
+  yaakOverlay = (final: prev: {
+    yaak = prev.yaak.overrideAttrs (oldAttrs: {
+      buildInputs = (oldAttrs.buildInputs or [ ]) ++ [ prev.libgit2 prev.sqlite ];
+    });
+  });
+
   darwinOverlay = (final: prev: {
     direnv = prev.direnv.overrideAttrs (oldAttrs: {
       env = (oldAttrs.env or { }) // {
@@ -37,7 +45,7 @@ let
     });
   });
 
-  common = [ i3ipcOverlay ];
+  common = [ i3ipcOverlay yaakOverlay ];
 in
 {
   inherit common;
