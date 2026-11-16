@@ -32,12 +32,25 @@ local function ssh_args(fg)
   if args and args:match("^%S*ssh%s") then return args end
 end
 
+-- A pane hc-rex-sync mirrors from herdr runs `hc attach tN`; the directory
+-- that counts is the hc terminal's foreground process's.
+local function hc_cwd(fg)
+  local ps = rex.exec({ "ps", "-o", "args=", "-p", tostring(fg.pid) })
+  local args = ps and ps.ok and ps.stdout or ""
+  local hc, t = args:match("^(%S+) attach .-(%S+)%s*$")
+  if not t then return nil end
+  local got = rex.exec({ hc, "get", t, "--json" })
+  local info = got and got.ok and rex.json.decode(got.stdout)
+  return info and ((info.foreground and info.foreground.cwd) or info.cwd)
+end
+
 -- Local panes use the foreground process's real cwd. An ssh pane uses the
 -- directory the remote shell reported, but only if that ssh session reported it.
 local function here(block_id)
   local proc = rex.block.call(terminal, "process", { block_id = block_id })
   local fg = proc and proc.foreground
   if not fg then return {} end
+  if fg.name == "hc" or fg.name == "herdr-core" then return { cwd = hc_cwd(fg) } end
   local ssh = ssh_args(fg)
   if not ssh then return { cwd = fg.cwd } end
 

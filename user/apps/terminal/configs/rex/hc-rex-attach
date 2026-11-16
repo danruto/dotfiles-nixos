@@ -1,0 +1,15 @@
+#!/bin/sh
+# Body of a Rex pane that shows an hc terminal: hc-rex-attach HC TERMINAL.
+# ctrl+\ detaches hc attach; reattach so the pane only ends when Rex closes it
+# (hc-rex-sync then kills the terminal) or the terminal finishes or is removed.
+# While hc can't be reached, wait rather than end: an ended pane reads as closed.
+hc=$1
+t=$2
+while :; do
+  s=$("$hc" get "$t" --json 2>/dev/null)
+  case $s in
+    *'"state":"live"'*) "$hc" attach --history 2000 "$t" || sleep 1 ;;
+    *'"state":"finished"'* | *'"kind":"not_found"'*) exit 0 ;;
+    *) sleep 1 ;;
+  esac
+done
