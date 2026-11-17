@@ -103,6 +103,38 @@ rex.action{
   run      = function(ctx, args) split_here(ctx, "right", args.command) end,
 }
 
+-- Image paste ----------------------------------------------------------------
+-- Panes run on orb, which can't see the Mac clipboard, so Claude's own ctrl+v
+-- finds no image. OrbStack's `mac` saves the clipboard image on the Mac, and
+-- the pane gets its /mnt/mac path pasted, which Claude attaches as an image.
+-- Without an image (or off orb) ctrl+v goes through as a key.
+
+local save_image = [[
+d=/private/tmp/rex-paste
+mkdir -p "$d" || exit 1
+f="$d/$(date +%Y%m%d-%H%M%S)-$$.png"
+pngpaste "$f" >/dev/null 2>&1 && echo "$f"
+]]
+
+rex.action{
+  name     = "paste_image",
+  title    = "Paste Clipboard Image",
+  category = "Pane",
+  run      = function(ctx)
+    local got = rex.exec({ "/usr/local/bin/mac", "sh", "-c", save_image })
+    local file = got and got.ok and got.stdout:match("%S+")
+    if not file then
+      rex.client.queue("pane.send_key", { key = "ctrl+v" })
+      return
+    end
+    rex.call("block.event", {
+      session_id = ctx.session_id,
+      block_id   = ctx.block_id,
+      event      = { type = "paste", payload = { text = "/mnt/mac" .. file } },
+    })
+  end,
+}
+
 -- Sessions (herdr spaces) ----------------------------------------------------
 
 -- Accordion: only the shown session stays expanded in the sidebar.
@@ -218,6 +250,7 @@ bind({ p .. "x" }, "pane.close")
 bind({ p .. "shift+x" }, "client.tab.close")
 bind({ p .. "shift+d" }, "session.close")
 
+bind({ "ctrl+v" }, "paste_image")
 bind({ p .. "z", "alt+z" }, "pane.zoom")
 bind({ p .. "ctrl+r" }, "client.config.reload")
 
