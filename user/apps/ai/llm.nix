@@ -26,12 +26,12 @@ let
   # https://downloads.claude.ai/claude-code-releases/<version>/manifest.zst.json
   claude-code-unwrapped = pkgs-master.claude-code.override {
     manifest = {
-      version = "2.1.330";
+      version = "2.1.331";
       platforms = {
-        "darwin-arm64" = { binary = "claude.zst"; checksum = "c909e975f01193126bf28da4fa66825db4e9d10fd52b217106fdb3b9c7f6d247"; };
-        "darwin-x64" = { binary = "claude.zst"; checksum = "e41ce2e31839b08c232a4e42bc82a080f74ae0f203acf97cb5d144f959545ac6"; };
-        "linux-arm64" = { binary = "claude.zst"; checksum = "fd32a5b1552693c801e6f6cb3dc77e39c2438a873d00600558bae8bdc06b20bd"; };
-        "linux-x64" = { binary = "claude.zst"; checksum = "d53a3f9aab93c87bba0813d1101677677b457100824f5c3604fea9915ac5237a"; };
+        "darwin-arm64" = { binary = "claude.zst"; checksum = "f129303752e09665843a586b1076e273568d1e5acaa5b2a6e62c316bb1cf6e5a"; };
+        "darwin-x64" = { binary = "claude.zst"; checksum = "1be3d8e06d1225899f4b74875b67928e9b8617fc7cb1c4f243aea1318083c8d4"; };
+        "linux-arm64" = { binary = "claude.zst"; checksum = "ce1ce2361762fa1944996e1f9a9ffeaf58d8e7383466c05ce4752c6c32d0046c"; };
+        "linux-x64" = { binary = "claude.zst"; checksum = "1466fdce6621ff0b69ae75faf43a35c9d2ff6a19523c42aa66a6858f566fcf62"; };
       };
     };
   };
@@ -47,7 +47,8 @@ let
     nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
     postBuild = ''
       wrapProgram $out/bin/claude \
-        --add-flags "--plugin-dir ${config.home.homeDirectory}/dev/pixelbrush/pb-skills/plugins/pb"
+        --add-flags "--plugin-dir ${config.home.homeDirectory}/dev/pixelbrush/pb-skills/plugins/pb" \
+        --add-flags "--plugin-dir ${aiConfigs}/mods/statusbar"
     '';
     inherit (claude-code-unwrapped) meta;
   };
@@ -93,12 +94,12 @@ let
   # `npm view @opencode/cli-<plat>@<version> dist.integrity`.
   opencode =
     let
-      version = "2.3.2";
+      version = "2.4.1";
       hashes = {
-        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-E9txUc4fNtvuEQUiEx84h4/bd/LJZcAHdIu0yfZRP8KDVP79WhzhEd7BTckJUyvWUc58ZP/o+nfgcnTQnvfJgw=="; };
-        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-t44ZuW5CKaWiRSp4gWUDurMf4edyXw/SmUty1pRi827zda0T2RatKWj4LnMUewNCL05COLB1Ppg8RWicswhFaQ=="; };
-        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-vNLWgHc2I/hAbW37OOANepj6VNS8mbbLp9TbWgEKY6MMvzZlx0ifsrcwUuLI0Qoso82UEj6RV20xcBWyZdF84w=="; };
-        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-cYrIzW8CvYc52INFA/cXmw7U2mk+JNWaV+olH7AflYqa/5srSrA/hbLwF7G1N4QTRMtOFrmeTM0LVN81q396sg=="; };
+        "x86_64-linux" = { plat = "linux-x64"; hash = "sha512-FYQAnneVlLmqy862674vvRVkj8yHuZAFHJGV3UCGQxo8aKG58IHPKrspbxruVajnIEpb0t8PeO63H/oW4vJG5A=="; };
+        "aarch64-linux" = { plat = "linux-arm64"; hash = "sha512-olNKfoAuHaDtHrWrlqxh2RPSonSfAZPGJlru7tMNeNTlHyLSrTbDe/+HJ6vdYRp7g4yKLSQ8SG264U/IC7Pgtw=="; };
+        "x86_64-darwin" = { plat = "darwin-x64"; hash = "sha512-J/khLpe0pisTGDD5jpddQjqb5e8qUsWYpiRkqIBN3a/P4S5asfP2ErLKSevmpGzhg9fC1TpLJnGVXwgN+JJgKg=="; };
+        "aarch64-darwin" = { plat = "darwin-arm64"; hash = "sha512-r6PIZl5wqFxVYfVFjm2JK4uf1a3YT7FMEVTODJF/1hKe6wBdK7THzbAM1SSyuRuMnSkDb9+dd8xNOk9zQK6trg=="; };
       };
       target = hashes.${pkgs.stdenv.hostPlatform.system};
     in
@@ -192,7 +193,7 @@ in
     pi-pig
   ];
 
-  # CLAUDE.md, the statusline scripts and settings.json are out-of-store symlinks
+  # CLAUDE.md, the subagent statusline script and settings.json are out-of-store symlinks
   # to the live working tree (like herdr's config.toml) so edits — including
   # Claude Code's own writes to settings.json — land directly in this repo
   # without a redeploy. Both subscription dirs in `claudeDirs` get the same set,
@@ -211,8 +212,6 @@ in
     (dir: {
       "${dir}/CLAUDE.md".source =
         config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/CLAUDE.md";
-      "${dir}/statusline.sh".source =
-        config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/statusline.sh";
       "${dir}/subagent-statusline.sh".source =
         config.lib.file.mkOutOfStoreSymlink "${aiConfigs}/subagent-statusline.sh";
     })

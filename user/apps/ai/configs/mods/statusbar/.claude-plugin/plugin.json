@@ -1,0 +1,6 @@
+{
+  "description": "Session status band: model, time, cost, context, cache, rate limits, PR",
+  "name": "statusbar",
+  "types": "./types/index.d.ts",
+  "version": "0.1.0"
+}

@@ -5,10 +5,20 @@
   "defaultThinkingLevel": "high",
   "deviceId": "35da7abf-1268-4b0c-9e75-60441d4da5ee",
   "enableInstallTelemetry": false,
+  "extensionChangelogVersions": {
+    "{\"source\":\"git:github.com/algal/pi-openai-server-compaction\",\"scope\":\"user\"}": "0.1.0",
+    "{\"source\":\"git:github.com/davebcn87/pi-autoresearch\",\"scope\":\"user\"}": "1.9.0",
+    "{\"source\":\"git:github.com/tintinweb/pi-manage-todo-list\",\"scope\":\"user\"}": "0.4.0",
+    "{\"source\":\"npm:@tmustier/pi-raw-paste\",\"scope\":\"user\"}": "0.1.3",
+    "{\"source\":\"npm:pi-interactive-shell\",\"scope\":\"user\"}": "0.17.1",
+    "{\"source\":\"npm:pi-prompt-template-model\",\"scope\":\"user\"}": "0.12.3",
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.83.0",
+    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.45.0"
+  },
   "extensions": [],
   "fullscreenExitOutput": "resume-hint",
   "hideThinkingBlock": true,
-  "lastChangelogVersion": "1.4.0",
+  "lastChangelogVersion": "1.5.0",
   "packages": [
     "git:github.com/davebcn87/pi-autoresearch",
     "git:github.com/tintinweb/pi-manage-todo-list",
@@ -21,8 +31,8 @@
     "npm:pi-interactive-shell",
     "npm:pi-intercom",
     {
-      "source": "npm:pi-lens@4.4.5",
-      "extensions": []
+      "extensions": [],
+      "source": "npm:pi-lens@4.4.5"
     },
     "../../dotfiles-nixos/user/apps/ai/configs/pi-lens-patched.ts",
     "npm:pi-markdown-preview",
@@ -33,8 +43,8 @@
     "git:github.com/algal/pi-openai-server-compaction",
     "npm:@narumitw/pi-usage",
     {
-      "source": "npm:pi-hermes-memory@0.9.11",
-      "extensions": []
+      "extensions": [],
+      "source": "npm:pi-hermes-memory@0.9.11"
     },
     "../../dotfiles-nixos/user/apps/ai/configs/pi-hermes-patched.ts",
     "../../dev/pixelbrush/pb-skills",

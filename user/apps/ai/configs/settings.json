@@ -141,11 +141,6 @@
   "remoteControlAtStartup": false,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "statusLine": {
-    "command": "~/.claude/statusline.sh",
-    "refreshInterval": 30,
-    "type": "command"
-  },
   "subagentStatusLine": {
     "command": "~/.claude/subagent-statusline.sh",
     "type": "command"
