@@ -58,6 +58,17 @@ function herdr.hc_attach(args)
   return { hc = hc, term = term }
 end
 
+-- A balanced row for a list of layouts, in order. Rex nests binary splits, so
+-- an N-up board is a tree; the before side is always the earlier item.
+function herdr.columns(specs, join)
+  if #specs == 1 then return specs[1] end
+  local mid = math.ceil(#specs / 2)
+  local before, after = {}, {}
+  for i = 1, mid do before[#before + 1] = specs[i] end
+  for i = mid + 1, #specs do after[#after + 1] = specs[i] end
+  return join(mid / #specs, herdr.columns(before, join), herdr.columns(after, join))
+end
+
 -- Live terminals started by another terminal, the rows herdr shows indented
 -- under an agent. `term` limits them to one parent. Each is paired with its
 -- parent's entry, which may be missing.
