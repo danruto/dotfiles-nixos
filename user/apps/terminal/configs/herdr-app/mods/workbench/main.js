@@ -68,6 +68,23 @@ export default class Workbench extends View {
     cx.notify();
   }
 
+  // `agents()` and `spaces()` keep each machine's last-read layout after its
+  // core goes away; only `machines()` says that machine is unavailable now.
+  offlineMachines() {
+    return new Set(machines()
+      .filter((machine) => machine.name !== null && machine.layout === "unavailable")
+      .map((machine) => machine.name));
+  }
+
+  // An agent's space names its machine; fall back to the address prefix
+  // ("ssh-nm/t3") when that machine's spaces are no longer listed.
+  machineOf(agent, space = null) {
+    const known = space ?? spaces().find((candidate) => candidate.id === agent.space);
+    if (known) return known.machine ?? null;
+    const slash = agent.address.indexOf("/");
+    return slash === -1 ? null : agent.address.slice(0, slash);
+  }
+
   async readMachine(name) {
     if (!name) {
       if (window()?.platform === "windows") {
@@ -101,15 +118,22 @@ export default class Workbench extends View {
     this.busySampling = true;
     cx.spawn(async (cx) => {
       const list = agents();
+      const offline = this.offlineMachines();
       const shells = new Set(["fish", "bash", "zsh", "sh", "pwsh", "powershell", "cmd", "nu", "elvish", "xonsh"]);
       const agentish = /claude|codex|opencode|gemini|aider|cursor|goose|amp/;
       for (const agent of list) {
+        // An offline machine answers `hc get` with an empty stdout and a
+        // nonzero code. That is not a foreground process, so don't turn it
+        // into one (it used to read as Working).
+        if (offline.has(this.machineOf(agent))) { delete this.foreground[agent.address]; continue; }
         try {
           const result = await hc(["get", agent.address]);
+          if (result.code !== 0) throw new Error(result.stderr || `hc get exited ${result.code}`);
           const data = JSON.parse(result.stdout || "{}");
           const foreground = data.foreground ?? null;
           const raw = foreground?.name || foreground?.argv?.[0] || "";
           const name = String(raw).split(/[\\/]/).pop() || "";
+          if (!name) { delete this.foreground[agent.address]; continue; }
           const key = name.toLowerCase().replace(/\.(exe|sh|cmd)$/, "");
           this.foreground[agent.address] = {
             name,
@@ -163,27 +187,29 @@ export default class Workbench extends View {
     openOverlay({ mod: "menu", kind: "popup", width: 200, props: { tab: "tab", target: { id: tab.id, space: space.id } } });
   }
 
-  agentRow(agent, t) {
+  agentRow(agent, t, offlineMachines) {
     const space = spaces().find((candidate) => candidate.id === agent.space);
     const tab = space?.tabs.find((candidate) => candidate.id === agent.tab);
+    const offline = offlineMachines.has(this.machineOf(agent, space));
     const children = terminals().filter((term) => term.parent === agent.address && term.state === "live" && term.address !== agent.address);
-    const since = short(Date.now() - ((agent.status === "working" ? tab?.working_since : null) ?? tab?.changed_at));
+    const since = offline ? "" : short(Date.now() - ((agent.status === "working" ? tab?.working_since : null) ?? tab?.changed_at));
     const title = (tab?.named && tab.name) || agent.title || tab?.name || agent.program?.name || agent.tab_name || "agent";
     const program = agent.program;
     const glyph = program?.icon
       ? (program.tint ? svg(program.icon).size(12).flex_none().text_color(t.dim) : image(program.icon).w(12).h(12).flex_none())
       : null;
     const foreground = this.foreground[agent.address];
-    const busy = agent.status !== "blocked" && foreground && !foreground.agent;
-    const state = busy ? (foreground.shell ? "waiting" : "working") : agent.status;
-    const label = state === "waiting" ? "Waiting"
-      : state === "working" ? "Working"
-        : { blocked: "Needs you", done: "Ready", idle: "Idle" }[agent.status] ?? "Idle";
-    const tone = busy ? t.working : t[agent.status] ?? t.dim;
+    const busy = !offline && agent.status !== "blocked" && foreground && !foreground.agent;
+    const state = offline ? "offline" : busy ? (foreground.shell ? "waiting" : "working") : agent.status;
+    const label = offline ? "Offline"
+      : state === "waiting" ? "Waiting"
+        : state === "working" ? "Working"
+          : { blocked: "Needs you", done: "Ready", idle: "Idle" }[agent.status] ?? "Idle";
+    const tone = offline ? t.dim : busy ? t.working : t[agent.status] ?? t.dim;
     const row = v_flex().id(`wb-agent-${agent.address}`).py(5).px(8).gap(2).flex_none().rounded(6)
       .when(tab?.active && space?.active, (el) => el.bg(t.selected))
       .hover((el) => el.bg(t.hover)).cursor_pointer()
-      .tooltip(foreground ? `Foreground: ${foreground.name}` : title)
+      .tooltip(offline ? `${title} (offline)` : foreground ? `Foreground: ${foreground.name}` : title)
       .on_click(() => {
         run("agent.focus", { terminal: agent.address });
         if (panes().some((candidate) => candidate.terminal === agent.address)) run("pane.focus", { terminal: agent.address });
@@ -191,9 +217,9 @@ export default class Workbench extends View {
       })
       .on_mouse_down("right", () => tab && space && this.tabMenu(space, tab))
       .child(h_flex().gap(7).items_center().min_w(0)
-        .child(this.dot(busy ? "working" : agent.status))
+        .child(this.dot(offline ? "unknown" : busy ? "working" : agent.status))
         .when(Boolean(glyph), (el) => el.child(glyph))
-        .child(div().flex_1().min_w(0).truncate().text_size(12).text_color(t.foreground).child(title))
+        .child(div().flex_1().min_w(0).truncate().text_size(12).text_color(offline ? t.muted : t.foreground).child(title))
         .when(Boolean(since), (el) => el.child(div().flex_none().text_size(10).text_color(t.dim).child(since))))
       .child(h_flex().gap(5).items_center().min_w(0).pl(16)
         .child(div().flex_none().text_size(10).text_color(tone).child(label))
@@ -208,18 +234,21 @@ export default class Workbench extends View {
         .child(div().flex_none().text_size(10).text_color(t.dim).child("↳"))
         .child(div().flex_1().min_w(0).truncate().text_size(11).text_color(t.dim)
           .child(child.name || child.agent || "task"))
-        .child(div().flex_none().text_size(9.5).text_color(t[child.status] ?? t.dim)
-          .child(child.status === "working" ? "Working" : child.status ?? ""))));
+        .child(div().flex_none().text_size(9.5).text_color(offline ? t.dim : t[child.status] ?? t.dim)
+          .child(offline ? "Offline" : child.status === "working" ? "Working" : child.status ?? ""))));
   }
 
   agentsSection(t) {
     const all = agents();
-    const order = { blocked: 0, working: 1, done: 2, idle: 3 };
-    const rows = [...all].sort((a, b) => (order[a.status] ?? 4) - (order[b.status] ?? 4)
+    const offlineMachines = this.offlineMachines();
+    const order = { blocked: 0, working: 1, done: 2, idle: 3, offline: 4 };
+    const rank = (agent) => offlineMachines.has(this.machineOf(agent)) ? 4 : order[agent.status] ?? 5;
+    const rows = [...all].sort((a, b) => rank(a) - rank(b)
       || (a.space ?? "").localeCompare(b.space ?? "")
       || a.tab_index - b.tab_index);
     const open = !this.folded.has("agents");
-    const blocked = all.filter((agent) => agent.status === "blocked").length;
+    const blocked = all.filter((agent) => agent.status === "blocked"
+      && !offlineMachines.has(this.machineOf(agent))).length;
     const extra = blocked
       ? h_flex().flex_none().gap(4).items_center().text_size(10).text_color(t.blocked)
           .child(div().size(6).rounded_full().bg(t.blocked)).child(String(blocked))
@@ -227,7 +256,7 @@ export default class Workbench extends View {
     return v_flex().flex_none().gap(1)
       .child(this.header("wb-agents", "Agents", all.length, open, extra, t, "workspace-chrome/layers")
         .on_click((_e, cx) => { this.fold("agents", cx); }))
-      .when(open, (el) => el.children(rows.map((agent) => this.agentRow(agent, t)))
+      .when(open, (el) => el.children(rows.map((agent) => this.agentRow(agent, t, offlineMachines)))
         .when(!rows.length, (inner) => inner.child(div().px(8).py(8).text_size(11).text_color(t.dim)
           .child("No agents running."))));
   }
@@ -273,7 +302,7 @@ export default class Workbench extends View {
         .child(div().size(6).flex_none().rounded_full().bg(this.spaceColor(space, t)))
         .child(div().flex_1().min_w(0).truncate().text_size(12)
           .text_color(space.active ? t.foreground : t.muted).child(space.name))
-        .when(Boolean(space.status), (el) => el.child(this.dot(space.status))))));
+        .when(ready && Boolean(space.status), (el) => el.child(this.dot(space.status))))));
   }
 
   spaceColor(space, t) {
