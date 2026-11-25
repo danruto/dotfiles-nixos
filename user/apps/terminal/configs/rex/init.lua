@@ -388,7 +388,7 @@ rex.action{
       items[#items + 1] = { id = r.term, title = r.title, subtitle = r.subtitle, detail = r.detail, icon = r.icon }
     end
     if #items == 0 then
-      items[1] = { id = "", title = "No agents running", subtitle = "Agents and their helpers show up here", icon = "clock" }
+      items[1] = { id = "none", title = "No agents running", subtitle = "Agents and their helpers show up here", icon = "clock" }
     end
 
     local chosen, why = rex.ui.pick{

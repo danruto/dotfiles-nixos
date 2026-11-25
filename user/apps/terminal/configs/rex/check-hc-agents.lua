@@ -66,7 +66,13 @@ local function body()
   rex.bind = function() end
   rex.unbind = function() return 0 end
   rex.mode = function() end
+  -- Holds the items to what the real picker accepts: a unique, non-empty id.
   rex.ui.pick = function(o)
+    local ids = {}
+    for i, it in ipairs(o.items) do
+      assert(type(it.id) == "string" and it.id ~= "" and not ids[it.id], "rex.ui.pick: items[" .. i .. "]: bad id")
+      ids[it.id] = true
+    end
     items = o.items
     if answer then return answer end
     return nil, "cancelled"
@@ -81,6 +87,19 @@ local function body()
     if not check(e == nil, "hc_agents raised: " .. tostring(e)) then return end
     return items
   end
+
+  -- With nothing to list, the picker still gets a valid row.
+  local real_exec = rex.exec
+  rex.exec = setmetatable({}, { __call = function(_, argv, opts)
+    if argv[2] == "connect" then
+      return { ok = true, code = 0, stderr = "", stdout = '{"jsonrpc":"2.0","id":1,"result":{"terminals":[]}}\n' }
+    end
+    return real_exec(argv, opts)
+  end, __index = real_exec })
+  local empty = run(nil)
+  rex.exec = real_exec
+  if not check(empty and #empty == 1 and empty[1].title == "No agents running", "empty board") then return end
+  results[#results + 1] = "empty: shows No agents running"
 
   -- The list: the parent leads its group, helpers nested under it.
   local listed = run(nil)
