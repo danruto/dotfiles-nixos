@@ -11,20 +11,70 @@ function herdr.pwd_path(url)
   return (path:gsub("%%(%x%x)", function(h) return string.char(tonumber(h, 16)) end))
 end
 
--- `ssh orb` becomes `ssh -t orb 'cd /path && exec $SHELL -l'`, so the new pane
--- lands in the same remote directory. -t goes first because the original args
--- end with the destination. Splitting a pane this made drops its old -t and
--- remote command first.
-function herdr.ssh_argv(args, path, command)
-  args = args:gsub("^(%S+) %-t ", "%1 "):gsub(" cd '.*' && exec %$SHELL %-l.*$", "")
+-- The ssh invocation behind a pane, without the remote command a previous
+-- split appended and without a pty. A pty rewrites bytes, so copies of a file
+-- have to run without one.
+function herdr.ssh_base(args)
+  args = args:gsub("^(%S+) %-t ", "%1 ")
+    :gsub(" cd '.*' && exec %$SHELL %-l.*$", "")
   local argv = {}
   for word in args:gmatch("%S+") do argv[#argv + 1] = word end
   if #argv < 2 then return nil end
+  return argv
+end
+
+-- `ssh orb` becomes `ssh -t orb 'cd /path && exec $SHELL -l'`, so the new pane
+-- lands in the same remote directory. -t goes first because the original args
+-- end with the destination.
+function herdr.ssh_argv(args, path, command)
+  local argv = herdr.ssh_base(args)
+  if not argv then return nil end
   table.insert(argv, 2, "-t")
   local run = "exec $SHELL -l"
   if command then run = run .. " -c " .. herdr.quote(command) end
   argv[#argv + 1] = "cd " .. herdr.quote(path) .. " && " .. run
   return argv
+end
+
+-- ssh argv that runs `command` on the pane's host, with no pty, for piping
+-- bytes through standard input.
+function herdr.ssh_copy_argv(args, command)
+  local base = herdr.ssh_base(args)
+  if not base then return nil end
+  local argv = { base[1] }
+  for i = 2, #base do
+    if base[i] ~= "-t" and base[i] ~= "-T" then argv[#argv + 1] = base[i] end
+  end
+  argv[#argv + 1] = command
+  return argv
+end
+
+-- The hc invocation behind a pane: `hc attach --history 2000 t7` becomes
+-- { hc = "/path/to/hc", term = "t7" }. A terminal on another machine is
+-- `machine/t7`, which is also the address hc attach takes.
+function herdr.hc_attach(args)
+  local hc, term = (args or ""):match("^(%S+) attach .-(%S+)%s*$")
+  if not hc then return nil end
+  return { hc = hc, term = term }
+end
+
+-- Live terminals started by another terminal, the rows herdr shows indented
+-- under an agent. `term` limits them to one parent. Each is paired with its
+-- parent's entry, which may be missing.
+function herdr.hc_children(terminals, term)
+  local by = {}
+  for _, t in ipairs(terminals or {}) do
+    if t.address then by[t.address] = t end
+  end
+  local out = {}
+  for _, t in ipairs(terminals or {}) do
+    local parent = t.parent
+    if t.state == "live" and parent and parent ~= t.address
+        and (not term or parent == term) then
+      out[#out + 1] = { terminal = t, parent = by[parent] }
+    end
+  end
+  return out
 end
 
 -- herdr sorts its agent panel by who needs you: blocked, then failed, done,

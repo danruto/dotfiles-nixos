@@ -4,6 +4,39 @@ import * as tree from "./hc-rex-tree.mjs";
 
 const block = (t, w) => ({ type: "block", id: "p" + t, content: { terminal: t }, ...(w ? { size: { weight: w } } : {}) });
 
+// A remote doc names its own terminals. Mirroring qualifies them for Rex and
+// the state file; writing a tab back to the doc removes the machine again.
+const machine = "ssh-nm";
+const qual = (t) => tree.qualify(machine, t);
+const remoteDoc = {
+  type: "row",
+  id: "tb1",
+  children: [block("t1"), { type: "column", id: "s1", children: [block("t2"), block("t3")] }],
+};
+const remoteRex = tree.toRex(tree.fromHerdr(remoteDoc), qual);
+assert.equal(remoteRex.split.before.block, "ssh-nm/t1", "Rex layout carries the machine");
+assert.equal(remoteRex.split.after.split.before.block, "ssh-nm/t2", "split panes carry it too");
+assert.equal(remoteRex.split.after.split.after.block, "ssh-nm/t3", "and the last pane");
+
+const blocks = { "ssh-nm/t1": "b1", "ssh-nm/t2": "b2", "ssh-nm/t3": "b3" };
+const termOf = (b) => Object.keys(blocks).find((t) => blocks[t] === b) ?? null;
+const remoteBack = tree.fromRex({
+  split: {
+    direction: "horizontal",
+    ratio: 0.5,
+    before: { block_id: "b1" },
+    after: { split: { direction: "vertical", ratio: 0.5, before: { block_id: "b2" }, after: { block_id: "b3" } } },
+  },
+}, termOf);
+assert.equal(tree.sig(remoteBack), "row(ssh-nm/t1,column(ssh-nm/t2,ssh-nm/t3))", "state keeps qualified terms");
+for (const leaf of tree.leaves(remoteBack)) leaf.term = tree.unqualify(machine, leaf.term);
+assert.equal(tree.sig(remoteBack), tree.sig(tree.fromHerdr(remoteDoc)), "the doc gets its bare terminals back");
+
+const local = tree.toRex(tree.fromHerdr({ type: "row", id: "tb", children: [block("t4")] }), (t) => tree.qualify(null, t));
+assert.equal(local.block, "t4", "the local doc's terminals stay bare");
+const twice = tree.toRex(tree.fromHerdr({ type: "row", id: "tb", children: [block("ssh-nm/t5")] }), qual);
+assert.equal(twice.block, "ssh-nm/t5", "an already-qualified terminal is left alone");
+
 const nested = {
   type: "row",
   id: "tb1",

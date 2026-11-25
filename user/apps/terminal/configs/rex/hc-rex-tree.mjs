@@ -6,6 +6,20 @@
 
 const DIRS = { horizontal: "row", vertical: "column" };
 
+// A herdr-app doc names its own terminals and ids. Everywhere else — hc calls,
+// attach blocks, the state file — an id on another machine carries that
+// machine as a prefix, the way hc addresses remote terminals (`ssh-nm/t7`).
+export function qualify(machine, id) {
+  if (!machine || !id || id.includes("/")) return id;
+  return `${machine}/${id}`;
+}
+
+export function unqualify(machine, id) {
+  if (!machine || !id) return id;
+  const prefix = `${machine}/`;
+  return id.startsWith(prefix) ? id.slice(prefix.length) : id;
+}
+
 function container(dir, kids) {
   const flat = [];
   for (const k of kids) {
