@@ -1,4 +1,4 @@
-{ config, lib, pkgs, pkgs-unstable, herdr, ... }:
+{ config, lib, pkgs, pkgs-unstable, herdr, osConfig, ... }:
 
 {
   home.username = "danruto";
@@ -18,6 +18,7 @@
     ../../user/apps/terminal/curl.nix
     ../../user/apps/terminal/helix-fork.nix
     ../../user/apps/terminal/foot.nix
+    ../../user/apps/terminal/rex-sync.nix
     ../../user/wm/niri/niri.nix
     ../../user/apps/ai/llm.nix
     ../../user/apps/browser/ff.nix
@@ -71,6 +72,8 @@
   home.stateVersion = "26.05";
 
   systemd.user.startServices = "sd-switch";
+
+  local.rexSync.rexBin = "${osConfig.services.rex.package}/bin/rex";
 
   systemd.user.services.agent-awake = {
     Unit.Description = "Keep the PC awake while an AI agent is working";

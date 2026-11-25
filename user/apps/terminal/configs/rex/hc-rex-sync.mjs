@@ -24,6 +24,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as tree from "./hc-rex-tree.mjs";
+import { eventLines } from "./hc-rex-events.mjs";
 
 const DRY = process.argv.includes("--dry-run");
 const DOC = "herdr-app";
@@ -184,7 +185,7 @@ function loadState() {
 
 function saveState(state) {
   if (DRY) return;
-  const { first, ...rest } = state;
+  const { first: _first, ...rest } = state;
   fs.mkdirSync(path.dirname(STATE), { recursive: true });
   fs.writeFileSync(STATE + ".tmp", JSON.stringify(rest, null, 1));
   fs.renameSync(STATE + ".tmp", STATE);
@@ -624,8 +625,15 @@ const soon = () => {
   timer = setTimeout(kick, 150);
 };
 
+// Every `rex api call` opens a client for the length of one call, so this
+// script's own reads emit client_connected and client_disconnected. Reconciling
+// on those would let each pass schedule the next one.
+const nextEvents = eventLines();
+
 const events = spawn("rex", ["events", "--json"], { stdio: ["ignore", "pipe", "inherit"] });
-events.stdout.on("data", soon);
+events.stdout.on("data", (chunk) => {
+  if (nextEvents(chunk).length) soon();
+});
 events.on("exit", (code) => {
   log(`rex events exited (${code})`);
   process.exit(1);
