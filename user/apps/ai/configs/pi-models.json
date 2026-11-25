@@ -31,6 +31,99 @@
           "contextWindow": 500000
         }
       }
+    },
+    "exe-anthropic": {
+      "name": "exe.dev (Anthropic)",
+      "baseUrl": "http://localhost:18080/anthropic",
+      "api": "anthropic-messages",
+      "apiKey": "exe-relay",
+      "models": [
+        {
+          "id": "claude-opus-5-5",
+          "name": "Claude Opus 5.5 (exe)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 200000,
+          "maxTokens": 64000
+        },
+        {
+          "id": "claude-sonnet-5-5",
+          "name": "Claude Sonnet 5.5 (exe)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 200000,
+          "maxTokens": 64000
+        },
+        {
+          "id": "claude-haiku-5-5",
+          "name": "Claude Haiku 5.5 (exe)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 200000,
+          "maxTokens": 64000
+        },
+        {
+          "id": "claude-fable-5-2",
+          "name": "Claude Fable 5.2 (exe)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 200000,
+          "maxTokens": 64000
+        }
+      ]
+    },
+    "exe-openai": {
+      "name": "exe.dev (OpenAI)",
+      "baseUrl": "http://localhost:18080/openai/v1",
+      "api": "openai-responses",
+      "apiKey": "exe-relay",
+      "models": [
+        {
+          "id": "gpt-6.2-sol",
+          "name": "GPT-6.2 Sol (exe)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 400000,
+          "maxTokens": 64000
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "name": "GPT-6.1 Sol (exe)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 400000,
+          "maxTokens": 64000
+        },
+        {
+          "id": "gpt-5.6-luna",
+          "name": "GPT-5.6 Luna (exe)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 400000,
+          "maxTokens": 64000
+        }
+      ]
     }
   }
 }

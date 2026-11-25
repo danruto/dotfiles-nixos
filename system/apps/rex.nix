@@ -1,20 +1,20 @@
-{ rex, username, hostname, ... }:
+{ rex, username, ... }:
 
-# Shared server on /run/rex/server.sock; members of the rex group can connect.
-# Also installs the rex CLI for every user, the xterm-rex terminfo, and the
-# SSH fallback in /etc/ssh/ssh_config. `nix flake update rex` moves channel.
+# The login server runs as root, names tailnet callers through the host's
+# tailscaled, and runs one Rex server per account as that account, so remote
+# sessions get the account's own login shell. Tailscale Serve publishes it at
+# https://<hostname>.<tailnet>.ts.net:7297, which the Rex CLI finds from the
+# hostname alone. `nix flake update rex` moves channel.
 {
   imports = [ rex.nixosModules.default ];
 
-  services.rex.enable = true;
-  services.rex.tailscale = {
+  services.rex.loginServer = {
     enable = true;
-    hostname = "rex-${hostname}";
+    tailscaleServe.enable = true;
+    accounts.${username}.principals = [
+      "tailscale:danruto@github"
+      "peer:1000"
+    ];
+    defaults."tailscale:danruto@github" = username;
   };
-
-  # Rex sends no telemetry itself; its embedded Tailscale (off by default)
-  # would upload logs and metrics to Tailscale unless this is set.
-  systemd.services.rex.environment.TS_NO_LOGS_NO_SUPPORT = "true";
-
-  users.users.${username}.extraGroups = [ "rex" ];
 }
