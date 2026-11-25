@@ -25,9 +25,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as tree from "./hc-rex-tree.mjs";
 import { eventLines } from "./hc-rex-events.mjs";
+import { isAgent, agentLabel, agentOrder } from "./hc-rex-agents.mjs";
 
 const DRY = process.argv.includes("--dry-run");
 const DOC = "herdr-app";
+const AGENTS_LABEL = "hc agents";
 const FLAVOR = "com.superlogical.terminal.shell";
 const ATTACH = path.join(path.dirname(fileURLToPath(import.meta.url)), "hc-rex-attach");
 const STATE = path.join(process.env.XDG_STATE_HOME || path.join(os.homedir(), ".local/state"), "hc-rex-sync.json");
@@ -193,6 +195,8 @@ function saveState(state) {
 
 const state = loadState();
 for (const map of Object.values(state.spaces)) map.machine ??= null;
+state.agents ??= { session: null, windows: {} };
+state.agents.windows ??= {};
 
 // Helpers ---------------------------------------------------------------------
 
@@ -299,6 +303,8 @@ async function pullRex(doc, rx, stale) {
   };
 
   for (const sessionId of rx.order) {
+    const view = rx.sessions.get(sessionId);
+    if (sessionId === state.agents.session || view?.label === AGENTS_LABEL) continue;
     if (knownSessions.has(sessionId)) continue;
     if (state.first) {
       stale.push(sessionId);
@@ -307,7 +313,6 @@ async function pullRex(doc, rx, stale) {
     // A Rex session the docs don't know yet belongs to the local doc; remote
     // docs only describe the spaces they already list.
     if (machine) continue;
-    const view = rx.sessions.get(sessionId);
     const space = { id: newId("sp"), name: view.label, folder: "", tabs: [] };
     for (const [i, win] of (view.windows || []).entries()) {
       const tab = await adoptWindow(sessionId, win, space, i);
@@ -523,9 +528,12 @@ async function orderRex(docs) {
       if (id && rx.sessions.has(id)) sessions.push(id);
     }
   }
-  const current = rx.order.filter((id) => sessions.includes(id));
-  if (current.join() !== sessions.join()) {
-    for (const id of sessions) await rex("session.move", { session_id: id });
+  const desired = [];
+  if (state.agents.session && rx.sessions.has(state.agents.session)) desired.push(state.agents.session);
+  desired.push(...sessions);
+  const current = rx.order.filter((id) => desired.includes(id));
+  if (current.join() !== desired.join()) {
+    for (const id of desired) await rex("session.move", { session_id: id });
   }
   for (const doc of docs) {
     for (const space of doc.value.spaces) {
@@ -539,6 +547,90 @@ async function orderRex(docs) {
       if (now.join() === windows.join()) continue;
       for (const w of windows) await rex("session.move_window", { session_id: sessionId, window_id: w });
     }
+  }
+}
+
+// Agent view -----------------------------------------------------------------
+// One Rex session whose tabs are the live hc agents and their subthreads, so
+// herdr's agent list is reachable without leaving Rex. Each tab attaches to
+// the terminal; the terminals themselves keep running in hc. Rex draws its
+// sidebar natively, so tabs are the closest thing to herdr's agent panel.
+// pullRex leaves this session alone, and syncAgents rebuilds it if a crash
+// left it unidentified.
+
+async function syncAgents(rx) {
+  const got = await hc.call("terminal.list", {});
+  const live = agentOrder((got.terminals ?? []).filter((t) => t.state === "live" && isAgent(t)));
+  let session = state.agents.session;
+  let view = session && rx.sessions.get(session);
+
+  // A session with our label that state doesn't own is a leftover from a
+  // crash; destroy it rather than letting it look like a herdr space.
+  if (!session) {
+    for (const [id, v] of rx.sessions) {
+      if (v.label !== AGENTS_LABEL) continue;
+      if (!DRY) await rex("session.destroy", { session_id: id });
+      break;
+    }
+    state.agents = { session: null, windows: {} };
+    view = null;
+  }
+
+  if (live.length === 0) {
+    if (view) await rex("session.destroy", { session_id: session });
+    state.agents = { session: null, windows: {} };
+    return;
+  }
+
+  if (!view) {
+    const res = await rex("session.create", {
+      label: AGENTS_LABEL,
+      initial_windows: live.map((t) => ({
+        window_label: agentLabel(t),
+        layout: { block: attachBlock(t.address) },
+      })),
+    });
+    state.agents = { session: res.session_id, windows: {} };
+    res.initial_windows.forEach((r, i) => {
+      state.agents.windows[live[i].address] = { window: r.window_id, label: agentLabel(live[i]) };
+    });
+    log(`agents view: ${live.length} tabs`);
+    return;
+  }
+
+  const wanted = new Set(live.map((t) => t.address));
+  for (const [address, w] of Object.entries(state.agents.windows)) {
+    if (wanted.has(address)) continue;
+    if (view.windows?.some((v) => v.window_id === w.window)) {
+      await rex("session.close_window", { session_id: session, window_id: w.window });
+    }
+    delete state.agents.windows[address];
+  }
+
+  for (const t of live) {
+    const w = state.agents.windows[t.address];
+    const open = w && view.windows?.some((v) => v.window_id === w.window);
+    const label = agentLabel(t);
+    if (open) {
+      if (label !== w.label) {
+        await rex("session.set_window_label", { session_id: session, window_id: w.window, label });
+        w.label = label;
+      }
+      continue;
+    }
+    const res = await rex("session.new_window", {
+      session_id: session,
+      window_label: label,
+      focus: false,
+      layout: { block: attachBlock(t.address) },
+    });
+    state.agents.windows[t.address] = { window: res.window_id, label };
+  }
+
+  const want = live.map((t) => state.agents.windows[t.address]?.window).filter(Boolean);
+  const have = (view.windows || []).map((w) => w.window_id).filter((id) => want.includes(id));
+  if (have.join() !== want.join()) {
+    for (const id of want) await rex("session.move_window", { session_id: session, window_id: id });
   }
 }
 
@@ -586,9 +678,10 @@ async function reconcile() {
     state.first = false;
 
     await pushDoc(docs, await snapshotRex());
+    await syncAgents(await snapshotRex());
+    saveState(state);
     await orderRex(docs);
     docVersions = new Map(docs.map((d) => [d.machine ?? "", d.version]));
-    saveState(state);
     return;
   }
   log("gave up after repeated document conflicts; retrying on the next change");
