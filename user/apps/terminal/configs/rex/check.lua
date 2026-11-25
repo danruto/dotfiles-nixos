@@ -41,16 +41,32 @@ eq(herdr.hc_attach("hc attach ssh-nm/t1n"), {
 }, "hc_attach keeps a machine address")
 eq(herdr.hc_attach("fish"), nil, "hc_attach ignores other programs")
 
+local now = 10 * 3600 * 1000
 local terms = {
-  { address = "t1", state = "live", name = "agent" },
-  { address = "t2", state = "live", parent = "t1", name = "review" },
-  { address = "t3", state = "finished", parent = "t1" },
-  { address = "t4", state = "live", parent = "gone" },
+  { address = "t1", state = "live", foreground = { name = "fish" }, labels = { where = "pb / pp" } },
+  { address = "t2", state = "live", parent = "t1", name = "review", created_ms = 1 },
+  { address = "t3", state = "finished", parent = "t1", name = "old", exit_code = 0, finished_ms = now - 60000, created_ms = 2 },
+  { address = "t4", state = "live", parent = "gone", name = "orphan" },
+  { address = "t5", state = "live", foreground = { name = "claude" }, title = "Fix nav",
+    status = { state = "blocked" }, status_ms = now - 120000, where = "nos / ui" },
+  { address = "t6", state = "live", foreground = { name = "fish" } },
+  { address = "t7", state = "finished", parent = "t1", finished_ms = now - 7200000 },
 }
-eq(#herdr.hc_children(terms), 2, "hc_children keeps live children")
-eq(#herdr.hc_children(terms, "t1"), 1, "hc_children filters by parent")
-eq(herdr.hc_children(terms, "t1")[1].parent.name, "agent", "hc_children pairs the parent")
-eq(herdr.hc_children(terms, "gone")[1].parent, nil, "hc_children tolerates a missing parent")
+local rows = herdr.agent_rows(terms, now, 3600000)
+local ids = {}
+for _, r in ipairs(rows) do ids[#ids + 1] = r.term end
+eq(ids, { "t5", "t1", "t2", "t3", "t4" }, "agent_rows sorts by need, nests helpers, drops plain shells and stale helpers")
+eq(rows[1].title, "Fix nav", "agent_rows titles an agent by its terminal title")
+eq(rows[1].detail, "Needs you · 2m", "agent_rows states need and age")
+eq(rows[2].title, "pp", "agent_rows falls back to the tab name")
+eq(rows[2].subtitle, "pb / pp · fish", "agent_rows says where an agent runs")
+eq(rows[3].title, "↳ review", "agent_rows indents a helper")
+eq(rows[3].subtitle, "from pp", "agent_rows names a helper's parent")
+eq(rows[4].detail, "Exited 0 · 1m", "agent_rows keeps a recent finished helper")
+eq(herdr.agent_rows(terms, now, 3600000, "t1")[1].term, "t1", "agent_rows leads with the focused group")
+eq(herdr.agent_rows({}, now, 0), {}, "agent_rows with nothing running")
+eq(herdr.short_age(59000), "59s", "short_age seconds")
+eq(herdr.short_age(3 * 86400000), "3d", "short_age days")
 
 local function join(ratio, a, b) return { ratio = ratio, a = a, b = b } end
 local function flatten(n, out)

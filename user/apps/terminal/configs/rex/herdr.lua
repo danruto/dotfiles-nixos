@@ -69,28 +69,143 @@ function herdr.columns(specs, join)
   return join(mid / #specs, herdr.columns(before, join), herdr.columns(after, join))
 end
 
--- Live terminals started by another terminal, the rows herdr shows indented
--- under an agent. `term` limits them to one parent. Each is paired with its
--- parent's entry, which may be missing.
-function herdr.hc_children(terminals, term)
-  local by = {}
-  for _, t in ipairs(terminals or {}) do
-    if t.address then by[t.address] = t end
-  end
-  local out = {}
-  for _, t in ipairs(terminals or {}) do
-    local parent = t.parent
-    if t.state == "live" and parent and parent ~= t.address
-        and (not term or parent == term) then
-      out[#out + 1] = { terminal = t, parent = by[parent] }
-    end
-  end
-  return out
-end
-
 -- herdr sorts its agent panel by who needs you: blocked, then failed, done,
 -- working and idle.
 local rank = { blocked = 1, error = 2, done = 3, working = 4, idle = 5 }
+
+-- The agents board ------------------------------------------------------------
+-- herdr's agents list, from hc's terminal.list: agents sorted by who needs
+-- you, each followed by the helpers it started. Fields come from the RPC
+-- (labels.where) or the CLI (where), so both are read.
+
+local agentish = { "claude", "codex", "opencode", "gemini", "aider", "cursor", "goose", "amp" }
+local words = { blocked = "Needs you", error = "Failed", done = "Ready", working = "Working", idle = "Idle" }
+
+function herdr.short_age(ms)
+  local s = math.max(0, math.floor(ms / 1000))
+  if s < 60 then return s .. "s" end
+  if s < 3600 then return math.floor(s / 60) .. "m" end
+  if s < 86400 then return math.floor(s / 3600) .. "h" end
+  return math.floor(s / 86400) .. "d"
+end
+
+local function where(t)
+  return t.where or (t.labels and t.labels.where) or nil
+end
+
+local function program(t)
+  return t.foreground and t.foreground.name or nil
+end
+
+local function is_agent(t)
+  if t.status then return true end
+  local name = (program(t) or ""):lower()
+  for _, a in ipairs(agentish) do
+    if name:find(a, 1, true) then return true end
+  end
+  return false
+end
+
+local function nonempty(s)
+  if s and s ~= "" then return s end
+end
+
+local function title_of(t)
+  local tab = where(t) and where(t):match("/%s*(.-)%s*$")
+  return nonempty(t.name)
+    or (t.status and nonempty(t.status.title))
+    or (is_agent(t) and nonempty(t.title))
+    or nonempty(tab)
+    or program(t)
+    or t.address
+end
+
+local function join(...)
+  local out = {}
+  for i = 1, select("#", ...) do
+    local s = select(i, ...)
+    if s and s ~= "" then out[#out + 1] = s end
+  end
+  return table.concat(out, " · ")
+end
+
+local function state_of(t, now)
+  if t.state ~= "live" then
+    local how = t.exit_code and ("Exited " .. t.exit_code) or (t.reason or "Finished")
+    return how, t.finished_ms and herdr.short_age(now - t.finished_ms)
+  end
+  local word = t.status and t.status.state
+  local age = t.status_ms and t.status and herdr.short_age(now - t.status_ms)
+  return words[word] or (word and word:gsub("^%l", string.upper)) or "Running", age
+end
+
+local function row(t, now, kind, parent)
+  local label, age = state_of(t, now)
+  local name = title_of(t)
+  return {
+    term     = t.address,
+    live     = t.state == "live",
+    kind     = kind,
+    name     = name,
+    title    = kind == "sub" and ("↳ " .. name) or name,
+    subtitle = join(kind == "sub" and parent and ("from " .. title_of(parent)) or nil,
+      where(t), program(t)),
+    detail   = join(label, age),
+    icon     = kind == "sub" and (t.state == "live" and "terminal" or "clock") or "person",
+  }
+end
+
+-- Rows for the board. Helpers that finished within `recent` ms stay listed so
+-- their output can still be read. The `first` terminal's group leads.
+function herdr.agent_rows(terminals, now, recent, first)
+  local by, kids = {}, {}
+  for _, t in ipairs(terminals or {}) do
+    if t.address then by[t.address] = t end
+  end
+  local function fresh(t)
+    return t.state == "live" or (t.finished_ms and now - t.finished_ms <= recent)
+  end
+  local function child(t)
+    return t.parent and t.parent ~= t.address and by[t.parent] and by[t.parent].state == "live"
+  end
+
+  local tops = {}
+  for _, t in ipairs(terminals or {}) do
+    if child(t) then
+      if fresh(t) then
+        kids[t.parent] = kids[t.parent] or {}
+        table.insert(kids[t.parent], t)
+      end
+    end
+  end
+  for _, t in ipairs(terminals or {}) do
+    if not child(t) and t.state == "live" and (is_agent(t) or kids[t.address] or t.parent) then
+      tops[#tops + 1] = t
+    end
+  end
+
+  local function rank_of(t)
+    if t.address == first then return 0 end
+    return rank[t.status and t.status.state] or 6
+  end
+  table.sort(tops, function(a, b)
+    local ra, rb = rank_of(a), rank_of(b)
+    if ra ~= rb then return ra < rb end
+    return (where(a) or a.address) < (where(b) or b.address)
+  end)
+
+  local out = {}
+  for _, t in ipairs(tops) do
+    out[#out + 1] = row(t, now, "agent")
+    local list = kids[t.address] or {}
+    table.sort(list, function(a, b)
+      if (a.state == "live") ~= (b.state == "live") then return a.state == "live" end
+      return (a.created_ms or 0) > (b.created_ms or 0)
+    end)
+    for _, k in ipairs(list) do out[#out + 1] = row(k, now, "sub", t) end
+  end
+  return out
+end
 
 function herdr.urgency(records)
   local best

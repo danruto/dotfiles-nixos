@@ -270,14 +270,17 @@ for name, step in pairs({ next = 1, previous = -1 }) do
   }
 end
 
--- hc subthreads ---------------------------------------------------------------
--- An hc terminal can start helpers (subagents, review loops) that live beside
--- it and name it as their parent. herdr shows them indented under the agent;
--- the layout doc the sync mirrors has no room for them, so Rex lists them here
--- instead. Picking one attaches it in a floating pane, which the sync leaves
--- alone because it only mirrors tiled panes. Closing the pane ends the view,
--- not the helper. A client that can't show prompts (the Windows app) gets a
--- board of every live subthread instead of a picker.
+-- hc agents -------------------------------------------------------------------
+-- herdr's agents list as a picker: every agent hc runs here, sorted by who
+-- needs you, with the helpers each one started (subagents, review loops)
+-- indented under it. The layout doc the sync mirrors has no room for helpers,
+-- so this is where Rex shows them. Picking an agent that has a pane goes to
+-- it; anything else opens in a floating pane, which the sync leaves alone
+-- because it only mirrors tiled panes. Closing that pane ends the view, not
+-- the program. A client that can't show prompts (the Windows app) gets a board
+-- of the live helpers instead.
+
+local RECENT_MS = 3600 * 1000
 
 local function attach_command(hc, term)
   local home = os.getenv("HOME") or os.getenv("USERPROFILE") or ""
@@ -288,88 +291,113 @@ local function attach_command(hc, term)
   return { "/bin/sh", wrapper, hc, term }
 end
 
+-- A finished helper can't be attached; its screen and history are paged.
+local function read_command(hc, term)
+  return { "/bin/sh", "-c", herdr.quote(hc) .. " read " .. herdr.quote(term) .. " | less -R +G" }
+end
+
+-- terminal.list carries each terminal's status and foreground, which
+-- `hc ls` leaves out.
+local function hc_terminals(hc)
+  local req = rex.json.encode{ jsonrpc = "2.0", id = 1, method = "terminal.list", params = { all = true } }
+  local got = rex.exec({ hc, "connect" }, { stdin = req .. "\n", timeout = 20 })
+  local line = got and got.ok and got.stdout:match("[^\n]+")
+  local ok, msg = pcall(rex.json.decode, line or "")
+  if not (ok and msg and msg.result) then
+    rex.log("warn", "hc agents: terminal.list failed: " .. tostring(got and got.stderr or "no hc"))
+    return {}
+  end
+  return msg.result.terminals or {}
+end
+
+-- The Rex pane hc-rex-sync made for a terminal, from the sync's state file.
+local function mirrored(term)
+  local dir = os.getenv("XDG_STATE_HOME") or ((os.getenv("HOME") or "") .. "/.local/state")
+  local fh = io.open(dir .. "/hc-rex-sync.json", "r")
+  if not fh then return nil end
+  local ok, state = pcall(rex.json.decode, fh:read("*a"))
+  fh:close()
+  if not (ok and state and state.blocks) then return nil end
+  local want = {}
+  for block, t in pairs(state.blocks) do
+    if t == term then want[block] = true end
+  end
+  if next(want) == nil then return nil end
+  local sessions = rex.call("session.list")
+  for _, s in ipairs(sessions and sessions.sessions or {}) do
+    for _, b in ipairs(blocks_of(s.session_id)) do
+      if want[b.block_id] and b.placement == "placed" then
+        return { session_id = s.session_id, window_id = b.window_id, block_id = b.block_id }
+      end
+    end
+  end
+end
+
+local function float(ctx, hc, picks)
+  local specs = {}
+  for _, r in ipairs(picks) do
+    specs[#specs + 1] = rex.layout.block{
+      flavor  = "com.superlogical.terminal.shell",
+      options = { command = r.live and attach_command(hc, r.term) or read_command(hc, r.term), shell = "none" },
+    }
+  end
+  local made = rex.session.new_layer{
+    session_id = ctx.session_id,
+    bounds     = { x = 0.1, y = 0.1, w = 0.8, h = 0.8 },
+    focus      = true,
+    layout     = herdr.columns(specs, rex.layout.horizontal),
+  }
+  for i, block in ipairs(made and made.block_ids or {}) do
+    if picks[i] then
+      rex.session.set_block_label{ session_id = ctx.session_id, block_id = block, label = picks[i].title }
+    end
+  end
+end
+
 rex.action{
-  name     = "hc_subthreads",
-  title    = "hc: Subthreads",
+  name     = "hc_agents",
+  title    = "hc: Agents",
   category = "Agent",
-  keywords = "hc herdr children subagents helpers threads",
+  keywords = "hc herdr agents subthreads children subagents helpers threads",
   run      = function(ctx)
-    local me = foreground(ctx.block_id)
+    local me = ctx.block_id and foreground(ctx.block_id)
     local here = me and hc_attached(me)
     local hc = here and here.hc or "hc"
-    local got = rex.exec({ hc, "ls", "--json" }, { timeout = 20 })
-    local list = got and got.ok and rex.json.decode(got.stdout)
-    local terminals = list and list.terminals or {}
+    local now = os.time() * 1000
+    local rows = herdr.agent_rows(hc_terminals(hc), now, RECENT_MS, here and here.term)
 
-    -- The focused pane's own children when it has any (that is the agent you
-    -- are looking at), otherwise every live subthread on this server.
-    local children = herdr.hc_children(terminals, here and here.term)
-    if #children == 0 then children = herdr.hc_children(terminals) end
-    if #children == 0 then return end
-
-    table.sort(children, function(a, b)
-      local an = a.terminal.name or a.terminal.agent or a.terminal.address
-      local bn = b.terminal.name or b.terminal.agent or b.terminal.address
-      return an:lower() < bn:lower()
-    end)
-
-    local items = {}
-    for _, c in ipairs(children) do
-      local t = c.terminal
-      local subtitle = c.parent and (c.parent.name or c.parent.agent or c.parent.address)
-      if t.where then
-        subtitle = (subtitle and subtitle .. " · " or "") .. t.where
-      end
-      items[#items + 1] = {
-        id       = t.address,
-        title    = t.name or t.agent or t.address,
-        subtitle = subtitle,
-        icon     = "terminal",
-        detail   = t.status,
-      }
+    local items, by = {}, {}
+    for _, r in ipairs(rows) do
+      by[r.term] = r
+      items[#items + 1] = { id = r.term, title = r.title, subtitle = r.subtitle, detail = r.detail, icon = r.icon }
+    end
+    if #items == 0 then
+      items[1] = { id = "", title = "No agents running", subtitle = "Agents and their helpers show up here", icon = "clock" }
     end
 
-    local picks = {}
     local chosen, why = rex.ui.pick{
-      title       = "hc subthreads",
-      placeholder = "Filter subthreads",
+      title       = "hc agents",
+      placeholder = "Filter agents and helpers",
       items       = items,
     }
+    local picks = {}
     if chosen ~= nil then
-      for _, item in ipairs(items) do
-        if item.id == chosen then picks = { item } end
-      end
+      if by[chosen] then picks = { by[chosen] } end
     elseif why ~= "cancelled" and why ~= "timeout" and why ~= "busy" then
-      -- The connected app can't show prompts (the Windows client doesn't), so
-      -- open a board of the live ones rather than doing nothing.
-      rex.log("info", "hc subthreads: no prompt (" .. tostring(why) .. "), opening all")
-      for i = 1, math.min(#items, 6) do picks[#picks + 1] = items[i] end
+      rex.log("info", "hc agents: no prompt (" .. tostring(why) .. "), opening live helpers")
+      for _, r in ipairs(rows) do
+        if r.kind == "sub" and r.live and #picks < 6 then picks[#picks + 1] = r end
+      end
     end
     if #picks == 0 then return end
 
-    local specs = {}
-    for _, p in ipairs(picks) do
-      specs[#specs + 1] = rex.layout.block{
-        flavor  = "com.superlogical.terminal.shell",
-        options = { command = attach_command(hc, p.id), shell = "none" },
-      }
+    local at = #picks == 1 and picks[1].live and mirrored(picks[1].term)
+    if at then
+      rex.session.focus_block{ session_id = at.session_id, block_id = at.block_id }
+      show_session(at.session_id, at.window_id)
+      return
     end
-
-    local made = rex.session.new_layer{
-      session_id = ctx.session_id,
-      bounds     = { x = 0.1, y = 0.1, w = 0.8, h = 0.8 },
-      focus      = true,
-      layout     = herdr.columns(specs, rex.layout.horizontal),
-    }
-    for i, block in ipairs(made and made.block_ids or {}) do
-      if picks[i] then
-        rex.session.set_block_label{
-          session_id = ctx.session_id,
-          block_id   = block,
-          label      = "↳ " .. picks[i].title,
-        }
-      end
-    end
+    float(ctx, hc, picks)
   end,
 }
 
@@ -401,7 +429,7 @@ bind({ p .. "n", "alt+right" }, "client.tab.next")
 
 bind({ "alt+up" }, "agent_previous")
 bind({ "alt+down" }, "agent_next")
-bind({ p .. "t", "alt+t" }, "hc_subthreads")
+bind({ p .. "t", "alt+t" }, "hc_agents")
 bind({ p .. "a" }, "client.sidebar.activity.toggle")
 bind({ p .. "b" }, "client.sidebar.toggle")
 
