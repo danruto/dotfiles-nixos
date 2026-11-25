@@ -25,6 +25,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as tree from "./hc-rex-tree.mjs";
 import { eventLines } from "./hc-rex-events.mjs";
+import { helpersOf, helperLabel, helperTree } from "./hc-rex-helpers.mjs";
 
 const DRY = process.argv.includes("--dry-run");
 const DOC = "herdr-app";
@@ -174,6 +175,9 @@ async function snapshotRex() {
 // spaces: machine/id -> { session, label, machine }
 // tabs:   machine/id -> { space, window, label, sig }
 // blocks: block id    -> hc terminal, machine-qualified
+// helpers: machine/tab id -> { session, window, sig }: the tab of helpers
+//          beside a herdr tab. A sig whose window is gone was closed in Rex,
+//          and stays closed until the helpers change.
 
 function loadState() {
   try {
@@ -193,6 +197,7 @@ function saveState(state) {
 
 const state = loadState();
 for (const map of Object.values(state.spaces)) map.machine ??= null;
+state.helpers ??= {};
 
 // Helpers ---------------------------------------------------------------------
 
@@ -281,7 +286,10 @@ async function pullRex(doc, rx, stale) {
   let dirty = false;
   const termOf = (b) => state.blocks[b] ?? null;
   const knownSessions = new Set(Object.values(state.spaces).map((s) => s.session));
-  const knownWindows = new Set(Object.values(state.tabs).map((t) => t.window));
+  const knownWindows = new Set([
+    ...Object.values(state.tabs).map((t) => t.window),
+    ...Object.values(state.helpers).map((h) => h.window),
+  ]);
 
   const adoptWindow = async (sessionId, win, space, index) => {
     const tab = { id: newId("tb"), name: defaultWindowLabel(win.label) ? String(index + 1) : win.label };
@@ -514,6 +522,57 @@ async function pushDoc(docs, rx) {
   }
 }
 
+// Helpers ---------------------------------------------------------------------
+
+async function liveTerminals() {
+  try {
+    return (await hc.call("terminal.list", {})).terminals ?? [];
+  } catch (e) {
+    log("terminal.list failed:", e.message);
+    return null;
+  }
+}
+
+async function pushHelpers(docs, terminals, rx) {
+  const shown = new Set(docs.flatMap((d) => d.value.spaces.flatMap((s) => s.tabs.flatMap((t) => tabTerms(t).map((x) => qual(d.machine, x))))));
+  const wanted = new Set();
+  for (const doc of docs) {
+    for (const space of doc.value.spaces) {
+      const map = state.spaces[qual(doc.machine, space.id)];
+      const view = map && rx.sessions.get(map.session);
+      if (!view) continue;
+      for (const [i, tab] of space.tabs.entries()) {
+        const tabKey = qual(doc.machine, tab.id);
+        const terms = helpersOf(terminals, tabTerms(tab).map((t) => qual(doc.machine, t)), shown);
+        const h = state.helpers[tabKey];
+        const win = h && view.windows?.find((w) => w.window_id === h.window);
+        if (terms.length === 0) continue;
+        wanted.add(tabKey);
+        const sig = terms.join(",");
+        if (h && h.sig === sig) continue;
+        if (win) await rex("session.close_window", { session_id: map.session, window_id: win.window_id });
+        const res = await rex("session.new_window", {
+          session_id: map.session,
+          window_label: helperLabel(tabLabel(tab, i)),
+          focus: false,
+          layout: tree.toRex(helperTree(terms), attachBlock),
+        });
+        state.helpers[tabKey] = { session: map.session, window: res.window_id, sig };
+        log(`helpers of ${tabLabel(tab, i)}: ${sig}`);
+      }
+    }
+  }
+  for (const [tabKey, h] of Object.entries(state.helpers)) {
+    if (wanted.has(tabKey)) continue;
+    const view = rx.sessions.get(h.session);
+    if (view?.windows?.some((w) => w.window_id === h.window)) {
+      await rex("session.close_window", { session_id: h.session, window_id: h.window });
+    }
+    delete state.helpers[tabKey];
+    log(`helpers of ${tabKey} gone -> Rex window closed`);
+  }
+}
+
 async function orderRex(docs) {
   const rx = await snapshotRex();
   const sessions = [];
@@ -533,7 +592,7 @@ async function orderRex(docs) {
       const view = rx.sessions.get(sessionId);
       if (!view) continue;
       const windows = space.tabs
-        .map((t) => state.tabs[qual(doc.machine, t.id)]?.window)
+        .flatMap((t) => [state.tabs[qual(doc.machine, t.id)]?.window, state.helpers[qual(doc.machine, t.id)]?.window])
         .filter((w) => view.windows?.some((v) => v.window_id === w));
       const now = (view.windows || []).map((w) => w.window_id).filter((w) => windows.includes(w));
       if (now.join() === windows.join()) continue;
@@ -545,6 +604,8 @@ async function orderRex(docs) {
 // Loop ------------------------------------------------------------------------
 
 let docVersions = new Map();
+let helperSig = null;
+const sigOfHelpers = (terminals) => terminals.filter((t) => t.parent).map((t) => t.address).sort().join(",");
 
 async function reconcile() {
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -586,6 +647,11 @@ async function reconcile() {
     state.first = false;
 
     await pushDoc(docs, await snapshotRex());
+    const terminals = await liveTerminals();
+    if (terminals) {
+      await pushHelpers(docs, terminals, await snapshotRex());
+      helperSig = sigOfHelpers(terminals);
+    }
     await orderRex(docs);
     docVersions = new Map(docs.map((d) => [d.machine ?? "", d.version]));
     saveState(state);
@@ -658,6 +724,11 @@ setInterval(async () => {
     } catch {}
   }
 }, 5000);
+// Helpers start and end without touching a doc or Rex.
+setInterval(async () => {
+  const terminals = await liveTerminals();
+  if (terminals && sigOfHelpers(terminals) !== helperSig) soon();
+}, 2000);
 setInterval(soon, 10000);
 
 await kick();
