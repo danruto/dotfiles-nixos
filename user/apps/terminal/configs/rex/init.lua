@@ -5,6 +5,9 @@
 -- Apply edits with `rex config reload`; check them with `rex config check`.
 
 local terminal = "com.superlogical.terminal"
+-- Rex reloads init.lua in the same Lua state, so require would keep the herdr
+-- module from the first load; drop it so a reload picks up herdr.lua edits.
+package.loaded["herdr"] = nil
 local herdr = require("herdr")
 
 -- Splits ---------------------------------------------------------------------
@@ -273,7 +276,8 @@ end
 -- the layout doc the sync mirrors has no room for them, so Rex lists them here
 -- instead. Picking one attaches it in a floating pane, which the sync leaves
 -- alone because it only mirrors tiled panes. Closing the pane ends the view,
--- not the helper.
+-- not the helper. A client that can't show prompts (the Windows app) gets a
+-- board of every live subthread instead of a picker.
 
 local function attach_command(hc, term)
   local home = os.getenv("HOME") or os.getenv("USERPROFILE") or ""
@@ -325,34 +329,46 @@ rex.action{
       }
     end
 
-    local chosen = rex.ui.pick{
+    local picks = {}
+    local chosen, why = rex.ui.pick{
       title       = "hc subthreads",
       placeholder = "Filter subthreads",
       items       = items,
     }
-    if chosen == nil then return end
-
-    local label = chosen
-    for _, item in ipairs(items) do
-      if item.id == chosen then label = item.title end
+    if chosen ~= nil then
+      for _, item in ipairs(items) do
+        if item.id == chosen then picks = { item } end
+      end
+    elseif why ~= "cancelled" and why ~= "timeout" and why ~= "busy" then
+      -- The connected app can't show prompts (the Windows client doesn't), so
+      -- open a board of the live ones rather than doing nothing.
+      rex.log("info", "hc subthreads: no prompt (" .. tostring(why) .. "), opening all")
+      for i = 1, math.min(#items, 6) do picks[#picks + 1] = items[i] end
     end
-    rex.session.attach{ session_id = ctx.session_id }
+    if #picks == 0 then return end
+
+    local specs = {}
+    for _, p in ipairs(picks) do
+      specs[#specs + 1] = rex.layout.block{
+        flavor  = "com.superlogical.terminal.shell",
+        options = { command = attach_command(hc, p.id), shell = "none" },
+      }
+    end
+
     local made = rex.session.new_layer{
       session_id = ctx.session_id,
       bounds     = { x = 0.1, y = 0.1, w = 0.8, h = 0.8 },
       focus      = true,
-      layout     = rex.layout.block{
-        flavor  = "com.superlogical.terminal.shell",
-        options = { command = attach_command(hc, chosen), shell = "none" },
-      },
+      layout     = herdr.columns(specs, rex.layout.horizontal),
     }
-    local block = made and made.block_ids and made.block_ids[1]
-    if block then
-      rex.session.set_block_label{
-        session_id = ctx.session_id,
-        block_id   = block,
-        label      = "↳ " .. label,
-      }
+    for i, block in ipairs(made and made.block_ids or {}) do
+      if picks[i] then
+        rex.session.set_block_label{
+          session_id = ctx.session_id,
+          block_id   = block,
+          label      = "↳ " .. picks[i].title,
+        }
+      end
     end
   end,
 }

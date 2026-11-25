@@ -52,6 +52,18 @@ eq(#herdr.hc_children(terms, "t1"), 1, "hc_children filters by parent")
 eq(herdr.hc_children(terms, "t1")[1].parent.name, "agent", "hc_children pairs the parent")
 eq(herdr.hc_children(terms, "gone")[1].parent, nil, "hc_children tolerates a missing parent")
 
+local function join(ratio, a, b) return { ratio = ratio, a = a, b = b } end
+local function flatten(n, out)
+  out = out or {}
+  if type(n) == "string" then out[#out + 1] = n
+  else flatten(n.a, out); flatten(n.b, out) end
+  return out
+end
+eq(herdr.columns({ "a" }, join), "a", "columns keeps a single layout")
+eq(flatten(herdr.columns({ "a", "b", "c" }, join)), { "a", "b", "c" }, "columns keeps order")
+eq(flatten(herdr.columns({ "a", "b", "c", "d", "e" }, join)), { "a", "b", "c", "d", "e" }, "columns keeps five")
+eq(herdr.columns({ "a", "b", "c" }, join).b, "c", "columns puts the remainder last")
+
 eq(herdr.urgency({ { state = "working" }, { state = "blocked" } }), 1, "urgency picks blocked")
 eq(herdr.urgency({}), nil, "urgency without records")
 
