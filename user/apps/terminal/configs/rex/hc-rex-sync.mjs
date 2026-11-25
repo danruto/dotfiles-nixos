@@ -31,6 +31,7 @@ const DRY = process.argv.includes("--dry-run");
 const DOC = "herdr-app";
 const FLAVOR = "com.superlogical.terminal.shell";
 const ATTACH = path.join(path.dirname(fileURLToPath(import.meta.url)), "hc-rex-attach");
+const BRIDGE = path.join(path.dirname(fileURLToPath(import.meta.url)), "hc-rex-bridge.lua");
 const STATE = path.join(process.env.XDG_STATE_HOME || path.join(os.homedir(), ".local/state"), "hc-rex-sync.json");
 const execp = promisify(execFile);
 const log = (...a) => console.error(new Date().toISOString(), ...a);
@@ -147,13 +148,64 @@ function fakeRex(method, args) {
   return { window_id: newId("dry-w"), block_ids: blocks(args.layout) };
 }
 
+// Rex calls go through one `rex do` bridge (hc-rex-bridge.lua) rather than a
+// process per call. Lua has no empty array, so an empty list arrives as {};
+// every field the sync reads is a list or an object it only reads properties
+// of, so an empty object is taken as an empty list.
+const listy = (v) => {
+  if (Array.isArray(v)) return v.map(listy);
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v);
+    if (keys.length === 0) return [];
+    for (const k of keys) v[k] = listy(v[k]);
+  }
+  return v;
+};
+
+class RexBridge {
+  constructor() {
+    this.next = 0;
+    this.waiting = new Map();
+    this.proc = spawn("rex", ["do", BRIDGE], { stdio: ["pipe", "pipe", "inherit"] });
+    let buf = "";
+    this.proc.stdout.on("data", (chunk) => {
+      buf += chunk;
+      let i;
+      while ((i = buf.indexOf("\n")) >= 0) {
+        const line = buf.slice(0, i);
+        buf = buf.slice(i + 1);
+        let msg;
+        try { msg = JSON.parse(line); } catch { continue; }
+        const w = this.waiting.get(msg.id);
+        if (!w) continue;
+        this.waiting.delete(msg.id);
+        if (msg.error !== undefined) w.reject(new Error(`rex ${w.method}: ${msg.error}`));
+        else w.resolve(msg.result === undefined ? null : listy(msg.result));
+      }
+    });
+    this.proc.on("exit", (code) => {
+      log(`rex bridge exited (${code})`);
+      process.exit(1);
+    });
+  }
+
+  call(method, args) {
+    const id = ++this.next;
+    return new Promise((resolve, reject) => {
+      this.waiting.set(id, { resolve, reject, method });
+      this.proc.stdin.write(JSON.stringify({ id, method, args }) + "\n");
+    });
+  }
+}
+
+const rexBridge = new RexBridge();
+
 async function rex(method, args = {}) {
   if (DRY && !REX_READS.has(method)) {
     log("dry-run rex", method, JSON.stringify(args).slice(0, 200));
     return fakeRex(method, args);
   }
-  const { stdout } = await execp("rex", ["api", "call", method, JSON.stringify(args)], { maxBuffer: 64 << 20 });
-  return stdout.trim() ? JSON.parse(stdout) : null;
+  return rexBridge.call(method, args);
 }
 
 const attachBlock = (term) => ({ flavor: FLAVOR, options: { command: ["/bin/sh", ATTACH, hcBin, term], shell: "none" } });
