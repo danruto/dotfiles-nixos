@@ -11,15 +11,15 @@
 , freetype
 }:
 let
-  version = "0.1.10";
+  version = "0.1.15";
   targets = {
     x86_64-linux = {
       name = "linux-x86_64";
-      sha256 = "adef0feab129c84d8de4d95179629bf297e76822d30e0d5e69c262ad232ce33a";
+      sha256 = "f99e1e04be82c0e10b2f69ee7403ca34386f480d92511df5865af4703e7655dd";
     };
     aarch64-linux = {
       name = "linux-aarch64";
-      sha256 = "34756580d50a7169ae86ac0345065dd809fc0cdd100763f0124222245072d79b";
+      sha256 = "0e5fd95a056452ec31e32fe6aa5a47a8b1d42020ae8f3a10cda2e0a1001d4124";
     };
   };
   target = targets.${stdenv.hostPlatform.system}

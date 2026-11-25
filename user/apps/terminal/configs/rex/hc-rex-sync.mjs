@@ -1,13 +1,17 @@
 #!/usr/bin/env node
-// Two-way sync between herdr-app's layout on this machine (the hc document
-// "herdr-app") and the Rex server here. herdr spaces are Rex sessions, tabs are
-// windows, panes are blocks running `hc attach`. The document is the truth:
+// Two-way sync between herdr-app's layout docs and the Rex server here. Each hc
+// core keeps its own "herdr-app" document, so the local core's doc and every
+// machine the core knows are read and mirrored together. herdr spaces are Rex
+// sessions, tabs are windows, panes are blocks running `hc attach`. Each doc is
+// the truth for its own machine:
 //   - Rex changes (new session, tab or split, close, rename, rearrange) are
-//     written into the document; a plain shell that appears in Rex is swapped
-//     for an hc terminal started where it was.
-//   - The document is then laid out in Rex; a tab whose shape differs is rebuilt.
+//     written into the doc they belong to; a plain shell that appears in Rex is
+//     swapped for an hc terminal started where it was.
+//   - The doc is then laid out in Rex; a tab whose shape differs is rebuilt.
 // Closing a pane in Rex kills its hc terminal, as closing it in herdr does.
 // With no state file (first run), Rex sessions it doesn't know are destroyed.
+// An unreadable machine is left alone, so its sessions survive an outage and
+// reattach when the machine returns.
 //
 //   node hc-rex-sync.mjs           run until stopped
 //   node hc-rex-sync.mjs --dry-run one pass, printing changes instead of making them
@@ -18,16 +22,22 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import * as tree from "./hc-rex-tree.mjs";
 
 const DRY = process.argv.includes("--dry-run");
 const DOC = "herdr-app";
 const FLAVOR = "com.superlogical.terminal.shell";
-const ATTACH = path.join(path.dirname(new URL(import.meta.url).pathname), "hc-rex-attach");
+const ATTACH = path.join(path.dirname(fileURLToPath(import.meta.url)), "hc-rex-attach");
 const STATE = path.join(process.env.XDG_STATE_HOME || path.join(os.homedir(), ".local/state"), "hc-rex-sync.json");
 const execp = promisify(execFile);
 const log = (...a) => console.error(new Date().toISOString(), ...a);
 const newId = (prefix) => prefix + crypto.randomBytes(16).toString("hex");
+
+// A doc names its own terminals; everywhere else a terminal or a doc id on
+// another machine carries that machine as a prefix, as hc addresses do.
+const qual = tree.qualify;
+const unqual = tree.unqualify;
 
 // hc --------------------------------------------------------------------------
 
@@ -83,6 +93,42 @@ async function hcMutate(method, params) {
   return hc.call(method, params);
 }
 
+// Machines are added and removed rarely; the list only needs to be fresh
+// enough for a new one to show up without a restart.
+let knownMachines = null;
+let knownAt = 0;
+async function machines() {
+  if (knownMachines && Date.now() - knownAt < 30000) return knownMachines;
+  try {
+    const got = await hc.call("machine.list", {});
+    knownMachines = (got.machines ?? [])
+      .filter((m) => m.state === "connected")
+      .map((m) => m.name);
+    knownAt = Date.now();
+  } catch (e) {
+    log("machine.list failed:", e.message);
+    knownMachines ??= [];
+  }
+  return knownMachines;
+}
+
+// Every readable herdr-app doc, local first. A machine that can't be read is
+// skipped rather than treated as empty, so its Rex sessions are left alone.
+async function loadDocs() {
+  const local = await hc.call("doc.get", { name: DOC });
+  const docs = [{ machine: null, value: local.value ?? { spaces: [] }, version: local.version }];
+  for (const name of await machines()) {
+    try {
+      const got = await hc.call("doc.get", { name: DOC, on: name });
+      docs.push({ machine: name, value: got.value ?? { spaces: [] }, version: got.version });
+    } catch (e) {
+      log(`leaving ${name} alone: ${e.message}`);
+    }
+  }
+  for (const d of docs) d.value.spaces ??= [];
+  return docs;
+}
+
 // Rex -------------------------------------------------------------------------
 
 const REX_READS = new Set(["session.list", "session.view", "block.method"]);
@@ -124,9 +170,9 @@ async function snapshotRex() {
 }
 
 // State -----------------------------------------------------------------------
-// spaces: space id -> { session, label }
-// tabs:   tab id   -> { space, window, label, sig }
-// blocks: block id -> hc terminal
+// spaces: machine/id -> { session, label, machine }
+// tabs:   machine/id -> { space, window, label, sig }
+// blocks: block id    -> hc terminal, machine-qualified
 
 function loadState() {
   try {
@@ -145,6 +191,7 @@ function saveState(state) {
 }
 
 const state = loadState();
+for (const map of Object.values(state.spaces)) map.machine ??= null;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -152,6 +199,19 @@ const spaceLabel = (space) => (space.name || path.basename(space.folder || "") |
 const tabLabel = (tab, i) => (tab.name || String(i + 1)).slice(0, 128);
 const defaultWindowLabel = (label) => /^Window [0-9a-f]{8}$/.test(label);
 const tabTerms = (tab) => tree.leaves(tree.fromHerdr(tab.root)).map((l) => l.term).filter(Boolean);
+
+// A machine's Rex session is labelled with the machine, because spaces on
+// different machines share names. A rename in Rex becomes the doc's name,
+// without the prefix, so the next pass shows it prefixed again.
+function shownSpace(machine, space) {
+  const name = spaceLabel(space);
+  return machine ? `${machine} · ${name}` : name;
+}
+
+function docSpaceName(machine, label) {
+  const prefix = machine ? `${machine} · ` : "";
+  return label.startsWith(prefix) ? label.slice(prefix.length) : label;
+}
 
 async function blockCwd(sessionId, blockId) {
   try {
@@ -162,21 +222,25 @@ async function blockCwd(sessionId, blockId) {
   }
 }
 
-async function startTerminal(cwd, space, tab) {
-  const t = await hcMutate("terminal.run", {
-    cwd,
+// A new terminal for a space: on that machine for a remote doc, in the plain
+// shell's directory for a local one.
+async function startTerminal(cwd, space, tab, machine) {
+  const params = {
     keep: true,
     no_parent: true,
     no_notify: true,
-    labels: { "herdr.space": space.id, "herdr.tab": tab.id, where: `${spaceLabel(space)} / ${tab.name || ""}` },
-  });
-  return t.address;
+    labels: { "herdr.space": space.id, "herdr.tab": tab.id, where: `${shownSpace(machine, space)} / ${tab.name || ""}` },
+  };
+  if (machine) params.on = machine;
+  else if (cwd) params.cwd = cwd;
+  const t = await hcMutate("terminal.run", params);
+  return qual(machine, t.address);
 }
 
 // Swap a plain Rex shell for an hc terminal started in its directory. A split
 // beside it that it then leaves fills exactly the space it had.
-async function adoptBlock(sessionId, win, leaf, space, tab) {
-  const term = await startTerminal(await blockCwd(sessionId, leaf.block), space, tab);
+async function adoptBlock(sessionId, win, leaf, space, tab, machine) {
+  const term = await startTerminal(await blockCwd(sessionId, leaf.block), space, tab, machine);
   const res = await rex("session.new_split", {
     session_id: sessionId,
     anchor_id: leaf.block,
@@ -207,7 +271,10 @@ async function killTerms(terms) {
 // Rex -> document --------------------------------------------------------------
 // Returns the edited document and what to commit once it's written.
 
-async function pullRex(doc, rx) {
+async function pullRex(doc, rx, stale) {
+  const machine = doc.machine;
+  const key = (id) => qual(machine, id);
+  const bare = (id) => unqual(machine, id);
   const pending = [];
   const kills = [];
   let dirty = false;
@@ -219,50 +286,58 @@ async function pullRex(doc, rx) {
     const tab = { id: newId("tb"), name: defaultWindowLabel(win.label) ? String(index + 1) : win.label };
     const n = tree.fromRex(tiled(win), termOf);
     if (!n) return null;
-    for (const leaf of tree.leaves(n)) if (!leaf.term) await adoptBlock(sessionId, win, leaf, space, tab);
+    for (const leaf of tree.leaves(n)) {
+      if (!leaf.term) await adoptBlock(sessionId, win, leaf, space, tab, machine);
+      leaf.term = bare(leaf.term);
+    }
     tab.root = tree.toHerdr(n, tab.id, () => newId("p"), newId);
     pending.push(() => {
-      state.tabs[tab.id] = { space: space.id, window: win.window_id, label: win.label, sig: tree.sig(n) };
+      state.tabs[key(tab.id)] = { space: key(space.id), window: win.window_id, label: win.label, sig: tree.sig(n) };
     });
     return tab;
   };
 
   for (const sessionId of rx.order) {
     if (knownSessions.has(sessionId)) continue;
-    const view = rx.sessions.get(sessionId);
     if (state.first) {
-      log(`first run: destroying Rex session ${view.label}`);
-      await rex("session.destroy", { session_id: sessionId });
+      stale.push(sessionId);
       continue;
     }
+    // A Rex session the docs don't know yet belongs to the local doc; remote
+    // docs only describe the spaces they already list.
+    if (machine) continue;
+    const view = rx.sessions.get(sessionId);
     const space = { id: newId("sp"), name: view.label, folder: "", tabs: [] };
     for (const [i, win] of (view.windows || []).entries()) {
       const tab = await adoptWindow(sessionId, win, space, i);
       if (tab) space.tabs.push(tab);
     }
-    doc.spaces.push(space);
-    pending.push(() => { state.spaces[space.id] = { session: sessionId, label: view.label }; });
+    doc.value.spaces.push(space);
+    pending.push(() => {
+      state.spaces[key(space.id)] = { session: sessionId, label: shownSpace(machine, space), machine };
+    });
     dirty = true;
     log(`new Rex session ${view.label} -> space ${space.id}`);
   }
 
-  for (const [spaceId, map] of Object.entries(state.spaces)) {
-    const space = doc.spaces.find((s) => s.id === spaceId);
+  for (const [spaceKey, map] of Object.entries(state.spaces)) {
+    if ((map.machine ?? null) !== machine) continue;
+    const space = doc.value.spaces.find((s) => key(s.id) === spaceKey);
     if (!space) continue;
     const view = rx.sessions.get(map.session);
     if (!view) {
-      kills.push(...space.tabs.flatMap(tabTerms));
-      doc.spaces = doc.spaces.filter((s) => s !== space);
+      kills.push(...space.tabs.flatMap((tab) => tabTerms(tab).map((t) => key(t))));
+      doc.value.spaces = doc.value.spaces.filter((s) => s !== space);
       pending.push(() => {
-        delete state.spaces[spaceId];
-        for (const [id, t] of Object.entries(state.tabs)) if (t.space === spaceId) delete state.tabs[id];
+        delete state.spaces[spaceKey];
+        for (const [id, t] of Object.entries(state.tabs)) if (t.space === spaceKey) delete state.tabs[id];
       });
       dirty = true;
       log(`Rex session for ${space.name} closed -> space removed`);
       continue;
     }
     if (view.label !== map.label) {
-      space.name = view.label;
+      space.name = docSpaceName(machine, view.label);
       pending.push(() => { map.label = view.label; });
       dirty = true;
     }
@@ -277,17 +352,17 @@ async function pullRex(doc, rx) {
       }
     }
 
-    for (const [tabId, tmap] of Object.entries(state.tabs)) {
-      if (tmap.space !== spaceId) continue;
-      const tab = space.tabs.find((t) => t.id === tabId);
+    for (const [tabKey, tmap] of Object.entries(state.tabs)) {
+      if (tmap.space !== spaceKey) continue;
+      const tab = space.tabs.find((t) => key(t.id) === tabKey);
       if (!tab) continue;
       const win = view.windows?.find((w) => w.window_id === tmap.window);
       if (!win) {
-        kills.push(...tabTerms(tab));
+        kills.push(...tabTerms(tab).map((t) => key(t)));
         space.tabs = space.tabs.filter((t) => t !== tab);
-        pending.push(() => { delete state.tabs[tabId]; });
+        pending.push(() => { delete state.tabs[tabKey]; });
         dirty = true;
-        log(`Rex window closed -> tab ${tab.name || tabId} removed`);
+        log(`Rex window closed -> tab ${tab.name || tabKey} removed`);
         continue;
       }
       if (win.label !== tmap.label) {
@@ -297,17 +372,20 @@ async function pullRex(doc, rx) {
       }
       const n = tree.fromRex(tiled(win), termOf);
       if (!n) continue;
-      for (const leaf of tree.leaves(n)) if (!leaf.term) await adoptBlock(map.session, win, leaf, space, tab);
+      for (const leaf of tree.leaves(n)) {
+        if (!leaf.term) await adoptBlock(map.session, win, leaf, space, tab, machine);
+        leaf.term = bare(leaf.term);
+      }
       const now = tree.sig(n);
       if (now === tmap.sig) continue;
       const before = tree.leaves(tree.fromHerdr(tab.root));
       const panes = new Map(before.map((l) => [l.term, l.pane]));
       const kept = new Set(tree.leaves(n).map((l) => l.term));
-      kills.push(...before.map((l) => l.term).filter((t) => t && !kept.has(t)));
+      kills.push(...before.map((l) => l.term).filter((t) => t && !kept.has(t)).map((t) => key(t)));
       tab.root = tree.toHerdr(n, tab.id, (t) => panes.get(t) ?? newId("p"), newId);
       pending.push(() => { tmap.sig = now; });
       dirty = true;
-      log(`Rex layout of ${space.name} / ${tab.name || tabId} changed -> ${now}`);
+      log(`Rex layout of ${space.name} / ${tab.name || tabKey} changed -> ${now}`);
     }
   }
 
@@ -316,15 +394,15 @@ async function pullRex(doc, rx) {
 
 // Document -> Rex --------------------------------------------------------------
 
-async function newWindow(sessionId, tab, i, focus) {
+async function newWindow(sessionId, tab, i, focus, machine) {
   const n = tree.fromHerdr(tab.root);
   if (!n) return null;
-  const terms = tree.leaves(n).map((l) => l.term);
+  const terms = tree.leaves(n).map((l) => qual(machine, l.term));
   const res = await rex("session.new_window", {
     session_id: sessionId,
     window_label: tabLabel(tab, i),
     focus,
-    layout: tree.toRex(n, attachBlock),
+    layout: tree.toRex(n, (term) => attachBlock(qual(machine, term))),
   });
   res.block_ids.forEach((b, j) => { state.blocks[b] = terms[j]; });
   return { window: res.window_id, sig: tree.sig(n), blocks: res.block_ids, terms };
@@ -335,136 +413,180 @@ function forgetBlocks(view, windowId) {
   for (const layer of win?.layers || []) for (const b of layer.blocks || []) delete state.blocks[b.block_id];
 }
 
-async function pushDoc(doc, rx) {
-  for (const space of doc.spaces) {
-    let map = state.spaces[space.id];
-    let view = map && rx.sessions.get(map.session);
+async function pushDoc(docs, rx) {
+  for (const doc of docs) {
+    const machine = doc.machine;
+    const key = (id) => qual(machine, id);
+    for (const space of doc.value.spaces) {
+      const spaceKey = key(space.id);
+      const map = state.spaces[spaceKey];
+      const view = map && rx.sessions.get(map.session);
 
-    if (!view) {
-      const windows = space.tabs
-        .map((tab, i) => ({ tab, i, n: tree.fromHerdr(tab.root) }))
-        .filter((w) => w.n);
-      if (windows.length === 0) continue;
-      const res = await rex("session.create", {
-        label: spaceLabel(space),
-        initial_windows: windows.map((w) => ({ window_label: tabLabel(w.tab, w.i), layout: tree.toRex(w.n, attachBlock) })),
-      });
-      state.spaces[space.id] = { session: res.session_id, label: spaceLabel(space) };
-      res.initial_windows.forEach((r, j) => {
-        const { tab, i, n } = windows[j];
-        const terms = tree.leaves(n).map((l) => l.term);
-        r.block_ids.forEach((b, k) => { state.blocks[b] = terms[k]; });
-        state.tabs[tab.id] = { space: space.id, window: r.window_id, label: tabLabel(tab, i), sig: tree.sig(n) };
-      });
-      log(`space ${spaceLabel(space)} -> new Rex session`);
-      continue;
-    }
-
-    if (spaceLabel(space) !== map.label) {
-      await rex("session.set_label", { session_id: map.session, label: spaceLabel(space) });
-      map.label = spaceLabel(space);
-    }
-
-    const wanted = new Set();
-    for (const [i, tab] of space.tabs.entries()) {
-      wanted.add(tab.id);
-      const tmap = state.tabs[tab.id];
-      const win = tmap && view.windows?.find((w) => w.window_id === tmap.window);
-      if (!win) {
-        const made = await newWindow(map.session, tab, i, false);
-        if (made) {
-          state.tabs[tab.id] = { space: space.id, window: made.window, label: tabLabel(tab, i), sig: made.sig };
-          log(`tab ${tabLabel(tab, i)} -> new Rex window`);
-        }
+      if (!view) {
+        const windows = space.tabs
+          .map((tab, i) => ({ tab, i, n: tree.fromHerdr(tab.root) }))
+          .filter((w) => w.n);
+        if (windows.length === 0) continue;
+        const label = shownSpace(machine, space);
+        const res = await rex("session.create", {
+          label,
+          initial_windows: windows.map((w) => ({
+            window_label: tabLabel(w.tab, w.i),
+            layout: tree.toRex(w.n, (term) => attachBlock(qual(machine, term))),
+          })),
+        });
+        state.spaces[spaceKey] = { session: res.session_id, label, machine };
+        res.initial_windows.forEach((r, j) => {
+          const { tab, i, n } = windows[j];
+          const terms = tree.leaves(n).map((l) => qual(machine, l.term));
+          r.block_ids.forEach((b, k) => { state.blocks[b] = terms[k]; });
+          state.tabs[key(tab.id)] = { space: spaceKey, window: r.window_id, label: tabLabel(tab, i), sig: tree.sig(n) };
+        });
+        log(`space ${label} -> new Rex session`);
         continue;
       }
-      if (tabLabel(tab, i) !== tmap.label) {
-        await rex("session.set_window_label", { session_id: map.session, window_id: win.window_id, label: tabLabel(tab, i) });
-        tmap.label = tabLabel(tab, i);
-      }
-      const docSig = tree.sig(tree.fromHerdr(tab.root));
-      if (docSig === tmap.sig) continue;
 
-      // Rebuild the tab beside the old window, keeping its place and focus.
-      const active = view.active_window_id === win.window_id;
-      const focusedTerm = state.blocks[win.focused_block_id];
-      const made = await newWindow(map.session, tab, i, active);
-      if (!made) continue;
-      await rex("session.move_window", { session_id: map.session, window_id: made.window, before_window_id: win.window_id });
-      forgetBlocks(view, win.window_id);
-      await rex("session.close_window", { session_id: map.session, window_id: win.window_id });
-      const focusBlock = made.blocks[made.terms.indexOf(focusedTerm)];
-      if (active && focusBlock) await rex("session.focus_block", { session_id: map.session, block_id: focusBlock });
-      Object.assign(tmap, { window: made.window, sig: made.sig, label: tabLabel(tab, i) });
-      log(`tab ${tabLabel(tab, i)} rebuilt: ${made.sig}`);
-    }
-
-    for (const [tabId, tmap] of Object.entries(state.tabs)) {
-      if (tmap.space !== space.id || wanted.has(tabId)) continue;
-      if (view.windows?.some((w) => w.window_id === tmap.window)) {
-        forgetBlocks(view, tmap.window);
-        await rex("session.close_window", { session_id: map.session, window_id: tmap.window });
+      const label = shownSpace(machine, space);
+      if (label !== map.label) {
+        await rex("session.set_label", { session_id: map.session, label });
+        map.label = label;
       }
-      delete state.tabs[tabId];
-      log(`tab ${tmap.label} gone from herdr -> Rex window closed`);
+
+      const wanted = new Set();
+      for (const [i, tab] of space.tabs.entries()) {
+        const tabKey = key(tab.id);
+        wanted.add(tabKey);
+        const tmap = state.tabs[tabKey];
+        const win = tmap && view.windows?.find((w) => w.window_id === tmap.window);
+        if (!win) {
+          const made = await newWindow(map.session, tab, i, false, machine);
+          if (made) {
+            state.tabs[tabKey] = { space: spaceKey, window: made.window, label: tabLabel(tab, i), sig: made.sig };
+            log(`tab ${tabLabel(tab, i)} -> new Rex window`);
+          }
+          continue;
+        }
+        if (tabLabel(tab, i) !== tmap.label) {
+          await rex("session.set_window_label", { session_id: map.session, window_id: win.window_id, label: tabLabel(tab, i) });
+          tmap.label = tabLabel(tab, i);
+        }
+        const docSig = tree.sig(tree.fromHerdr(tab.root));
+        if (docSig === tmap.sig) continue;
+
+        // Rebuild the tab beside the old window, keeping its place and focus.
+        const active = view.active_window_id === win.window_id;
+        const focusedTerm = state.blocks[win.focused_block_id];
+        const made = await newWindow(map.session, tab, i, active, machine);
+        if (!made) continue;
+        await rex("session.move_window", { session_id: map.session, window_id: made.window, before_window_id: win.window_id });
+        forgetBlocks(view, win.window_id);
+        await rex("session.close_window", { session_id: map.session, window_id: win.window_id });
+        const focusBlock = made.blocks[made.terms.indexOf(focusedTerm)];
+        if (active && focusBlock) await rex("session.focus_block", { session_id: map.session, block_id: focusBlock });
+        Object.assign(tmap, { window: made.window, sig: made.sig, label: tabLabel(tab, i) });
+        log(`tab ${tabLabel(tab, i)} rebuilt: ${made.sig}`);
+      }
+
+      for (const [tabKey, tmap] of Object.entries(state.tabs)) {
+        if (tmap.space !== spaceKey || wanted.has(tabKey)) continue;
+        if (view.windows?.some((w) => w.window_id === tmap.window)) {
+          forgetBlocks(view, tmap.window);
+          await rex("session.close_window", { session_id: map.session, window_id: tmap.window });
+        }
+        delete state.tabs[tabKey];
+        log(`tab ${tmap.label} gone from herdr -> Rex window closed`);
+      }
     }
   }
 
-  const live = new Set(doc.spaces.map((s) => s.id));
-  for (const [spaceId, map] of Object.entries(state.spaces)) {
-    if (live.has(spaceId)) continue;
+  // Only a space from a doc that was read can have gone away. A machine that
+  // couldn't be read keeps its sessions.
+  const seen = new Set(docs.map((d) => d.machine));
+  const live = new Set(docs.flatMap((d) => d.value.spaces.map((s) => qual(d.machine, s.id))));
+  for (const [spaceKey, map] of Object.entries(state.spaces)) {
+    if (!seen.has(map.machine ?? null)) continue;
+    if (live.has(spaceKey)) continue;
     if (rx.sessions.has(map.session)) await rex("session.destroy", { session_id: map.session });
-    for (const [id, t] of Object.entries(state.tabs)) if (t.space === spaceId) delete state.tabs[id];
-    delete state.spaces[spaceId];
+    for (const [id, t] of Object.entries(state.tabs)) if (t.space === spaceKey) delete state.tabs[id];
+    delete state.spaces[spaceKey];
     log(`space ${map.label} gone from herdr -> Rex session destroyed`);
   }
 }
 
-async function orderRex(doc) {
+async function orderRex(docs) {
   const rx = await snapshotRex();
-  const sessions = doc.spaces.map((s) => state.spaces[s.id]?.session).filter((id) => rx.sessions.has(id));
+  const sessions = [];
+  for (const doc of docs) {
+    for (const space of doc.value.spaces) {
+      const id = state.spaces[qual(doc.machine, space.id)]?.session;
+      if (id && rx.sessions.has(id)) sessions.push(id);
+    }
+  }
   const current = rx.order.filter((id) => sessions.includes(id));
   if (current.join() !== sessions.join()) {
     for (const id of sessions) await rex("session.move", { session_id: id });
   }
-  for (const space of doc.spaces) {
-    const sessionId = state.spaces[space.id]?.session;
-    const view = rx.sessions.get(sessionId);
-    if (!view) continue;
-    const windows = space.tabs.map((t) => state.tabs[t.id]?.window).filter((w) => view.windows?.some((v) => v.window_id === w));
-    const now = (view.windows || []).map((w) => w.window_id).filter((w) => windows.includes(w));
-    if (now.join() === windows.join()) continue;
-    for (const w of windows) await rex("session.move_window", { session_id: sessionId, window_id: w });
+  for (const doc of docs) {
+    for (const space of doc.value.spaces) {
+      const sessionId = state.spaces[qual(doc.machine, space.id)]?.session;
+      const view = rx.sessions.get(sessionId);
+      if (!view) continue;
+      const windows = space.tabs
+        .map((t) => state.tabs[qual(doc.machine, t.id)]?.window)
+        .filter((w) => view.windows?.some((v) => v.window_id === w));
+      const now = (view.windows || []).map((w) => w.window_id).filter((w) => windows.includes(w));
+      if (now.join() === windows.join()) continue;
+      for (const w of windows) await rex("session.move_window", { session_id: sessionId, window_id: w });
+    }
   }
 }
 
 // Loop ------------------------------------------------------------------------
 
-let docVersion = -1;
+let docVersions = new Map();
 
 async function reconcile() {
   for (let attempt = 0; attempt < 5; attempt++) {
-    const got = await hc.call("doc.get", { name: DOC });
-    const doc = got.value ?? { spaces: [] };
-    doc.spaces ??= [];
+    const docs = await loadDocs();
+    const rx = await snapshotRex();
+    const stale = [];
+    let conflict = false;
 
-    const { dirty, pending, kills } = await pullRex(doc, await snapshotRex());
-    let version = got.version;
-    if (dirty && !DRY) {
-      try {
-        version = (await hc.call("doc.set", { name: DOC, value: doc, version: got.version })).version;
-      } catch (e) {
-        if (e.kind === "conflict") continue;
-        throw e;
+    for (const doc of docs) {
+      const { dirty, pending, kills } = await pullRex(doc, rx, stale);
+      if (dirty && !DRY) {
+        try {
+          const wrote = await hc.call("doc.set", {
+            name: DOC,
+            ...(doc.machine ? { on: doc.machine } : {}),
+            value: doc.value,
+            version: doc.version,
+          });
+          doc.version = wrote.version;
+        } catch (e) {
+          if (e.kind === "conflict") {
+            conflict = true;
+            break;
+          }
+          throw e;
+        }
+      } else if (dirty) {
+        log("dry-run hc doc.set", doc.machine ?? "local");
       }
+      for (const f of pending) f();
+      await killTerms(kills);
     }
-    for (const f of pending) f();
-    await killTerms(kills);
+    if (conflict) continue;
+
+    for (const id of new Set(stale)) {
+      log(`first run: destroying Rex session ${id}`);
+      if (!DRY) await rex("session.destroy", { session_id: id });
+    }
     state.first = false;
 
-    await pushDoc(doc, await snapshotRex());
-    await orderRex(doc);
-    docVersion = version;
+    await pushDoc(docs, await snapshotRex());
+    await orderRex(docs);
+    docVersions = new Map(docs.map((d) => [d.machine ?? "", d.version]));
     saveState(state);
     return;
   }
@@ -509,14 +631,25 @@ events.on("exit", (code) => {
   process.exit(1);
 });
 
+// The local doc is the one edited most, so it is checked every second; the
+// machines' docs over ssh every five.
 setInterval(async () => {
   try {
     const { version } = await hc.call("doc.get", { name: DOC });
-    if (version !== docVersion) soon();
+    if (docVersions.get("") !== version) soon();
   } catch (e) {
     log(e.message);
   }
 }, 1000);
+
+setInterval(async () => {
+  for (const name of await machines()) {
+    try {
+      const { version } = await hc.call("doc.get", { name: DOC, on: name });
+      if (docVersions.get(name) !== version) soon();
+    } catch {}
+  }
+}, 5000);
 setInterval(soon, 10000);
 
 await kick();
