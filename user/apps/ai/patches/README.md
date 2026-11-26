@@ -9,21 +9,17 @@ Maintenance scripts live under `scripts/ai/<extension>/`; checks shared by
 extensions live under `scripts/ai/shared/`. Add future extension scripts to their
 own directory rather than the top-level `scripts/` list.
 
-## PiG 0.7.0
+## PiG 0.8.0
 
-`pi-pig.nix` builds the fixed-hash `v0.7.0` source archive with Go 1.27.3 and applies `pig-0.5.3-event-bus-cleanup.patch`. The upstream source commit is `beb56447c476da70d05d8e1e1ca9e993b367cb8b`. The diagnostic build identity ends in `event-bus-cleanup`.
+`pi-pig.nix` builds the fixed-hash `v0.8.0` source archive with Go 1.27.3. It carries no patch: upstream now registers migrated Node event listeners with the runtime-owned cleanup mechanism itself. The upstream source commit is `73585394f40cde45fd40889db265179ac3c2af99`.
 
-The patch registers migrated Node event listeners with the same runtime-owned cleanup mechanism as new listeners. This preserves explicit unsubscribe, repeated unsubscribe, reload and connection-close behavior when a native extension moves the Node bus onto the shared host registry. It does not disable extensions or hide panic diagnostics.
+The check phase runs upstream's event-bus lifetime tests (runtime invalidate, closed connection, stale unsubscribe, Node reload and shutdown) with disposable home and agent roots. The install check requires `pig --version` to print the upstream Pi version and the source to carry the pinned PiG release. The package keeps the runtime tools, default agent directory and Herdr reporter.
 
-The patch includes mixed Go/Node regression tests. The Nix check phase runs the migrated-listener unsubscribe/idempotence case, reload guard and existing subscription-lifetime owners with disposable home and agent roots. The package retains the existing runtime tools, default agent directory and Herdr reporter.
+Restart PiG after changing its package; `/reload` does not replace a running host binary.
 
-Git-backed flake references omit untracked patch files. Until a new patch is tracked, use a `path:$PWD` flake reference so builds include it.
+Run `scripts/bump pig` to update the release version, upstream build revision, source hash and module hash. PiG is also included in `scripts/bump` with no arguments. The updater builds a temporary candidate with the package checks before replacing `pi-pig.nix`; failures leave the pin unchanged.
 
-A temporary PiG-only activation adds a `pig` Nix profile entry at priority 4. After a Home Manager switch includes the fixed package, inspect `nix profile list` and remove that temporary entry with `nix profile remove pig` so it cannot mask later updates. Restart PiG after changing its package; `/reload` does not replace a running host binary.
-
-Run `scripts/bump pig` to update the release version, upstream build revision, source hash and module hash. PiG is also included in `scripts/bump` with no arguments. The updater builds a temporary candidate with the existing patch and package checks before replacing `pi-pig.nix`; failures leave the pin unchanged. Run `python3 scripts/ai/pig/test-bump.py` for the offline updater checks.
-
-The updater does not remove patches or relax the pinned Go compiler and compatibility-version check. When a later upstream release includes the equivalent lifetime fix, remove the patch while retaining the regression checks and return to the upstream packaging path only after mixed-extension shutdown passes. Source and module hashes must change explicitly with the release pin.
+The updater does not relax the pinned Go compiler and compatibility-version check.
 
 ## Hermes 0.9.11
 

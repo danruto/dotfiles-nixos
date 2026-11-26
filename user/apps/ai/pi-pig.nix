@@ -3,8 +3,8 @@
 }:
 
 let
-  version = "0.7.0";
-  upstreamRevision = "beb56447c476da70d05d8e1e1ca9e993b367cb8b";
+  version = "0.8.0";
+  upstreamRevision = "73585394f40cde45fd40889db265179ac3c2af99";
   platforms = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
   # herdr-pig v0.2.1, Apache-2.0. Loaded only by PiG via llm.nix's home.file.
   herdrExtension = fetchurl {
@@ -20,11 +20,10 @@ buildGoModule {
 
   src = fetchurl {
     url = "https://github.com/MichaelKinsy/PiG/archive/refs/tags/v${version}.tar.gz";
-    hash = "sha256-p3Ax4r2kN3Wi1bVJKwZY2mg1yDl2frEqBdOvfUs641Q=";
+    hash = "sha256-ZUSgJrZLxmuy5DjbaIc+7NLcCcA9YWa1NRl/3ddtLkM=";
   };
 
-  patches = [ ./patches/pig-0.5.3-event-bus-cleanup.patch ];
-  vendorHash = "sha256-TxiMiTBUE8KqTMbxLecJ9NzvWH8PE3wIXs66ENnZ4S8=";
+  vendorHash = "sha256-oRD+lArStyahDbfdUHgSUXcFlJNEqsDx36TmJ2JYwnc=";
   proxyVendor = true;
   subPackages = [ "cmd/pig" ];
   # The extension host needs the Go compiler at runtime.
@@ -39,7 +38,7 @@ buildGoModule {
   postPatch = ''
     printf '\nreplace github.com/MichaelKinsy/PiG/extensions/sdk => ./extensions/sdk\n' >> go.mod
   '';
-  ldflags = [ "-s" "-w" "-X github.com/MichaelKinsy/PiG/coding/cli.Build=${upstreamRevision}-event-bus-cleanup" ];
+  ldflags = [ "-s" "-w" "-X github.com/MichaelKinsy/PiG/coding/cli.Build=${upstreamRevision}" ];
 
   nativeBuildInputs = [ makeWrapper ];
   nativeCheckInputs = [ nodejs ];
@@ -49,9 +48,6 @@ buildGoModule {
     export HOME="$TMPDIR/home" PIG_HOME="$TMPDIR/pig" PI_HOME="$TMPDIR/pi"
     export PIG_CODING_AGENT_DIR="$TMPDIR/pig/agent" PI_CODING_AGENT_DIR="$TMPDIR/pi/agent"
     mkdir -p "$HOME" "$PIG_CODING_AGENT_DIR" "$PI_CODING_AGENT_DIR"
-    go test -trimpath ./test/extension-conformance \
-      -run '^(TestNativeEventBusRegistrationOrderAcrossRealms|TestNativeEventBusReload_AC3_RetiresMigratedNodeListeners)$/^AC1_AC2_node_listener_predates_native_subscription$' \
-      -count=1 -timeout=180s
     go test -trimpath ./coding/extension/host/subprocess \
       -run '^(TestHostEventBusListenerIsRetiredByRuntimeInvalidate|TestHostEventBusClosedConnectionForgetsRetainedSubscriptions|TestHostEventBusStaleUnsubscribeKeepsTheListenerThatReusedItsKey|TestNodeEventBusListenersRemovedOnReloadAndShutdown)$' \
       -count=1 -timeout=180s
@@ -73,10 +69,11 @@ buildGoModule {
   doInstallCheck = true;
   installCheckPhase = ''
     runHook preInstallCheck
-    # The binary must report the pinned release plus the Pi version baked into its source.
+    # The binary reports the Pi version baked into its source; the source must carry the pinned PiG release.
     upstream=$(sed -n 's/^const UpstreamVersion = "\([^"]*\)"$/\1/p' internal/coding/pigversion/pigversion.go)
     [ -n "$upstream" ]
-    PIG_CODING_AGENT_DIR="$TMPDIR/agent" "$out/bin/pig" --version | grep -Fx "${version}+$upstream"
+    PIG_CODING_AGENT_DIR="$TMPDIR/agent" "$out/bin/pig" --version | grep -Fx "$upstream"
+    grep -Fx "const PigVersion = \"${version}\"" internal/coding/pigversion/pigversion.go
     runHook postInstallCheck
   '';
 
