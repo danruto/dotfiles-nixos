@@ -14,6 +14,7 @@
     ../../user/apps/terminal/myvim.nix
     ../../user/apps/terminal/helix-fork.nix
     ../../user/apps/terminal/rex.nix
+    ../../user/apps/terminal/terminal-browser.nix
     # ../../user/apps/terminal/helix.nix
     # ../../user/apps/fileman/yazi.nix
     ../../user/apps/fileman/elio.nix
