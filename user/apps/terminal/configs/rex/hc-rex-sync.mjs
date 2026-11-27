@@ -26,6 +26,8 @@ import { fileURLToPath } from "node:url";
 import * as tree from "./hc-rex-tree.mjs";
 import { eventLines } from "./hc-rex-events.mjs";
 import { helpersOf, helperLabel, helperTree } from "./hc-rex-helpers.mjs";
+import { bareLabel, withGlyphOf } from "./hc-rex-labels.mjs";
+import { paneState, cmdlineOf } from "./hc-rex-heal.mjs";
 
 const DRY = process.argv.includes("--dry-run");
 const DOC = "herdr-app";
@@ -254,7 +256,7 @@ state.helpers ??= {};
 // Helpers ---------------------------------------------------------------------
 
 const spaceLabel = (space) => (space.name || path.basename(space.folder || "") || "space").slice(0, 128);
-const tabLabel = (tab, i) => (tab.name || String(i + 1)).slice(0, 128);
+const tabLabel = (tab, i) => (bareLabel(tab.name) || String(i + 1)).slice(0, 128);
 const defaultWindowLabel = (label) => /^Window [0-9a-f]{8}$/.test(label);
 const tabTerms = (tab) => tree.leaves(tree.fromHerdr(tab.root)).map((l) => l.term).filter(Boolean);
 
@@ -344,7 +346,8 @@ async function pullRex(doc, rx, stale) {
   ]);
 
   const adoptWindow = async (sessionId, win, space, index) => {
-    const tab = { id: newId("tb"), name: defaultWindowLabel(win.label) ? String(index + 1) : win.label };
+    const label = bareLabel(win.label);
+    const tab = { id: newId("tb"), name: defaultWindowLabel(label) ? String(index + 1) : label };
     const n = tree.fromRex(tiled(win), termOf);
     if (!n) return null;
     for (const leaf of tree.leaves(n)) {
@@ -353,7 +356,7 @@ async function pullRex(doc, rx, stale) {
     }
     tab.root = tree.toHerdr(n, tab.id, () => newId("p"), newId);
     pending.push(() => {
-      state.tabs[key(tab.id)] = { space: key(space.id), window: win.window_id, label: win.label, sig: tree.sig(n) };
+      state.tabs[key(tab.id)] = { space: key(space.id), window: win.window_id, label, sig: tree.sig(n) };
     });
     return tab;
   };
@@ -426,9 +429,10 @@ async function pullRex(doc, rx, stale) {
         log(`Rex window closed -> tab ${tab.name || tabKey} removed`);
         continue;
       }
-      if (win.label !== tmap.label) {
-        if (!defaultWindowLabel(win.label)) tab.name = win.label;
-        pending.push(() => { tmap.label = win.label; });
+      const label = bareLabel(win.label);
+      if (label !== tmap.label) {
+        if (!defaultWindowLabel(label)) tab.name = label;
+        pending.push(() => { tmap.label = label; });
         dirty = true;
       }
       const n = tree.fromRex(tiled(win), termOf);
@@ -528,7 +532,7 @@ async function pushDoc(docs, rx) {
           continue;
         }
         if (tabLabel(tab, i) !== tmap.label) {
-          await rex("session.set_window_label", { session_id: map.session, window_id: win.window_id, label: tabLabel(tab, i) });
+          await rex("session.set_window_label", { session_id: map.session, window_id: win.window_id, label: withGlyphOf(win.label, tabLabel(tab, i)) });
           tmap.label = tabLabel(tab, i);
         }
         const docSig = tree.sig(tree.fromHerdr(tab.root));
@@ -653,6 +657,71 @@ async function orderRex(docs) {
   }
 }
 
+// Panes a Rex restart left as plain shells -----------------------------------
+// An idle one is put back on its hc terminal where it sits. A busy one goes on
+// the hold list (HELD: block id -> where) and stays as it is, idle or not,
+// until its entry is removed from that file, so nothing in it is lost.
+// Checking every pane is a call each, so it's done at most every 15 seconds.
+
+const HELD = path.join(path.dirname(STATE), "hc-rex-held.json");
+let healedAt = 0;
+
+function loadHeld() {
+  try {
+    return JSON.parse(fs.readFileSync(HELD, "utf8"));
+  } catch {
+    return {};
+  }
+}
+
+async function healPanes(rx) {
+  if (Date.now() - healedAt < 15000) return;
+  healedAt = Date.now();
+  const held = loadHeld();
+  const before = JSON.stringify(held);
+  const live = new Set();
+  for (const sessionId of rx.order) {
+    const view = rx.sessions.get(sessionId);
+    for (const win of view?.windows || []) {
+      for (const b of tiled(win) ? (win.layers.find((l) => l.kind === "tiled")?.blocks || []) : []) {
+        const term = state.blocks[b.block_id];
+        live.add(b.block_id);
+        if (!term || held[b.block_id]) continue;
+        let proc;
+        try {
+          proc = await rex("block.method", { session_id: sessionId, block_id: b.block_id, method: "process" });
+        } catch {
+          continue;
+        }
+        const what = paneState(proc, proc?.child ? cmdlineOf(proc.child.pid) : null);
+        if (what === "busy") {
+          held[b.block_id] = `${view.label} / ${bareLabel(win.label)}: ${proc.foreground?.name}, not ${term}`;
+          log(`held ${held[b.block_id]}`);
+          continue;
+        }
+        if (what !== "reattach") continue;
+        const res = await rex("session.new_split", {
+          session_id: sessionId,
+          anchor_id: b.block_id,
+          direction: "horizontal",
+          side: "after",
+          focus: win.focused_block_id === b.block_id,
+          layout: { block: attachBlock(term) },
+        });
+        await rex("block.close", { session_id: sessionId, block_id: b.block_id });
+        delete state.blocks[b.block_id];
+        state.blocks[res.block_ids[0]] = term;
+        log(`${view.label} / ${win.label}: plain shell put back on ${term}`);
+      }
+    }
+  }
+  for (const id of Object.keys(held)) if (!live.has(id)) delete held[id];
+  if (!DRY && JSON.stringify(held) !== before) {
+    fs.mkdirSync(path.dirname(HELD), { recursive: true });
+    fs.writeFileSync(HELD, JSON.stringify(held, null, 1));
+  }
+}
+
 // Loop ------------------------------------------------------------------------
 
 let docVersions = new Map();
@@ -705,6 +774,7 @@ async function reconcile() {
       helperSig = sigOfHelpers(terminals);
     }
     await orderRex(docs);
+    await healPanes(await snapshotRex());
     docVersions = new Map(docs.map((d) => [d.machine ?? "", d.version]));
     saveState(state);
     return;

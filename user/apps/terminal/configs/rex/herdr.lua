@@ -152,6 +152,7 @@ local function row(t, now, kind, parent)
       where(t), program(t)),
     detail   = join(label, age),
     icon     = kind == "sub" and (t.state == "live" and "terminal" or "clock") or "person",
+    state    = t.state == "live" and t.status and t.status.state or nil,
   }
 end
 
@@ -242,6 +243,55 @@ function herdr.label(label, rank)
   local glyph = rank and herdr.glyphs[rank]
   if glyph then return glyph .. " " .. label end
   return label
+end
+
+-- The agents board's text: a status glyph, title and state on one line, where
+-- it runs dimmed under it. Helpers sit indented under their agent.
+function herdr.board_lines(rows, clock)
+  local dim, reset = "\27[2m", "\27[0m"
+  local out = { "\27[1mAgents\27[0m" .. dim .. "  " .. (clock or "") .. reset, "" }
+  if #(rows or {}) == 0 then out[#out + 1] = dim .. "No agents running" .. reset end
+  for _, r in ipairs(rows or {}) do
+    local glyph = (r.state and herdr.glyphs[rank[r.state]]) or "  "
+    local pad = r.kind == "sub" and "   " or ""
+    out[#out + 1] = pad .. glyph .. " " .. r.title .. "  " .. dim .. (r.detail or "") .. reset
+    if r.subtitle and r.subtitle ~= "" then out[#out + 1] = pad .. "   " .. dim .. r.subtitle .. reset end
+  end
+  return out
+end
+
+-- gh's updatedAt, "2026-11-27T01:02:03Z", as seconds since the epoch.
+function herdr.utc_seconds(iso)
+  local y, mo, d, h, mi, s = (iso or ""):match("^(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)")
+  if not y then return nil end
+  y, mo, d = tonumber(y), tonumber(mo), tonumber(d)
+  if mo <= 2 then y, mo = y - 1, mo + 12 end
+  local days = 365 * y + math.floor(y / 4) - math.floor(y / 100) + math.floor(y / 400)
+    + math.floor((153 * (mo - 3) + 2) / 5) + d - 1 - 719468
+  return days * 86400 + tonumber(h) * 3600 + tonumber(mi) * 60 + tonumber(s)
+end
+
+-- The PRs panel's text: a heading per list, then one line per pull request,
+-- its title an OSC 8 link so a click opens it.
+function herdr.pr_lines(review, mine, now, clock, err)
+  local dim, bold, reset = "\27[2m", "\27[1m", "\27[0m"
+  local out = { bold .. "Pull requests" .. reset .. dim .. "  " .. (clock or "") .. reset }
+  if err then out[#out + 1] = "\27[31m" .. tostring(err):gsub("%s+$", "") .. reset end
+  local function section(name, list)
+    out[#out + 1] = ""
+    out[#out + 1] = bold .. name .. reset .. dim .. "  " .. #(list or {}) .. reset
+    for _, pr in ipairs(list or {}) do
+      local at = herdr.utc_seconds(pr.updatedAt)
+      local age = at and herdr.short_age((now - at) * 1000) or ""
+      local repo = pr.repository and pr.repository.name or ""
+      local link = "\27]8;;" .. (pr.url or "") .. "\27\\" .. (pr.title or "") .. "\27]8;;\27\\"
+      out[#out + 1] = (pr.isDraft and dim .. "◌ " .. reset or "● ") .. link
+        .. dim .. "  " .. repo .. "#" .. tostring(pr.number) .. " · " .. age .. reset
+    end
+  end
+  section("Review requested", review)
+  section("Mine", mine)
+  return out
 end
 
 function herdr.sort_agents(list)

@@ -280,22 +280,9 @@ end
 -- the program. A client that can't show prompts (the Windows app) gets a board
 -- of the live helpers instead.
 
-local RECENT_MS = 3600 * 1000
-
--- The Rex server runs with a bare PATH (/usr/local/bin:/usr/bin under
--- systemd), so hc is looked for where it gets installed.
-local function hc_bin()
-  local home = os.getenv("HOME") or ""
-  for _, path in ipairs({ home .. "/.nix-profile/bin/hc", home .. "/.local/bin/hc",
-      "/etc/profiles/per-user/" .. (os.getenv("USER") or "") .. "/bin/hc", "/opt/homebrew/bin/hc" }) do
-    local fh = io.open(path, "r")
-    if fh then
-      fh:close()
-      return path
-    end
-  end
-  return "hc"
-end
+package.loaded["hcrpc"] = nil
+local hcrpc = require("hcrpc")
+local hc_bin, hc_terminals, RECENT_MS = hcrpc.bin, hcrpc.terminals, hcrpc.RECENT_MS
 
 local function attach_command(hc, term)
   local home = os.getenv("HOME") or os.getenv("USERPROFILE") or ""
@@ -309,21 +296,6 @@ end
 -- A finished helper can't be attached; its screen and history are paged.
 local function read_command(hc, term)
   return { "/bin/sh", "-c", herdr.quote(hc) .. " read " .. herdr.quote(term) .. " | less -R +G" }
-end
-
--- terminal.list carries each terminal's status and foreground, which
--- `hc ls` leaves out.
-local function hc_terminals(hc)
-  local req = rex.json.encode{ jsonrpc = "2.0", id = 1, method = "terminal.list", params = { all = true } }
-  local got, err = rex.exec({ hc, "connect" }, { stdin = req .. "\n", timeout = 20 })
-  local line = got and got.ok and got.stdout:match("[^\n]+")
-  local ok, msg = pcall(rex.json.decode, line or "")
-  if not (ok and msg and msg.result) then
-    rex.log("warn", "hc agents: " .. hc .. " terminal.list failed: "
-      .. tostring(err or (got and (got.stderr ~= "" and got.stderr or got.stdout))))
-    return {}
-  end
-  return msg.result.terminals or {}
 end
 
 -- The Rex pane hc-rex-sync made for a terminal, from the sync's state file.
@@ -417,6 +389,68 @@ rex.action{
   end,
 }
 
+-- Panels: a script kept open in a floating pane over the current tab. Its key
+-- shows it, hides it, and brings it back, still running. Floating panes stay
+-- out of herdr, like the picker's.
+local function rex_bin()
+  return hcrpc.find("rex", { "/Applications/Rex Beta.app/Contents/Helpers/Rex Server.rex/Contents/MacOS/rex",
+    "/Applications/Rex.app/Contents/Helpers/Rex Server.rex/Contents/MacOS/rex" })
+end
+
+local function toggle_panel(ctx, label, script, bounds)
+  if not ctx.session_id then return end
+  local view = rex.session.view{ session_id = ctx.session_id }
+  if not view then
+    rex.session.attach{ session_id = ctx.session_id }
+    view = rex.session.view{ session_id = ctx.session_id }
+  end
+  local win
+  for _, w in ipairs(view and view.windows or {}) do
+    if w.window_id == view.active_window_id then win = w end
+  end
+  if not win then return end
+  for _, layer in ipairs(win.layers or {}) do
+    for _, b in ipairs(layer.blocks or {}) do
+      if layer.kind == "floating" and b.label == label then
+        rex.session.set_layer_state{ session_id = ctx.session_id, layer_id = layer.layer_id,
+          state = layer.state == "minimized" and "normal" or "minimized" }
+        return
+      end
+    end
+  end
+  local made = rex.session.new_layer{
+    session_id = ctx.session_id,
+    bounds     = bounds,
+    focus      = false,
+    layout     = rex.layout.block{
+      flavor  = "com.superlogical.terminal.shell",
+      options = { command = { rex_bin(), "do", (os.getenv("HOME") or "") .. "/.config/rex/" .. script }, shell = "none" },
+    },
+  }
+  local block = made and made.block_ids and made.block_ids[1]
+  if block then rex.session.set_block_label{ session_id = ctx.session_id, block_id = block, label = label } end
+end
+
+rex.action{
+  name     = "agents_board",
+  title    = "hc: Agents board",
+  category = "Agent",
+  keywords = "hc herdr agents board panel sidebar",
+  run      = function(ctx)
+    toggle_panel(ctx, "agents board", "hc-agents-board.lua", { x = 0.7, y = 0, w = 0.3, h = 1 })
+  end,
+}
+
+rex.action{
+  name     = "prs_panel",
+  title    = "GitHub: Pull requests",
+  category = "Agent",
+  keywords = "github gh pr pull requests review panel",
+  run      = function(ctx)
+    toggle_panel(ctx, "pull requests", "prs-panel.lua", { x = 0, y = 0.6, w = 0.7, h = 0.4 })
+  end,
+}
+
 -- Keys -----------------------------------------------------------------------
 -- alt+letters are owned by aerospace on the Mac, same as under herdr; the
 -- ctrl+a prefix forms are the reliable path.
@@ -447,6 +481,8 @@ bind({ "alt+up" }, "agent_previous")
 bind({ "alt+down" }, "agent_next")
 bind({ p .. "t", "alt+t" }, "hc_agents")
 bind({ p .. "a" }, "client.sidebar.activity.toggle")
+bind({ "ctrl+shift+a", "alt+a", p .. "shift+a" }, "agents_board")
+bind({ "ctrl+shift+g", "alt+p", p .. "shift+g" }, "prs_panel")
 bind({ p .. "b" }, "client.sidebar.toggle")
 
 bind({ p .. "c" }, "client.tab.new")

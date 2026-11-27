@@ -59,6 +59,31 @@ eq(ids, { "t5", "t1", "t2", "t3", "t4" }, "agent_rows sorts by need, nests helpe
 eq(rows[1].title, "Fix nav", "agent_rows titles an agent by its terminal title")
 eq(rows[1].detail, "Needs you · 2m", "agent_rows states need and age")
 eq(rows[2].title, "pp", "agent_rows falls back to the tab name")
+eq(rows[1].state, "blocked", "agent_rows keeps the status for the board")
+
+local plain = function(s) return (s:gsub("\27%[[%d;]*m", "")) end
+local board = herdr.board_lines(rows, "09:00")
+eq(plain(board[1]), "Agents  09:00", "board heading")
+eq(plain(board[3]), "🟡 Fix nav  Needs you · 2m", "board puts the glyph before a blocked agent")
+local sub
+for _, line in ipairs(board) do if plain(line):match("^   %S+ ↳") or plain(line):match("^      ↳") then sub = sub or line end end
+eq(sub ~= nil, true, "board indents helpers")
+eq(plain(herdr.board_lines({}, "")[3]), "No agents running", "empty board")
+
+eq(herdr.utc_seconds("1970-01-02T00:00:01Z"), 86401, "utc_seconds")
+eq(herdr.utc_seconds("2026-11-27T01:02:03Z"), 1795741323, "utc_seconds today")
+eq(herdr.utc_seconds("2024-02-29T00:00:00Z"), 1709164800, "utc_seconds leap day")
+eq(herdr.utc_seconds("nope"), nil, "utc_seconds rejects")
+local unlink = function(s) return plain(s):gsub("\27%]8;;[^\27]*\27\\", "") end
+local prs = herdr.pr_lines(
+  { { number = 7, title = "Fix it", repository = { name = "api" }, updatedAt = "2026-11-27T00:00:00Z", url = "u" } },
+  { { number = 9, title = "Mine", repository = { name = "web" }, isDraft = true, updatedAt = "2026-11-26T00:00:00Z" } },
+  herdr.utc_seconds("2026-11-27T02:00:00Z"), "09:00")
+eq(unlink(prs[3]), "Review requested  1", "pr_lines review heading")
+eq(unlink(prs[4]), "● Fix it  api#7 · 2h", "pr_lines row")
+eq(unlink(prs[7]), "◌ Mine  web#9 · 1d", "pr_lines draft row")
+eq(prs[4]:find("\27]8;;u\27\\Fix it", 1, true) ~= nil, true, "pr_lines links the title")
+eq(unlink(herdr.pr_lines(nil, nil, 0, "", "gh: no auth\n")[2]), "gh: no auth", "pr_lines shows the error")
 eq(rows[2].subtitle, "pb / pp · fish", "agent_rows says where an agent runs")
 eq(rows[3].title, "↳ review", "agent_rows indents a helper")
 eq(rows[3].subtitle, "from pp", "agent_rows names a helper's parent")
