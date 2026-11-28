@@ -659,12 +659,14 @@ async function orderRex(docs) {
 
 // Panes a Rex restart left as plain shells -----------------------------------
 // An idle one is put back on its hc terminal where it sits. A busy one goes on
-// the hold list (HELD: block id -> where) and stays as it is, idle or not,
-// until its entry is removed from that file, so nothing in it is lost.
+// the hold list (HELD: block id -> where) and stays as it is, idle or not.
+// Removing its entry from that file releases it: it's put back on its hc
+// terminal on the next check, ending whatever runs in it.
 // Checking every pane is a call each, so it's done at most every 15 seconds.
 
 const HELD = path.join(path.dirname(STATE), "hc-rex-held.json");
 let healedAt = 0;
+let lastHeld = {};
 
 function loadHeld() {
   try {
@@ -679,6 +681,7 @@ async function healPanes(rx) {
   healedAt = Date.now();
   const held = loadHeld();
   const before = JSON.stringify(held);
+  const released = new Set(Object.keys(lastHeld).filter((id) => !held[id]));
   const live = new Set();
   for (const sessionId of rx.order) {
     const view = rx.sessions.get(sessionId);
@@ -694,12 +697,12 @@ async function healPanes(rx) {
           continue;
         }
         const what = paneState(proc, proc?.child ? cmdlineOf(proc.child.pid) : null);
-        if (what === "busy") {
+        if (what === "busy" && !released.has(b.block_id)) {
           held[b.block_id] = `${view.label} / ${bareLabel(win.label)}: ${proc.foreground?.name}, not ${term}`;
           log(`held ${held[b.block_id]}`);
           continue;
         }
-        if (what !== "reattach") continue;
+        if (what !== "reattach" && !(what === "busy" && released.has(b.block_id))) continue;
         const res = await rex("session.new_split", {
           session_id: sessionId,
           anchor_id: b.block_id,
@@ -716,6 +719,7 @@ async function healPanes(rx) {
     }
   }
   for (const id of Object.keys(held)) if (!live.has(id)) delete held[id];
+  lastHeld = { ...held };
   if (!DRY && JSON.stringify(held) !== before) {
     fs.mkdirSync(path.dirname(HELD), { recursive: true });
     fs.writeFileSync(HELD, JSON.stringify(held, null, 1));
