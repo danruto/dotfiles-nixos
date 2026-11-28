@@ -1,81 +1,8 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-settings.json",
-  "alwaysThinkingEnabled": true,
   "attribution": {
     "commit": "",
     "pr": ""
-  },
-  "autoMemoryEnabled": false,
-  "autoMode": {
-    "allow": [
-      "$defaults",
-      "Bash(oxlint:*)",
-      "Bash(oxfmt:*)",
-      "Bash(gh pr view:*)"
-    ],
-    "soft_deny": [
-      "$defaults"
-    ]
-  },
-  "disableBundledSkills": true,
-  "disableWorkflows": true,
-  "effortLevel": "high",
-  "enableArtifact": true,
-  "enabledPlugins": {
-    "bb@bubblebeam": true,
-    "claude-code-setup@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true,
-    "lua-lsp@claude-plugins-official": true,
-    "revdiff@revdiff": true,
-    "runpod@runpod": true,
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "bubblebeam": {
-      "source": {
-        "path": "/home/danruto/dev/nearmap/bubblebeam",
-        "source": "directory"
-      }
-    },
-    "runpod": {
-      "source": {
-        "repo": "runpod/runpod-plugins-official",
-        "source": "github"
-      }
-    }
-  },
-  "feedbackDrafts": "off",
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "command": "bash '/home/danruto/.claude/hooks/herdr-agent-state.sh' session",
-            "timeout": 10,
-            "type": "command"
-          },
-          {
-            "command": "bash '/home/danruto/dotfiles-nixos/user/apps/ai/configs/vcs-mode.sh'",
-            "timeout": 10,
-            "type": "command"
-          }
-        ],
-        "matcher": "^(startup|resume|clear|compact|fork)$"
-      }
-    ]
-  },
-  "model": "opus",
-  "modelSettings": {
-    "claude-fable-5-1": {
-      "effortLevel": "medium"
-    },
-    "claude-opus-5": {
-      "effortLevel": "medium"
-    },
-    "claude-opus-5-5": {
-      "effortLevel": "medium"
-    }
   },
   "permissions": {
     "allow": [
@@ -106,12 +33,6 @@
       "mcp__fff__find_files",
       "mcp__fff__multi_grep"
     ],
-    "ask": [
-      "Bash(but push:*)",
-      "Bash(gh pr create:*)",
-      "Bash(git push:*)"
-    ],
-    "defaultMode": "auto",
     "deny": [
       "Bash(rm -rf:*)",
       "Bash(git reset --hard:*)",
@@ -124,22 +45,101 @@
       "Read(.env.staging)",
       "Read(.env.test)",
       "ExitPlanMode"
+    ],
+    "ask": [
+      "Bash(but push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git push:*)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "opus",
+  "disableBundledSkills": true,
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "^(startup|resume|clear|compact|fork)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/home/danruto/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash '/home/danruto/dotfiles-nixos/user/apps/ai/configs/vcs-mode.sh'",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
-  "remoteControlAtStartup": false,
-  "skipDangerousModePermissionPrompt": true,
-  "skipWorkflowUsageWarning": true,
+  "disableWorkflows": true,
+  "enableArtifact": true,
   "subagentStatusLine": {
-    "command": "~/.claude/subagent-statusline.sh",
-    "type": "command"
+    "type": "command",
+    "command": "~/.claude/subagent-statusline.sh"
   },
-  "switchModelsOnFlag": false,
-  "theme": "auto",
+  "enabledPlugins": {
+    "bb@bubblebeam": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "lua-lsp@claude-plugins-official": true,
+    "revdiff@revdiff": true,
+    "runpod@runpod": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "bubblebeam": {
+      "source": {
+        "source": "directory",
+        "path": "/home/danruto/dev/nearmap/bubblebeam"
+      }
+    },
+    "runpod": {
+      "source": {
+        "source": "github",
+        "repo": "runpod/runpod-plugins-official"
+      }
+    }
+  },
+  "feedbackDrafts": "off",
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "medium"
+    },
+    "claude-opus-5": {
+      "effortLevel": "medium"
+    },
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
   "tui": "fullscreen",
-  "verbose": true,
   "voice": {
     "enabled": true,
     "mode": "hold"
+  },
+  "autoMemoryEnabled": false,
+  "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "auto",
+  "verbose": true,
+  "switchModelsOnFlag": false,
+  "remoteControlAtStartup": false,
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(oxlint:*)",
+      "Bash(oxfmt:*)",
+      "Bash(gh pr view:*)"
+    ],
+    "soft_deny": [
+      "$defaults"
+    ]
   },
   "voiceEnabled": true
 }
